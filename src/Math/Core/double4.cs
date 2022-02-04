@@ -1,16 +1,16 @@
+using ProtoBuf;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
 {
-    /// <summary>
-    /// Represents a 4D vector using four double-precision floating-point numbers.
-    /// </summary>
+    /// <summary>Represents a 4D vector using four double-precision.</summary>
     /// <remarks>
     /// The double4 structure is suitable for interoperation with unmanaged code requiring four consecutive doubles.
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
+    [ProtoContract]
     public struct double4 : IEquatable<double4>
     {
         #region Fields
@@ -18,21 +18,25 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The x component of the double4.
         /// </summary>
+        [ProtoMember(1)]
         public double x;
 
         /// <summary>
         /// The y component of the double4.
         /// </summary>
+        [ProtoMember(2)]
         public double y;
 
         /// <summary>
         /// The z component of the double4.
         /// </summary>
+        [ProtoMember(3)]
         public double z;
 
         /// <summary>
         /// The w component of the double4.
         /// </summary>
+        [ProtoMember(4)]
         public double w;
 
         /// <summary>
@@ -77,11 +81,23 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Constructs a new double4.
         /// </summary>
+        /// <param name="val">This value will be set for the x, y, z and w component.</param>
+        public double4(double val)
+        {
+            x = val;
+            y = val;
+            z = val;
+            w = val;
+        }
+
+        /// <summary>
+        /// Constructs a new double4.
+        /// </summary>
         /// <param name="x">The x component of the double4.</param>
         /// <param name="y">The y component of the double4.</param>
         /// <param name="z">The z component of the double4.</param>
         /// <param name="w">The w component of the double4.</param>
-        public double4(double x, double y, double z, double w)
+        public double4(double x, double y, double z, double w) : this()
         {
             this.x = x;
             this.y = y;
@@ -97,8 +113,8 @@ namespace Fusee.Math.Core
         {
             x = v.x;
             y = v.y;
-            z = 0.0f;
-            w = 0.0f;
+            z = 0.0;
+            w = 0.0;
         }
 
         /// <summary>
@@ -110,7 +126,7 @@ namespace Fusee.Math.Core
             x = v.x;
             y = v.y;
             z = v.z;
-            w = 0.0f;
+            w = 0.0;
         }
 
         /// <summary>
@@ -138,6 +154,18 @@ namespace Fusee.Math.Core
             w = v.w;
         }
 
+        /// <summary>
+        /// Constructs a new double4 by converting from a double4.
+        /// </summary>
+        /// <param name="d4">The double4 to copy components from.</param>
+        public double4(float4 d4)
+        {
+            x = d4.x;
+            y = d4.y;
+            z = d4.z;
+            w = d4.w;
+        }
+
         #endregion Constructors
 
         #region Public Members
@@ -145,7 +173,7 @@ namespace Fusee.Math.Core
         #region this
 
         /// <summary>
-        /// Gets or sets the individual components x, y, z, or w depending on their index.
+        /// Gets or sets the individual components x, y, z, or w, depending on their index.
         /// </summary>
         /// <param name="idx">The index (between 0 and 3).</param>
         /// <returns>The x or y component of the double4.</returns>
@@ -197,27 +225,31 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets the length (magnitude) of the vector.
         /// </summary>
-        /// <value>
-        /// The length.
-        /// </value>
-        /// <seealso cref="LengthSquared" />
-        public double Length => (double)System.Math.Sqrt(x * x + y * y + z * z + w * w);
+        /// <see cref="LengthSquared"/>
+        public double Length => System.Math.Sqrt(LengthSquared);
 
         #endregion public double Length
+
+        #region public double Length1
+
+        /// <summary>
+        /// Gets the length in 1-norm.
+        /// </summary>
+        /// <see cref="LengthSquared"/>
+        public double Length1 => (double)System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w);
+
+        #endregion public double Length1
 
         #region public double LengthSquared
 
         /// <summary>
         /// Gets the square of the vector length (magnitude).
         /// </summary>
-        /// <value>
-        /// The length squared.
-        /// </value>
-        /// <see cref="Length" />
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
         /// </remarks>
+        /// <see cref="Length"/>
         public double LengthSquared => x * x + y * y + z * z + w * w;
 
         #endregion public double LengthSquared
@@ -234,6 +266,18 @@ namespace Fusee.Math.Core
 
         #endregion public Normalize()
 
+        #region public Normalize1()
+
+        /// <summary>
+        /// Scales the double4 to unit length in 1-norm.
+        /// </summary>
+        public double4 Normalize1()
+        {
+            return Normalize1(this);
+        }
+
+        #endregion public Normalize1()
+
         #region public NormalizeFast()
 
         /// <summary>
@@ -246,13 +290,47 @@ namespace Fusee.Math.Core
 
         #endregion public NormalizeFast()
 
+        #region public double[] ToArray()
+
         /// <summary>
-        /// Returns an array of doubles with the four components of the vector.
+        /// XML-Comment
         /// </summary>
-        /// <returns>Returns an array of doubles with the four components of the vector.</returns>
+        /// <returns>An double array of size 4 that contains the x,y,z,w components.</returns>
         public double[] ToArray()
         {
             return new double[] { x, y, z, w };
+        }
+
+        #endregion public double[] ToArray()
+
+        #region public Round()
+
+        /// <summary>
+        /// Rounds the double4 to 6 digits (max double precision).
+        /// </summary>
+        public double4 Round()
+        {
+            return Round(this);
+        }
+
+        #endregion public Round()
+
+        /// <summary>
+        /// Converts this double4 - which is interpreted as a color - from sRgb space to linear color space.       
+        /// </summary>
+        /// <returns></returns>
+        public double4 LinearColorFromSRgb()
+        {
+            return LinearColorFromSRgb(this);
+        }
+
+        /// <summary>
+        /// Converts this double4 - which is interpreted as a color - from linear color space to sRgb space.
+        /// </summary>
+        /// <returns></returns>
+        public double4 SRgbFromLinearColor()
+        {
+            return SRgbFromLinearColor(this);
         }
 
         #endregion Instance
@@ -266,12 +344,11 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">Left operand.</param>
         /// <param name="b">Right operand.</param>
-        /// <returns>
-        /// Result of operation.
-        /// </returns>
+        /// <returns>Result of operation.</returns>
         public static double4 Add(double4 a, double4 b)
         {
-            return new double4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
+            var result = new double4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
+            return result;
         }
 
         #endregion Add
@@ -283,12 +360,11 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First operand</param>
         /// <param name="b">Second operand</param>
-        /// <returns>
-        /// Result of subtraction
-        /// </returns>
+        /// <returns>Result of subtraction</returns>
         public static double4 Subtract(double4 a, double4 b)
         {
-            return new double4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+            var result = new double4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+            return result;
         }
 
         #endregion Subtract
@@ -300,12 +376,11 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
-        /// <returns>
-        /// Result of the operation.
-        /// </returns>
+        /// <returns>Result of the operation.</returns>
         public static double4 Multiply(double4 vector, double scale)
         {
-            return new double4(vector.x * scale, vector.y * scale, vector.z * scale, vector.w * scale);
+            var result = new double4(vector.x * scale, vector.y * scale, vector.z * scale, vector.w * scale);
+            return result;
         }
 
         /// <summary>
@@ -313,12 +388,11 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
-        /// <returns>
-        /// Result of the operation.
-        /// </returns>
+        /// <returns>Result of the operation.</returns>
         public static double4 Multiply(double4 vector, double4 scale)
         {
-            return new double4(vector.x * scale.x, vector.y * scale.y, vector.z * scale.z, vector.w * scale.w);
+            var result = new double4(vector.x * scale.x, vector.y * scale.y, vector.z * scale.z, vector.w * scale.w);
+            return result;
         }
 
         #endregion Multiply
@@ -330,12 +404,11 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
-        /// <returns>
-        /// Result of the operation.
-        /// </returns>
+        /// <returns>Result of the operation.</returns>
         public static double4 Divide(double4 vector, double scale)
         {
-            return Multiply(vector, 1 / scale);
+            var result = new double4(vector.x / scale, vector.y / scale, vector.z / scale, vector.w / scale);
+            return result;
         }
 
         /// <summary>
@@ -343,12 +416,11 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
-        /// <returns>
-        /// Result of the operation.
-        /// </returns>
+        /// <returns>Result of the operation.</returns>
         public static double4 Divide(double4 vector, double4 scale)
         {
-            return new double4(vector.x / scale.x, vector.y / scale.y, vector.z / scale.z, vector.w / scale.w);
+            var result = new double4(vector.x / scale.x, vector.y / scale.y, vector.z / scale.z, vector.w / scale.w);
+            return result;
         }
 
         #endregion Divide
@@ -360,9 +432,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First operand</param>
         /// <param name="b">Second operand</param>
-        /// <returns>
-        /// The component-wise minimum
-        /// </returns>
+        /// <returns>The component-wise minimum</returns>
         public static double4 Min(double4 a, double4 b)
         {
             a.x = a.x < b.x ? a.x : b.x;
@@ -381,9 +451,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First operand</param>
         /// <param name="b">Second operand</param>
-        /// <returns>
-        /// The component-wise maximum
-        /// </returns>
+        /// <returns>The component-wise maximum</returns>
         public static double4 Max(double4 a, double4 b)
         {
             a.x = a.x > b.x ? a.x : b.x;
@@ -403,9 +471,7 @@ namespace Fusee.Math.Core
         /// <param name="vec">Input vector</param>
         /// <param name="min">Minimum vector</param>
         /// <param name="max">Maximum vector</param>
-        /// <returns>
-        /// The clamped vector
-        /// </returns>
+        /// <returns>The clamped vector</returns>
         public static double4 Clamp(double4 vec, double4 min, double4 max)
         {
             vec.x = vec.x < min.x ? min.x : vec.x > max.x ? max.x : vec.x;
@@ -423,12 +489,10 @@ namespace Fusee.Math.Core
         /// Scale a vector to unit length
         /// </summary>
         /// <param name="vec">The input vector</param>
-        /// <returns>
-        /// The normalized vector
-        /// </returns>
+        /// <returns>The normalized vector</returns>
         public static double4 Normalize(double4 vec)
         {
-            double scale = 1.0f / vec.Length;
+            double scale = 1.0 / vec.Length;
             vec.x *= scale;
             vec.y *= scale;
             vec.z *= scale;
@@ -438,15 +502,32 @@ namespace Fusee.Math.Core
 
         #endregion Normalize
 
+        #region Normalize1
+
+        /// <summary>
+        /// Scales the vector to unit length in 1-norm.
+        /// </summary>
+        /// <param name="vec">The input vector.</param>
+        /// <returns>The scaled vector.</returns>
+        public static double4 Normalize1(double4 vec)
+        {
+            double scale = 1.0 / vec.Length1;
+            vec.x *= scale;
+            vec.y *= scale;
+            vec.z *= scale;
+            vec.w *= scale;
+            return vec;
+        }
+
+        #endregion Normalize1
+
         #region NormalizeFast
 
         /// <summary>
         /// Scale a vector to approximately unit length
         /// </summary>
         /// <param name="vec">The input vector</param>
-        /// <returns>
-        /// The normalized vector
-        /// </returns>
+        /// <returns>The normalized vector</returns>
         public static double4 NormalizeFast(double4 vec)
         {
             double scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
@@ -466,15 +547,34 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="left">First operand</param>
         /// <param name="right">Second operand</param>
-        /// <returns>
-        /// The dot product of the two inputs
-        /// </returns>
+        /// <returns>The dot product of the two inputs</returns>
         public static double Dot(double4 left, double4 right)
         {
             return left.x * right.x + left.y * right.y + left.z * right.z + left.w * right.w;
         }
 
         #endregion Dot
+
+        /// <summary>
+        /// Performs <see cref="M.Step(double, double)"/> for each component of the input vectors.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        public static double4 Step(double4 edge, double4 val)
+        {
+            return new double4(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z), M.Step(edge.w, val.w));
+        }
+
+        /// <summary>
+        /// Returns a double4 where all components are raised to the specified power.
+        /// </summary>
+        /// <param name="val">The double4 to be raised to a power.</param>
+        /// <param name="exp">A double that specifies a power.</param>
+        /// <returns></returns>
+        public static double4 Pow(double4 val, double exp)
+        {
+            return new double4(System.Math.Pow(val.x, exp), System.Math.Pow(val.y, exp), System.Math.Pow(val.z, exp), System.Math.Pow(val.w, exp));
+        }
 
         #region Lerp
 
@@ -484,15 +584,29 @@ namespace Fusee.Math.Core
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
         /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
-        /// <returns>
-        /// a when blend=0, b when blend=1, and a linear combination otherwise
-        /// </returns>
+        /// <returns>a when blend=0, b when blend=1, and a linear combination otherwise</returns>
         public static double4 Lerp(double4 a, double4 b, double blend)
         {
             a.x = blend * (b.x - a.x) + a.x;
             a.y = blend * (b.y - a.y) + a.y;
             a.z = blend * (b.z - a.z) + a.z;
             a.w = blend * (b.w - a.w) + a.w;
+            return a;
+        }
+
+        /// <summary>
+        /// Returns a new Vector that is the linear blend of the 2 given Vectors.
+        /// Each component of vector a is blended with its equivalent in vector b.
+        /// </summary>
+        /// <param name="a">First input vector</param>
+        /// <param name="b">Second input vector</param>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        public static double4 Lerp(double4 a, double4 b, double4 blend)
+        {
+            a.x = blend.x * (b.x - a.x) + a.x;
+            a.y = blend.y * (b.y - a.y) + a.y;
+            a.z = blend.z * (b.z - a.z) + a.z;
+            a.w = blend.w * (b.w - a.w) + a.w;
             return a;
         }
 
@@ -508,15 +622,122 @@ namespace Fusee.Math.Core
         /// <param name="c">Third input Vector</param>
         /// <param name="u">First Barycentric Coordinate</param>
         /// <param name="v">Second Barycentric Coordinate</param>
-        /// <returns>
-        /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
-        /// </returns>
+        /// <returns>a when u=1, v=0, b when v=1,u=0, c when u=v=0, and a linear combination of a,b,c otherwise</returns>
         public static double4 BaryCentric(double4 a, double4 b, double4 c, double u, double v)
         {
             return u * a + v * b + (1.0 - u - v) * c;
         }
 
         #endregion Barycentric
+
+        #region Round
+
+        /// <summary>
+        /// Rounds a vector to 6 digits (max double precision).
+        /// </summary>
+        /// <param name="vec">The input vector.</param>
+        /// <returns>The rounded vector.</returns>
+        public static double4 Round(double4 vec)
+        {
+            return new double4((double)System.Math.Round(vec.x, 6),
+                              (double)System.Math.Round(vec.y, 6),
+                              (double)System.Math.Round(vec.z, 6),
+                              (double)System.Math.Round(vec.w, 6));
+        }
+
+        #endregion Round
+
+        #region Color Conversion
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="sRGBCol">The linear color value as <see cref="double4"/>.</param>
+        public static double4 SRgbFromLinearColor(double4 sRGBCol)
+        {
+            return new double4(double3.SRgbFromLinearColor(sRGBCol.rgb), sRGBCol.a);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="r">The red color value in range 0 - 255.</param>
+        /// <param name="g">The green color value in range 0 - 255.</param>
+        /// <param name="b">The blue color value in range 0 - 255.</param>
+        /// <param name="a">The alpha value in range 0 - 255.</param>
+        public static double4 SRgbFromLinearColor(int r, int g, int b, int a)
+        {
+            return new double4(double3.SRgbFromLinearColor(r, g, b), a / 255f);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="hex">The color value as hex code in form of a "FFFFFFFF" string.</param>
+        public static double4 SRgbFromLinearColor(string hex)
+        {
+            var rgba = Convert.ToUInt32(hex, 16);
+            return SRgbFromLinearColor(rgba);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="col">The color value as uint.</param>
+        public static double4 SRgbFromLinearColor(uint col)
+        {
+            var a = (byte)(col & byte.MaxValue);
+            var b = (byte)(col >> 8 & byte.MaxValue);
+            var g = (byte)(col >> 16 & byte.MaxValue);
+            var r = (byte)(col >> 24 & byte.MaxValue);
+            return SRgbFromLinearColor(r, g, b, a);
+        }
+
+        /// <summary>
+        /// Converts a color value from sRgb to linear space.
+        /// </summary>
+        /// <param name="sRGBCol">The sRgb color value as <see cref="double4"/>.</param>
+        public static double4 LinearColorFromSRgb(double4 sRGBCol)
+        {
+            return new double4(double3.LinearColorFromSRgb(sRGBCol.rgb), sRGBCol.a);
+        }
+
+        /// <summary>
+        ///Converts a color value from sRgb to linear space.
+        /// </summary>
+        /// <param name="r">The red color value in range 0 - 255.</param>
+        /// <param name="g">The green color value in range 0 - 255.</param>
+        /// <param name="b">The blue color value in range 0 - 255.</param>
+        /// <param name="a">The alpha value in range 0 - 255.</param>
+        public static double4 LinearColorFromSRgb(int r, int g, int b, int a)
+        {
+            return new double4(double3.LinearColorFromSRgb(r, g, b), a / 255f);
+        }
+
+        /// <summary>
+        /// Converts a color value from sRgb to linear space.
+        /// </summary>
+        /// <param name="hex">The color value as hex code in form of a "FFFFFFFF" string.</param>
+        public static double4 LinearColorFromSRgb(string hex)
+        {
+            var rgba = Convert.ToUInt32(hex, 16);
+            return LinearColorFromSRgb(rgba);
+        }
+
+        /// <summary>
+        /// Converts a color value from sRgb to linear space.
+        /// </summary>
+        /// <param name="col">The color value as uint.</param>
+        public static double4 LinearColorFromSRgb(uint col)
+        {
+            var a = (byte)(col & byte.MaxValue);
+            var b = (byte)(col >> 8 & byte.MaxValue);
+            var g = (byte)(col >> 16 & byte.MaxValue);
+            var r = (byte)(col >> 24 & byte.MaxValue);
+            return LinearColorFromSRgb(r, g, b, a);
+        }
+
+        #endregion
 
         #endregion Static
 
@@ -525,17 +746,11 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets and sets an OpenTK.double2 with the x and y components of this instance.
         /// </summary>
-        /// <value>
-        /// The xy.
-        /// </value>
         public double2 xy { get => new(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets and sets an OpenTK.double3 with the x, y and z components of this instance.
         /// </summary>
-        /// <value>
-        /// The xyz.
-        /// </value>
         public double3 xyz { get => new(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
 
         #endregion Swizzle
@@ -547,9 +762,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
-        /// <returns>
-        /// The result of the calculation.
-        /// </returns>
+        /// <returns>The result of the calculation.</returns>
         public static double4 operator +(double4 left, double4 right)
         {
             return Add(left, right);
@@ -560,9 +773,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
-        /// <returns>
-        /// The result of the calculation.
-        /// </returns>
+        /// <returns>The result of the calculation.</returns>
         public static double4 operator -(double4 left, double4 right)
         {
             return Subtract(left, right);
@@ -572,9 +783,7 @@ namespace Fusee.Math.Core
         /// Negates an instance.
         /// </summary>
         /// <param name="vec">The instance.</param>
-        /// <returns>
-        /// The result of the calculation.
-        /// </returns>
+        /// <returns>The result of the calculation.</returns>
         public static double4 operator -(double4 vec)
         {
             vec.x = -vec.x;
@@ -589,12 +798,21 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The instance.</param>
         /// <param name="scale">The scalar.</param>
-        /// <returns>
-        /// The result of the calculation.
-        /// </returns>
+        /// <returns>The result of the calculation.</returns>
         public static double4 operator *(double4 vec, double scale)
         {
             return Multiply(vec, scale);
+        }
+
+        /// <summary>
+        /// Multiplies two instances (component-wise).
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <returns>The result of the calculation.</returns>
+        public static double4 operator *(double4 left, double4 right)
+        {
+            return Multiply(left, right);
         }
 
         /// <summary>
@@ -602,23 +820,8 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="scale">The scalar.</param>
         /// <param name="vec">The instance.</param>
-        /// <returns>
-        /// The result of the calculation.
-        /// </returns>
+        /// <returns>The result of the calculation.</returns>
         public static double4 operator *(double scale, double4 vec)
-        {
-            return Multiply(vec, scale);
-        }
-
-        /// <summary>
-        /// Multiplies a vector by the components a vector (scale).
-        /// </summary>
-        /// <param name="vec">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
-        /// <returns>
-        /// Result of the operation.
-        /// </returns>
-        public static double4 operator *(double4 vec, double4 scale)
         {
             return Multiply(vec, scale);
         }
@@ -628,9 +831,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The instance.</param>
         /// <param name="scale">The scalar.</param>
-        /// <returns>
-        /// The result of the calculation.
-        /// </returns>
+        /// <returns>The result of the calculation.</returns>
         public static double4 operator /(double4 vec, double scale)
         {
             return Divide(vec, scale);
@@ -641,9 +842,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
-        /// <returns>
-        /// True, if left equals right; false otherwise.
-        /// </returns>
+        /// <returns>True, if left equals right; false otherwise.</returns>
         public static bool operator ==(double4 left, double4 right)
         {
             return left.Equals(right);
@@ -654,12 +853,20 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
-        /// <returns>
-        /// True, if left does not equa lright; false otherwise.
-        /// </returns>
+        /// <returns>True, if left does not equal right; false otherwise.</returns>
         public static bool operator !=(double4 left, double4 right)
         {
             return !left.Equals(right);
+        }
+
+        /// <summary>
+        /// Explicit cast operator to cast a double4 into a double4 value.
+        /// </summary>
+        /// <param name="d4">The double4 value to cast.</param>
+        /// <returns>A double4 value.</returns>
+        public static explicit operator double4(float4 d4)
+        {
+            return new double4(d4);
         }
 
         /*
@@ -734,9 +941,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Returns the hashcode for this instance.
         /// </summary>
-        /// <returns>
-        /// A System.Int32 containing the unique hashcode for this instance.
-        /// </returns>
+        /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode() ^ w.GetHashCode();
@@ -750,9 +955,7 @@ namespace Fusee.Math.Core
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="obj">The object to compare to.</param>
-        /// <returns>
-        /// True if the instances are equal; false otherwise.
-        /// </returns>
+        /// <returns>True if the instances are equal; false otherwise.</returns>
         public override bool Equals(object? obj)
         {
             if (!(obj is double4))
@@ -765,7 +968,7 @@ namespace Fusee.Math.Core
 
         #endregion Overrides
 
-        #region Color
+        #region Color Swizzle
 
         /// <summary>
         /// The red component (same as x)
@@ -795,6 +998,15 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// The rg component (same as xy)
+        /// </summary>
+        public double2 rg
+        {
+            get => xy;
+            set => xy = value;
+        }
+
+        /// <summary>
         /// The rgb component (same as xyz)
         /// </summary>
         public double3 rgb
@@ -818,20 +1030,16 @@ namespace Fusee.Math.Core
 
         #region IEquatable<double4> Members
 
-        /// <summary>
-        /// Indicates whether the current vector is equal to another vector.
-        /// </summary>
+        /// <summary>Indicates whether the current vector is equal to another vector.</summary>
         /// <param name="other">A vector to compare with this vector.</param>
-        /// <returns>
-        /// true if the current vector is equal to the vector parameter; otherwise, false.
-        /// </returns>
+        /// <returns>true if the current vector is equal to the vector parameter; otherwise, false.</returns>
         public bool Equals(double4 other)
         {
             return
-                x == other.x &&
-                y == other.y &&
-                z == other.z &&
-                w == other.w;
+                System.Math.Abs(x - other.x) < M.EpsilonDouble &&
+                System.Math.Abs(y - other.y) < M.EpsilonDouble &&
+                System.Math.Abs(z - other.z) < M.EpsilonDouble &&
+                System.Math.Abs(w - other.w) < M.EpsilonDouble;
         }
 
         #endregion IEquatable<double4> Members

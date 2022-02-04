@@ -44,14 +44,14 @@ namespace Fusee.Engine.Core
         public int CascadeFarPlane = 500;
 
         /// <summary>
-        /// Controls whether the render output is anti aliased using FXAA. 
+        /// Controls whether the render output is anti aliased using FXAA.
         /// This is done in an additional pass that is turned off if this is set to false.
         /// </summary>
         public bool FxaaOn { get; set; } = true;
 
         /// <summary>
         /// Determines if the scene gets rendered with Screen Space Ambient Occlusion.
-        /// This is done in an additional pass that is turned of if this is set to false. 
+        /// This is done in an additional pass that is turned of if this is set to false.
         /// In this case the ambient component of the lighting is a static value.
         /// If possible set this in the "Init" method to avoid the creation of an SSAO texture if you don't need one.
         /// </summary>
@@ -64,6 +64,7 @@ namespace Fusee.Engine.Core
                 _needToSetSSAOTex = true;
             }
         }
+
         private bool _ssaoOn = true;
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace Fusee.Engine.Core
         //The following ShaderEffects cache all possible ShaderEffects, needed to render the lighting passes.
         private ShaderEffect _lightingPassEffectPoint; //needed when a point light is rendered;
         private ShaderEffect _lightingPassEffectOther; //needed when a light of another type is rendered;
-        private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;         
+        private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;
         private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;
         private ShaderEffect _lightingPassEffectNoCascades; //needed when a parallel light is rendered without cascaded shadow mapping;
 
@@ -183,9 +184,9 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            var wc = CurrentNode.GetWeights();
-            if (wc != null)
-                AddWeightToMesh(mesh, wc);
+            //var wc = CurrentNode.GetWeights();
+            //if (wc != null)
+            //    AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
@@ -374,7 +375,7 @@ namespace Fusee.Engine.Core
                             if (NumberOfCascades == 1)
                                 shadowMap = new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
                             else if (NumberOfCascades > 1)
-                                shadowMap = new WritableArrayTexture(NumberOfCascades, RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
+                                shadowMap = new WritableArrayTexture(NumberOfCascades, RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
                             else
                                 throw new ArgumentException($"Number of shadow cascades is {NumberOfCascades} but must be greater or equal 1.");
 
@@ -561,7 +562,8 @@ namespace Fusee.Engine.Core
                 if (lightVisRes.Item2.Light.IsCastingShadows)
                 {
                     isCastingShadows = true;
-                    var shadowParams = _shadowparams[new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light)];
+
+                    if (!_shadowparams.TryGetValue(new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light), out var shadowParams)) continue;
 
                     //Create and/or choose correct shader effect
                     switch (lightVisRes.Item2.Light.Type)
@@ -647,7 +649,11 @@ namespace Fusee.Engine.Core
                 }
 
                 //Set background color only in last light pass to NOT blend the color (additive).
-                if (i == LightViseratorResults.Count - 1)
+                var isNextLightLast = i + 1 == LightViseratorResults.Count - 1;
+                if (i == LightViseratorResults.Count - 1 ||
+                   (isNextLightLast && !LightViseratorResults[i + 1].Item2.Light.Active) ||
+                   (isNextLightLast && !LightViseratorResults[i + 1].Item2.Light.IsCastingShadows) ||
+                   (isNextLightLast && lightVisRes.Item2.Light.Type == LightType.Point && !_canUseGeometryShaders))
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, BackgroundColor);
                 else
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, _texClearColor);
@@ -949,9 +955,9 @@ namespace Fusee.Engine.Core
         {
             _gBufferRenderTarget = _rc.CreateGBufferTarget(TexRes);
 
-            _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
-            _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
-            _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.fRGB32), (int)TexRes, (int)TexRes, false, TextureFilterMode.Linear);
+            _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.RGB/*fRGB16*/), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
+            _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.RGB/*fRGB16*/), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
+            _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGB), (int)TexRes, (int)TexRes, false, TextureFilterMode.Linear);
 
             _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;
         }

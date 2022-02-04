@@ -183,10 +183,10 @@ namespace Fusee.Engine.Core.ShaderShards
                 Type.Sampler2D => "sampler2D",
                 Type.SamplerCube => "samplerCube",
                 Type.Void => "void",
-                Type.ArrayTexture => "sampler2DArray",
-                Type.Sampler2DShadow => "sampler2DShadow",
-                Type.SamplerCubeShadow => "samplerCubeShadow",
-                Type.ArrayTextureShadow => "sampler2DArrayShadow",
+                Type.ArrayTexture => "highp sampler2DArray",
+                Type.Sampler2DShadow => "highp sampler2DShadow",
+                Type.SamplerCubeShadow => "highp samplerCubeShadow",
+                Type.ArrayTextureShadow => "highp sampler2DArrayShadow",
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
             };
         }
