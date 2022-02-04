@@ -44,14 +44,14 @@ namespace Fusee.Engine.Core
         public int CascadeFarPlane = 500;
 
         /// <summary>
-        /// Controls whether the render output is anti aliased using FXAA. 
+        /// Controls whether the render output is anti aliased using FXAA.
         /// This is done in an additional pass that is turned off if this is set to false.
         /// </summary>
         public bool FxaaOn { get; set; } = true;
 
         /// <summary>
         /// Determines if the scene gets rendered with Screen Space Ambient Occlusion.
-        /// This is done in an additional pass that is turned of if this is set to false. 
+        /// This is done in an additional pass that is turned of if this is set to false.
         /// In this case the ambient component of the lighting is a static value.
         /// If possible set this in the "Init" method to avoid the creation of an SSAO texture if you don't need one.
         /// </summary>
@@ -98,7 +98,7 @@ namespace Fusee.Engine.Core
         //The following ShaderEffects cache all possible ShaderEffects, needed to render the lighting passes.
         private ShaderEffect _lightingPassEffectPoint; //needed when a point light is rendered;
         private ShaderEffect _lightingPassEffectOther; //needed when a light of another type is rendered;
-        private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;         
+        private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;
         private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;
         private ShaderEffect _lightingPassEffectNoCascades; //needed when a parallel light is rendered without cascaded shadow mapping;
 
@@ -184,9 +184,9 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            var wc = CurrentNode.GetWeights();
-            if (wc != null)
-                AddWeightToMesh(mesh, wc);
+            //var wc = CurrentNode.GetWeights();
+            //if (wc != null)
+            //    AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
