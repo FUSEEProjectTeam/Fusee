@@ -71,7 +71,7 @@ namespace Fusee.Math.Core
         {
             x = v.x;
             y = v.y;
-            z = 0.0f;
+            z = 0.0;
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace Fusee.Math.Core
         /// The length.
         /// </value>
         /// <see cref="LengthSquared" />
-        public double Length => (double)System.Math.Sqrt(LengthSquared);
+        public double Length => System.Math.Sqrt(LengthSquared);
 
         #endregion public double Length
 
@@ -541,7 +541,7 @@ namespace Fusee.Math.Core
         {
             if (vec.Length > M.EpsilonDouble)
             {
-                var scale = 1.0f / vec.Length;
+                var scale = 1.0 / vec.Length;
 
                 vec.x *= scale;
                 vec.y *= scale;
@@ -552,23 +552,23 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Normalizes the given vectors and makes sure they are orthogonal to each other.
+        /// Orthoes the normalize.
         /// </summary>
-        /// <param name="vecOne">The first vector.</param>
-        /// <param name="vecTwo">The second vector.</param>
-        /// <returns>An double3 Array of size 2 with orthonormalized vectors. </returns>
-        public static double3[] OrthoNormalize(double3 vecOne, double3 vecTwo)
+        /// <param name="normal">The normal.</param>
+        /// <param name="tangent">The tangent.</param>
+        /// <returns>An double3 Array of size 2 with orthonormalized normal and tangent. </returns>
+        public static double3[] OrthoNormalize(double3 normal, double3 tangent)
         {
             var ret = new double3[2];
 
-            vecOne = Normalize(vecOne);
-            var proj = vecOne * Dot(vecTwo, vecOne);
+            normal = Normalize(normal);
+            var proj = normal * Dot(tangent, normal);
 
-            vecTwo -= proj;
-            vecTwo = Normalize(vecTwo);
+            tangent -= proj;
+            tangent = Normalize(tangent);
 
-            ret[0] = vecOne;
-            ret[1] = vecTwo;
+            ret[0] = normal;
+            ret[1] = tangent;
 
             return ret;
         }
@@ -615,7 +615,7 @@ namespace Fusee.Math.Core
         #region Cross
 
         /// <summary>
-        /// Caclulate the cross (vector) product of two vectors
+        /// Calculate the cross (vector) product of two vectors
         /// </summary>
         /// <param name="left">First operand</param>
         /// <param name="right">Second operand</param>
@@ -775,7 +775,7 @@ namespace Fusee.Math.Core
                 if (dotP > 1)
                     dotP = 1;
 
-                return (double)System.Math.Acos(dotP);
+                return System.Math.Acos(dotP);
             }
 
             return 0;

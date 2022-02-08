@@ -368,6 +368,7 @@ namespace Fusee.Tests.Math.Core
         public void QuaternionToMatrix_MainRotations(Quaternion quat, float4x4 expected)
         {
             var actual = Quaternion.ToRotationMatrix(quat);
+
             Assert.Equal(expected, actual);
         }
 

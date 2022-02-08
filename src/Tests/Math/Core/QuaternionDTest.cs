@@ -80,7 +80,7 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(ThisException))]
         public void Invalid_SetWithIdx_Exception(int idx, string expected)
         {
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var qd4 = new QuaternionD(0, 0, 0, 0); qd4[idx] = 10; });
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var q4 = new QuaternionD(0, 0, 0, 0); q4[idx] = 10; });
 
             Assert.Equal(expected, actual.ParamName);
         }
@@ -133,10 +133,10 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = quat.ToAxisAngle();
 
-            Assert.Equal(expected.x, actual.x, 6);
-            Assert.Equal(expected.y, actual.y, 6);
-            Assert.Equal(expected.z, actual.z, 6);
-            Assert.Equal(expected.w, actual.w, 6);
+            Assert.Equal(expected.x, actual.x, 14);
+            Assert.Equal(expected.y, actual.y, 14);
+            Assert.Equal(expected.z, actual.z, 14);
+            Assert.Equal(expected.w, actual.w, 14);
         }
 
         [Fact]
@@ -165,10 +165,7 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = quat.Normalize();
 
-            Assert.Equal(expected.x, actual.x, 14);
-            Assert.Equal(expected.y, actual.y, 14);
-            Assert.Equal(expected.z, actual.z, 14);
-            Assert.Equal(expected.w, actual.w, 14);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -188,7 +185,7 @@ namespace Fusee.Tests.Math.Core
 
             var actual = quat.Invert();
 
-            Assert.Equal(new QuaternionD(-0.25f, -0.25f, -0.25f, 0.25f), actual);
+            Assert.Equal(new QuaternionD(-0.25, -0.25, -0.25, 0.25), actual);
         }
 
         #endregion
@@ -220,8 +217,8 @@ namespace Fusee.Tests.Math.Core
         #region Mult
 
         [Theory]
-        [MemberData(nameof(GetQuaternionMultiplication))]
-        public void Multiply_TwoQuaternions_Static(QuaternionD left, QuaternionD right, QuaternionD expected)
+        [MemberData(nameof(GetQuaternionDMultiplication))]
+        public void Multiply_TwoQuaternionDs_Static(QuaternionD left, QuaternionD right, QuaternionD expected)
         {
             var actual = QuaternionD.Multiply(left, right);
 
@@ -230,7 +227,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetScalarMultiplication))]
-        public void Multiply_QuaternionScalar_Staic(QuaternionD quat, double scale, QuaternionD expected)
+        public void Multiply_QuaternionDScalar_Staic(QuaternionD quat, double scale, QuaternionD expected)
         {
             var actual = QuaternionD.Multiply(quat, scale);
 
@@ -263,7 +260,7 @@ namespace Fusee.Tests.Math.Core
 
             var actual = QuaternionD.Invert(quat);
 
-            Assert.Equal(new QuaternionD(-0.25f, -0.25f, -0.25f, 0.25f), actual);
+            Assert.Equal(new QuaternionD(-0.25, -0.25, -0.25, 0.25), actual);
         }
 
         #endregion
@@ -276,10 +273,7 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = QuaternionD.Normalize(quat);
 
-            Assert.Equal(expected.x, actual.x, 14);
-            Assert.Equal(expected.y, actual.y, 14);
-            Assert.Equal(expected.z, actual.z, 14);
-            Assert.Equal(expected.w, actual.w, 14);
+            Assert.Equal(expected, actual);
         }
 
         #endregion
@@ -295,10 +289,10 @@ namespace Fusee.Tests.Math.Core
 
             var actual = QuaternionD.FromAxisAngle(axis, angle);
 
-            Assert.Equal(expected.x, actual.x, 7);
-            Assert.Equal(expected.y, actual.y, 7);
-            Assert.Equal(expected.z, actual.z, 7);
-            Assert.Equal(expected.w, actual.w, 7);
+            Assert.Equal(expected.x, actual.x, 14);
+            Assert.Equal(expected.y, actual.y, 14);
+            Assert.Equal(expected.z, actual.z, 14);
+            Assert.Equal(expected.w, actual.w, 14);
         }
 
         [Theory]
@@ -307,10 +301,10 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = QuaternionD.ToAxisAngle(quat);
 
-            Assert.Equal(expected.x, actual.x, 6);
-            Assert.Equal(expected.y, actual.y, 6);
-            Assert.Equal(expected.z, actual.z, 6);
-            Assert.Equal(expected.w, actual.w, 6);
+            Assert.Equal(expected.x, actual.x, 14);
+            Assert.Equal(expected.y, actual.y, 14);
+            Assert.Equal(expected.z, actual.z, 14);
+            Assert.Equal(expected.w, actual.w, 14);
         }
 
         [Theory]
@@ -324,22 +318,12 @@ namespace Fusee.Tests.Math.Core
 
             var expectedRotMat = double4x4.CreateFromAxisAngle(expectedAxis, expectedAngle);
 
-            Assert.Equal(expectedRotMat, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetAxisAngle))]
-        public void ToRotMat_Static_7DecimalsEqual(QuaternionD quat, double4 expected)
-        {
-            var actual = QuaternionD.ToRotationMatrixFast(quat);
-
-            var expectedAxis = new double3(expected.xyz);
-            var expectedAngle = expected.w;
-
-            var expectedRotMat = double4x4.CreateFromAxisAngle(expectedAxis, expectedAngle);
-
-            for (var i = 0; i < expectedRotMat.ToArray().Length; i++)
-                Assert.Equal(expectedRotMat.ToArray()[i], actual.ToArray()[i], 7);
+            var expAsArray = expectedRotMat.ToArray();
+            var actualAsArray = actual.ToArray();
+            for (int i = 0; i < expAsArray.Length; i++)
+            {
+                Assert.Equal(expAsArray[i], actualAsArray[i], 14);
+            }
         }
 
         #endregion
@@ -351,7 +335,6 @@ namespace Fusee.Tests.Math.Core
         public void Slerp_TestSlerp(QuaternionD q1, QuaternionD q2, double blend, QuaternionD expected)
         {
             var actual = QuaternionD.Slerp(q1, q2, blend);
-
             Assert.Equal(expected.x, actual.x, 14);
             Assert.Equal(expected.y, actual.y, 14);
             Assert.Equal(expected.z, actual.z, 14);
@@ -364,7 +347,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetEuler))]
-        public void EulerToQuaternion_MainRotations(double3 euler, QuaternionD expected)
+        public void EulerToQuaternionD_MainRotations(double3 euler, QuaternionD expected)
         {
             var actual = QuaternionD.FromEuler(euler, true);
 
@@ -374,13 +357,73 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(expected.w, actual.w, 14);
         }
 
+        [Theory]
+        [MemberData(nameof(GetEuler))]
+        public void QuaternionDToEuler_MainRotations(double3 expected, QuaternionD quat)
+        {
+            var actual = QuaternionD.ToEuler(quat, true);
+
+            Assert.Equal(expected.x, actual.x, 5);
+            Assert.Equal(expected.y, actual.y, 5);
+            Assert.Equal(expected.z, actual.z, 5);
+        }
+
+        [Fact]
+        public void LookRotation_TestRotation()
+        {
+            var lookAt = new double3(1, 0, 0);
+            var upDirection = new double3(0, 1, 0);
+
+            var actual = QuaternionD.LookRotation(lookAt, upDirection);
+
+            Assert.Equal(new QuaternionD(0, System.Math.Sqrt(0.5), 0, System.Math.Sqrt(0.5)), actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMatrix))]
+        public void QuaternionDToMatrix_MainRotations(QuaternionD quat, double4x4 expected)
+        {
+            var actual = QuaternionD.ToRotationMatrix(quat);
+
+            var expAsArray = expected.ToArray();
+            var actualAsArray = actual.ToArray();
+            for (int i = 0; i < expAsArray.Length; i++)
+            {
+                Assert.Equal(expAsArray[i], actualAsArray[i], 14);
+            }
+        }
+
+        [Fact]
+        public void CopySign_TestNegative()
+        {
+            var a = 1;
+            var b = -2;
+
+            var actual = QuaternionD.CopySign(a, b);
+
+            Assert.Equal(-1, actual);
+        }
+
+        #endregion
+
+        #region FromToRotation
+
+        [Theory]
+        [MemberData(nameof(GetFromToRotation))]
+        public void FromToRotation_TestRotation(double3 from, double3 to, QuaternionD expected)
+        {
+            var actual = QuaternionD.FromToRotation(from, to);
+
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
 
         #region Transform
 
         [Theory]
         [MemberData(nameof(GetTransform))]
-        public void Transform_double4(double4 vec, QuaternionD quat, double4 expected)
+        public void Transform_Float4(double4 vec, QuaternionD quat, double4 expected)
         {
             var actual = QuaternionD.Transform(vec, quat);
 
@@ -412,8 +455,8 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Theory]
-        [MemberData(nameof(GetQuaternionMultiplication))]
-        public void Multiply_TwoQuaternions_Operator(QuaternionD left, QuaternionD right, QuaternionD expected)
+        [MemberData(nameof(GetQuaternionDMultiplication))]
+        public void Multiply_TwoQuaternionDs_Operator(QuaternionD left, QuaternionD right, QuaternionD expected)
         {
             var actual = left * right;
 
@@ -422,7 +465,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetScalarMultiplication))]
-        public void Multiply_QuaternionScalar_Operator(QuaternionD quat, double scale, QuaternionD expected)
+        public void Multiply_QuaternionDScalar_Operator(QuaternionD quat, double scale, QuaternionD expected)
         {
             var actual = quat * scale;
 
@@ -431,7 +474,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetScalarMultiplication))]
-        public void Multiply_ScalarQuaternion_Operator(QuaternionD quat, double scale, QuaternionD expected)
+        public void Multiply_ScalarQuaternionD_Operator(QuaternionD quat, double scale, QuaternionD expected)
         {
             var actual = scale * quat;
 
@@ -487,7 +530,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void ToString_InvariantCulture()
         {
-            string s = "V: (0.16751879124639693, 0.5709414713577319, 0.5709414713577319) w: 0.5656758145325667";
+            string s = "V: (0.5709414713577319, 0.16751879124639693, 0.16751879124639693) w: 0.7860666291368439";
             QuaternionD q = QuaternionD.FromEuler(double3.One);
 
             Assert.Equal(s, q.ToString(CultureInfo.InvariantCulture));
@@ -496,7 +539,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void ToString_CultureDE()
         {
-            string s = "V: (0,16751879124639693; 0,5709414713577319; 0,5709414713577319) w: 0,5656758145325667";
+            string s = "V: (0,5709414713577319; 0,16751879124639693; 0,16751879124639693) w: 0,7860666291368439";
             QuaternionD q = QuaternionD.FromEuler(double3.One);
 
             Assert.Equal(s, q.ToString(new CultureInfo("de-DE")));
@@ -513,18 +556,18 @@ namespace Fusee.Tests.Math.Core
         {
             yield return new object[]
             {
-                new QuaternionD((double) System.Math.Sqrt(0.5f), 0, 0, (double) System.Math.Sqrt(0.5f)),
-                new double4(1, 0, 0, M.DegreesToRadians(90))
+                new QuaternionD(System.Math.Sqrt(0.5), 0, 0,  System.Math.Sqrt(0.5)),
+                new double4(1, 0, 0, M.DegreesToRadiansD((double)90))
             };
             yield return new object[]
             {
-                new QuaternionD(0, (double) System.Math.Sqrt(0.5f), 0, (double) System.Math.Sqrt(0.5f)),
-                new double4(0, 1, 0, M.DegreesToRadians(90))
+                new QuaternionD(0, System.Math.Sqrt(0.5), 0,  System.Math.Sqrt(0.5)),
+                new double4(0, 1, 0, M.DegreesToRadiansD((double)90))
             };
             yield return new object[]
             {
-                new QuaternionD(0, 0, (double) System.Math.Sqrt(0.5f), (double) System.Math.Sqrt(0.5f)),
-                new double4(0, 0, 1, M.DegreesToRadians(90))
+                new QuaternionD(0, 0, System.Math.Sqrt(0.5),  System.Math.Sqrt(0.5)),
+                new double4(0, 0, 1, M.DegreesToRadiansD((double)90))
             };
         }
 
@@ -533,17 +576,17 @@ namespace Fusee.Tests.Math.Core
             yield return new object[]
             {
                 new QuaternionD(1, 0, 0, 1),
-                new QuaternionD((double) System.Math.Sqrt(0.5f), 0, 0, (double) System.Math.Sqrt(0.5f)),
+                new QuaternionD( System.Math.Sqrt(0.5), 0, 0,  System.Math.Sqrt(0.5)),
             };
             yield return new object[]
             {
                 new QuaternionD(0, 1, 0, 1),
-                new QuaternionD(0, (double) System.Math.Sqrt(0.5f), 0, (double) System.Math.Sqrt(0.5f)),
+                new QuaternionD(0,  System.Math.Sqrt(0.5), 0,  System.Math.Sqrt(0.5)),
             };
             yield return new object[]
             {
                 new QuaternionD(0, 0, 1, 1),
-                new QuaternionD(0, 0, (double) System.Math.Sqrt(0.5f), (double) System.Math.Sqrt(0.5f)),
+                new QuaternionD(0, 0,  System.Math.Sqrt(0.5),  System.Math.Sqrt(0.5)),
             };
         }
 
@@ -568,7 +611,7 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { one, one, zero };
         }
 
-        public static IEnumerable<object[]> GetQuaternionMultiplication()
+        public static IEnumerable<object[]> GetQuaternionDMultiplication()
         {
             var zero = new QuaternionD(0, 0, 0, 0);
             var one = new QuaternionD(1, 1, 1, 1);
@@ -594,13 +637,56 @@ namespace Fusee.Tests.Math.Core
         {
             var zero = new QuaternionD(0, 0, 0, 0);
             var id = new QuaternionD(0, 0, 0, 1);
-            var x = new QuaternionD(0.5f, 0, 0, 0.5f);
-            var y = new QuaternionD(0, 0.5f, 0, 0.5f);
+            var x = new QuaternionD(0.5, 0, 0, 0.5);
+            var y = new QuaternionD(0, 0.5, 0, 0.5);
 
-            yield return new object[] { zero, zero, 0.5f, id };
-            yield return new object[] { x, zero, 0.5f, x };
-            yield return new object[] { zero, x, 0.5f, x };
-            yield return new object[] { x, y, 0.5f, new QuaternionD(0.40824829046386d, 0.40824829046386d, 0, 0.816496580927726d) };
+            yield return new object[] { zero, zero, 0.5, id };
+            yield return new object[] { x, zero, 0.5, x };
+            yield return new object[] { zero, x, 0.5, x };
+            yield return new object[] { x, y, 0.5, new QuaternionD(0.40824829046386, 0.40824829046386, 0, 0.81649658092773) };
+        }
+
+        public static IEnumerable<object[]> GetEuler()
+        {
+            yield return new object[]
+            {
+                new double3(90, 0, 0),
+                new QuaternionD(System.Math.Sqrt(0.5), 0, 0,  System.Math.Sqrt(0.5))
+            };
+            yield return new object[]
+            {
+                new double3(0, 90, 0),
+                new QuaternionD(0, System.Math.Sqrt(0.5), 0,  System.Math.Sqrt(0.5))
+            };
+            yield return new object[]
+            {
+                new double3(0, 0, 90),
+                new QuaternionD(0, 0, System.Math.Sqrt(0.5f),  System.Math.Sqrt(0.5f))
+            };
+        }
+
+        public static IEnumerable<object[]> GetMatrix()
+        {
+            yield return new object[]
+                {new QuaternionD(1, 0, 0, 1), new double4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1)};
+            yield return new object[]
+                {new QuaternionD(0, 1, 0, 1), new double4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1)};
+            yield return new object[]
+                {new QuaternionD(0, 0, 1, 1), new double4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)};
+        }
+
+        public static IEnumerable<object[]> GetFromToRotation()
+        {
+            var x = new double3(1, 0, 0);
+            var y = new double3(0, 1, 0);
+            var z = new double3(0, 0, 1);
+
+            yield return new object[]
+                {y, z, new QuaternionD(System.Math.Sqrt(0.5), 0, 0, System.Math.Sqrt(0.5))};
+            yield return new object[]
+                {z, x, new QuaternionD(0, System.Math.Sqrt(0.5), 0, System.Math.Sqrt(0.5))};
+            yield return new object[]
+                {x, y, new QuaternionD(0, 0, System.Math.Sqrt(0.5), System.Math.Sqrt(0.5))};
         }
 
         public static IEnumerable<object[]> GetTransform()
@@ -610,32 +696,14 @@ namespace Fusee.Tests.Math.Core
             var z = new double4(0, 0, 1, 0);
 
             yield return new object[]
-                {y, new QuaternionD((double) System.Math.Sqrt(0.5f), 0, 0, (double) System.Math.Sqrt(0.5f)), z};
+                {y, new QuaternionD( System.Math.Sqrt(0.5), 0, 0, System.Math.Sqrt(0.5)), z};
             yield return new object[]
-                {z, new QuaternionD(0, (double) System.Math.Sqrt(0.5f), 0, (double) System.Math.Sqrt(0.5f)), x};
+                {z, new QuaternionD(0, System.Math.Sqrt(0.5), 0, System.Math.Sqrt(0.5)), x};
             yield return new object[]
-                {x, new QuaternionD(0, 0, (double) System.Math.Sqrt(0.5f), (double) System.Math.Sqrt(0.5f)), y};
-        }
-
-        public static IEnumerable<object[]> GetEuler()
-        {
-            yield return new object[]
-            {
-                new double3(90, 0, 0),
-                new QuaternionD(System.Math.Sqrt(0.5f), 0, 0, System.Math.Sqrt(0.5f))
-            };
-            yield return new object[]
-            {
-                new double3(0, 90, 0),
-                new QuaternionD(0, System.Math.Sqrt(0.5f), 0, System.Math.Sqrt(0.5f))
-            };
-            yield return new object[]
-            {
-                new double3(0, 0, 90),
-                new QuaternionD(0, 0, System.Math.Sqrt(0.5f), System.Math.Sqrt(0.5f))
-            };
+                {x, new QuaternionD(0, 0, System.Math.Sqrt(0.5), System.Math.Sqrt(0.5)), y};
         }
 
         #endregion
+
     }
 }

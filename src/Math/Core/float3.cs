@@ -165,7 +165,7 @@ namespace Fusee.Math.Core
         /// The length.
         /// </value>
         /// <see cref="LengthSquared" />
-        public float Length => (float)System.Math.Sqrt(LengthSquared);
+        public float Length => MathF.Sqrt(LengthSquared);
 
         #endregion public float Length
 
@@ -775,7 +775,7 @@ namespace Fusee.Math.Core
                 if (dotP > 1)
                     dotP = 1;
 
-                return (float)System.Math.Acos(dotP);
+                return (float)MathF.Acos(dotP);
             }
 
             return 0;
@@ -1278,9 +1278,9 @@ namespace Fusee.Math.Core
         public bool Equals(float3 other)
         {
             return
-                System.Math.Abs(x - other.x) < M.EpsilonFloat &&
-                System.Math.Abs(y - other.y) < M.EpsilonFloat &&
-                System.Math.Abs(z - other.z) < M.EpsilonFloat;
+                MathF.Abs(x - other.x) < M.EpsilonFloat &&
+                MathF.Abs(y - other.y) < M.EpsilonFloat &&
+                MathF.Abs(z - other.z) < M.EpsilonFloat;
         }
 
         #endregion IEquatable<float3> Members

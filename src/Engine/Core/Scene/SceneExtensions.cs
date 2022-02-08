@@ -466,7 +466,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="quaternion">Rotation amount in Quaternion.</param>
         public static void Rotate(this Transform tc, Quaternion quaternion)
         {
-            tc.RotationQuaternion *= quaternion;
+            Rotate(tc, Quaternion.ToRotationMatrix(quaternion), space);
         }
 
         /// <summary>
