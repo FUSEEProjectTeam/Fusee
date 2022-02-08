@@ -655,8 +655,8 @@ namespace Fusee.Examples.Labyrinth.Core
                 headTranslation.z -= _moveZ * M.Sin(_angle);
                 _headTransform.Translation = headTranslation;
 
-                _bodyPivotTransform.RotationQuaternion = Quaternion.Invert(_headTransform.RotationQuaternion);
-                _bodyTransform.RotationQuaternion *= _bodyPivotTransform.RotationQuaternion * Quaternion.FromEuler(new float3(_moveX, 0, -_moveZ)) * Quaternion.Invert(_bodyPivotTransform.RotationQuaternion);
+                _bodyPivotTransform.RotationQuaternion = QuaternionF.Invert(_headTransform.RotationQuaternion);
+                _bodyTransform.RotationQuaternion *= _bodyPivotTransform.RotationQuaternion * QuaternionF.FromEuler(new float3(_moveX, 0, -_moveZ)) * QuaternionF.Invert(_bodyPivotTransform.RotationQuaternion);
             }
         }
 
@@ -846,7 +846,7 @@ namespace Fusee.Examples.Labyrinth.Core
 
                 _overviewCam.Active = true;
                 _mainCam.Active = false;
-                _overviewCamTransform.RotateGlobal(Quaternion.FromEuler(new float3(0, 0.2f * M.Pi / 180, 0)), Quaternion.Identity);
+                _overviewCamTransform.RotateGlobal(QuaternionF.FromEuler(new float3(0, 0.2f * M.Pi / 180, 0)), QuaternionF.Identity);
             }
         }
 

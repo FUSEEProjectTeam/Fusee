@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -820,7 +820,7 @@ namespace Fusee.Math.Core
         /// <param name="quat">The quaternion used for the rotation.</param>
         /// <param name="vec">The vector to rotate.</param>
         /// <returns>The rotated vector.</returns>
-        public static float3 Rotate(Quaternion quat, float3 vec)
+        public static float3 Rotate(QuaternionF quat, float3 vec)
         {
             float3 temp, result;
 

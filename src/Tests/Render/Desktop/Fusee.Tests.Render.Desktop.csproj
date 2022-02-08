@@ -25,6 +25,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\AdvancedUI\Core\Fusee.Examples.AdvancedUI.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\BoneAnimation\Core\Fusee.Examples.BoneAnimation.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\GeometryEditing\Core\Fusee.Examples.GeometryEditing.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\MeshingAround\Core\Fusee.Examples.MeshingAround.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Picking\Core\Fusee.Examples.Picking.Core.csproj" />

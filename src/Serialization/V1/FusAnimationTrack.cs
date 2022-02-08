@@ -118,7 +118,7 @@ namespace Fusee.Serialization.V1
         /// </summary>
         Lerp,
         /// <summary>
-        /// Spherical interpolation. float3 are interpreted as Euler angles and interpolated in a shortest-path way using <see cref="Quaternion"/>s.
+        /// Spherical interpolation. float3 are interpreted as Euler angles and interpolated in a shortest-path way using <see cref="QuaternionF"/>s.
         /// </summary>
         Slerp,
     }

@@ -214,7 +214,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 _beta -= speed.y * 0.0001f;
             }
 
-            _camPivotTransform.RotationQuaternion = Quaternion.FromEuler(_beta, _alpha, 0);
+            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_beta, _alpha, 0);
 
             _renderer.Render(RC);
 

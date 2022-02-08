@@ -20,7 +20,7 @@ namespace Fusee.Math.Core
         #region Constructors
 
         /// <summary>
-        /// Construct a new QuaternionD from vector and w components
+        ///     Construct a new QuaternionD from vector and w components
         /// </summary>
         /// <param name="v">The vector part</param>
         /// <param name="w">The w part</param>
@@ -31,7 +31,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Construct a new QuaternionD
+        ///     Construct a new QuaternionD
         /// </summary>
         /// <param name="xx">The xx component</param>
         /// <param name="yy">The yy component</param>
@@ -49,7 +49,7 @@ namespace Fusee.Math.Core
         #region Properties
 
         /// <summary>
-        /// Gets and sets an Fusee.Math.double3 with the x, y and z components of this instance.
+        ///     Gets and sets an Fusee.Math.double3 with the x, y and z components of this instance.
         /// </summary>
         public double3 xyz
         {
@@ -58,7 +58,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets and sets the x component of this instance.
+        ///     Gets and sets the x component of this instance.
         /// </summary>
         public double x
         {
@@ -67,7 +67,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets and sets the y component of this instance.
+        ///     Gets and sets the y component of this instance.
         /// </summary>
         public double y
         {
@@ -76,7 +76,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets and sets the z component of this instance.
+        ///     Gets and sets the z component of this instance.
         /// </summary>
         public double z
         {
@@ -85,7 +85,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets and sets the w component of this instance.
+        ///     Gets and sets the w component of this instance.
         /// </summary>
         public double w
         {
@@ -100,7 +100,7 @@ namespace Fusee.Math.Core
         #region this
 
         /// <summary>
-        /// Sets/Gets value from given index
+        ///     Sets/Gets value from given idx
         /// </summary>
         /// <param name="idx"></param>
         /// <returns></returns>
@@ -262,7 +262,7 @@ namespace Fusee.Math.Core
         #region Sub
 
         /// <summary>
-        /// Subtracts two instances.
+        ///     Subtracts two instances.
         /// </summary>
         /// <param name="left">The left instance.</param>
         /// <param name="right">The right instance.</param>
@@ -279,7 +279,7 @@ namespace Fusee.Math.Core
         #region Mult
 
         /// <summary>
-        /// Multiplies two instances.
+        ///     Multiplies two instances.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -296,7 +296,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Multiplies an instance by a scalar.
+        ///     Multiplies an instance by a scalar.
         /// </summary>
         /// <param name="quaternion">The instance.</param>
         /// <param name="scale">The scalar.</param>
@@ -509,20 +509,20 @@ namespace Fusee.Math.Core
         #region Conversion
 
         /// <summary>
-        ///     Convert Euler angle to QuaternionD rotation.
+        /// Convert Euler angle to Quaternion rotation.
         /// </summary>
-        /// <param name="x">Angle around the x-axis.</param>
-        /// <param name="y">Angle around the y-axis.</param>
-        /// <param name="z">Angle around the z-axis.</param>
+        /// <param name="x">Angle around x.</param>
+        /// <param name="y">Angle around x.</param>
+        /// <param name="z">Angle around x.</param>
         /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
-        /// <returns>A QuaternionD representing the euler angle passed to this method.</returns>
+        /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
         /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
         /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
         /// the range of [-PI, PI].
         ///
-        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternionD/index.htm">the euclideanspace website</a>.
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
         /// </remarks>
-        public static QuaternionD FromEuler(double3 e, bool inDegrees = false)
+        public static QuaternionD FromEuler(double x, double y, double z, bool inDegrees = false)
         {
             if (inDegrees)
             {
@@ -553,76 +553,22 @@ namespace Fusee.Math.Core
             return q;
         }
 
+
         /// <summary>
-        /// Convert Euler angle to QuaternionD rotation.
+        ///     Convert Euler angle to Quaternion rotation.
         /// </summary>
         /// <param name="e">Euler angle to convert.</param>
         /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
-        /// <returns>A QuaternionD representing the euler angle passed to this method.</returns>
+        /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
         /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
         /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
         /// the range of [-PI, PI].
         ///
-        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternionD/index.htm">the euclidean space website</a>.
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
         /// </remarks>
         public static QuaternionD FromEuler(double3 e, bool inDegrees = false)
         {
-            return FromEuler(e.x, e.y, e.z, inDegrees);
-        }
-
-        /// <summary>
-        ///     Convert QuaternionD rotation to Euler Angles.
-        /// </summary>
-        /// <param name="q">QuaternionD rotation to convert.</param>
-        /// <param name="inDegrees">Whether the angles shall be in degrees or radians.</param>
-        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
-        /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
-        /// the range of [-PI, PI].
-        ///
-        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternionD/index.htm">the euclidean space website</a>.
-        /// </remarks>
-        public static double3 ToEuler(QuaternionD q, bool inDegrees = false)
-        {
-            // Ref: 3D Math Primer for Graphics and Game Development SE, Page 290 - Listing 8.6, ISBN 978-1-56881-723-1
-
-            double3 euler;
-            q = q.Normalize();
-
-            var sp = -2 * (q.y * q.z - q.w * q.x);
-
-            if (System.Math.Abs(sp) > 0.99999f)
-            {
-                euler.x = M.PiOver2 * sp;
-
-                euler.y = System.Math.Atan2(-q.x * q.z + q.w * q.y, 0.5f - q.y * q.y - q.z * q.z);
-                euler.z = 0;
-            }
-            else
-            {
-                euler.x = System.Math.Asin(sp);
-                euler.y = System.Math.Atan2(q.x * q.z + q.w * q.y, 0.5f - q.x * q.x - q.y * q.y);
-                euler.z = System.Math.Atan2(q.x * q.y + q.w * q.z, 0.5f - q.x * q.x - q.z * q.z);
-            }
-
-            var q = new QuaternionD();
-
-            double3 s, c;
-
-            s.x = System.Math.Sin(e.x * 0.5);
-            c.x = System.Math.Cos(e.x * 0.5);
-
-            s.y = System.Math.Sin(e.y * 0.5);
-            c.y = System.Math.Cos(e.y * 0.5);
-
-            s.z = System.Math.Sin(e.z * 0.5);
-            c.z = System.Math.Cos(e.z * 0.5);
-
-            q.x = s.x * c.y * c.z + s.y * s.z * c.x;
-            q.y = s.y * c.x * c.z - s.x * s.z * c.y;
-            q.z = s.z * c.x * c.y - s.x * s.y * c.z;
-            q.w = c.x * c.y * c.z + s.y * s.z * s.x;
-
-            return q;
+            return FromEuler(e, inDegrees);
         }
 
         /// <summary>
@@ -881,7 +827,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Subtracts two instances.
+        ///     Subtracts two instances.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -892,7 +838,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Multiplies two instances.
+        ///     Multiplies two instances.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -903,7 +849,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Multiplies an instance by a scalar.
+        ///     Multiplies an instance by a scalar.
         /// </summary>
         /// <param name="quaternion">The instance.</param>
         /// <param name="scale">The scalar.</param>
@@ -914,7 +860,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Multiplies an instance by a scalar.
+        ///     Multiplies an instance by a scalar.
         /// </summary>
         /// <param name="quaternion">The instance.</param>
         /// <param name="scale">The scalar.</param>
@@ -925,7 +871,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Compares two instances for equality.
+        ///     Compares two instances for equality.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -936,7 +882,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Compares two instances for inequality.
+        ///     Compares two instances for inequality.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -953,7 +899,7 @@ namespace Fusee.Math.Core
         #region public override string ToString()
 
         /// <summary>
-        /// Returns a System.String that represents the current QuaternionD.
+        ///     Returns a System.String that represents the current QuaternionD.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
@@ -986,7 +932,7 @@ namespace Fusee.Math.Core
         #region public override bool Equals (object o)
 
         /// <summary>
-        /// Compares this object instance to another object for equality.
+        ///     Compares this object instance to another object for equality.
         /// </summary>
         /// <param name="other">The other object to be used in the comparison.</param>
         /// <returns>True if both objects are QuaternionDs of equal value. Otherwise it returns false.</returns>
@@ -1001,7 +947,7 @@ namespace Fusee.Math.Core
         #region public override int GetHashCode ()
 
         /// <summary>
-        /// Provides the hash code for this object.
+        ///     Provides the hash code for this object.
         /// </summary>
         /// <returns>A hash code formed from the bitwise XOR of this objects members.</returns>
         public override int GetHashCode()
@@ -1018,7 +964,7 @@ namespace Fusee.Math.Core
         #region IEquatable<QuaternionD> Members
 
         /// <summary>
-        /// Compares this QuaternionD instance to another QuaternionD for equality.
+        ///     Compares this QuaternionD instance to another QuaternionD for equality.
         /// </summary>
         /// <param name="other">The other QuaternionD to be used in the comparison.</param>
         /// <returns>True if both instances are equal; false otherwise.</returns>

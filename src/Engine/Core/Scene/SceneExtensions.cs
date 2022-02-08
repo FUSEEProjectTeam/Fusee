@@ -464,9 +464,9 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="quaternion">Rotation amount in Quaternion.</param>
-        public static void Rotate(this Transform tc, Quaternion quaternion)
+        public static void Rotate(this Transform tc, QuaternionF quaternion)
         {
-            Rotate(tc, Quaternion.ToRotationMatrix(quaternion), space);
+            tc.RotationQuaternion *= quaternion;
         }
 
         /// <summary>
@@ -507,9 +507,9 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="tc"></param>
         /// <param name="rotation">Rotation amount as represented in Quaternion.</param>
         /// <param name="parentGlobalRot">Global (accumulated) rotation of the parent node.</param>
-        public static void RotateGlobal(this Transform tc, Quaternion rotation, Quaternion parentGlobalRot)
+        public static void RotateGlobal(this Transform tc, QuaternionF rotation, QuaternionF parentGlobalRot)
         {
-            tc.RotationQuaternion *= parentGlobalRot * rotation * Quaternion.Invert(parentGlobalRot);
+            tc.RotationQuaternion *= parentGlobalRot * rotation * QuaternionF.Invert(parentGlobalRot);
         }
 
         /// <summary>

@@ -111,7 +111,7 @@ namespace Fusee.Examples.Picking.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            _camPivotTransform.RotationQuaternion = Quaternion.FromEuler(new float3(_angleVert, _angleHorz, 0));
+            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(new float3(_angleVert, _angleHorz, 0));
 
             _sceneRenderer.Render(RC);
 
