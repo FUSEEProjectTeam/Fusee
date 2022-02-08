@@ -116,7 +116,7 @@ namespace Fusee.Examples.Integrations.Core
             _camTransform.RotationMatrix = mtxRot;
 
             _sceneRenderer.Render(RC);
-            FusToWpfEvents?.Invoke(this, new FpsEvent(Time.FramesPerSecondAverage));
+            FusToWpfEvents?.Invoke(this, new FpsEvent(FramesPerSecondAverage));
 
             _guiRenderer.Render(RC);
 
