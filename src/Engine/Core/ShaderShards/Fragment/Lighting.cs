@@ -40,7 +40,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Caches "allLight[i]." names (used as uniform parameters).
         /// </summary>
-        internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new();
+        public static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new();
 
         /// <summary>
         /// Contains all methods for color management (gamma and from and to sRGB).
@@ -1231,7 +1231,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
     }
 
-    internal struct LightParamStrings
+    public struct LightParamStrings
     {
         public string PositionViewSpace;
         public string Intensities;
