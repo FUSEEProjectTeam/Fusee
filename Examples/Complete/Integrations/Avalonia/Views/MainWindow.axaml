@@ -13,8 +13,8 @@
 		<vm:MainWindowViewModel/>
 	</Design.DataContext>
 
-	<Grid ColumnDefinitions="2*,10*">
-		<Grid Grid.Column="0" RowDefinitions="1*,1*">
+	<Grid ColumnDefinitions="1*,10*">
+		<Grid Grid.Column="0" RowDefinitions="1*,1*" Background="LightGray">
 
 			<Label Grid.Row="0" Content="{Binding GetFPS}"/>
 
@@ -33,7 +33,7 @@
 			</Grid>
 
 		</Grid>
-		<fusee:FuseeWindowControl ClipToBounds="True" Grid.Column="1" Focusable="True" x:Name="FuseeWindowControl"/>
+		<fusee:FuseeWindowControl Grid.Column="1" Focusable="True" x:Name="FuseeWindowControl"/>
 	</Grid>
 
 </Window>

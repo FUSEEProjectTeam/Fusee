@@ -38,13 +38,7 @@ namespace Fusee.Avalonia.Desktop
     {
         public PixelSize GetPixelSize()
         {
-            var value = _pxSizeMethod?.Invoke(this, null);
-            if (value is not null)
-            {
-                return (PixelSize)value;
-            }
-
-            throw new("Unable to retrieve PixelSize() from framebuffer");
+            return new PixelSize((int)Parent.Bounds.Width, (int)Parent.Bounds.Height);
         }
 
         /// <summary>
@@ -74,8 +68,6 @@ namespace Fusee.Avalonia.Desktop
         /// </summary>
         public EventHandler<PixelSize>? OnResize;
 
-        private readonly MethodInfo _pxSizeMethod = typeof(OpenGlControlBase).GetMethod("GetPixelSize", BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new("Unable to find PixelSize() method");
         private readonly FieldInfo _depthBufferField = typeof(OpenGlControlBase).GetField("_depthBuffer", BindingFlags.Instance | BindingFlags.NonPublic)
             ?? throw new("Unable to find _depthBuffer field");
 
@@ -90,6 +82,8 @@ namespace Fusee.Avalonia.Desktop
             {
                OnResize?.Invoke(this, GetPixelSize());
             };
+
+
         }
 
 
@@ -101,6 +95,11 @@ namespace Fusee.Avalonia.Desktop
             var oldViewport = new int[4];
             GL.GetInteger(GetPName.Viewport, oldViewport);
             GL.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
+
+            Width = (int)Parent.Bounds.Width;
+            Height = (int)Parent.Bounds.Height;
+
+            Dispatcher.UIThread.Post(InvalidateMeasure, DispatcherPriority.MaxValue);
 
             //Tell our subclass to render
             OnRender?.Invoke(this, EventArgs.Empty);
