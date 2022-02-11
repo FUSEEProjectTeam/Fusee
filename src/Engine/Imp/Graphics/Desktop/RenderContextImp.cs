@@ -716,7 +716,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets the shader parameter list of a specific <see cref="IShaderHandle" />. 
+        /// Gets the shader parameter list of a specific <see cref="IShaderHandle" />.
         /// </summary>
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
@@ -1157,7 +1157,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping.
         /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
         /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
         /// </summary>
@@ -2357,7 +2357,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will detach the texture currently associated with <see cref="FramebufferAttachment.ColorAttachment1"/>.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with <see cref="FramebufferAttachment.DepthAttachment"/> will be detached.</param>       
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with <see cref="FramebufferAttachment.DepthAttachment"/> will be detached.</param>
         public void DetachTextureFromFbo(IRenderTarget renderTarget, bool isDepthTex, int attachment = 0)
         {
             ChangeFramebufferTexture2D(renderTarget, attachment, 0, isDepthTex);
@@ -2369,7 +2369,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will attach the texture to <see cref="FramebufferAttachment.ColorAttachment1"/>.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to <see cref="FramebufferAttachment.DepthAttachment"/>.</param>        
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to <see cref="FramebufferAttachment.DepthAttachment"/>.</param>
         /// <param name="texHandle">The gpu handle of the texture.</param>
         public void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0)
         {
@@ -2416,7 +2416,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Set the Viewport of the rendering output window by x,y position and width,height parameters. 
+        /// Set the Viewport of the rendering output window by x,y position and width,height parameters.
         /// The Viewport is the portion of the final image window.
         /// </summary>
         /// <param name="x">The x.</param>
@@ -2456,10 +2456,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
         }
 
-        /// <summary> 
+        /// <summary>
         /// Returns a human readable description of the underlying graphics hardware. This implementation reports GL_VENDOR, GL_RENDERER, GL_VERSION and GL_EXTENSIONS.
-        /// </summary> 
-        /// <returns></returns> 
+        /// </summary>
+        /// <returns></returns>
         public string GetHardwareDescription()
         {
             return "Vendor: " + GL.GetString(StringName.Vendor) + "\nRenderer: " + GL.GetString(StringName.Renderer) + "\nVersion: " + GL.GetString(StringName.Version) + "\nExtensions: " + GL.GetString(StringName.Extensions);

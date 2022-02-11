@@ -149,7 +149,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public float2 UV
         {
@@ -316,8 +316,8 @@ namespace Fusee.Engine.Core
                 var frustumCorners = new float4[4];
 
                 frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
-                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr 
-                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
+                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr
+                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl
                 frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr
 
                 for (var i = 0; i < frustumCorners.Length; i++)
@@ -500,7 +500,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
         /// It additionally updates the view matrix of the RenderContext.
-        /// </summary> 
+        /// </summary>
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void RenderTransform(Transform transform)

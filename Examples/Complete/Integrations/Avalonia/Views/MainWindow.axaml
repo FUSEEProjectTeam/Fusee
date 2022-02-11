@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Fusee.Example.Integrations.Avalonia.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:fusee="clr-namespace:Fusee.Avalonia.Desktop;assembly=Fusee.Avalonia.Desktop"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Fusee.Example.Integrations.Avalonia.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Fusee.Example.Integrations.Avalonia">
+
+	<Design.DataContext>
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
+
+	<Grid ColumnDefinitions="2*,10*">
+		<Grid Grid.Column="0" RowDefinitions="1*,1*">
+
+			<Label Grid.Row="0" Content="{Binding GetFPS}"/>
+
+			<Grid Grid.Row="1" RowDefinitions="1*,1*,1*" ColumnDefinitions="1*,1*,1*">
+				<Label Grid.Row="0" Grid.Column="0" Content="x" />
+				<Slider Grid.Row="0" Grid.Column="1" Minimum="-5.0" Maximum="5.0" Ticks="0.01" Value="{Binding xValue}" />
+				<Label Grid.Row="0" Grid.Column="2" Content="{Binding xValue, StringFormat=\{0:0.00\}}" />
+
+				<Label Grid.Row="1" Grid.Column="0" Content="y" />
+				<Slider Grid.Row="1" Grid.Column="1" Minimum="-5.0" Maximum="5.0" Ticks="0.01" Value="{Binding yValue}" />
+				<Label Grid.Row="1" Grid.Column="2" Content="{Binding yValue, StringFormat=\{0:0.00\}}" />
+
+				<Label Grid.Row="2" Grid.Column="0" Content="z" />
+				<Slider Grid.Row="2" Grid.Column="1" Minimum="-5.0" Maximum="5.0" Ticks="0.01" Value="{Binding zValue}" />
+				<Label Grid.Row="2" Grid.Column="2" Content="{Binding zValue, StringFormat=\{0:0.00\}}" />
+			</Grid>
+
+		</Grid>
+		<fusee:FuseeWindowControl ClipToBounds="True" Grid.Column="1" Focusable="True" x:Name="FuseeWindowControl"/>
+	</Grid>
+
+</Window>

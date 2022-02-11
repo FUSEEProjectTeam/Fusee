@@ -14,7 +14,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     public class RenderCanvasInputDriverImp : IInputDriverImp
     {
         /// <summary>
-        /// Constructor. Use this in platform specific application projects. 
+        /// Constructor. Use this in platform specific application projects.
         /// </summary>
         /// <param name="renderCanvas">The render canvas to provide mouse and keyboard input for.</param>
         public RenderCanvasInputDriverImp(IRenderCanvasImp renderCanvas)
@@ -76,7 +76,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string DriverId
@@ -604,7 +604,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string Id
@@ -875,7 +875,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public string Desc => "Standard Mouse implementation.";
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string Id => GetType().FullName;

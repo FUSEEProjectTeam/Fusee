@@ -185,7 +185,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             set => _videoWallMonitorsHor = value;
         }
 
-        internal RenderCanvasGameWindow _gameWindow;
+        public RenderCanvasGameWindow _gameWindow;
 
         #endregion
 
@@ -400,7 +400,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             if (_gameWindow != null)
             {
-                _gameWindow.UpdateFrequency = 60;
+                _gameWindow.UpdateFrequency = 0;
                 _gameWindow.RenderFrequency = 0;
 
                 _gameWindow.Run();
@@ -529,7 +529,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #endregion
     }
 
-    internal class RenderCanvasGameWindow : GameWindow
+    public class RenderCanvasGameWindow : GameWindow
     {
         #region Fields
 
@@ -620,7 +620,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Enable(EnableCap.CullFace);
 
             // Use VSync!
-            VSync = OpenTK.Windowing.Common.VSyncMode.On;
+            //VSync = OpenTK.Windowing.Common.VSyncMode.On;
 
             _renderCanvasImp.DoInit();
         }
