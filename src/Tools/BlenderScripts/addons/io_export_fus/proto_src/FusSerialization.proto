@@ -4,8 +4,34 @@ message AABBf {
    float3 min = 1;
    float3 max = 2;
 }
+message AlbedoChannel {
+   float4 Color = 1;
+   string Texture = 2;
+   float Mix = 3;
+   oneof subtype {
+      SpecularChannel SpecularChannel = 100;
+   }
+}
+message BRDFChannel {
+   float IOR = 1;
+   float Metallic = 2;
+   float Specular = 3;
+   float Roughness = 4;
+   float Subsurface = 5;
+   float3 SubsurfaceColor = 6;
+}
+enum Distribution {
+   GGX = 0;
+}
 message FusAnimation {
-   repeated FusAnimationTrack AnimationTracks = 3;
+   repeated FusAnimationChannel AnimationChannel = 3;
+}
+message FusAnimationChannel {
+   int32 SceneComponent = 1;
+   string Property = 2;
+   TypeId TypeId = 3;
+   repeated FusAnimationKeyBase KeyFrames = 4;
+   LerpType LerpType = 5;
 }
 message FusAnimationKeyBase {
    float Time = 1;
@@ -36,13 +62,6 @@ message FusAnimationKeyFloat4 {
 message FusAnimationKeyInt {
    int32 Value = 1;
 }
-message FusAnimationTrack {
-   FusComponent SceneComponent = 1;
-   string Property = 2;
-   TypeId TypeId = 3;
-   repeated FusAnimationKeyBase KeyFrames = 4;
-   LerpType LerpType = 5;
-}
 message FusBone {
    string Name = 1;
 }
@@ -55,14 +74,15 @@ message FusCamera {
    float Fov = 6;
    float2 ClippingPlanes = 7;
    float4 Viewport = 8;
-   bool Active = 9;
+   float Scale = 9;
 }
 message FusComponent {
    string Name = 1;
+   bool Active = 2;
    oneof subtype {
       FusTransform FusTransform = 100;
       FusMesh FusMesh = 101;
-      FusMaterial FusMaterial = 102;
+      FusMaterialBase FusMaterialBase = 102;
       FusLight FusLight = 103;
       FusWeight FusWeight = 104;
       FusAnimation FusAnimation = 105;
@@ -86,27 +106,36 @@ message FusHeader {
    string CreationDate = 4;
 }
 message FusLight {
-   bool Active = 1;
-   float4 Color = 2;
-   float MaxDistance = 3;
-   float Strength = 4;
-   LightType Type = 5;
-   float OuterConeAngle = 6;
-   float InnerConeAngle = 7;
+   float4 Color = 1;
+   float MaxDistance = 2;
+   float Strength = 3;
+   LightType Type = 4;
+   float OuterConeAngle = 5;
+   float InnerConeAngle = 6;
 }
-message FusMaterial {
-   MatChannelContainer Albedo = 1;
-   MatChannelContainer Specular = 2;
-   MatChannelContainer Emissive = 3;
-   NormapMapChannelContainer NormalMap = 4;
+message FusMaterialBRDF {
+   BRDFChannel BRDF = 2;
+}
+message FusMaterialBase {
+   AlbedoChannel Albedo = 1;
+   AlbedoChannel Emissive = 3;
+   NormapMapChannel NormalMap = 4;
    oneof subtype {
-      FusMaterialPBR FusMaterialPBR = 200;
+      FusMaterialStandard FusMaterialStandard = 200;
+      FusMaterialBRDF FusMaterialBRDF = 201;
+      FusMaterialDiffuseBRDF FusMaterialDiffuseBRDF = 202;
+      FusMaterialGlossyBRDF FusMaterialGlossyBRDF = 203;
    }
 }
-message FusMaterialPBR {
-   float RoughnessValue = 1;
-   float FresnelReflectance = 2;
-   float DiffuseFraction = 3;
+message FusMaterialDiffuseBRDF {
+   float Roughness = 1;
+}
+message FusMaterialGlossyBRDF {
+   float Roughness = 1;
+   Distribution Distribution = 2;
+}
+message FusMaterialStandard {
+   AlbedoChannel Specular = 2;
 }
 message FusMesh {
    repeated float3 Vertices = 1;
@@ -150,15 +179,7 @@ enum LightType {
    Spot = 2;
    Legacy = 3;
 }
-message MatChannelContainer {
-   float4 Color = 1;
-   string Texture = 2;
-   float Mix = 3;
-   oneof subtype {
-      SpecularChannelContainer SpecularChannelContainer = 100;
-   }
-}
-message NormapMapChannelContainer {
+message NormapMapChannel {
    string Texture = 1;
    float Intensity = 2;
 }
@@ -166,9 +187,9 @@ enum ProjectionMethod {
    Perspective = 0;
    Orthographic = 1;
 }
-message SpecularChannelContainer {
+message SpecularChannel {
    float Shininess = 1;
-   float Intensity = 2;
+   float Strength = 2;
 }
 enum TypeId {
    Double = 0;
@@ -202,8 +223,8 @@ message float4 {
    float w = 4;
 }
 message float4x4 {
-   float4 Row0 = 1;
-   float4 Row1 = 2;
-   float4 Row2 = 3;
-   float4 Row3 = 4;
+   float4 Row1 = 1;
+   float4 Row2 = 2;
+   float4 Row3 = 3;
+   float4 Row4 = 4;
 }

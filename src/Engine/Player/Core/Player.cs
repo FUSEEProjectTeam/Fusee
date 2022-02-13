@@ -208,7 +208,6 @@ namespace Fusee.Engine.Player.Core
             // Tick any animations and Render the scene loaded in Init()
             RC.View = view;
             RC.Projection = perspective;
-            _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);

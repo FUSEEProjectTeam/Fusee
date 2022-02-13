@@ -57,7 +57,7 @@ class BlenderVisitor:
         self.DoBakeNLATracks = False
         self.fps = bpy.context.scene.render.fps
         self.__matrixStack = [mathutils.Matrix.Identity(4)]
-        self.__transformStack = [(mathutils.Vector((0, 0, 0)), mathutils.Quaternion(), mathutils.Vector((0, 0, 0)), 0.0)]
+        self.__transformStack = [(mathutils.Vector((0, 0, 0)), mathutils.Quaternion(), mathutils.Vector((0, 0, 0)))]
         self.__fusWriter = FusSceneWriter()
         self.__textures = []
         self.__visitors = {
@@ -78,7 +78,7 @@ class BlenderVisitor:
         # Push the absolute transformation matrix onto the stack for possible children
         self.__matrixStack.append(self.__matrixStack[-1] @ curMatrix)
         # Push the relative individual transformtion parameters (pos, rot, scale) onto the stack
-        self.__transformStack.append((curLoc, curRot, curScale, 0))
+        self.__transformStack.append((curLoc, curRot, curScale))
 
     def XFormPop(self):
         self.__matrixStack.pop()

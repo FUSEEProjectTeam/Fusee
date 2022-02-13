@@ -110,7 +110,7 @@ class FusSceneWriter:
 
 
 #### ANIMATION COMPONENT ####
-    def BeginAnimation(self, name = None):
+    def BeginAnimation(self, name = ""):
         if self.__curComponent == None:
             self.__curComponent, inx = self.AddComponent(name)
             self.__curAnimation = self.__curComponent.FusAnimation
