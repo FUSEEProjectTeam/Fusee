@@ -38,7 +38,7 @@ class FusSceneWriter:
         self.__curMaterial = None
         self.__curMesh = None
         self.__curAnimation = None
-        self.__curAnimationTrack = None
+        self.__curAnimationChannel = None
         self.__typeId = None
         self.__inx = 0
 
@@ -115,19 +115,19 @@ class FusSceneWriter:
             self.__curComponent, inx = self.AddComponent(name)
             self.__curAnimation = self.__curComponent.FusAnimation
 
-    def BeginAnimationTrack(self, property, typeId, lerpType):
+    def BeginAnimationChannel(self, property, typeId, lerpType):
         if self.__curAnimation != None:
-            if self.__curAnimationTrack == None:
-                self.__curAnimationTrack = self.__curAnimation.AnimationTracks.add()
-                self.__curAnimationTrack.SceneComponent = self.__inx
-                self.__curAnimationTrack.Property = property
-                self.__curAnimationTrack.TypeId = typeId
+            if self.__curAnimationChannel == None:
+                self.__curAnimationChannel = self.__curAnimation.AnimationChannel.add()
+                self.__curAnimationChannel.SceneComponent = self.__inx
+                self.__curAnimationChannel.Property = property
+                self.__curAnimationChannel.TypeId = typeId
                 self.__typeId = typeId
-                self.__curAnimationTrack.LerpType = lerpType
+                self.__curAnimationChannel.LerpType = lerpType
 
     def AddKeyframe(self, keyTime, keyValue): 
-        if self.__curAnimationTrack != None:
-            keyFrame = self.__curAnimationTrack.KeyFrames.add()
+        if self.__curAnimationChannel != None:
+            keyFrame = self.__curAnimationChannel.KeyFrames.add()
             keyFrame.Time = keyTime
             if(self.__typeId == FusSer.Double):
                 keyFrame.FusAnimationKeyDouble.Value = keyValue
@@ -152,8 +152,8 @@ class FusSceneWriter:
             else:
                 print('No fitting TypeId found')
 
-    def EndAnimationTrack(self):
-        self.__curAnimationTrack = None
+    def EndAnimationChannel(self):
+        self.__curAnimationChannel = None
 
     def EndAnimation(self):
         self.__curAnimation = None

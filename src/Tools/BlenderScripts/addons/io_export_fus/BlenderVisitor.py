@@ -121,7 +121,7 @@ class BlenderVisitor:
 
     def __AddTransform(self):
         """Convert the current blender obj's transformation into a FUSEE Transform component"""
-        location, rotation, scale, dummy = self.XFormGetTOSTransform()
+        location, rotation, scale = self.XFormGetTOSTransform()
         rot_eul = rotation.to_euler('YXZ')
 
         if self.DoApplyScale:
@@ -186,20 +186,20 @@ class BlenderVisitor:
                     #Starts the AnimationTrack/AddKeyframe creation
                     if(len(loc) > 0):
                         newKP = self.createKP(loc, newKP, ob)
-                        self.__fusWriter.BeginAnimationTrack("Translation", FusSer.Float3, FusSer.Lerp)    
+                        self.__fusWriter.BeginAnimationChannel("Translation", FusSer.Float3, FusSer.Lerp)    
                         self.AddKeyframes(loc)
-                        self.__fusWriter.EndAnimationTrack()
+                        self.__fusWriter.EndAnimationChannel()
                     if(len(rotE) > 0):
                         newKP = self.createKP(rotE, newKP, ob)
-                        self.__fusWriter.BeginAnimationTrack("Rotation", FusSer.Float3, FusSer.Lerp) 
+                        self.__fusWriter.BeginAnimationChannel("Rotation", FusSer.Float3, FusSer.Lerp) 
                         self.AddKeyframes(rotE)
-                        self.__fusWriter.EndAnimationTrack()  
+                        self.__fusWriter.EndAnimationChannel()  
                     if(not self.DoApplyScale):
                         if(len(scl) > 0):
                             newKP = self.createKP(scl, newKP, ob)
-                            self.__fusWriter.BeginAnimationTrack("Scale", FusSer.Float3, FusSer.Lerp)   
+                            self.__fusWriter.BeginAnimationChannel("Scale", FusSer.Float3, FusSer.Lerp)   
                             self.AddKeyframes(scl)
-                            self.__fusWriter.EndAnimationTrack()                 
+                            self.__fusWriter.EndAnimationChannel()                 
 
 
                     self.DeleteCreatedKPFC(action, newKP, newFC)

@@ -4,6 +4,8 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
+using System;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -31,32 +33,38 @@ namespace Fusee.Examples.Simple.Core
 
         private bool _keys;
 
-        // Init is called on startup.
-        public override void Init()
+        private async Task Load()
         {
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
+            Console.WriteLine("Loading scene ...");
+
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
-
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("anim.fus"); ;
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override async Task InitAsync()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            _sceneRenderer.Animate();
-            RC.Viewport(0, 0, Width, Height);
+            await Load();
+            await base.InitAsync();
+        }
+
+        // Init is called on startup.
+        public override void Init()
+        {
+            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
+            RC.ClearColor = new float4(1, 1, 1, 1);
+        }
+
+        public override void Update()
+        {
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -66,26 +74,26 @@ namespace Fusee.Examples.Simple.Core
             if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
                 else
                 {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTimeUpdate);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -93,6 +101,16 @@ namespace Fusee.Examples.Simple.Core
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
+        }
+
+
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
+            // Clear the backbuffer
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
@@ -112,7 +130,7 @@ namespace Fusee.Examples.Simple.Core
             RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }

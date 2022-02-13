@@ -11,7 +11,7 @@ namespace Fusee.Engine.Core.Scene
         /// The animation tracks making up this animation data. 
         /// Each animation track controls a single value.
         /// </summary>
-        public List<AnimationChannel> AnimationChannel = new();
+        public Xirkit.Animation animation = new Xirkit.Animation();
 
     }
 }

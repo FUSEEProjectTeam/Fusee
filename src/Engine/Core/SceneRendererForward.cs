@@ -146,114 +146,6 @@ namespace Fusee.Engine.Core
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
             _state = new RendererState();
-            InitAnimations(_sc);
-        }
-
-        /// <summary>
-        /// Initializes animations, given as <see cref="Animation"/>.
-        /// </summary>
-        /// <param name="sc">The Scene, containing the Animations.</param>
-        public void InitAnimations(SceneContainer sc)
-        {
-            _animation = new Animation();
-
-            foreach (var a in sc.Children.FindComponents(t => t.GetType() == typeof(Scene.Animation)))
-            {
-                var ac = (Scene.Animation)a;
-                if (ac.AnimationChannel != null)
-                {
-                    foreach (var animChnannelContainer in ac.AnimationChannel)
-                    {
-                        // Type t = animTrackContainer.TypeId;
-                        switch (animChnannelContainer.TypeId)
-                        {
-                            // if (typeof(int).IsAssignableFrom(t))
-                            case TypeId.Int:
-                                {
-                                    var channel = new Channel<int>(Lerp.IntLerp);
-                                    foreach (AnimationKeyInt key in animChnannelContainer.KeyFrames)
-                                    {
-                                        channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
-                                    }
-                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
-                                        animChnannelContainer.Property);
-                                }
-                                break;
-                            //else if (typeof(float).IsAssignableFrom(t))
-                            case TypeId.Float:
-                                {
-                                    var channel = new Channel<float>(Lerp.FloatLerp);
-                                    foreach (AnimationKeyFloat key in animChnannelContainer.KeyFrames)
-                                    {
-                                        channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
-                                    }
-                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
-                                        animChnannelContainer.Property);
-                                }
-                                break;
-
-                            // else if (typeof(float2).IsAssignableFrom(t))
-                            case TypeId.Float2:
-                                {
-                                    var channel = new Channel<float2>(Lerp.Float2Lerp);
-                                    foreach (AnimationKeyFloat2 key in animChnannelContainer.KeyFrames)
-                                    {
-                                        channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
-                                    }
-                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
-                                        animChnannelContainer.Property);
-                                }
-                                break;
-                            // else if (typeof(float3).IsAssignableFrom(t))
-                            case TypeId.Float3:
-                                {
-                                    Channel<float3>.LerpFunc lerpFunc = animChnannelContainer.LerpType switch
-                                    {
-                                        LerpType.Lerp => Lerp.Float3Lerp,
-                                        LerpType.Slerp => Lerp.Float3QuaternionSlerp,
-                                        _ => throw new InvalidOperationException(
-             "Unknown lerp type: animTrackContainer.LerpType: " +
-             (int)animChnannelContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
-                                                  // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
-                                    };
-                                    var channel = new Channel<float3>(lerpFunc);
-                                    foreach (AnimationKeyFloat3 key in animChnannelContainer.KeyFrames)
-                                    {
-                                        channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
-                                    }
-                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
-                                        animChnannelContainer.Property);
-                                }
-                                break;
-                            // else if (typeof(float4).IsAssignableFrom(t))
-                            case TypeId.Float4:
-                                {
-                                    var channel = new Channel<float4>(Lerp.Float4Lerp);
-                                    foreach (AnimationKeyFloat4 key in animChnannelContainer.KeyFrames)
-                                    {
-                                        channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
-                                    }
-                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
-                                        animChnannelContainer.Property);
-                                }
-                                break;
-                                //TODO : Add cases for each type
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Handles animations.
-        /// </summary>
-        public void Animate()
-        {
-            if (_animation.ChannelBaseList.Count != 0)
-            {
-                // Set the animation time here!
-                _animation.Animate(Time.DeltaTime);
-            }
         }
 
         /// <summary>
@@ -680,6 +572,15 @@ namespace Fusee.Engine.Core
             var renderStatesAfter = _rc.CurrentRenderState.Copy();
 
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
+        }
+        /// <summary>
+        /// If the Scene has an <see cref="Scene.Animation"/>, it will be played.
+        /// </summary>
+        /// <param name="anim">The Animation.</param>
+        [VisitMethod]
+        public void RenderAnimation(Scene.Animation anim)
+        {
+            anim.animation.Animate(Time.DeltaTime);
         }
 
         /// <summary>
