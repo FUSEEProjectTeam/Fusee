@@ -7,6 +7,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
+using Fusee.Xirkit;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -127,7 +128,7 @@ namespace Fusee.Engine.Core
         private readonly SceneContainer _convertedScene;
         private readonly Stack<SceneNode> _predecessors;
         private SceneNode _currentNode;
-
+        protected Xirkit.Animation _animation;
         private readonly Dictionary<FusMaterialBase, Effect> _matMap;
         private readonly Dictionary<FusMesh, Mesh> _meshMap;
         private readonly Dictionary<string, Texture> _texMap;
@@ -200,54 +201,102 @@ namespace Fusee.Engine.Core
         }
 
         ///<summary>
-        /// Converts the animation component.
+        /// Converts the animation component and adds the Xirkit Animation to it.
         ///</summary>
         [VisitMethod]
         public void ConvAnimation(FusAnimation a)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
-            Animation anim = new Animation();
+            Scene.Animation anim = new Scene.Animation();
 
             for (int i = 0; i < a.AnimationChannel.Count; i++)
             {
-                anim.AnimationChannel.Add(new AnimationChannel());
-                //TODO: Allow other Componenttypes other than Transform to be animated 
-                anim.AnimationChannel[i].SceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
-                anim.AnimationChannel[i].Property = a.AnimationChannel[i].Property;
-                anim.AnimationChannel[i].TypeId = (Scene.TypeId)a.AnimationChannel[i].TypeId;
-                anim.AnimationChannel[i].LerpType = (Scene.LerpType)a.AnimationChannel[i].LerpType;
-                for (int j = 0; j < a.AnimationChannel[i].KeyFrames.Count; j++)
+                foreach (var animChnannelContainer in a.AnimationChannel)
                 {
-                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Double)
-                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyDouble { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyDouble)a.AnimationChannel[i].KeyFrames[j]).Value });
+                    // Type t = animTrackContainer.TypeId;
+                    switch (animChnannelContainer.TypeId)
+                    {
+                        // if (typeof(int).IsAssignableFrom(t))
+                        case Serialization.V1.TypeId.Int:
+                            {
+                                var channel = new Channel<int>(Lerp.IntLerp);
+                                var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                                foreach (Serialization.V1.FusAnimationKeyInt key in animChnannelContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
+                                }
+                                anim.animation.AddAnimation(channel, sceneComponent,
+                                    animChnannelContainer.Property);
+                            }
+                            break;
+                        //else if (typeof(float).IsAssignableFrom(t))
+                        case Serialization.V1.TypeId.Float:
+                            {
+                                var channel = new Channel<float>(Lerp.FloatLerp);
+                                var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                                foreach (Serialization.V1.FusAnimationKeyFloat key in animChnannelContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
+                                }
+                                anim.animation.AddAnimation(channel, sceneComponent,
+                                    animChnannelContainer.Property);
+                            }
+                            break;
 
-                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Int)
-                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyInt { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyInt)a.AnimationChannel[i].KeyFrames[j]).Value });
-
-                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Float)
-                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyFloat { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat)a.AnimationChannel[i].KeyFrames[j]).Value });
-
-                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Float2)
-                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyFloat2 { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat2)a.AnimationChannel[i].KeyFrames[j]).Value });
-
-                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Float3)
-                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyFloat3 { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat3)a.AnimationChannel[i].KeyFrames[j]).Value });
-
-                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Float4)
-                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyFloat4 { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat4)a.AnimationChannel[i].KeyFrames[j]).Value });
-
+                        // else if (typeof(float2).IsAssignableFrom(t))
+                        case Serialization.V1.TypeId.Float2:
+                            {
+                                var channel = new Channel<float2>(Lerp.Float2Lerp);
+                                var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                                foreach (Serialization.V1.FusAnimationKeyFloat2 key in animChnannelContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
+                                }
+                                anim.animation.AddAnimation(channel, sceneComponent,
+                                    animChnannelContainer.Property);
+                            }
+                            break;
+                        // else if (typeof(float3).IsAssignableFrom(t))
+                        case Serialization.V1.TypeId.Float3:
+                            {
+                                Channel<float3>.LerpFunc lerpFunc = animChnannelContainer.LerpType switch
+                                {
+                                    Serialization.V1.LerpType.Lerp => Lerp.Float3Lerp,
+                                    Serialization.V1.LerpType.Slerp => Lerp.Float3QuaternionSlerp,
+                                    _ => throw new System.InvalidOperationException(
+         "Unknown lerp type: animTrackContainer.LerpType: " +
+         (int)animChnannelContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+                                              // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
+                                };
+                                var channel = new Channel<float3>(lerpFunc);
+                                var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                                foreach (Serialization.V1.FusAnimationKeyFloat3 key in animChnannelContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
+                                }
+                                anim.animation.AddAnimation(channel, sceneComponent,
+                                    animChnannelContainer.Property);
+                            }
+                            break;
+                        // else if (typeof(float4).IsAssignableFrom(t))
+                        case Serialization.V1.TypeId.Float4:
+                            {
+                                var channel = new Channel<float4>(Lerp.Float4Lerp);
+                                var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                                foreach (Serialization.V1.FusAnimationKeyFloat4 key in animChnannelContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
+                                }
+                                anim.animation.AddAnimation(channel, sceneComponent,
+                                    animChnannelContainer.Property);
+                            }
+                            break;
+                            //TODO : Add cases for each type
+                    }
                 }
-
             }
             _currentNode.AddComponent(anim);
-            // TODO: Test animation and refactor animation method from scene renderer to this converter 
-        }
-
-
-        public void ConvKeyFrames()
-        {
-
         }
 
 
@@ -968,7 +1017,7 @@ namespace Fusee.Engine.Core
         /// Converts the animation component.
         ///</summary>
         [VisitMethod]
-        public void ConvAnimation(Animation a)
+        public void ConvAnimation(Xirkit.Animation a)
         {
             // TODO: Test animation and refactor animation method from scene renderer to this converter 
         }
