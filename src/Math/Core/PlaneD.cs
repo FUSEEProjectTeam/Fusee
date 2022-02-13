@@ -103,7 +103,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Calculates the angle between this plane and another one.
         /// </summary>
-        /// <param name="other">The other plane to calculate the angle with.</param>        
+        /// <param name="other">The other plane to calculate the angle with.</param>
         public double AngleBetween(PlaneD other)
         {
             var numerator = System.Math.Abs((A * other.A) + (B * other.B) + (C * other.C));
@@ -168,7 +168,7 @@ namespace Fusee.Math.Core
         {
             var r = BoxExtendInNormalDirection(size);
 
-            //Distance from aabb center to plane
+            //Distance from center to plane
             var s = SignedDistanceFromPoint(center);
 
             //Completely inside
@@ -254,22 +254,12 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Calculates the projection interval radius of aabb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// <param name="aabb">The axis aligned bounding box.</param>
-        /// </summary>
-        private double BoxExtendInNormalDirection(AABBd aabb)
-        {
-            var boxExtend = aabb.Size * 0.5f;
-            return boxExtend.x * System.Math.Abs(Normal.x) + boxExtend.y * System.Math.Abs(Normal.y) + boxExtend.z * System.Math.Abs(Normal.z);
-        }
-
-        /// <summary>
         /// Calculates the projection interval radius of an cuboid onto line L(t) = cuboid.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
         /// <param name="size">The width, height and length of a cuboid.</param>
         /// </summary>
         private double BoxExtendInNormalDirection(double3 size)
         {
-            var boxExtend = size * 0.5f;
+            var boxExtend = size * 0.5;
             return boxExtend.x * System.Math.Abs(Normal.x) + boxExtend.y * System.Math.Abs(Normal.y) + boxExtend.z * System.Math.Abs(Normal.z);
         }
 
@@ -279,14 +269,24 @@ namespace Fusee.Math.Core
         /// </summary>
         private double BoxExtendInNormalDirection(double size)
         {
-            var boxExtend = size * 0.5f;
+            var boxExtend = size * 0.5;
             return boxExtend * System.Math.Abs(Normal.x) + boxExtend * System.Math.Abs(Normal.y) + boxExtend * System.Math.Abs(Normal.z);
+        }
+
+        /// <summary>
+        /// Calculates the projection interval radius of aabb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
+        /// <param name="aabb">The axis aligned bounding box.</param>
+        /// </summary>
+        private double BoxExtendInNormalDirection(AABBd aabb)
+        {
+            var boxExtend = aabb.Size * 0.5;
+            return boxExtend.x * System.Math.Abs(Normal.x) + boxExtend.y * System.Math.Abs(Normal.y) + boxExtend.z * System.Math.Abs(Normal.z);
         }
 
         /// <summary>
         /// Calculates the projection interval radius of obb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
         /// <param name="obb">The object oriented bounding box.</param>
-        ///</summary>
+        /// </summary>
         private double BoxExtendInNormalDirection(OBBd obb)
         {
             var transformationMat = obb.Rotation * double4x4.CreateTranslation(obb.Translation); //without scale!
@@ -295,7 +295,7 @@ namespace Fusee.Math.Core
             var yAxis = (double3.UnitY * transformationMat).Normalize();
             var zAxis = (double3.UnitZ * transformationMat).Normalize();
 
-            var boxExtend = obb.Size * 0.5f;
+            var boxExtend = obb.Size * 0.5;
 
             return boxExtend.x * System.Math.Abs(double3.Dot(Normal, xAxis)) +
                     boxExtend.y * System.Math.Abs(double3.Dot(Normal, yAxis)) +

@@ -43,7 +43,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Generates a albedo and specular (alpha channel) texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        void SetAlbedoSpecularTex();
+        void SetAlbedoTex();
 
         /// <summary>
         /// Generates a normal texture and sets it at the correct position in the RenderTextures Array.
@@ -61,9 +61,14 @@ namespace Fusee.Engine.Common
         void SetSpecularTex();
 
         /// <summary>
-        /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
+        /// Generates a emissive texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
         void SetEmissiveTex();
+
+        /// <summary>
+        /// Generates a texture containing subsurface color and strength and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
+        void SetSubsurfaceTex();
 
         /// <summary>
         /// Event that deletes unmanaged buffer objects.

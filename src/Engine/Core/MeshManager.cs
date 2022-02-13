@@ -1,13 +1,13 @@
-﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
-    internal class MeshManager
+    internal class MeshManager : IDisposable
     {
         private readonly IRenderContextImp _renderContextImp;
         private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new();
@@ -23,6 +23,12 @@ namespace Fusee.Engine.Core
 
             if (meshImp.ColorsSet)
                 _renderContextImp.RemoveColors(meshImp);
+
+            if (meshImp.ColorsSet1)
+                _renderContextImp.RemoveColors1(meshImp);
+
+            if (meshImp.ColorsSet2)
+                _renderContextImp.RemoveColors2(meshImp);
 
             if (meshImp.UVsSet)
                 _renderContextImp.RemoveUVs(meshImp);
@@ -74,6 +80,12 @@ namespace Fusee.Engine.Core
                 case MeshChangedEnum.Colors:
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors);
                     break;
+                case MeshChangedEnum.Colors1:
+                    _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors1);
+                    break;
+                case MeshChangedEnum.Colors2:
+                    _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors2);
+                    break;
                 case MeshChangedEnum.Normals:
                     _renderContextImp.SetNormals(toBeUpdatedMeshImp, mesh.Normals);
                     break;
@@ -115,6 +127,12 @@ namespace Fusee.Engine.Core
 
             if (mesh.ColorsSet)
                 _renderContextImp.SetColors(meshImp, mesh.Colors);
+
+            if (mesh.ColorsSet1)
+                _renderContextImp.SetColors1(meshImp, mesh.Colors1);
+
+            if (mesh.ColorsSet2)
+                _renderContextImp.SetColors2(meshImp, mesh.Colors2);
 
             if (mesh.BoneIndicesSet)
                 _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices);
@@ -177,5 +195,35 @@ namespace Fusee.Engine.Core
             }
         }
 
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!disposed)
+            {
+                Cleanup();
+
+                for (int i = 0; i < _identifierToMeshImpDictionary.Count; i++)
+                {
+                    var meshItem = _identifierToMeshImpDictionary.ElementAt(i);
+                    Remove(meshItem.Value);
+                    _identifierToMeshImpDictionary.Remove(meshItem.Key);
+                }
+
+                // Note disposing has been done.
+                disposed = true;
+            }
+        }
+
+        ~MeshManager()
+        {
+            Dispose(disposing: false);
+        }
     }
 }

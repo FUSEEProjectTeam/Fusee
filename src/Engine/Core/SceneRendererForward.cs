@@ -39,7 +39,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
-        public List<Tuple<SceneNode, LightResult>> LightViseratorResults
+        internal List<Tuple<SceneNode, LightResult>> LightViseratorResults
         {
             get => _lightResults;
             private set
@@ -54,6 +54,7 @@ namespace Fusee.Engine.Core
                 }
             }
         }
+        private List<Tuple<SceneNode, LightResult>> _lightResults = new();
 
         #region Traversal information
 
@@ -93,14 +94,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected RendererState _state;
 
-        /// <summary>
-        /// List of <see cref="LightResult"/>, created by the <see cref="Core.PrePassVisitor"/>.
-        /// </summary>
-        protected List<Tuple<SceneNode, LightResult>> _lightResults = new();
-
         #endregion
 
-        #region Initialization Construction Startup      
+        #region Initialization Construction Startup
 
 
         private Light _legacyLight;
@@ -145,6 +141,7 @@ namespace Fusee.Engine.Core
         {
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
+            IgnoreInactiveComponents = true;
             _state = new RendererState();
         }
 
@@ -175,7 +172,7 @@ namespace Fusee.Engine.Core
         {
             SetContext(rc);
 
-            PrePassVisitor.PrePassTraverse(_sc, _rc);
+            PrePassVisitor.PrePassTraverse(_sc);
 
             AccumulateLight();
 
@@ -200,6 +197,8 @@ namespace Fusee.Engine.Core
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
+
+            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam)
@@ -308,14 +307,14 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                _state.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+                var currentScale = _state.Model.Scale();
+                _state.CanvasXForm *= float4x4.CreateScale(new float3(1 / currentScale.x, 1 / currentScale.y, 1 / currentScale.z)) * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
                 _state.Model *= _state.CanvasXForm;
 
                 _parentRect = newRect;
                 _state.UiRect = newRect;
             }
-
-            if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
+            else if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 var frustumCorners = new float4[4];
 
@@ -358,7 +357,7 @@ namespace Fusee.Engine.Core
                     isCtcInitialized = true;
 
                 }
-                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
+                _state.CanvasXForm *= _rc.InvModel * _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
                 _state.Model *= _state.CanvasXForm;
 
                 _parentRect = newRect;
@@ -504,7 +503,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// If a Transform is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
         /// It additionally updates the view matrix of the RenderContext.
-        /// </summary> 
+        /// </summary>
         /// <param name="transform">The Transform.</param>
         [VisitMethod]
         public void RenderTransform(Transform transform)
@@ -520,9 +519,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderOctant(OctantD ptOctant)
         {
-            _state.Effect.SetFxParam("OctantLevel", ptOctant.Level);
-        }
 
+        }
 
         /// <summary>
         /// If a ShaderEffect is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
@@ -541,8 +539,8 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a Mesh is visited and it has a <see cref="Weight"/> the BoneIndices and  BoneWeights get set, 
-        /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
+        /// If a Mesh is visited and it has a <see cref="Weight"/> the BoneIndices and  BoneWeights get set,
+        /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.
         /// </summary>
         /// <param name="mesh">The Mesh.</param>
         [VisitMethod]
@@ -563,15 +561,13 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            var wc = CurrentNode.GetWeights();
-            if (wc != null)
-                AddWeightToMesh(mesh, wc);
+            //var wc = CurrentNode.GetWeights();
+            //if (wc != null)
+            //    AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, true);
-            var renderStatesAfter = _rc.CurrentRenderState.Copy();
-
-            _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
+            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
         /// <summary>
         /// If the Scene has an <see cref="Scene.Animation"/>, it will be played.
@@ -655,7 +651,7 @@ namespace Fusee.Engine.Core
             _state.Model = float4x4.Identity;
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
-            _state.Effect = MakeEffect.Default;
+            _state.Effect = _rc.DefaultEffect;
             _rc.CreateShaderProgram(_state.Effect);
             _state.RenderUndoStates = new RenderStateSet();
             _state.RenderLayer = new RenderLayer();
@@ -698,7 +694,7 @@ namespace Fusee.Engine.Core
                     UpdateShaderParamForLight(i, _lightResults[i].Item2);
                 }
                 else
-                    _rc.SetGlobalEffectParam($"allLights[{i}].isActive", 0);
+                    _rc.SetGlobalEffectParam($"allLights[{i}].isActive".GetHashCode(), 0);
             }
         }
 
@@ -719,17 +715,17 @@ namespace Fusee.Engine.Core
             var lightParamStrings = Lighting.LightPararamStringsAllLights[position];
 
             // Set parameters in modelview space since the lightning calculation is in modelview space
-            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
-            _rc.SetGlobalEffectParam(lightParamStrings.Intensities, light.Color);
-            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, light.MaxDistance);
-            _rc.SetGlobalEffectParam(lightParamStrings.Strength, strength);
-            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);
-            _rc.SetGlobalEffectParam(lightParamStrings.LightType, (int)light.Type);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.Bias, light.Bias);
+            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace.GetHashCode(), _rc.View * lightRes.WorldSpacePos);
+            _rc.SetGlobalEffectParam(lightParamStrings.Intensities.GetHashCode(), light.Color);
+            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance.GetHashCode(), light.MaxDistance);
+            _rc.SetGlobalEffectParam(lightParamStrings.Strength.GetHashCode(), strength);
+            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle.GetHashCode(), M.DegreesToRadians(light.OuterConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle.GetHashCode(), M.DegreesToRadians(light.InnerConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.Direction.GetHashCode(), dirViewSpace);
+            _rc.SetGlobalEffectParam(lightParamStrings.LightType.GetHashCode(), (int)light.Type);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsActive.GetHashCode(), light.Active ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows.GetHashCode(), light.IsCastingShadows ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.Bias.GetHashCode(), light.Bias);
         }
     }
 }

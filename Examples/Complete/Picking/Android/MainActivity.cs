@@ -76,7 +76,11 @@ namespace Fusee.Examples.Picking.Android
                 var app = new Core.Picking();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                RenderCanvasImp rci = new(ApplicationContext, null, delegate { app.Run(); });
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate
+                {
+                    app.InitApp();
+                    app.Run();
+                });
                 app.CanvasImplementor = rci;
                 app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 

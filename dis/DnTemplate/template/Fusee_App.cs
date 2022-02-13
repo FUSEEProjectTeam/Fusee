@@ -3,13 +3,14 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -40,12 +41,18 @@ namespace FuseeApp
         {
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
+        }
 
+        // Async init is required for Blazor
+        public override async Task InitAsync()
+        {
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
+
+            await base.InitAsync();
         }
 
         // Update is called 60 times a second
@@ -73,13 +80,6 @@ namespace FuseeApp
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
-            {
-                _keys = false;
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
-            }
             else
             {
                 if (_keys)
@@ -102,6 +102,7 @@ namespace FuseeApp
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 2, -8, 0, 1.5f, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, (float)Width / Height, 1, 100);
 
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Render(RC);

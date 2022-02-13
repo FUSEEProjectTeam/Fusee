@@ -1,32 +1,30 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.23">
-  <PropertyGroup>
-    <TargetFramework>MonoAndroid11.0</TargetFramework>
-    <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Description>Fusee Engine Imp Graphics Android</Description>
-    <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Imp.Graphics.Android</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-  </PropertyGroup>
+﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.44">
+	
+	<PropertyGroup>
+		<TargetFramework>MonoAndroid11.0</TargetFramework>
+		<DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Legacy.OpenTK" Version="1.0.1" />
-  </ItemGroup>
+		<IsPackable>true</IsPackable>
+		<Description>Fusee Engine Imp Graphics Android</Description>
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-  </ItemGroup>
-  
-  <Import Project="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+
+		<PackageReference Include="Xamarin.Legacy.OpenTK" Version="1.0.1" />
+	</ItemGroup>
+
+	<Import Project="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
+	
 </Project>

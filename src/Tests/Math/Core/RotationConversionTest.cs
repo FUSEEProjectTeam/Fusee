@@ -26,7 +26,7 @@ namespace Fusee.Tests.Math.Core
         {
             var valid = false;
             var expected = quaternion;
-            var actual = Quaternion.EulerToQuaternion(euler);
+            var actual = Quaternion.FromEuler(euler);
 
             if (MathF.Abs(expected.x - actual.x) < precision &&
                 MathF.Abs(expected.y - actual.y) < precision &&
@@ -79,11 +79,11 @@ namespace Fusee.Tests.Math.Core
         {
             var valid = false;
             var expected = euler;
-            var actual = Quaternion.QuaternionToEuler(quaternion);
+            var actual = Quaternion.ToEuler(quaternion);
 
             //Since we test quaternions seperately, we can use them to compare here
-            var expectedQ = Quaternion.EulerToQuaternion(expected);
-            var actualQ = Quaternion.EulerToQuaternion(actual);
+            var expectedQ = Quaternion.FromEuler(expected);
+            var actualQ = Quaternion.FromEuler(actual);
 
             if (MathF.Abs(expectedQ.x - actualQ.x) < precision &&
                 MathF.Abs(expectedQ.y - actualQ.y) < precision &&
@@ -106,7 +106,7 @@ namespace Fusee.Tests.Math.Core
         {
             var valid = false;
             var expected = matrix;
-            var actual = Quaternion.ToRotMat(quaternion);
+            var actual = Quaternion.ToRotationMatrixFast(quaternion);
 
             if (MathF.Abs(expected.M11 - actual.M11) < precision &&
                 MathF.Abs(expected.M12 - actual.M12) < precision &&
@@ -140,8 +140,8 @@ namespace Fusee.Tests.Math.Core
             var actual = float4x4.RotMatToEuler(matrix);
 
             //Since we test quaternions seperately, we can use them to compare here
-            var expectedQ = Quaternion.EulerToQuaternion(expected);
-            var actualQ = Quaternion.EulerToQuaternion(actual);
+            var expectedQ = Quaternion.FromEuler(expected);
+            var actualQ = Quaternion.FromEuler(actual);
 
             if (MathF.Abs(expectedQ.x - actualQ.x) < precision &&
                 MathF.Abs(expectedQ.y - actualQ.y) < precision &&

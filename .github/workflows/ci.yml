@@ -10,26 +10,30 @@ on:
     - master
     - develop
   workflow_dispatch:
-  
+
 jobs:
   lint:
-    runs-on: windows-latest
+    runs-on: windows-2022
     name: Linting
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
     steps:
     - uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: dotnet tool restore
       run: dotnet tool restore
     - name: dotnet format folder
       run: dotnet tool run dotnet-format -f . --exclude src\Engine\Imp\Graphics\Shared
     - name: dotnet format solution
       run: dotnet tool run dotnet-format Fusee.sln
-    - name: dotnet format fix style - warn
-      run: dotnet tool run dotnet-format Fusee.sln --no-restore --fix-style warn
-    - name: dotnet format fix style - info
-      run: dotnet tool run dotnet-format Fusee.sln --no-restore --fix-style info
+#    - name: dotnet format fix style - warn
+#      run: dotnet tool run dotnet-format Fusee.sln --no-restore --fix-style warn
+#    - name: dotnet format fix style - info
+#      run: dotnet tool run dotnet-format Fusee.sln --no-restore --fix-style info
     - name: Commiting changes
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
@@ -44,11 +48,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
+        os: [ 'windows-2022', 'ubuntu-latest', 'macos-latest' ]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: AssetStorage
       run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Tests.AssetStorage.Desktop.csproj
     - name: Math
@@ -73,28 +81,132 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
+        os: [ 'windows-2022', 'ubuntu-latest', 'macos-latest' ]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Build Release-Desktop
       run: dotnet build -c Release-Desktop Fusee.sln
     - name: Upload Player-Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: fusee-desktop-${{ matrix.os }}-player
         path: bin/Release/Player/Desktop/
     - name: Upload Tool-Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: fusee-desktop-${{ matrix.os }}-tools
         path: bin/Release/Tools/
-    - name: Upload Example-Artifacts
-      uses: actions/upload-artifact@v2
+#    - name: Upload Example-Artifacts
+#      uses: actions/upload-artifact@v2.2.4
+#      with:
+#        name: fusee-desktop-${{ matrix.os }}-examples
+#        path: bin/Release/Examples/**/Desktop/
+
+  buildnuget:
+    needs: [tests]
+    name: Build NuGet
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+      NUGET_BUILD: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'windows-2022' ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
       with:
-        name: fusee-desktop-${{ matrix.os }}-examples
-        path: bin/Release/Examples/**/Desktop/
+        dotnet-version: 6.0.x
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        vs-version: '[17.0,]'
+#    - name: Setup dotnet macos workload
+#      run: dotnet workload install macos
+#    - name: Build Release-Blazor
+#      run: dotnet build -c Release-Blazor Fusee.sln
+#    - name: Setup wasm-tools workload
+#      run: dotnet workload install wasm-tools
+#    - name: Publish F.E.Player.Blazor
+#      run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
+#    - name: Build F.T.B.Blazorpatch
+#      run: dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
+#    - name: Patch Blazor
+#      run: dotnet bin/Release/Tools/Build/Blazorpatch/net6.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net6.0/publish/wwwroot -t All
+    - name: Build F.E.Player.Desktop
+      run: dotnet publish -c Release -p:PublishProfile=win-x64-release src\Engine\Player\Desktop\Fusee.Engine.Player.Desktop.csproj
+    - name: Pack Fusee.sln NuGet
+      run: dotnet pack Fusee.sln -c Release-NuGet
+    - name: Pack F.B.I.Android
+      run: msbuild src\Base\Imp\Android\Fusee.Base.Imp.Android.csproj -t:restore,pack -p:Configuration=Release
+    - name: Pack F.E.I.Graphics.Android
+      run: msbuild src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj -t:restore,pack -p:Configuration=Release
+    - name: Pack Core Metapackage
+      run: dotnet pack dis\NuGet\Core\Core.csproj -c Release -o bin\Release\nuget
+    - name: Pack Desktop Metapackage
+      run: dotnet pack dis\NuGet\Desktop\Desktop.csproj -c Release -o bin\Release\nuget
+    - name: Pack Android Metapackage
+      run: msbuild dis\NuGet\Android\Android.csproj -t:restore,pack -p:Configuration=Release
+    - name: Pack Fusee.Template.dotnet
+      run: dotnet pack dis\DnTemplate\DnTemplate.csproj -c Release -o bin\Release\nuget
+    - name: Pack VSTemplate
+      run: msbuild dis\VSTemplate\VSTemplate.sln -t:restore,build -p:Configuration=Release
+    - name: Pack Blender Addon
+      run: tar -c -a -f bin\Release\nuget\io_export_fus.zip -C bin\Release\Tools\CmdLine\net6.0\BlenderScripts\addons *
+    - name: Upload NuGet-Atrifacts
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: fusee-nuget-${{ matrix.os }}
+        path: |
+          bin/Release/nuget/
+          dis/VSTemplate/VSTemplate/bin/Release/ProjectTemplates/CSharp/1033/Fusee.Template.VS.zip
+          dis/VSTemplate/VSIX/bin/Release/Fusee.Template.VS.vsix
+
+  buildblazor:
+    needs: [tests]
+    name: Build Blazor
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'windows-2019', 'ubuntu-latest', 'macos-latest' ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Setup dotnet macos workload
+      run: dotnet workload install macos
+    - name: Build Release-Blazor
+      run: dotnet build -c Release-Blazor Fusee.sln
+    - name: Setup wasm-tools workload
+      run: dotnet workload install wasm-tools
+    - name: Publish F.E.Player.Blazor
+      run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
+    - name: Build F.T.B.Blazorpatch
+      run: dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
+    - name: Patch Blazor
+      run: dotnet bin/Release/Tools/Build/Blazorpatch/net6.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net6.0/publish/wwwroot -t All
+    - name: Upload Player-Artifact
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: fusee-blazor-${{ matrix.os }}-player
+        path: bin/Release/Player/Blazor/net6.0/publish/
 
   buildandroid:
     name: Build Android
@@ -102,10 +214,18 @@ jobs:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        vs-version: '[17.0,]'
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1
     - name: Build with MSBuild
@@ -117,7 +237,7 @@ jobs:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
-    runs-on: windows-latest
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
@@ -125,6 +245,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Setup .NET 6.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v1
         with:

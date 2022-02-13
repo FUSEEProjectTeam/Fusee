@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<OutputPath>$(BaseOutputPath)\Player\Blazor\</OutputPath>
+
+		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+		<BlazorCacheBootResources>false</BlazorCacheBootResources>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Blazor\Fusee.Engine.Imp.Graphics.Blazor.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Blazor\Fusee.Base.Imp.Blazor.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.1" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.JSInterop.WebAssembly" Version="6.0.1" />
+	</ItemGroup>
+
+	<Target Name="MovingAssetsToServerRoot" BeforeTargets="PostBuildEvent">
+		<ItemGroup>
+			<AssetsDir Include="$(OutputPath)$(TargetFramework)\Assets\**\*.*" />
+		</ItemGroup>
+		<Message Text="Moving 'Assets' folder to http server root folder" Importance="high" />
+		<Move SourceFiles="@(AssetsDir)" DestinationFolder="$(OutputPath)$(TargetFramework)\wwwroot\Assets\%(RecursiveDir)" />
+		<RemoveDir Directories="$(OutputPath)$(TargetFramework)\Assets" />
+	</Target>
+
+</Project>

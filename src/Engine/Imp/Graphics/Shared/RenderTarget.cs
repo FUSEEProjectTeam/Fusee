@@ -80,13 +80,13 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetPositionTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGB32));
+            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
         }
 
         /// <summary>
         /// Generates a albedo and specular (alpha channel) texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>       
-        public void SetAlbedoSpecularTex()
+        public void SetAlbedoTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
@@ -112,7 +112,7 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetSSAOTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA16));
         }
 
         /// <summary>
@@ -124,11 +124,19 @@ namespace Fusee.Engine.Imp.Shared
         }
 
         /// <summary>
-        /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
+        /// Generates a emissive texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
         public void SetEmissiveTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGB));
+            RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
+        }
+
+        /// <summary>
+        /// Generates a subsurface texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
+        public void SetSubsurfaceTex()
+        {
+            RenderTextures[(int)RenderTargetTextureTypes.Subsurface] = WritableTexture.CreateSubsurfaceTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
 
         /// <summary>

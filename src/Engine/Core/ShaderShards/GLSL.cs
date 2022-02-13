@@ -12,6 +12,7 @@ namespace Fusee.Engine.Core.ShaderShards
             Mat3,
             Mat4,
             Vec2,
+            IVec2,
             Vec3,
             Vec4,
             Boolean,
@@ -38,7 +39,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
         internal static string CreateIn(Type type, string varName)
         {
-            return $"in  {DecodeType(type)} {varName};\n";
+            return $"in {DecodeType(type)} {varName};\n";
         }
 
         internal static string CreateVar(Type type, string varName)
@@ -116,10 +117,16 @@ namespace Fusee.Engine.Core.ShaderShards
             };
 
             foreach (var field in type.GetFields())
-                res.Add($"{DecodeType(field.FieldType)} {field.Name};");
+            {
+                if (!Attribute.IsDefined(field, typeof(Effects.NoUniformAttribute)))
+                    res.Add($"{DecodeType(field.FieldType)} {field.Name};");
+            }
 
             foreach (var prop in type.GetProperties())
-                res.Add($"{DecodeType(prop.PropertyType)} {prop.Name};");
+            {
+                if (!Attribute.IsDefined(prop, typeof(Effects.NoUniformAttribute)))
+                    res.Add($"{DecodeType(prop.PropertyType)} {prop.Name};");
+            }
 
             res.Add("};");
             AddTabsToMethods(res);
@@ -167,6 +174,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 Type.Mat3 => "mat3",
                 Type.Mat4 => "mat4",
                 Type.Vec2 => "vec2",
+                Type.IVec2 => "ivec2",
                 Type.Vec3 => "vec3",
                 Type.Vec4 => "vec4",
                 Type.Boolean => "bool",
@@ -175,10 +183,10 @@ namespace Fusee.Engine.Core.ShaderShards
                 Type.Sampler2D => "sampler2D",
                 Type.SamplerCube => "samplerCube",
                 Type.Void => "void",
-                Type.ArrayTexture => "sampler2DArray",
-                Type.Sampler2DShadow => "sampler2DShadow",
-                Type.SamplerCubeShadow => "samplerCubeShadow",
-                Type.ArrayTextureShadow => "sampler2DArrayShadow",
+                Type.ArrayTexture => "highp sampler2DArray",
+                Type.Sampler2DShadow => "highp sampler2DShadow",
+                Type.SamplerCubeShadow => "highp samplerCubeShadow",
+                Type.ArrayTextureShadow => "highp sampler2DArrayShadow",
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
             };
         }

@@ -240,6 +240,7 @@ namespace Fusee.Examples.Starkiller.Core
             //Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             var orthographic = float4x4.CreateOrthographic(Width, Height, 0.01f, 1000);
             RC.Projection = orthographic;
             _guiRenderer.Render(RC);

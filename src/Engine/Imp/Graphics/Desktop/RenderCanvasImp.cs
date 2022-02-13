@@ -13,7 +13,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// <summary>
     /// This is a default render canvas implementation creating its own rendering window.
     /// </summary>
-    public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp
+    public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp, IDisposable
     {
         #region Fields
 
@@ -201,7 +201,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
         /// <param name="appIcon">The icon for the render window.</param>
-        public RenderCanvasImp(Icon appIcon)
+        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
+        public RenderCanvasImp(Icon appIcon, bool isMultithreaded = false)
         {
             //TODO: Select correct monitor
             Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
@@ -217,19 +218,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
 
             WindowHandle = new WindowHandle()
             {
-                Handle = _gameWindow.Handle
+                Handle = _gameWindow.Context.WindowPtr
             };
 
             _gameWindow.CenterWindow();
+            if (_gameWindow.IsMultiThreaded)
+                _gameWindow.Context.MakeNoneCurrent();
         }
 
         /// <summary>
@@ -237,25 +240,27 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="width">The width of the render window.</param>
         /// <param name="height">The height of the render window.</param>
+        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <remarks>The window created by this constructor is not visible. Should only be used for internal testing.</remarks>
-        public RenderCanvasImp(int width, int height)
+        public RenderCanvasImp(int width, int height, bool isMultithreaded = false)
         {
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, true);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, true, isMultithreaded);
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
 
             WindowHandle = new WindowHandle()
             {
-                Handle = _gameWindow.Handle
+                Handle = _gameWindow.Context.WindowPtr
             };
 
             _gameWindow.IsVisible = false;
-            _gameWindow.MakeCurrent();
+            if (_gameWindow.IsMultiThreaded)
+                _gameWindow.Context.MakeNoneCurrent();
         }
 
         /// <summary>
@@ -344,16 +349,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void CloseGameWindow()
         {
             if (_gameWindow != null)
+            {
                 _gameWindow.Close();
+                _gameWindow.ProcessEvents();
+                _gameWindow.Dispose();
+            }
         }
 
         /// <summary>
-        /// Presents this application instance. Call this function after rendering to show the final image. 
+        /// Presents this application instance. Call this function after rendering to show the final image.
         /// After Present is called the render buffers get flushed.
         /// </summary>
         public void Present()
         {
-            if (_gameWindow != null)
+            if (!_gameWindow.IsExiting)
                 _gameWindow.SwapBuffers();
         }
 
@@ -406,9 +415,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns></returns>
         public Bitmap ShootCurrentFrame(int width, int height)
         {
-            this.DoInit();
-            this.DoRender();
-            this.DoResize(width, height);
+            DoInit();
+            DoRender();
+            DoResize(width, height);
 
             var bmp = new Bitmap(this.Width, this.Height, SDPixelFormat.Format32bppArgb);
             var mem = bmp.LockBits(new System.Drawing.Rectangle(0, 0, Width, Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, SDPixelFormat.Format32bppArgb);
@@ -486,7 +495,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Does the unload of this instance. 
+        /// Does the unload of this instance.
         /// </summary>
         protected internal void DoUnLoad()
         {
@@ -569,19 +578,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
-        public IntPtr Handle
-        {
-            get
-            {
-                IntPtr hwnd;
-                unsafe
-                {
-                    hwnd = this.Context.WindowPtr;
-                }
-                return hwnd;
-            }
-        }
-
         #endregion
 
         #region Constructors
@@ -592,11 +588,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing)
-            : base(GameWindowSettings.Default, new NativeWindowSettings { Size = new OpenTK.Mathematics.Vector2i(width, height), Profile = OpenTK.Windowing.Common.ContextProfile.Core, Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible })
+        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
+        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false)
+            : base(new GameWindowSettings { IsMultiThreaded = isMultithreaded }, new NativeWindowSettings { Size = new OpenTK.Mathematics.Vector2i(width, height), Profile = OpenTK.Windowing.Common.ContextProfile.Core, Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible })
         {
             _renderCanvasImp = renderCanvasImp;
-
             _renderCanvasImp.BaseWidth = width;
             _renderCanvasImp.BaseHeight = height;
         }

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<DefineConstants>$(DefineConstants);PLATFORM_BLAZOR</DefineConstants>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+
+
+		<PackageReference Include="Microsoft.JSInterop" Version="6.0.1" />
+		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
+
+	</ItemGroup>
+</Project>

@@ -51,8 +51,8 @@
             "problemMatcher": []
         },
         {
-            "label": "publish",
-            "detail": "Build this Fusee app to a self contained application.",
+            "label": "publish-desktop",
+            "detail": "Publish this Fusee app to a self contained application.",
             "dependsOn": [
                 "clean",
                 "build"
@@ -60,8 +60,9 @@
             "command": "fusee",
             "args": [
                 "publish",
+                "-p", "Desktop",
                 "-i", "bin/Debug/Fusee_App.dll",
-                "-o", "${workspaceFolder}/pub"
+                "-o", "${workspaceFolder}/pub/exe"
             ],
             "type": "shell",
             "group": "build",
@@ -69,6 +70,27 @@
                 "reveal": "silent"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "publish-web",
+            "detail": "Publish this Fusee app to a Blazor web application.",
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "command": "fusee",
+            "args": [
+                "publish",
+                "-p", "Web",
+                "-i", "bin/Debug/Fusee_App.dll",
+                "-o", "${workspaceFolder}/pub/web"
+            ],
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": [],
         }
     ]
 }

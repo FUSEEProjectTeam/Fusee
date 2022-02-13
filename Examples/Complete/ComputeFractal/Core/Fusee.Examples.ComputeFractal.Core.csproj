@@ -1,36 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-	<TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
-    <OutputPath>$(BaseOutputPath)\Examples\ComputeFractal\Core\</OutputPath>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<OutputPath>$(BaseOutputPath)\Examples\ComputeFractal\Core\</OutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Assets\Lato-Black.ttf" />
-    <None Remove="Assets\MandelbrotFractal.comp" />
-    <None Remove="Assets\RenderTexToScreen.frag" />
-    <None Remove="Assets\RenderTexToScreen.vert" />
-    <None Remove="Assets\RocketFus.fus" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.Gui.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Jometri\Fusee.Jometri.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.Gui.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Jometri\Fusee.Jometri.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Assets\RenderTexToScreen.vert">
-      <PackagePath>contentFiles\Assets\</PackagePath>
-    </Content>
-  </ItemGroup>
 </Project>

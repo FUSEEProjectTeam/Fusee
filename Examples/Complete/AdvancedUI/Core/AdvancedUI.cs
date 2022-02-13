@@ -51,6 +51,10 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private ScenePicker _scenePicker;
 
+        private CanvasNode _canvas;
+        private Mesh _monkey;
+        private SceneNode _monkeyNode;
+
         //rnd is public so unit tests can inject a seeded random.
         public Random rnd;
 
@@ -64,8 +68,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             }
             else
             {
-                UserInterfaceHelper.CanvasHeightInit = 16;
-                UserInterfaceHelper.CanvasWidthInit = 9;
+                UserInterfaceHelper.CanvasHeightInit = 9;
+                UserInterfaceHelper.CanvasWidthInit = 16;
             }
 
             _canvasHeight = UserInterfaceHelper.CanvasHeightInit;
@@ -79,13 +83,13 @@ namespace Fusee.Examples.AdvancedUI.Core
             //_scene = BuildScene();
             _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
 
-            var monkey = _scene.Children[0].GetComponent<Mesh>();
+            _monkeyNode = _scene.Children[0];
+            _monkey = _monkeyNode.GetComponent<Mesh>();
 
-            // Check if rnd was injected (render tests inject a seeded random)
             if (rnd == null)
                 rnd = new Random();
 
-            var numberOfTriangles = monkey.Triangles.Length / 3;
+            var numberOfTriangles = _monkey.Triangles.Length / 3;
 
             //Create dummy positions on model
             for (int i = 0; i < NumberOfAnnotations; i++)
@@ -93,9 +97,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                 int triangleNumber = rnd.Next(1, numberOfTriangles);
                 int triIndex = (triangleNumber - 1) * 3;
 
-                float3 triVert0 = monkey.Vertices[monkey.Triangles[triIndex]];
-                float3 triVert1 = monkey.Vertices[monkey.Triangles[triIndex + 1]];
-                float3 triVert2 = monkey.Vertices[monkey.Triangles[triIndex + 2]];
+                float3 triVert0 = _monkey.Vertices[_monkey.Triangles[triIndex]];
+                float3 triVert1 = _monkey.Vertices[_monkey.Triangles[triIndex + 1]];
+                float3 triVert2 = _monkey.Vertices[_monkey.Triangles[triIndex + 2]];
 
                 float3 middle = (triVert0 + triVert1 + triVert2) / 3;
 
@@ -120,6 +124,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             }
 
             _gui = CreateGui();
+
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -190,28 +195,14 @@ namespace Fusee.Examples.AdvancedUI.Core
             float4x4 perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             float4x4 orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-
-            RC.View = view;
-            RC.Projection = _canvasRenderMode == CanvasRenderMode.Screen ? orthographic : perspective;
-            // Constantly check for interactive objects.
-            if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
-
-            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-
             #endregion Controls
 
             //Annotations will be updated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
-
             RC.View = view;
             RC.Projection = perspective;
-            SceneNode canvas = _gui.Children[0];
 
-            foreach (SceneNode child in canvas.Children)
+            foreach (SceneNode child in _canvas.Children)
             {
                 if (!child.Name.Contains("MarkModelContainer")) continue;
 
@@ -224,20 +215,20 @@ namespace Fusee.Examples.AdvancedUI.Core
                     UserInterfaceInput uiInput = _uiInput[k];
 
                     //the monkey's matrices
-                    SceneNode monkey = _scene.Children[0];
-                    float4x4 model = monkey.GetGlobalTransformation();
+                    float4x4 model = _monkeyNode.GetGlobalTransformation();
                     float4x4 projection = perspective;
 
                     float4x4 mvpMonkey = projection * view * model;
 
-                    float3 clipPos = float4x4.TransformPerspective(mvpMonkey, uiInput.Position); //divides by 2
+                    float3 clipPos = float4x4.TransformPerspective(mvpMonkey, uiInput.Position);
                     float2 canvasPosCircle = new float2(clipPos.x, clipPos.y) * 0.5f + 0.5f;
-
                     canvasPosCircle.x *= _canvasWidth;
                     canvasPosCircle.y *= _canvasHeight;
+
                     uiInput.CircleCanvasPos = canvasPosCircle;
 
-                    var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2)); //we want the lower left point of the rect that encloses the
+                    var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2));
+
                     circle.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(AnchorPos.Middle, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
@@ -248,13 +239,13 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         uiInput.IsVisible = true;
 
-                        var effect = circle.GetComponent<DefaultSurfaceEffect>();
+                        var effect = circle.GetComponent<SurfaceEffect>();
                         effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaVis);
                     }
                     else
                     {
                         uiInput.IsVisible = false;
-                        var effect = circle.GetComponent<DefaultSurfaceEffect>();
+                        var effect = circle.GetComponent<SurfaceEffect>();
                         effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaInv);
 
                     }
@@ -330,6 +321,14 @@ namespace Fusee.Examples.AdvancedUI.Core
             _sceneRenderer.Render(RC);
 
             RC.Projection = _canvasRenderMode == CanvasRenderMode.Screen ? orthographic : perspective;
+            // Constantly check for interactive objects.
+            if (!Input.Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
+
+            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
             _guiRenderer.Render(RC);
 
             Present();
@@ -342,7 +341,6 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _canvasHeight = UserInterfaceHelper.CanvasHeightInit * _resizeScaleFactor.y;
             _canvasWidth = UserInterfaceHelper.CanvasWidthInit * _resizeScaleFactor.x;
-
         }
 
         private SceneContainer CreateGui()
@@ -363,7 +361,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             Texture guiFuseeLogo = new(AssetStorage.Get<ImageData>("FuseeText.png"));
-            TextureNode fuseeLogo = new(
+            TextureNode fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 guiFuseeLogo,
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
@@ -375,7 +373,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 Name = "MarkModelContainer",
             };
 
-            CanvasNode canvas = new(
+            _canvas = new(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -405,8 +403,22 @@ namespace Fusee.Examples.AdvancedUI.Core
             {
                 Children = new List<SceneNode>
                 {
-                    //Add canvas.
-                    canvas
+                    new SceneNode()
+                    {
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Translation = new float3(0, 0, 0.1f),
+                                Rotation = new float3(0, 0, 0),
+                                Scale = new float3(_canvasWidth, _canvasHeight, 0.1f)
+                            }
+                        },
+                        Children = new ChildList()
+                        {
+                            _canvas
+                        }
+                    }
                 }
             };
         }

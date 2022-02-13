@@ -122,7 +122,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
         public const int SI_NO_BUTTON = -1;
         public const int SI_EVENT = 0x0001;
         public const int SI_AVERAGE_EVENTS = 1;
-
         #endregion
 
         #region Structs
@@ -350,7 +349,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
             name = buttonNameStruct.name;
             return tmpRetVal;
         }
-
         #endregion
     }
 }
@@ -383,20 +381,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// <summary>
         /// Dispatching Thread
         /// </summary>
-        private readonly System.Threading.Thread eventThread;
+        private readonly Thread eventThread;
 
         /// <summary>
         /// Buffer for Events
         /// </summary>
         private readonly Dictionary<SiApp.SiEventType, EventArgs> eventBuffer = new();
+
         /// <summary>
         /// The 3Dconnexion device.
         /// </summary>
         /// <param name="appName"></param>
         public _3DconnexionDevice(string appName)
         {
-            this.AppName = appName;
-            eventThread = new System.Threading.Thread(EventThreadLoop)
+            AppName = appName;
+            eventThread = new Thread(EventThreadLoop)
             {
                 IsBackground = true,
                 Name = "3Dconnexion-Event-Dispatcher"
@@ -509,19 +508,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
 
             SiApp.SpwRetVal v = SiApp.SiInitialize();
 
-            //try
-            //{
-            //    v = SiApp.SiInitialize();
-            //}
-            //catch
-            //{
-            //    // throw new _3DxException("Driver not installed.");
-            //    Diagnostics.Log("3DX Driver is not installed");
-            //    eventThread.Abort();
-            //    Dispose();
-            //    return;
-            //}
-
             if (v == SiApp.SpwRetVal.SPW_DLL_LOAD_ERROR)
                 throw new _3DxException("Unable to load SiApp DLL");
 
@@ -546,8 +532,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             SiApp.SiGetDeviceInfo(_deviceHandle, ref info);
 
             this.FirmwareVersion = info.firmware;
-
-
         }
 
         /// <summary>
@@ -555,14 +539,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// </summary>
         public void CloseDevice()
         {
-
-
             if (_deviceHandle != IntPtr.Zero)
             {
                 SiApp.SiClose(_deviceHandle);
                 _deviceHandle = IntPtr.Zero;
             }
-
         }
 
         /// <summary>
@@ -573,7 +554,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// <param name="lParam"></param>
         public void ProcessWindowMessage(int msg, IntPtr wParam, IntPtr lParam)
         {
-            if (this.IsDisposed) //We don't throw an Exception in the Message Loop, just return
+            if (IsDisposed) //We don't throw an Exception in the Message Loop, just return
                 return;
 
             SiApp.SiGetEventData evd = default;
@@ -617,37 +598,36 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             Motion?.Invoke(this, args);
         }
 
-        //protected virtual void OnDeviceChange(DeviceChangeEventArgs args)
-        //{
-        //    if (DeviceChange != null)
-        //        DeviceChange(this, args);
-        //}
-
         #region IDisposable Member
 
-        /// <summary>
-        /// Disposes of the device.
-        /// </summary>
         public void Dispose()
         {
-            if (!this.IsDisposed)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
             {
                 CloseDevice();
                 ZeroPoint = null;
                 Motion = null;
+                IsDisposed = true;
+
+                //eventThread.Join();
             }
-            this.IsDisposed = true;
         }
 
         #endregion
 
         private void EventThreadLoop()
         {
-            while (!this.IsDisposed)
+            while (!IsDisposed)
             {
                 lock (eventBuffer)
                 {
-                    while (eventBuffer.Count == 0)
+                    while (eventBuffer.Count == 0 || !IsDisposed)
                         Monitor.Wait(eventBuffer);
                     foreach (var c in eventBuffer)
                     {

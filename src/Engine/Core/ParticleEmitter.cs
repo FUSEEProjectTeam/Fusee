@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core
 
             varying vec4 vColor;
             varying vec3 vNormal;
-            varying vec2 vUV;
+            varying vec2 vUv;
             varying float vTransparency;
         
             uniform mat4 FUSEE_MVP;
@@ -64,8 +64,8 @@ namespace Fusee.Engine.Core
                 gl_Position = FUSEE_P * vPos; //Perspektive-Projektion
                 vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
                 vNormal = vec3(0, 0, 1);
-                vUV.x = (fuUV.x <= 0.0) ? 0.0 : 1.0;
-                vUV.y = (fuUV.y <= 0.0) ? 0.0 : 1.0;
+                vUv.x = (fuUV.x <= 0.0) ? 0.0 : 1.0;
+                vUv.y = (fuUV.y <= 0.0) ? 0.0 : 1.0;
 
                 vTransparency = fuNormal.y;
             }";
@@ -86,13 +86,13 @@ namespace Fusee.Engine.Core
             varying float vTransparency;
 
             // The parameter holding the UV-Coordinates of the texture
-            varying vec2 vUV;
+            varying vec2 vUv;
 
             void main()
             {    
               // The most basic texturing function, expecting the above mentioned parameters  
              vec4 AlphaColor = vec4(1.0, 1.0, 1.0, vTransparency);
-             gl_FragColor = texture2D(texture1, vUV)*AlphaColor;        
+             gl_FragColor = texture2D(texture1, vUv)*AlphaColor;        
             }";
 
         #endregion

@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
     /// many similarities in this class' methods and properties.
     /// </summary>
-    public class RenderContext
+    public class RenderContext : IDisposable
     {
         /// <summary>
         /// The color to use when clearing the color buffer.
@@ -63,10 +63,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
         /// </summary>
-        internal readonly Dictionary<string, object> GlobalFXParams;
+        internal readonly Dictionary<int, FxParam> GlobalFXParams;
 
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
+        private bool _disposed;
 
         #region RenderState management properties
 
@@ -112,6 +113,11 @@ namespace Fusee.Engine.Core
 
         private readonly EffectManager _effectManager;
         private readonly Dictionary<Effect, CompiledEffects> _allCompiledEffects = new();
+
+        /// <summary>
+        /// The default <see cref="Effect"/>, that is used if a <see cref="SceneNode"/> has a mesh but no effect.
+        /// </summary>
+        public SurfaceEffectBase DefaultEffect;
 
         /// <summary>
         /// The currently used <see cref="Effect"/> is set in <see cref="SetEffect(Effect, bool)"/>.
@@ -198,6 +204,7 @@ namespace Fusee.Engine.Core
             get => _view;
             set
             {
+                if (_view == value) return;
                 _view = value;
 
                 _modelViewOK = false;
@@ -215,21 +222,21 @@ namespace Fusee.Engine.Core
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
 
-                SetGlobalEffectParam(UniformNameDeclarations.View, _view);
-                SetGlobalEffectParam(UniformNameDeclarations.ModelView, ModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ViewHash, _view);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewHash, ModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjectionHash, ModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.IView, InvView);
-                SetGlobalEffectParam(UniformNameDeclarations.IModelView, InvModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.IViewHash, InvView);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewHash, InvModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjectionHash, InvModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.ITView, InvTransView);
-                SetGlobalEffectParam(UniformNameDeclarations.ITModelView, InvTransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ITViewHash, InvTransView);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewHash, InvTransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjectionHash, InvTransModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.TView, TransView);
-                SetGlobalEffectParam(UniformNameDeclarations.TModelView, TransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.TViewHash, TransView);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewHash, TransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjectionHash, TransModelViewProjection);
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
@@ -251,6 +258,8 @@ namespace Fusee.Engine.Core
             get => _model;
             set
             {
+                if (_model == value) return;
+
                 _model = value;
 
                 _modelViewOK = false;
@@ -268,21 +277,21 @@ namespace Fusee.Engine.Core
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
 
-                SetGlobalEffectParam(UniformNameDeclarations.Model, _model);
-                SetGlobalEffectParam(UniformNameDeclarations.ModelView, ModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelHash, _model);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewHash, ModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjectionHash, ModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.IModel, InvModel);
-                SetGlobalEffectParam(UniformNameDeclarations.IModelView, InvModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelHash, InvModel);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewHash, InvModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjectionHash, InvModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.ITModel, InvTransModel);
-                SetGlobalEffectParam(UniformNameDeclarations.ITModelView, InvTransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelHash, InvTransModel);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewHash, InvTransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjectionHash, InvTransModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.TModel, TransModel);
-                SetGlobalEffectParam(UniformNameDeclarations.TModelView, TransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelHash, TransModel);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewHash, TransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjectionHash, TransModelViewProjection);
             }
         }
 
@@ -304,6 +313,7 @@ namespace Fusee.Engine.Core
             get => _projection;
             set
             {
+                if (_projection == value) return;
                 // Update matrix
                 _projection = value;
 
@@ -313,15 +323,16 @@ namespace Fusee.Engine.Core
                 _invTransProjectionOk = false;
                 _transProjectionOk = false;
 
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Projection, _projection);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IProjection, InvProjection);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITProjection, InvTransProjection);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TProjection, TransProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ProjectionHash, _projection);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjectionHash, ModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.IProjectionHash, InvProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ITProjectionHash, InvTransProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.TProjectionHash, TransProjection);
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
                 RenderFrustum.CalculateFrustumPlanes(_projection * View);
+                SetGlobalEffectParam(UniformNameDeclarations.ClippingPlanesHash, CalculateClippingPlanesFromProjection());
             }
         }
 
@@ -474,7 +485,6 @@ namespace Fusee.Engine.Core
                 return _invProjection;
             }
         }
-
 
         /// <summary>
         /// The inverse of the ModelViewProjection matrix.
@@ -771,7 +781,7 @@ namespace Fusee.Engine.Core
             set
             {
                 _bones = value;
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.BonesArray, _bones);
+                SetGlobalEffectParam(UniformNameDeclarations.BonesArrayHash, _bones);
             }
         }
 
@@ -783,9 +793,10 @@ namespace Fusee.Engine.Core
         {
             _rci = rci;
             DefaultState = new RenderContextDefaultState();
-            GlobalFXParams = new Dictionary<string, object>();
+            DefaultEffect = MakeEffect.Default();
+            GlobalFXParams = new Dictionary<int, FxParam>();
 
-            SetGlobalEffectParam(UniformNameDeclarations.FuseePlatformId, _rci.FuseePlatformId);
+            SetGlobalEffectParam(UniformNameDeclarations.FuseePlatformIdHash, _rci.FuseePlatformId);
 
             RenderFrustum = new FrustumF();
 
@@ -840,6 +851,7 @@ namespace Fusee.Engine.Core
             ViewportHeight = height;
             ViewportXStart = x;
             ViewportYStart = y;
+            SetGlobalEffectParam(UniformNameDeclarations.ViewportPxHash, new float2(width, height));
         }
 
         #region Image Data related methods
@@ -1009,7 +1021,7 @@ namespace Fusee.Engine.Core
                 throw new NullReferenceException("No render context Implementation found!");
 
             var compiledEffect = new CompiledEffect();
-            var shaderParams = new Dictionary<string, ShaderParamInfo>();
+            var shaderParams = new Dictionary<int, ShaderParamInfo>();
 
             string vert = string.Empty;
             string geom = string.Empty;
@@ -1030,7 +1042,7 @@ namespace Fusee.Engine.Core
                     }
                     else
                     {
-                        var surfEffect = (SurfaceEffect)ef;
+                        var surfEffect = (SurfaceEffectBase)ef;
 
                         var renderDependentShards = new List<KeyValuePair<ShardCategory, string>>();
 
@@ -1038,15 +1050,15 @@ namespace Fusee.Engine.Core
                         //May be difficult because we'd need to remove or add them (and only them) depending on the render method
                         if (fx == null) //effect was never build before
                         {
-                            surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.LightingSetup)));
-                            foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
-                                surfEffect.ParamDecl.Add(dcl.Name, dcl);
+                            surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.SurfaceInput.ShadingModel, surfEffect.SurfaceInput.TextureSetup)));
+                            foreach (var dcl in SurfaceEffectBase.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
+                                surfEffect.ParamDecl.Add(dcl.Hash, dcl);
                         }
 
                         if (renderForward)
                         {
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.LightingSetup)));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.SurfaceInput.ShadingModel)));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.SurfaceInput.ShadingModel, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
@@ -1055,15 +1067,15 @@ namespace Fusee.Engine.Core
                         {
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.ColorManagementMethods()));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.SurfaceInput.ShadingModel, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
                         }
 
-                        vert = SurfaceEffect.JoinShards(surfEffect.VertexShaderSrc);
-                        geom = SurfaceEffect.JoinShards(surfEffect.GeometryShaderSrc);
-                        frag = SurfaceEffect.JoinShards(surfEffect.FragmentShaderSrc, renderDependentShards);
+                        vert = SurfaceEffectBase.JoinShards(surfEffect.VertexShaderSrc);
+                        geom = SurfaceEffectBase.JoinShards(surfEffect.GeometryShaderSrc);
+                        frag = SurfaceEffectBase.JoinShards(surfEffect.FragmentShaderSrc, renderDependentShards);
                     }
                     var shaderOnGpu = _rci.CreateShaderProgram(vert, frag, geom);
-                    var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+                    var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
 
                     if (activeUniforms.Count == 0)
                     {
@@ -1083,7 +1095,7 @@ namespace Fusee.Engine.Core
                 catch (Exception ex)
                 {
                     Diagnostics.Error("Error while compiling shader ", ex, new string[] { vert, geom, frag });
-                    throw new Exception("Error while compiling shader ", ex);
+                    throw new Exception($"Error while compiling shader\n{vert}\n{geom}\n{frag}", ex);
                 }
             }
             else
@@ -1094,9 +1106,9 @@ namespace Fusee.Engine.Core
                     cs = computeShader.ComputeShaderSrc;
 
                     var shaderOnGpu = _rci.CreateShaderProgramCompute(cs);
-                    var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+                    var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
 
-                    var shaderStorageBuffers = _rci.GetShaderStorageBufferList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+                    var shaderStorageBuffers = _rci.GetShaderStorageBufferList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
 
                     if (activeUniforms.Count == 0)
                     {
@@ -1167,32 +1179,32 @@ namespace Fusee.Engine.Core
         /// <param name="ef">The ShaderEffect the parameters are created for.</param>
         /// <param name="cFx">The compiled shader effect for which the effect variables will be created.</param>
         /// <param name="activeUniforms">The active uniform parameters, as they are saved in the source shader on the gpu.</param>
-        private void CreateAllEffectVariables(Effect ef, CompiledEffect cFx, Dictionary<string, ShaderParamInfo> activeUniforms)
+        private void CreateAllEffectVariables(Effect ef, CompiledEffect cFx, Dictionary<int, ShaderParamInfo> activeUniforms)
         {
             if (cFx.ActiveUniforms.Count != 0)
                 throw new ArgumentException("The compiled effect already has parameters!");
 
             //Iterate source shader's active params and create a EffectParam for each one.
-            foreach (var shaderParams in activeUniforms)
+            foreach (var shaderParam in activeUniforms)
             {
-                if (!ef.ParamDecl.TryGetValue(shaderParams.Key, out IFxParamDeclaration dcl))
+                if (!ef.ParamDecl.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
                 {
-                    Diagnostics.Error(shaderParams.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
+                    Diagnostics.Error(shaderParam.Value.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
                     continue;
                 }
 
                 var effectParam = new FxParam()
                 {
-                    Info = shaderParams.Value
+                    Info = shaderParam.Value
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(shaderParams.Key, out object globalFXValue))
-                    effectParam.Value = globalFXValue;
+                if (GlobalFXParams.TryGetValue(shaderParam.Key, out FxParam globalFxParam))
+                    effectParam.Value = globalFxParam.Value;
                 else
                     effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
 
-                cFx.ActiveUniforms.Add(shaderParams.Key, effectParam);
+                cFx.ActiveUniforms.Add(shaderParam.Key, effectParam);
             }
         }
 
@@ -1200,18 +1212,31 @@ namespace Fusee.Engine.Core
         /// Sets global effect parameters by updating or adding them in the GlobalFXParams list.
         /// Changes will only have an effect when rendering.
         /// </summary>
-        /// <param name="name">Effect parameter name.</param>
+        /// <param name="hash">Effect parameter hash (generated from its name).</param>
         /// <param name="value">Effect parameter value.</param>
-        internal void SetGlobalEffectParam(string name, object value)
+        internal void SetGlobalEffectParam(int hash, object value)
         {
-            if (GlobalFXParams.TryGetValue(name, out var currentValue))
+            if (GlobalFXParams.TryGetValue(hash, out var param))
             {
-                if (currentValue.Equals(value)) return; // no new value
-                GlobalFXParams[name] = value;
+                if (param.Value == value) return; // no new value
+                param.Value = value;
+                param.HasValueChanged = true;
             }
             else if (value != null)
             {
-                GlobalFXParams.Add(name, value);
+                var newParam = new FxParam()
+                {
+                    Value = value
+                };
+                GlobalFXParams.Add(hash, newParam);
+            }
+        }
+
+        internal void ClearGlobalEffectParamsDirtyFlag()
+        {
+            foreach (var globalParam in GlobalFXParams.Values)
+            {
+                globalParam.HasValueChanged = false;
             }
         }
 
@@ -1219,28 +1244,31 @@ namespace Fusee.Engine.Core
         /// Called from the <see cref="Effect.EffectChanged"/> event. Will lookup the CompiledEffect and change the value of the parameter there.
         /// </summary>
         /// <param name="ef">The Effect.</param>
-        /// <param name="name">The parameter's name</param>
+        /// <param name="hash">The parameter's hash (generated from its name).</param>
         /// <param name="paramValue">The parameter's value.</param>
-        internal void UpdateParameterInCompiledEffect(Effect ef, string name, object paramValue)
+        internal void UpdateParameterInCompiledEffect(Effect ef, int hash, object paramValue)
         {
             if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffects)) throw new ArgumentException("Effect isn't build yet!");
 
             var forwardFx = compiledEffects.ForwardFx;
-            if (forwardFx != null && forwardFx.ActiveUniforms.TryGetValue(name, out FxParam effectParamFw))
+            if (forwardFx != null)
             {
-                effectParamFw.Value = paramValue;
-                effectParamFw.HasValueChanged = true;
+                if (forwardFx.ActiveUniforms.TryGetValue(hash, out var effectParamFw))
+                {
+                    effectParamFw.Value = paramValue;
+                    effectParamFw.HasValueChanged = true;
+                }
             }
 
             var deferredFx = compiledEffects.DeferredFx;
-            if (deferredFx != null && deferredFx.ActiveUniforms.TryGetValue(name, out FxParam effectParamDf))
+            if (deferredFx != null)
             {
-                effectParamDf.Value = paramValue;
-                effectParamDf.HasValueChanged = true;
+                if (deferredFx.ActiveUniforms.TryGetValue(hash, out var effectParamDf))
+                {
+                    effectParamDf.Value = paramValue;
+                    effectParamDf.HasValueChanged = true;
+                }
             }
-            //else
-            //    Diagnostics.Warn($"Parameter {name} is declared in Effect but currently not used by the shader."); 
-
         }
 
         /// <summary>
@@ -1282,6 +1310,10 @@ namespace Fusee.Engine.Core
         {
             if (param.HasValueChanged)
             {
+                if (param.Info.Type == typeof(bool))
+                {
+                    _rci.SetShaderParam(param.Info.Handle, (bool)param.Value ? 1 : 0);
+                }
                 if (param.Info.Type == typeof(int))
                 {
                     _rci.SetShaderParam(param.Info.Handle, (int)param.Value);
@@ -1318,6 +1350,13 @@ namespace Fusee.Engine.Core
                 }
                 else if (param.Info.Type == typeof(float4))
                 {
+                    if (param.Info.Size > 1)
+                    {
+                        // parameter is an array
+                        var paramArray = (float4[])param.Value;
+                        _rci.SetShaderParam(param.Info.Handle, paramArray);
+                        return;
+                    }
                     _rci.SetShaderParam(param.Info.Handle, (float4)param.Value);
                 }
                 else if (param.Info.Type == typeof(float4x4))
@@ -1505,11 +1544,6 @@ namespace Fusee.Engine.Core
                     {
                         CurrentRenderState.SetRenderState(renderState, value);
                         _rci.SetRenderState(renderState, value);
-                        //Diagnostics.Warn("PREVIOUSLY LOCKED STATE WAS OVERWRITTEN: Render state " + renderState + " was locked and will remain its old value.\n Call UnlockRenderState(renderState) to undo it.");
-                    }
-                    else
-                    {
-                        //Diagnostics.Warn("Render state " + renderState + " was locked and will remain its old value.\n Call UndoLockRenderState(renderState) to undo it.");
                     }
 
                     return;
@@ -1519,17 +1553,13 @@ namespace Fusee.Engine.Core
             var currentVal = CurrentRenderState.GetRenderState(renderState);
             if (doLockState)
             {
-                if (currentVal != null)
-                    LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)currentVal);
-                else
-                    LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)RenderStateSet.Default.GetRenderState(renderState));
+                LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)currentVal);
             }
             if (currentVal != value)
             {
                 CurrentRenderState.SetRenderState(renderState, value);
                 _rci.SetRenderState(renderState, value);
             }
-
         }
 
         /// <summary>
@@ -1554,12 +1584,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public uint GetRenderState(RenderState renderState)
         {
-            var currentState = CurrentRenderState.GetRenderState(renderState);
-
-            if (currentState != null)
-                return (uint)currentState;
-            else
-                return (uint)RenderStateSet.Default.GetRenderState(renderState);
+            return CurrentRenderState.GetRenderState(renderState);
         }
 
         /// <summary>
@@ -1660,27 +1685,21 @@ namespace Fusee.Engine.Core
 
                 SetShaderProgram(cFx.GpuHandle);
 
-                foreach (var fxParam in cFx.ActiveUniforms)
+                foreach (var key in GlobalFXParams.Keys)
                 {
-                    if (!_currentEffect.ParamDecl.TryGetValue(fxParam.Key, out IFxParamDeclaration dcl))
-                    {
-                        Diagnostics.Error(fxParam.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
-                        continue;
-                    }
+                    var globalFxParam = GlobalFXParams[key];
 
-                    // OVERWRITE Values in the Effect with the newest ones from the GlobalFXParams collection.
-                    if (GlobalFXParams.TryGetValue(fxParam.Key, out object globalFXValue))
+                    if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
                     {
-                        var dclVal = dcl.GetType().GetField("Value").GetValue(dcl);
-                        if (!dclVal.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
-                        {
-                            _currentEffect.SetFxParam(fxParam.Key, globalFXValue);
-                        }
+                        if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
+                            _currentEffect.SetFxParam(key, globalFxParam.Value);
                     }
+                }
 
-                    var param = cFx.ActiveUniforms[fxParam.Key];
-                    SetShaderParamT(param);
-                    param.HasValueChanged = false;
+                foreach (var fxParam in cFx.ActiveUniforms.Values)
+                {
+                    SetShaderParamT(fxParam);
+                    fxParam.HasValueChanged = false;
                 }
 
                 _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
@@ -1737,27 +1756,21 @@ namespace Fusee.Engine.Core
                 SetShaderProgram(cFx.GpuHandle);
                 SetRenderStateSet(_currentEffect.RendererStates);
 
-                foreach (var fxParam in cFx.ActiveUniforms)
+                foreach (var key in GlobalFXParams.Keys)
                 {
-                    if (!_currentEffect.ParamDecl.TryGetValue(fxParam.Key, out IFxParamDeclaration dcl))
-                    {
-                        Diagnostics.Error(fxParam.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
-                        continue;
-                    }
+                    var globalFxParam = GlobalFXParams[key];
 
-                    // OVERWRITE Values in the Effect with the newest ones from the GlobalFXParams collection.
-                    if (GlobalFXParams.TryGetValue(fxParam.Key, out object globalFXValue))
+                    if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
                     {
-                        var dclVal = dcl.GetType().GetField("Value").GetValue(dcl);
-                        if (!dclVal.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
-                        {
-                            _currentEffect.SetFxParam(fxParam.Key, globalFXValue);
-                        }
+                        if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
+                            _currentEffect.SetFxParam(key, globalFxParam.Value);
                     }
+                }
 
-                    var param = cFx.ActiveUniforms[fxParam.Key];
-                    SetShaderParamT(param);
-                    param.HasValueChanged = false;
+                foreach (var fxParam in cFx.ActiveUniforms.Values)
+                {
+                    SetShaderParamT(fxParam);
+                    fxParam.HasValueChanged = false;
                 }
 
                 // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
@@ -1775,20 +1788,57 @@ namespace Fusee.Engine.Core
             {
                 throw new Exception("Error while rendering pass ", ex);
             }
+        }
 
+        private float2 CalculateClippingPlanesFromProjection()
+        {
+            var C = Projection.M33;
+            var D = Projection.M34;
+            float f = D / (C - 1.0f) * -1;
+            float n = D / (C + 1.0f) * -1;
+            return new float2(n, f);
         }
 
         #endregion
 
         /// <summary>
-        /// Resets the RenderContexts View, Projection and Viewport to the values defined in <see cref="DefaultState"/>.
-        /// Must be called after every visitation of the Scene Graph that changed these values.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        internal void ResetToDefaultRenderContextState()
+        public void Dispose()
         {
-            Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
-            View = DefaultState.View;
-            Projection = DefaultState.Projection;
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!_disposed)
+            {
+                _effectManager.Dispose();
+                _textureManager.Dispose();
+                _meshManager.Dispose();
+
+                // Note disposing has been done.
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
+        ~RenderContext()
+        {
+            Dispose(disposing: false);
         }
     }
 }

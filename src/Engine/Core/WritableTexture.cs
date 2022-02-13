@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using System;
 
@@ -174,6 +174,17 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Create a texture that is intended to save subsurface color and strength.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <param name="pxFormat">The color format of this texture.</param>
+        public static WritableTexture CreateSubsurfaceTex(int width, int height, ImagePixelFormat pxFormat)
+        {
+            return new WritableTexture(RenderTargetTextureTypes.Subsurface, pxFormat, width, height, false, TextureFilterMode.Linear);
+        }
+
+        /// <summary>
         /// Create a texture that is intended to save normal information.
         /// </summary>
         /// <param name="width">Width in px.</param>
@@ -195,7 +206,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateDepthTex(int width, int height, ImagePixelFormat pxFormat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Depth, pxFormat, width, height, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, compareMode, compareFunc);
+            return new WritableTexture(RenderTargetTextureTypes.Depth, pxFormat, width, height, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToEdge, compareMode, compareFunc);
         }
 
         /// <summary>
@@ -203,10 +214,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
+        /// <param name="pxFormat">The color format of this texture.</param>
         /// <returns></returns>
-        public static WritableTexture CreateSSAOTex(int width, int height)
+        public static WritableTexture CreateSSAOTex(int width, int height, ImagePixelFormat pxFormat)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.Nearest);
+            return new WritableTexture(RenderTargetTextureTypes.Ssao, pxFormat, width, height, false, TextureFilterMode.Nearest);
         }
 
         /// <summary>
@@ -220,20 +232,41 @@ namespace Fusee.Engine.Core
             return new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.fRGBA32), width, height, false, TextureFilterMode.Linear);
         }
 
+        private bool _disposed;
+
         /// <summary>
-        /// Implementation of the <see cref="IDisposable"/> interface.
+        /// Fire dispose mesh event
         /// </summary>
-        public void Dispose()
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
         {
-            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+                }
+
+                _disposed = true;
+            }
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire TextureChanged event.
+        /// Fire dispose mesh event
+        /// </summary>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Destructor calls <see cref="Dispose()"/> in order to fire TextureChanged event.
         /// </summary>
         ~WritableTexture()
         {
-            Dispose();
+            Dispose(true);
         }
     }
 }

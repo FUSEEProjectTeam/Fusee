@@ -4,6 +4,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -41,14 +42,12 @@ namespace Fusee.Engine.Player.Core
 
         private float _maxPinchSpeed;
 
-        private bool _isLoaded;
-
-        public void LoadAssets()
+        public async Task LoadAssets()
         {
             // Load the standard model
-            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
 
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, _canvasRenderMode, "FUSEE Player");
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, _canvasRenderMode, "FUSEE Player");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -83,8 +82,12 @@ namespace Fusee.Engine.Player.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
+        }
 
-            _isLoaded = true;
+        public override async Task InitAsync()
+        {
+            await LoadAssets();
+            await base.InitAsync();
         }
 
         // Init is called on startup.
@@ -101,14 +104,10 @@ namespace Fusee.Engine.Player.Core
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
-            LoadAssets();
         }
 
         public override void Update()
         {
-            if (!_isLoaded) return;
-
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -117,7 +116,7 @@ namespace Fusee.Engine.Player.Core
 
             var curDamp = (float)System.Math.Exp(-Damping * DeltaTimeUpdate);
             // Zoom & Roll
-            if (Touch.TwoPoint)
+            if (Touch != null && Touch.TwoPoint)
             {
                 if (!_twoTouchRepeated)
                 {
@@ -149,7 +148,7 @@ namespace Fusee.Engine.Player.Core
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
 
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
                 float2 touchVel;
@@ -193,17 +192,17 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (!_isLoaded) return;
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             // Create the camera matrix and set it as the current View transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
             var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
 
-            var view = mtxCam * mtxRot * _sceneScale * _sceneCenter; ;
+            var view = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar) * mtxOffset;
 
             // Tick any animations and Render the scene loaded in Init()
@@ -214,13 +213,13 @@ namespace Fusee.Engine.Player.Core
 
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-            RC.View = float4x4.Identity;
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
 
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
@@ -229,12 +228,6 @@ namespace Fusee.Engine.Player.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        // Is called when the window was resized
-        public override void Resize(ResizeEventArgs e)
-        {
-
         }
     }
 }

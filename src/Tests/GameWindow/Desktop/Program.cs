@@ -5,6 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Fusee.Tests.GameWindow.Desktop
 {
@@ -20,13 +21,18 @@ namespace Fusee.Tests.GameWindow.Desktop
         public static void Init()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
-            IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+            IO.IOImp = new IOImp();
 
-            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            var fap = new FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await Task.FromResult(new Font { _fontImp = new FontImp((Stream)storage) });
+                    },
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
@@ -38,6 +44,11 @@ namespace Fusee.Tests.GameWindow.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
+                    },
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
@@ -58,7 +69,7 @@ namespace Fusee.Tests.GameWindow.Desktop
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(cimp);
 
             // Initialize canvas/app and canvas implementor
-            app.InitCanvas();
+            app.InitApp();
             app.Init();
         }
     }

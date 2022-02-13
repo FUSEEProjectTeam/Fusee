@@ -66,7 +66,29 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Members       
+        #region Members
+
+        /// <summary>
+        /// Used to inject functionallity that is ment to be executed when the application is shutting down.
+        /// </summary>
+        public event EventHandler<EventArgs> ApplicationIsShuttingDown;
+
+        /// <summary>
+        /// Used to stop the rendering process when the application is shutting down.
+        /// Needed when the creation and running of an application are executed in different threads.
+        /// Will invoke <see cref="ApplicationIsShuttingDown"/>.
+        /// </summary>
+        public bool IsShuttingDown
+        {
+            get { return _isShuttingDown; }
+            private set
+            {
+                _isShuttingDown = value;
+                if (_isShuttingDown)
+                    ApplicationIsShuttingDown?.Invoke(this, new EventArgs());
+            }
+        }
+        private bool _isShuttingDown;
 
         /// <summary>
         ///     Gets the name of the app.
@@ -122,9 +144,29 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Initializes the canvas for the rendering loop.
+        /// This event is usually triggered when loading is completed (after init() method)
         /// </summary>
-        public void InitCanvas()
+        public EventHandler<EventArgs> LoadingCompleted;
+
+        /// <summary>
+        /// Called after <see cref="RenderCanvas.Init"/> can be used to await async tasks (e.g. loading methods)
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task InitAsync()
+        {
+            await Task.Run(() => LoadingCompleted?.Invoke(this, null));
+        }
+
+        /// <summary>
+        /// <see langword="true"/> when InitAsync() finished
+        /// Prevents <see cref="RenderCanvas.RenderAFrame"/> and <see cref="RenderCanvas.Update"/> while <see langword="false"/>
+        /// </summary>
+        public bool IsLoaded { get; set; } = false;
+
+        /// <summary>
+        /// Initializes the application and prepares it for the rendering loop.
+        /// </summary>
+        public void InitApp()
         {
             // InitImplementors();
             CanvasImplementor.Caption = GetAppName();
@@ -141,18 +183,31 @@ namespace Fusee.Engine.Core
 
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
-            CanvasImplementor.Init += delegate { Init(); };
-            CanvasImplementor.UnLoad += delegate { DeInit(); };
+            CanvasImplementor.Init += async delegate
+            {
+                Init();
+                await InitAsync();
+                IsLoaded = true;
+            };
+            CanvasImplementor.UnLoad += delegate
+            {
+                DeInit();
+            };
 
             CanvasImplementor.Update += delegate
             {
-                Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
+                if (!IsLoaded) return;
 
+                Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
                 Update();
             };
 
             CanvasImplementor.Render += delegate
             {
+                if (!IsLoaded) return;
+
+                if (IsShuttingDown) return;
+
                 // pre-rendering
                 Input.Instance.PreRender();
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
@@ -161,15 +216,13 @@ namespace Fusee.Engine.Core
                 if (Width != 0 || Height != 0)
                     RenderAFrame();
 
-                //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
-                RC.ResetToDefaultRenderContextState();
-
                 // post-rendering
                 Input.Instance.PostRender();
             };
 
             CanvasImplementor.Resize += delegate
             {
+                if (IsShuttingDown) return;
                 RC.DefaultState.CanvasWidth = Width;
                 RC.DefaultState.CanvasHeight = Height;
                 Resize(new ResizeEventArgs(Width, Height));
@@ -258,7 +311,6 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Run()
         {
-            InitCanvas();
             CanvasImplementor.Run();
         }
 
@@ -302,11 +354,13 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Closes the GameWindow with a call to OpenTK.
+        /// Closes the GameWindow with a call to OpenTK.
         /// </summary>
         public void CloseGameWindow()
         {
+            IsShuttingDown = true;
             CanvasImplementor.CloseGameWindow();
+            RC.Dispose();
         }
 
         #endregion

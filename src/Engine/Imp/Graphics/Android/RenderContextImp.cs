@@ -266,6 +266,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     format = PixelFormat.Rgba;
                     pxType = PixelType.UnsignedByte;
                     break;
+                case ColorFormat.fRGBA32:
+                    // SHOULD:
+                    //internalFormat = PixelInternalFormat.Rgba32f;
+                    //format = PixelFormat.Rgba;
+                    //pxType = PixelType.Float;
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormat.Rgba;
+                    pxType = PixelType.UnsignedByte;
+                    break;
+                case ColorFormat.iRGBA32:
+                    // SHOULD:
+                    //internalFormat = PixelInternalFormat.Rgba32f;
+                    //format = PixelFormat.Rgba;
+                    //pxType = PixelType.Float;
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormat.Rgba;
+                    pxType = PixelType.UnsignedByte;
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
@@ -597,6 +615,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
             GL.BindAttribLocation(program, AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
             GL.BindAttribLocation(program, AttributeLocations.ColorAttribLocation, UniformNameDeclarations.VertexColor);
+            GL.BindAttribLocation(program, AttributeLocations.Color1AttribLocation, UniformNameDeclarations.VertexColor1);
+            GL.BindAttribLocation(program, AttributeLocations.Color2AttribLocation, UniformNameDeclarations.VertexColor2);
             GL.BindAttribLocation(program, AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
             GL.BindAttribLocation(program, AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
             GL.BindAttribLocation(program, AttributeLocations.TangentAttribLocation, UniformNameDeclarations.Tangent);
@@ -1121,11 +1141,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             var gBufferRenderTarget = new RenderTarget(res);
             gBufferRenderTarget.SetPositionTex();
-            gBufferRenderTarget.SetAlbedoSpecularTex();
+            gBufferRenderTarget.SetAlbedoTex();
             gBufferRenderTarget.SetNormalTex();
-            gBufferRenderTarget.SetDepthTex(Common.TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
+            gBufferRenderTarget.SetDepthTex();
             gBufferRenderTarget.SetSpecularTex();
             gBufferRenderTarget.SetEmissiveTex();
+            gBufferRenderTarget.SetSubsurfaceTex();
 
             return gBufferRenderTarget;
         }
@@ -1390,6 +1411,60 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        public void SetColors1(IMeshImp mr, uint[] colors)
+        {
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            int colsBytes = colors.Length * sizeof(uint);
+            if (((MeshImp)mr).ColorBufferObject1 == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject1);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
+            if (vboBytes != colsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.",
+                    colsBytes, vboBytes));
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        public void SetColors2(IMeshImp mr, uint[] colors)
+        {
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            int colsBytes = colors.Length * sizeof(uint);
+            if (((MeshImp)mr).ColorBufferObject1 == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject1);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
+            if (vboBytes != colsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.",
+                    colsBytes, vboBytes));
+        }
+
+        /// <summary>
         /// Binds the triangles onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -1446,6 +1521,26 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject);
             ((MeshImp)mr).InvalidateColors();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveColors1(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject1);
+            ((MeshImp)mr).InvalidateColors1();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveColors2(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject2);
+            ((MeshImp)mr).InvalidateColors2();
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.MeshingAround.Desktop
 {
@@ -21,6 +22,11 @@ namespace Fusee.Examples.MeshingAround.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await Task.FromResult(new Font { _fontImp = new FontImp((Stream)storage) });
+                    },
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
@@ -32,6 +38,11 @@ namespace Fusee.Examples.MeshingAround.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
+                    },
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
@@ -53,6 +64,8 @@ namespace Fusee.Examples.MeshingAround.Desktop
             // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+
+            app.InitApp();
 
             // Start the app
             app.Run();

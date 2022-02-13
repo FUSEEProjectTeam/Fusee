@@ -1,55 +1,24 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.23">
-  <PropertyGroup>
-    <TargetFramework>MonoAndroid11.0</TargetFramework>
-    <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
-    <Description>Fusee Base Imp Android</Description>
-    <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Android</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <EmbeddedNativeLibrary Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Android\ARM64\libfreetype262d.so">
-      <Link>lib\arm64\libfreetype.so</Link>
-      <Abi>arm64-v8a</Abi>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedNativeLibrary>
-    <EmbeddedNativeLibrary Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Android\ARM\libfreetype262d.so">
-      <Link>lib\arm\libfreetype.so</Link>
-      <Abi>armeabi-v7a</Abi>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedNativeLibrary>
-    <EmbeddedNativeLibrary Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Android\x64\libfreetype262d.so">
-      <Link>lib\x64\libfreetype.so</Link>
-      <Abi>x86_64</Abi>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedNativeLibrary>
-    <EmbeddedNativeLibrary Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Android\x86\libfreetype262d.so">
-      <Link>lib\x86\libfreetype.so</Link>
-      <Abi>x86</Abi>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedNativeLibrary>
-  </ItemGroup>
-
-    <ItemGroup>
-	    <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll" Link="Natives\SharpFont.dll" PackagePath="lib/monoandroid81" />
-    </ItemGroup>
+﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.44">
 	
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>MonoAndroid11.0</TargetFramework>
+		<DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+		
+		<IsPackable>true</IsPackable>
+		<Description>Fusee Base Imp Android</Description>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <Reference Include="SharpFont">
-      <HintPath>$(FuseeEngineRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+
+		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
+	</ItemGroup>
+	
 </Project>

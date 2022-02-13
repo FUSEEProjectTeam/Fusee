@@ -22,7 +22,6 @@ namespace Fusee.Base.Common
             _assetHandlers = new Dictionary<Type, AssetHandler>();
         }
 
-
         /// <summary>
         /// Determines whether this instance can handle assets of the specified type (in general).
         /// </summary>
@@ -44,7 +43,7 @@ namespace Fusee.Base.Common
         /// </summary>
         /// <param name="id">The asset identifier.</param>
         /// <returns>Implementors should return null if the asset cannot be retrieved.</returns>
-        protected abstract Stream GetStreamAsync(string id);
+        protected abstract Task<Stream> GetStreamAsync(string id);
 
         /// <summary>
         /// Retrieves the asset identified by the given string.
@@ -88,17 +87,21 @@ namespace Fusee.Base.Common
         /// <exception cref="System.ArgumentNullException"></exception>
         public async Task<object> GetAssetAsync(string id, Type type)
         {
-            var stream = GetStreamAsync(id);
+            var stream = await GetStreamAsync(id);
 
             if (stream == null)
             {
                 return null;
             }
 
-            if (_assetHandlers.TryGetValue(type, out AssetHandler handler))
+            if (_assetHandlers.TryGetValue(type, out var handler))
             {
+                // Return in using will dispose the used object, which is what we want...
                 return await handler.DecoderAsync(id, stream).ConfigureAwait(false);
             }
+
+            stream.Close();
+            await stream.DisposeAsync();
 
             return null;
         }

@@ -1,0 +1,224 @@
+<Window x:Class="Fusee.Examples.PointCloudOutOfCore.Wpf.MainWindow"        
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Fusee.Examples.PointCloudOutOfCore.Wpf"
+        xmlns:sew="clr-namespace:Fusee.PointCloud.Common;assembly=Fusee.Pointcloud.Common"
+        mc:Ignorable="d"        
+        Title="Fusee Point Cloud Viewer"  MaxHeight ="727" MinWidth="330" MaxWidth="310" ResizeMode="CanResize" ShowInTaskbar="True" Background="#FFCECECE"
+        Height="{Binding SystemParameters.PrimaryScreenHeight}"         
+        WindowStartupLocation="Manual" 
+        WindowState="Maximized">
+
+    <Grid x:Name="OuterGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Margin="0,50,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
+
+            <Grid x:Name="InnerGrid" Margin="0,0,0,0" Width="330">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <Grid x:Name="PtVisContainer" Height="125" Margin="7,7,22,0" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="3*" />
+
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.5*" />
+                        <RowDefinition Height="0.5*" />
+                        <RowDefinition Height="0.8*" />
+                    </Grid.RowDefinitions>
+
+                    <Border BorderBrush="White" Background="White" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" VerticalAlignment="Center" Height="125" Grid.RowSpan="3">
+                        <Border.Effect>
+                            <DropShadowEffect Color="LightGray"/>
+                        </Border.Effect>
+                    </Border>
+                    <Border BorderBrush="Gray" Background="Gray" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" x:Name="border5" VerticalAlignment="Center" Height="42"/>
+                    <Line Grid.Column="0" Grid.ColumnSpan="3" StrokeThickness="1" Stroke="Black" Fill="Black" Grid.RowSpan="1" X1="0" X2="320" Margin="0,-34,0,0" VerticalAlignment="Center" Grid.Row="1" />
+                    <Image HorizontalAlignment="Center" Height="31" VerticalAlignment="Center" Width="35" Source="Assets/vis_w.png"/>
+                    <Label Content="Visibility" HorizontalAlignment="Center" VerticalAlignment="Center" Width="148" Height="32" Grid.Column="1" Grid.Row="0" x:Name="PtVisLabel" FontWeight="Bold" Foreground="White" FontSize="14"/>
+
+                    <Label Content="Threshold:" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="1" x:Name="PtThresholdLabel">
+                        <Label.ToolTip>
+                            <TextBlock>
+                            Maximal number of visible points.<LineBreak/>
+                            If the number given is smaller <LineBreak/>
+                            than the number of points in the <LineBreak/>
+                            root, the points from the root <LineBreak/>
+                            will be shown nonetheless.
+                            </TextBlock>
+                        </Label.ToolTip>
+                    </Label>
+                    <TextBox Text="500000" Margin="50,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" Width="52" Height="20" TextChanged="VisPoints_TextChanged" LostFocus="VisPoints_LostFocus" x:Name="PtThreshold"/>
+
+                    <Label Content="Min. Proj. Size Modifier" HorizontalAlignment="Center" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="2" x:Name="MinProjSizeLabel" FontWeight="Normal" Grid.RowSpan="2">
+                        <Label.ToolTip>
+                            <TextBlock>
+                            Specifies how many % of the screen <LineBreak />
+                            projected size of the root octant <LineBreak />
+                            will be used as the minimal screen <LineBreak /> 
+                            projected octant size.<LineBreak /> 
+                            An octant that is smaller than this<LineBreak />
+                            will be discarded.<LineBreak />
+                            Default is 1/3.
+                            </TextBlock>
+                        </Label.ToolTip>
+                    </Label>
+                    <Slider VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="2" Width="144" Maximum ="1.00" Grid.Column="1" Minimum ="0.01" x:Name="MinProjSize" ValueChanged="MinProjSize_ValueChanged" Thumb.DragStarted="MinProjSize_DragStarted" Thumb.DragCompleted="MinProjSize_DragCompleted"/>
+                    <Label Content="0.33" HorizontalAlignment="Left" Margin="7,10,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="9" x:Name="MinProjSizeVal" />
+                </Grid>
+
+                <Grid x:Name="LightingContainer" Height="150" VerticalAlignment="Top" Margin="7,139,22,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="3*" />
+
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>                        
+                        <RowDefinition Height="0.3*" />
+                        <RowDefinition Height="0.35*" />
+                        <RowDefinition Height="0.35*" />
+                    </Grid.RowDefinitions>
+
+                    <Border BorderBrush="White" Background="White" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" Grid.RowSpan="7" BorderThickness="0" VerticalAlignment="Center" Height="350">
+                        <Border.Effect>
+                            <DropShadowEffect Color="LightGray"/>
+                        </Border.Effect>
+                    </Border>
+                    <Border BorderBrush="Gray" Background="Gray" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" x:Name="border1" VerticalAlignment="Center" Height="42"/>
+                    
+                    <Image HorizontalAlignment="Left" Height="30" Margin="15,0,0,0" VerticalAlignment="Center" Width="37" Source="Assets/lighting_w.png"/>
+                    <Label Content="Lighting" HorizontalAlignment="Center" VerticalAlignment="Center" Width="146" Height="30" x:Name="LightingLabel" FontWeight="Bold" FontStyle="Normal" Foreground="White" FontSize="14" Grid.Column="1"/>
+                    
+                    <Label Content="EDL Neighbor Px" HorizontalAlignment="Left" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="1" x:Name="EDLNeighbourPxLabel" Grid.ColumnSpan="2" />
+                    <Slider HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="1" VerticalAlignment="Center" Width="144" Grid.Column="1" x:Name="EDLNeighbourPx" Maximum ="10" Minimum ="1" IsSnapToTickEnabled="True"
+                    TickFrequency="1" ValueChanged="EDLNeighbourPxSlider_ValueChanged" Thumb.DragStarted="EDLNeighbourPx_DragStarted" Thumb.DragCompleted="EDLNeighbourPx_DragCompleted"/>
+                    <Label Content="10" HorizontalAlignment="Left" Margin="7,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" x:Name="EDLNeighbourPxVal" />
+
+                    <Label Content="EDL strength" HorizontalAlignment="Left" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Row="2"  Grid.Column="1" x:Name="EDLStrengthLabel" Grid.ColumnSpan="2" />
+                    <Slider HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="2" VerticalAlignment="Center" Width="144" Grid.Column="1" x:Name="EDLStrength" Maximum ="1.0" Minimum ="0.0" ValueChanged="EDLStrengthSlider_ValueChanged" Thumb.DragStarted="EDLStrength_DragStarted" Thumb.DragCompleted="EDLStrength_DragCompleted"/>
+                    <Label Content="10" HorizontalAlignment="Left" Margin="7,07,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2" x:Name="EDLStrengthVal" />
+
+                    <!--<Label Content="10" HorizontalAlignment="Left" Margin="7,07,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="5" x:Name="SpecStrengthVal" />-->
+
+                </Grid>
+
+                <Grid x:Name="PtShapeContainer" Height="70" Margin="7,296,22,0" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="3*" />
+
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.5*" />
+                        <RowDefinition Height="0.5*" />
+
+                    </Grid.RowDefinitions>
+
+                    <Border BorderBrush="White" Background="White" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" VerticalAlignment="Center" Height="70" Grid.RowSpan="2">
+                        <Border.Effect>
+                            <DropShadowEffect Color="LightGray"/>
+                        </Border.Effect>
+                    </Border>
+                    <Border BorderBrush="Gray" Background="Gray" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" x:Name="border2" VerticalAlignment="Center" Height="42"/>
+                    <Line Grid.Column="0" Grid.ColumnSpan="3" StrokeThickness="1" Stroke="Black" Fill="Black" Grid.RowSpan="1" X1="0" X2="330" VerticalAlignment="Top" Grid.Row="1" />
+                    <Image HorizontalAlignment="Center" Height="27" VerticalAlignment="Center" Width="34" Source="Assets/ptMode_w.png"/>
+                    <Label Content="Point shape" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="148" Height="30" Grid.Column="1" Grid.Row="0" x:Name="PtShapeLabel" FontWeight="Bold" Foreground="White" FontSize="14"/>
+                    <ComboBox Height="22" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" MaxWidth="144" Width="144" Grid.Column="1" x:Name="PtShape" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type sew:PointShape}}}" SelectionChanged="PtShape_SelectionChanged" IsEnabled="true"/>
+                </Grid>
+
+                <Grid x:Name="PtSizeContainer" Height="125" Margin="7,374,22,0" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="3*" />
+
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.5*" />
+                        <RowDefinition Height="0.5*" />
+                        <RowDefinition Height="0.8*" />
+                    </Grid.RowDefinitions>
+
+                    <Border BorderBrush="White" Background="White" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" VerticalAlignment="Center" Height="125" Grid.RowSpan="3">
+                        <Border.Effect>
+                            <DropShadowEffect Color="LightGray"/>
+                        </Border.Effect>
+                    </Border>
+                    <Border BorderBrush="Gray" Background="Gray" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" x:Name="border3" VerticalAlignment="Center" Height="42"/>
+                    <Line Grid.Column="0" Grid.ColumnSpan="3" StrokeThickness="1" Stroke="Black" Fill="Black" Grid.RowSpan="1" X1="0" X2="320" Margin="0,-34,0,0" VerticalAlignment="Center" Grid.Row="1" />
+                    <Image HorizontalAlignment="Center" Height="31" VerticalAlignment="Center" Width="35" Source="Assets/size_w.png"/>
+                    <Label Content="Point size mode" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="0" x:Name="PtSizeModeLabel" FontWeight="Bold" Foreground="White" FontSize="14"/>
+                    <ComboBox Height="22" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" MaxWidth="144" Width="144" Grid.Column="1" x:Name="PtSizeMode" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type sew:PointSizeMode}}}" SelectionChanged="PtSizeMode_SelectionChanged" IsEnabled="true"/>
+                    <Label Content="Point size" HorizontalAlignment="Center" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="2" x:Name="PtSizeLabel" FontWeight="Normal" Grid.RowSpan="2" />
+                    <Slider VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="9" Width="144" Maximum ="50.0" Grid.Column="1" Minimum ="1.0" IsSnapToTickEnabled="True" ValueChanged="PtSize_ValueChanged" Thumb.DragStarted="PtSize_DragStarted"  Thumb.DragCompleted="PtSize_DragCompleted" x:Name="PtSize"/>
+                    <Label Content="10" HorizontalAlignment="Left" Margin="7,10,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="9" x:Name="PtSizeVal" />
+                </Grid>
+
+                <Grid x:Name="ColorModeContainer" Height="125" Margin="7,506,22,0" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="3*" />
+
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.5*" />
+                        <RowDefinition Height="0.5*" />
+                        <RowDefinition Height="0.8*" />
+                    </Grid.RowDefinitions>
+
+                    <Border BorderBrush="White" Background="White" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" VerticalAlignment="Center" Height="125" Grid.RowSpan="3">
+                        <Border.Effect>
+                            <DropShadowEffect Color="LightGray"/>
+                        </Border.Effect>
+                    </Border>
+                    <Border BorderBrush="Gray" Background="Gray" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" x:Name="border4" VerticalAlignment="Center" Height="42"/>
+                    <Image HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Width="37" Source="Assets/color_w.png"/>
+                    <Line Grid.Column="0" Grid.ColumnSpan="3" StrokeThickness="1" Stroke="Black" Fill="Black" Grid.RowSpan="1" X1="0" X2="320" Margin="0,-34,0,0" VerticalAlignment="Center" Grid.Row="1" />
+                    <Label Content="Color mode" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="148" Height="30" Grid.Row="0" x:Name="ColorModeLabel" FontWeight="Bold" Foreground="White" FontSize="14" Grid.Column="1"/>
+                    <ComboBox Height="22" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" MaxWidth="144" Grid.Column="1" Width="144" x:Name="ColorMode" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type sew:ColorMode}}}" SelectionChanged="ColorMode_SelectionChanged" IsEnabled="true"/>
+                    <!--<Label Content="Single color" HorizontalAlignment="Left" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="2" x:Name="SingleColorLabel" Grid.RowSpan="2" Grid.ColumnSpan="2" />-->
+                    <!--<xctk:ColorPicker Name="SingleColor" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" Grid.Row="12" Width="100"  Grid.Column="1" SelectedColorChanged="SingleColor_SelectedColorChanged"/>-->
+                </Grid>
+            </Grid>
+
+        </ScrollViewer>
+
+        <Border BorderBrush="Gray" Background="Gray" Grid.Column="0" Margin="7,7,7,0" Grid.RowSpan="1" BorderThickness="0" x:Name="borderButtons" VerticalAlignment="Top" Height="43">
+            <Border.Effect>
+                <DropShadowEffect Color="LightGray"/>
+            </Border.Effect>
+        </Border>
+
+        <Button Grid.RowSpan="1" Grid.ColumnSpan="1" Width="40" Height="30" x:Name="LoadFile_Button" Click="LoadFile_Button_Click" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Load File" Margin="15,15,0,0">
+            <Image Height="25" Width="25" Source="Assets/folder.png"/>
+        </Button>
+
+        <Button Grid.RowSpan="1" Grid.ColumnSpan="1" Width="40" Height="30" x:Name="ResetCam_Button" Click="ResetCam_Button_Click" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Reset Camera" Margin="60,15,0,0">
+            <Image Height="25" Width="25" Source="Assets/camera.png"/>
+        </Button>
+        <Button Grid.RowSpan="1" Grid.ColumnSpan="1" Width="40" Height="30" x:Name="ShowOctants_Button" Click="ShowOctants_Button_Click" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="Toggle Octants" IsEnabled="False" Margin="105,15,0,0">
+            <Image Height="25" Width="25" Source="Assets/octants_inactive.png" x:Name="ShowOctants_Img"/>
+        </Button>
+
+        <Border BorderBrush="White" Background="White" Grid.Column="0" Margin="7,57,7,0" Grid.RowSpan="1" BorderThickness="0" x:Name="inactiveBorder" VerticalAlignment="Top" Height="825" Opacity="0.7" Visibility="Hidden"/>
+
+    </Grid>
+</Window>

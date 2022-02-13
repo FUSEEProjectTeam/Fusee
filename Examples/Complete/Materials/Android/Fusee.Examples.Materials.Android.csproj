@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Materials.Android</RootNamespace>
@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <BaseOutputPath>..\..\..\..\bin\$(Configuration)</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)\Examples\Materials\Android</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\SurfaceEffects\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{05BCD767-C30E-4D72-A006-B23CF90056CA}</ProjectGuid>
@@ -34,12 +34,16 @@
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi-v7a;x86_64</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
     <Debugger>Xamarin</Debugger>
     <AndroidEnableMultiDex>False</AndroidEnableMultiDex>
     <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <OutputPath>..\..\..\..\bin\Debug\Examples\Materials\Android\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,6 +54,11 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <MonoDroidLinkMode>Full</MonoDroidLinkMode>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <BundleAssemblies>false</BundleAssemblies>
+    <OutputPath>..\..\..\..\bin\Release\Examples\Materials\Android\</OutputPath>
   </PropertyGroup>
   <!-- External References -->
   <ItemGroup>
@@ -95,9 +104,9 @@
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Materials\Core\Fusee.Examples.Materials.Core.csproj">
-      <Project>{c0fde6f1-18e8-4c4a-bb9c-b9b532ed1fa0}</Project>
-      <Name>Fusee.Examples.MeshingAround.Core</Name>
+    <ProjectReference Include="..\Core\Fusee.Examples.Materials.Core.csproj">
+      <Project>{78a63ae0-11ee-430d-8d21-f7898de1c9da}</Project>
+      <Name>Fusee.Examples.Materials.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- Assets -->
@@ -121,9 +130,7 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\AboutAssets.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AndroidAsset>
+    <AndroidAsset Include="Assets\AboutAssets.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- This overrides the UpdateAndroidAssets target in Xamarin.Android.Common.targets -->

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Fusee.App.$ext_safeprojectname$.Desktop</AssemblyName>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fusee.Desktop" Version="0.10.2.0" />
+    <PackageReference Include="Fusee.Desktop" Version="0.11.2" />
   </ItemGroup>
   
   <ItemGroup>

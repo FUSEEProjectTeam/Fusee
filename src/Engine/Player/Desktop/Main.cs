@@ -178,8 +178,7 @@ namespace Fusee.Engine.Player.Desktop
                     player.ModelFile = modelFile;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-                app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
+                app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
                 app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
@@ -187,6 +186,8 @@ namespace Fusee.Engine.Player.Desktop
                 // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
                 // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
                 // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+
+                app.InitApp();
 
                 // Start the app
                 app.Run();

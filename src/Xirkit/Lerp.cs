@@ -13,7 +13,6 @@ namespace Fusee.Xirkit
         /// </summary>
         public static double DoubleLerp(double val1, double val2, float time1, float time2)
         {
-
             return (val1 + ((val2 - val1) / time1) * time2);
         }
 
@@ -68,10 +67,10 @@ namespace Fusee.Xirkit
         /// </summary>
         public static float3 Float3QuaternionSlerp(float3 val1, float3 val2, float time1, float time2)
         {
-            Quaternion q1 = Quaternion.EulerToQuaternion(val1);
-            Quaternion q2 = Quaternion.EulerToQuaternion(val2);
+            Quaternion q1 = Quaternion.FromEuler(val1);
+            Quaternion q2 = Quaternion.FromEuler(val2);
             Quaternion res = Quaternion.Slerp(q1, q2, time2 / time1);
-            return Quaternion.QuaternionToEuler(res);
+            return Quaternion.ToEuler(res);
         }
 
         /// <summary>

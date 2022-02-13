@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -10,9 +10,14 @@ namespace Fusee.Engine.Core.Effects
     public interface IFxParamDeclaration
     {
         /// <summary>
-        /// The name of the parameter.
+        /// The name of the parameter. Must be unique in the used Effect.
         /// </summary>
         string Name { get; set; }
+
+        /// <summary>
+        /// Hash code of the Name, set in the Setter of "Name".
+        /// </summary>
+        int Hash { get; }
 
         /// <summary>
         /// The Type of the parameter.
@@ -20,9 +25,11 @@ namespace Fusee.Engine.Core.Effects
         Type ParamType { get; }
 
         /// <summary>
-        /// Defines in which type of shader this parameter is used in.
+        /// Sets the value of this parameter declaration. Implementations should provide a type check using <see cref="ParamType"/>.
         /// </summary>
-        IEnumerable<ShaderCategory> UsedInShaders { get; }
+        /// <param name="val"></param>
+        /// <returns></returns>
+        bool SetValue(object val);
     }
 
     /// <summary>
@@ -34,9 +41,23 @@ namespace Fusee.Engine.Core.Effects
     public struct FxParamDeclaration<T> : IFxParamDeclaration
     {
         /// <summary>
-        /// The name of the parameter.
+        /// The name of the parameter. Must be unique in the used Effect.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                Hash = value.GetHashCode();
+            }
+        }
+        private string _name;
+
+        /// <summary>
+        /// Hash code of the Name.
+        /// </summary>
+        public int Hash { get; private set; }
 
         /// <summary>
         /// The value of the parameter.
@@ -48,8 +69,22 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public Type ParamType => typeof(T);
 
-        IEnumerable<ShaderCategory> IFxParamDeclaration.UsedInShaders => _usedInShaders;
-
-        private readonly IEnumerable<ShaderCategory> _usedInShaders;
+        /// <summary>
+        /// Sets the value of this parameter declaration.
+        /// </summary>
+        /// <param name="val">The new parameter value.</param>
+        /// <returns></returns>
+        public bool SetValue(object val)
+        {
+            if (ParamType != typeof(T))
+                throw new ArgumentException($"{val} has the wrong Type!");
+            else
+            {
+                if (Value != null && Value.Equals((T)val))
+                    return false;
+                Value = (T)val;
+                return true;
+            }
+        }
     }
 }

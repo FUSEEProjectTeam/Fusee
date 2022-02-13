@@ -3,7 +3,7 @@
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// Event arguments for notifying a <see cref="SurfaceEffect"/> about changes in a property of a class (for example see <see cref="ColorInput"/>).
+    /// Event arguments for notifying a <see cref="SurfaceEffectBase"/> about changes in a property of a class (for example see <see cref="DiffuseInput"/>).
     /// </summary>
     public class SurfaceEffectEventArgs : EventArgs
     {

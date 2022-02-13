@@ -1,49 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
-    <IsPackable>false</IsPackable>
-    <OutputPath>$(BaseOutputPath)\Player\Core\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+	
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<OutputPath>$(BaseOutputPath)\Player\Core\</OutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Assets\Model.fus" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.Gui.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.Gui.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+	</ItemGroup>
+	
 </Project>

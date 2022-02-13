@@ -18,7 +18,7 @@ using Font = Fusee.Base.Core.Font;
 
 namespace Fusee.Examples.Labyrinth.Core
 {
-    [FuseeApplication(Name = "FUSEE Labyrinth Example", Description = "A very sqiggly example.")]
+    [FuseeApplication(Name = "FUSEE Labyrinth Example", Description = "A very squiggly example.")]
     public class Labyrinth : RenderCanvas
     {
         // My var
@@ -135,7 +135,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _cornerbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    cornerstone.GetComponent<DefaultSurfaceEffect>(),
+                                    cornerstone.GetComponent<SurfaceEffect>(),
                                     cornerstone.GetComponent<Mesh>()
                                 },
                             Name = "Cornerstone" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -153,7 +153,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallXbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    wallX.GetComponent<DefaultSurfaceEffect>(),
+                                    wallX.GetComponent<SurfaceEffect>(),
                                     wallX.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -171,7 +171,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallZbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    wallZ.GetComponent<DefaultSurfaceEffect>(),
+                                    wallZ.GetComponent<SurfaceEffect>(),
                                     wallZ.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -189,7 +189,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _ballradius, countY * (_wallZbox.z + _cornerbox.z)/2),
                                     },
-                                    head.GetComponent<DefaultSurfaceEffect>(),
+                                    head.GetComponent<SurfaceEffect>(),
                                     head.GetComponent<Mesh>()
                                 },
                             Name = "Head",
@@ -217,7 +217,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                             {
                                                 Translation = new float3(0,0,0)
                                             },
-                                            ball.GetComponent<DefaultSurfaceEffect>(),
+                                            ball.GetComponent<SurfaceEffect>(),
                                             ball.GetComponent<Mesh>()
                                         },
                                     Name = "Body",
@@ -234,16 +234,16 @@ namespace Fusee.Examples.Labyrinth.Core
             maze.Children.Add(new SceneNode
             {
                 Components = new List<SceneComponent>
-                                {
-                                    new Transform
-                                    {
-                                        Scale = new float3(_length, 1, _height),
-                                        Translation = new float3(_length/2 - _cornerbox.x/2, -0.5f, _height/2 - _cornerbox.z/2)
-                                    },
-                                    //ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.8f, 0.8f, 0.8f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f),
-                                    MakeEffect.FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1), new float4(0, 0, 0, 1)),
-                                    _ground
-                                },
+                {
+                    new Transform
+                    {
+                        Scale = new float3(_length, 1, _height),
+                        Translation = new float3(_length/2 - _cornerbox.x/2, -0.5f, _height/2 - _cornerbox.z/2)
+                    },
+                    //ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.8f, 0.8f, 0.8f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f),
+                    MakeEffect.FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1)),
+                    _ground
+                },
                 Name = "Ground"
             }
             );
@@ -263,10 +263,7 @@ namespace Fusee.Examples.Labyrinth.Core
             _timeMap = new FontMap(_fontLato, 24);
             _gui = CreateGui();
             Resize(new ResizeEventArgs(Width, Height));
-            // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
-
-            // Set the clear color for the backbuffer to black (0% intensity in color channels R, G, B  100% intensity in color channelsA).
             RC.ClearColor = new float4(0, 0, 0, 1);
 
             // Find the ball and create AABB
@@ -335,12 +332,11 @@ namespace Fusee.Examples.Labyrinth.Core
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-            // Render the scene loaded in Init()
             RC.Projection = perspective;
             _sceneRenderer.Render(RC);
 
-            // Constantly check for interactive objects.
 
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
@@ -370,7 +366,7 @@ namespace Fusee.Examples.Labyrinth.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
+            var fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 //Set the albedo texture you want to use.
                 guiFuseeLogo,
@@ -386,7 +382,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNode(
+            var text = TextNode.Create(
                 "FUSEE Labyrinth Example",
                 "ButtonText",
                 GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
@@ -397,7 +393,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 VerticalTextAlignment.Center);
 
             // Create stopwatch
-            var timer = new TextNode(
+            var timer = TextNode.Create(
                 "00:00.00",
                 "Timer",
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),
@@ -508,7 +504,7 @@ namespace Fusee.Examples.Labyrinth.Core
                         headTranslation.z += _moveX * M.Cos(_angle);
                         _head.Translation = headTranslation;
 
-                        _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Cos(_angle), 0, M.Sin(_angle)), -_moveX)), 0);
+                        _body.Rotate(Quaternion.ToEuler(Quaternion.FromAxisAngle(new float3(-M.Cos(_angle), 0, M.Sin(_angle)), -_moveX)), 0);
                     }
 
                     // AD Axis
@@ -519,7 +515,7 @@ namespace Fusee.Examples.Labyrinth.Core
                         headTranslation.x += _moveZ * M.Cos(_angle);
                         headTranslation.z -= _moveZ * M.Sin(_angle);
                         _head.Translation = headTranslation;
-                        _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Sin(_angle), 0, M.Cos(_angle)), -_moveZ)), 0);
+                        _body.Rotate(Quaternion.ToEuler(Quaternion.FromAxisAngle(new float3(M.Sin(_angle), 0, M.Cos(_angle)), -_moveZ)), 0);
                     }
                 }
             }
@@ -741,7 +737,7 @@ namespace Fusee.Examples.Labyrinth.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
+            var fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 //Set the albedo texture you want to use.
                 guiFuseeLogo,
@@ -757,7 +753,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNode(
+            var text = TextNode.Create(
                 "FUSEE Labyrinth Example",
                 "ButtonText",
                 GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
@@ -767,7 +763,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
-            var endtime = new TextNode(
+            var endtime = TextNode.Create(
                 "SOLVED\n" +
                 _timertext.Text,
                 "Timer",

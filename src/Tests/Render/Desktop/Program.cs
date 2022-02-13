@@ -63,7 +63,7 @@ namespace Fusee.Tests.Render.Desktop
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(cimp));
 
                 // Initialize canvas/app and canvas implementor
-                app.InitCanvas();
+                app.InitApp();
                 app.Init();
 
                 // Render a single frame and save it

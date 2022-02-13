@@ -485,6 +485,22 @@ namespace Fusee.Engine.Common
         void SetColors(IMeshImp mr, uint[] colors);
 
         /// <summary>
+        /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
+        void SetColors1(IMeshImp mr, uint[] colors);
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
+        void SetColors2(IMeshImp mr, uint[] colors);
+
+        /// <summary>
         /// Binds the triangles onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -533,6 +549,18 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
         void RemoveColors(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveColors1(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveColors2(IMeshImp mesh);
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
