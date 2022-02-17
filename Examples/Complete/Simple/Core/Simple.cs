@@ -1,10 +1,12 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System;
+using ImGuiNET;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -45,6 +47,28 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
 
+            _rocketScene = new SceneContainer
+            {
+                Children = new System.Collections.Generic.List<SceneNode>
+                {
+                    new SceneNode
+                    {
+                        Components = new System.Collections.Generic.List<SceneComponent>
+                        {
+                            new Transform(),
+                            MakeEffect.FromDiffuseSpecular(float4.One),
+                            new Cube(),
+                            new Transform
+                            {
+                                Translation = new float3(-0.5f, -0.5f ,0)
+                            },
+                            MakeEffect.FromDiffuseSpecular(new float4(1,0,1,0.5f)),
+                            new Cube()
+                        }
+                    }
+                }
+            };
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -75,6 +99,7 @@ namespace Fusee.Examples.Simple.Core
             {
                 _keys = false;
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+                Console.WriteLine(Mouse.XVel);
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
             else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
@@ -103,22 +128,18 @@ namespace Fusee.Examples.Simple.Core
             _angleVert += _angleVelVert;
         }
 
+        bool open = true;
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            RC.Viewport(0, 0, Width, Height);
-
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 2, -10, 0, 2, 0, 0, 1, 0);
 
             var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)RC.ViewportWidth / RC.ViewportWidth, ZNear, ZFar);
+            var orthographic = float4x4.CreateOrthographic(RC.ViewportWidth, RC.ViewportHeight, ZNear, ZFar);
 
             // Render the scene loaded in Init()
             RC.View = view;
@@ -129,16 +150,13 @@ namespace Fusee.Examples.Simple.Core
             RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, RC.ViewportWidth, RC.ViewportHeight);
             if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), RC.ViewportWidth, RC.ViewportHeight);
             }
 
             _guiRenderer.Render(RC);
-
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
-            Present();
         }
     }
 }

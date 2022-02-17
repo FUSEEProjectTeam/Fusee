@@ -82,8 +82,6 @@ namespace Fusee.Avalonia.Desktop
             {
                OnResize?.Invoke(this, GetPixelSize());
             };
-
-
         }
 
 
@@ -99,7 +97,11 @@ namespace Fusee.Avalonia.Desktop
             Width = (int)Parent.Bounds.Width;
             Height = (int)Parent.Bounds.Height;
 
-            Dispatcher.UIThread.Post(InvalidateMeasure, DispatcherPriority.MaxValue);
+            //GL.Enable(EnableCap.AlphaTest);
+            //GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
+            //GL.BlendFuncSeparate(BlendingFactorSrc.Zero, BlendingFactorDest.One, BlendingFactorSrc.One, BlendingFactorDest.One);
+            //GL.Enable(EnableCap.DepthTest);
+            //GL.DepthFunc(DepthFunction.Less);
 
             //Tell our subclass to render
             OnRender?.Invoke(this, EventArgs.Empty);

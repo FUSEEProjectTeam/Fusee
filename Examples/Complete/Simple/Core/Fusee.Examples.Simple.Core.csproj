@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 		<OutputPath>$(BaseOutputPath)\Examples\Simple\Core\</OutputPath>
 	</PropertyGroup>
 
@@ -19,6 +19,9 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="ImGui.NET" Version="1.87.2" />
 	</ItemGroup>
 
 </Project>

@@ -88,7 +88,8 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Gets and sets the viewport width.
         /// </summary>
-        public int ViewportWidth { get; private set; }
+        public int ViewportWidth {
+            get; private set; }
 
         /// <summary>
         /// Gets and sets the viewport height.
@@ -955,8 +956,8 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Viewport(int x, int y, int width, int height)
         {
-            if (ViewportXStart == x && ViewportYStart == y && ViewportWidth == width && ViewportHeight == height)
-                return;
+            //if (ViewportXStart == x && ViewportYStart == y && ViewportWidth == width && ViewportHeight == height)
+            //    return;
 
             _rci.Scissor(x, y, width, height);
             _rci.Viewport(x, y, width, height);

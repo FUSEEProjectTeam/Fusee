@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Examples\Simple\Desktop\</OutputPath>
-
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 
@@ -11,6 +11,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
 		<ProjectReference Include="..\Core\Fusee.Examples.Simple.Core.csproj" />
+		<PackageReference Include="ImGui.NET" Version="1.87.2" />
 
 		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 	</ItemGroup>

@@ -22,7 +22,7 @@ namespace Fusee.Examples.Integrations.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererForward _sceneRenderer;
+        private SceneRendererDeferred _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -53,9 +53,31 @@ namespace Fusee.Examples.Integrations.Core
 
             // Load the rocket model
             _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
+            //_rocketScene = new SceneContainer
+            //{
+            //    Children = new System.Collections.Generic.List<SceneNode>
+            //    {
+            //        new SceneNode
+            //        {
+            //            Components = new System.Collections.Generic.List<SceneComponent>
+            //            {
+            //                new Transform(),
+            //                MakeEffect.FromDiffuseSpecular(float4.One * 0.5f),
+            //                new Cube(),
+            //                new Transform
+            //                {
+            //                    Translation = new float3(-0.5f, -0.5f ,0)
+            //                },
+            //                MakeEffect.FromDiffuseSpecular(new float4(1,0,1,0.5f)),
+            //                new Cube()
+            //            }
+            //        }
+            //    }
+            //};
+
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
 
             rocketTransform = _rocketScene.Children[0].GetTransform();
@@ -68,6 +90,7 @@ namespace Fusee.Examples.Integrations.Core
             await Load();
             await base.InitAsync();
         }
+
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()

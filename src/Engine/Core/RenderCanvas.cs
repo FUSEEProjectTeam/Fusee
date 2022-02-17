@@ -58,7 +58,7 @@ namespace Fusee.Engine.Core
         /// <value>
         ///     Use the render context (<see cref="RenderContext" />) to fill the render canvas with 3d contents.
         /// </value>
-        protected RenderContext RC { get; private set; }
+        public RenderContext RC { get; private set; }
 
         #endregion
 
@@ -162,6 +162,57 @@ namespace Fusee.Engine.Core
         /// Prevents <see cref="RenderCanvas.RenderAFrame"/> and <see cref="RenderCanvas.Update"/> while <see langword="false"/>
         /// </summary>
         public bool IsLoaded { get; set; } = false;
+
+        /// <summary>
+        /// Initializes the application and prepares it for the rendering loop without binding the render event.
+        /// This is left to be done by a user at any necessary order
+        /// </summary>
+        /// <param name="rc">Possible custom <see cref="RenderContext"/> which can be set during app initialization</param>
+        public void InitAppCustomRenderMethod(RenderContext rc = null)
+        {
+            // InitImplementors();
+            CanvasImplementor.Caption = GetAppName();
+
+            var windowWidth = GetWindowWidth();
+            var windowHeight = GetWindowHeight();
+
+            if (windowWidth != -1 && windowHeight != -1)
+                SetWindowSize(windowWidth, windowHeight);
+
+            RC = rc is null ? new RenderContext(ContextImplementor) : rc;
+            RC.Viewport(0, 0, Width, Height);
+            RC.SetRenderStateSet(RenderStateSet.Default);
+
+            VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
+
+            CanvasImplementor.Init += async delegate
+            {
+                Init();
+                await InitAsync();
+                IsLoaded = true;
+            };
+            CanvasImplementor.UnLoad += delegate
+            {
+                DeInit();
+            };
+
+            CanvasImplementor.Update += delegate
+            {
+                if (!IsLoaded) return;
+
+                Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
+                //Console.WriteLine(CanvasImplementor.DeltaTimeUpdate);
+                Update();
+            };
+
+            CanvasImplementor.Resize += delegate
+            {
+                if (IsShuttingDown) return;
+                RC.DefaultState.CanvasWidth = Width;
+                RC.DefaultState.CanvasHeight = Height;
+                Resize(new ResizeEventArgs(Width, Height));
+            };
+        }
 
         /// <summary>
         /// Initializes the application and prepares it for the rendering loop.
