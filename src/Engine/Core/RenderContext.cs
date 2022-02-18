@@ -99,12 +99,12 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Gets and sets the x coordinate of viewport's lower left (starting) point.
         /// </summary>
-        public int ViewportXStart { get; private set; }
+        public int ViewportXStart { get; set; }
 
         /// <summary>
         /// Gets and sets the y coordinate of viewport's lower left (starting) point.
         /// </summary>
-        public int ViewportYStart { get; private set; }
+        public int ViewportYStart { get; set; }
 
         #endregion
 

@@ -165,7 +165,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Initializes the application and prepares it for the rendering loop without binding the render event.
-        /// This is left to be done by a user at any necessary order
+        /// This is left to be done by a user at any time
         /// </summary>
         /// <param name="rc">Possible custom <see cref="RenderContext"/> which can be set during app initialization</param>
         public void InitAppCustomRenderMethod(RenderContext rc = null)

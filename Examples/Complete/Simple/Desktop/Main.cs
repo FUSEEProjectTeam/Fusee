@@ -3,14 +3,12 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Desktop;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +16,10 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Numerics;
+using ImVec4 = System.Numerics.Vector4;
+using System.Drawing;
+using Font = Fusee.Base.Core.Font;
 
 namespace Fusee.Examples.Simple.Desktop
 {
@@ -84,7 +86,6 @@ namespace Fusee.Examples.Simple.Desktop
 
             app.InitAppCustomRenderMethod();
 
-
             _renderCanvas.Init += InitImGUI;
             _renderCanvas.Update += UpdateImGUI;
             _renderCanvas.Render += RenderImGUI;
@@ -96,6 +97,14 @@ namespace Fusee.Examples.Simple.Desktop
 
         #region IMGUI
 
+        private struct UniformFieldInfo
+        {
+            public int Location;
+            public string Name;
+            public int Size;
+            public ActiveUniformType Type;
+        }
+
         private static int _vertexArray;
         private static int _vertexBuffer;
         private static int _vertexBufferSize;
@@ -105,9 +114,7 @@ namespace Fusee.Examples.Simple.Desktop
         private static int _windowWidth;
         private static int _windowHeight;
 
-        private static bool _frameBegun;
-
-        private static System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
+        private static Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
         private static readonly string _vertexSource = @"#version 330 core
                                                 uniform mat4 projection_matrix;
@@ -133,16 +140,14 @@ namespace Fusee.Examples.Simple.Desktop
                                                 }";
 
         private static int _shaderProgram;
-        private static Dictionary<string, UniformFieldInfo> _uniformVarToLocation = new();
-
-        struct UniformFieldInfo
-        {
-            public int Location;
-            public string Name;
-            public int Size;
-            public ActiveUniformType Type;
-        }
-
+        private static readonly Dictionary<string, UniformFieldInfo> _uniformVarToLocation = new();
+        private static int _viewportFB;
+        private static int _renderTexture;
+        private static int _depthRenderbuffer;
+        private static Vector2 _min = new(0, 0);
+        private static Vector2 _max = new(0, 0);
+        private static Vector2 _size = new(0, 0);
+        private static Vector2 _pos = new(0, 0);
 
         private static void InitImGUI(object sender, InitEventArgs args)
         {
@@ -152,21 +157,87 @@ namespace Fusee.Examples.Simple.Desktop
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
             var io = ImGui.GetIO();
-            io.Fonts.AddFontDefault();
+            io.Fonts.AddFontFromFileTTF("Assets/Lato-Black.ttf", 14);
 
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
             io.BackendFlags |= ImGuiBackendFlags.RendererHasViewports;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+
+
+            var style = ImGui.GetStyle();
+            var colors = style.Colors;
+
+            style.WindowRounding = 2.0f;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows
+            style.ScrollbarRounding = 3.0f;             // Radius of grab corners rounding for scrollbar
+            style.GrabRounding = 2.0f;             // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+            style.AntiAliasedLines = true;
+            style.AntiAliasedFill = true;
+            style.WindowRounding = 2;
+            style.ChildRounding = 2;
+            style.ScrollbarSize = 16;
+            style.ScrollbarRounding = 3;
+            style.GrabRounding = 2;
+            style.ItemSpacing.X = 10;
+            style.ItemSpacing.Y = 4;
+            style.IndentSpacing = 22;
+            style.FramePadding.X = 6;
+            style.FramePadding.Y = 4;
+            style.Alpha = 1.0f;
+            style.FrameRounding = 3.0f;
+
+            colors[(int)ImGuiCol.Text] = new Vector4(0.00f, 0.00f, 0.00f, 1.00f);
+            colors[(int)ImGuiCol.TextDisabled] = new Vector4(0.60f, 0.60f, 0.60f, 1.00f);
+            colors[(int)ImGuiCol.WindowBg] = new Vector4(0.86f, 0.86f, 0.86f, 1.00f);
+            //color(int)s[ImGuiCol_ChildWindowBg]         = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
+            colors[(int)ImGuiCol.ChildBg] = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
+            colors[(int)ImGuiCol.PopupBg] = new Vector4(0.93f, 0.93f, 0.93f, 0.98f);
+            colors[(int)ImGuiCol.Border] = new Vector4(0.71f, 0.71f, 0.71f, 0.08f);
+            colors[(int)ImGuiCol.BorderShadow] = new Vector4(0.00f, 0.00f, 0.00f, 0.04f);
+            colors[(int)ImGuiCol.FrameBg] = new Vector4(0.71f, 0.71f, 0.71f, 0.55f);
+            colors[(int)ImGuiCol.FrameBgHovered] = new Vector4(0.94f, 0.94f, 0.94f, 0.55f);
+            colors[(int)ImGuiCol.FrameBgActive] = new Vector4(0.71f, 0.78f, 0.69f, 0.98f);
+            colors[(int)ImGuiCol.TitleBg] = new Vector4(0.85f, 0.85f, 0.85f, 1.00f);
+            colors[(int)ImGuiCol.TitleBgCollapsed] = new Vector4(0.82f, 0.78f, 0.78f, 0.51f);
+            colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.78f, 0.78f, 0.78f, 1.00f);
+            colors[(int)ImGuiCol.MenuBarBg] = new Vector4(0.86f, 0.86f, 0.86f, 1.00f);
+            colors[(int)ImGuiCol.ScrollbarBg] = new Vector4(0.20f, 0.25f, 0.30f, 0.61f);
+            colors[(int)ImGuiCol.ScrollbarGrab] = new Vector4(0.90f, 0.90f, 0.90f, 0.30f);
+            colors[(int)ImGuiCol.ScrollbarGrabHovered] = new Vector4(0.92f, 0.92f, 0.92f, 0.78f);
+            colors[(int)ImGuiCol.ScrollbarGrabActive] = new Vector4(1.00f, 1.00f, 1.00f, 1.00f);
+            colors[(int)ImGuiCol.CheckMark] = new Vector4(0.184f, 0.407f, 0.193f, 1.00f);
+            colors[(int)ImGuiCol.SliderGrab] = new Vector4(0.26f, 0.59f, 0.98f, 0.78f);
+            colors[(int)ImGuiCol.SliderGrabActive] = new Vector4(0.26f, 0.59f, 0.98f, 1.00f);
+            colors[(int)ImGuiCol.Button] = new Vector4(0.71f, 0.78f, 0.69f, 0.40f);
+            colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.725f, 0.805f, 0.702f, 1.00f);
+            colors[(int)ImGuiCol.ButtonActive] = new Vector4(0.793f, 0.900f, 0.836f, 1.00f);
+            colors[(int)ImGuiCol.Header] = new Vector4(0.71f, 0.78f, 0.69f, 0.31f);
+            colors[(int)ImGuiCol.HeaderHovered] = new Vector4(0.71f, 0.78f, 0.69f, 0.80f);
+            colors[(int)ImGuiCol.HeaderActive] = new Vector4(0.71f, 0.78f, 0.69f, 1.00f);
+            colors[(int)ImGuiCol.Tab] = new Vector4(0.39f, 0.39f, 0.39f, 1.00f);
+            colors[(int)ImGuiCol.TabHovered] = new Vector4(0.26f, 0.59f, 0.98f, 0.78f);
+            colors[(int)ImGuiCol.TabActive] = new Vector4(0.26f, 0.59f, 0.98f, 1.00f);
+            colors[(int)ImGuiCol.Separator] = new Vector4(0.39f, 0.39f, 0.39f, 1.00f);
+            colors[(int)ImGuiCol.SeparatorHovered] = new Vector4(0.14f, 0.44f, 0.80f, 0.78f);
+            colors[(int)ImGuiCol.SeparatorActive] = new Vector4(0.14f, 0.44f, 0.80f, 1.00f);
+            colors[(int)ImGuiCol.ResizeGrip] = new Vector4(1.00f, 1.00f, 1.00f, 0.00f);
+            colors[(int)ImGuiCol.ResizeGripHovered] = new Vector4(0.26f, 0.59f, 0.98f, 0.45f);
+            colors[(int)ImGuiCol.ResizeGripActive] = new Vector4(0.26f, 0.59f, 0.98f, 0.78f);
+            colors[(int)ImGuiCol.PlotLines] = new Vector4(0.39f, 0.39f, 0.39f, 1.00f);
+            colors[(int)ImGuiCol.PlotLinesHovered] = new Vector4(1.00f, 0.43f, 0.35f, 1.00f);
+            colors[(int)ImGuiCol.PlotHistogram] = new Vector4(0.90f, 0.70f, 0.00f, 1.00f);
+            colors[(int)ImGuiCol.PlotHistogramHovered] = new Vector4(1.00f, 0.60f, 0.00f, 1.00f);
+            colors[(int)ImGuiCol.TextSelectedBg] = new Vector4(0.26f, 0.59f, 0.98f, 0.35f);
+            //colors[(int)ImGuiCol.ModalWindowDarkening] = new Vector4(0.20f, 0.20f, 0.20f, 0.35f);
+            colors[(int)ImGuiCol.DragDropTarget] = new Vector4(0.26f, 0.59f, 0.98f, 0.95f);
+            colors[(int)ImGuiCol.NavHighlight] = colors[(int)ImGuiCol.HeaderHovered];
+            colors[(int)ImGuiCol.NavWindowingHighlight] = new Vector4(0.70f, 0.70f, 0.70f, 0.70f);
 
             CreateDeviceResources();
 
             SetPerFrameImGuiData(1f / 60f);
 
             ImGui.NewFrame();
-            _frameBegun = true;
-
         }
-
 
         private static void CreateDeviceResources()
         {
@@ -264,18 +335,12 @@ namespace Fusee.Examples.Simple.Desktop
             }
 
             // FRAMEBUFFER STUFF
-
-            GL.CreateFramebuffers(1, out _viewportFB);            // The texture we're going to render to
+            GL.CreateFramebuffers(1, out _viewportFB);
             GL.GenTextures(1, out _renderTexture);
             GL.GenRenderbuffers(1, out _depthRenderbuffer);
         }
 
-        private static int _viewportFB;
-        private static int _renderTexture;
-        private static int _depthRenderbuffer;
-        private static float2 _viewPortRes = new float2(3840, 2160);
-
-        private unsafe static void RecreateFontDeviceTexture()
+        private static unsafe void RecreateFontDeviceTexture()
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
@@ -326,12 +391,8 @@ namespace Fusee.Examples.Simple.Desktop
         {
             SetPerFrameImGuiData(_renderCanvas.DeltaTimeUpdate);
             UpdateImGuiInput();
-
-            _frameBegun = true;
             ImGui.NewFrame();
         }
-
-        private static bool _viewportOpen = true;
 
         private static void UpdateRenderTexture(int width, int height)
         {
@@ -341,6 +402,8 @@ namespace Fusee.Examples.Simple.Desktop
 
             // Give an empty image to OpenGL ( the last "0" )
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height, 0, PixelFormat.Bgr, PixelType.UnsignedByte, new IntPtr());
+            // GL.TexStorage2DMultisample(TextureTargetMultisample2d.Texture2DMultisample, 32, SizedInternalFormat.Rgba8, width, height, false);
+
 
             // Poor filtering. Needed !
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
@@ -365,10 +428,8 @@ namespace Fusee.Examples.Simple.Desktop
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
         }
 
-        static System.Numerics.Vector2 _min = new System.Numerics.Vector2(0, 0);
-        static System.Numerics.Vector2 _max = new System.Numerics.Vector2(0, 0);
-        static System.Numerics.Vector2 _size = new System.Numerics.Vector2(0, 0);
-        static System.Numerics.Vector2 _pos = new System.Numerics.Vector2(0, 0);
+        private static bool _dockspaceOpen = true;
+        private static bool _viewportOpen = true;
 
         private static void RenderImGUI(object sender, RenderEventArgs args)
         {
@@ -379,18 +440,17 @@ namespace Fusee.Examples.Simple.Desktop
             Input.Instance.PreRender();
             Time.Instance.DeltaTimeIncrement = _renderCanvas.DeltaTime;
 
+            #region FuseeRender
+
             if (_size.X != 0)
             {
-                // pre-rendering
-
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
                 // Enable FB
                 UpdateRenderTexture((int)_size.X, (int)_size.Y);
-                // app.RC.Viewport((int)_pos.X, (int)(((_windowHeight - _size.Y)) - _pos.Y), (int)_size.X, (int)_size.Y);
                 app.RC.Viewport(0, 0, (int)_size.X, (int)_size.Y);
+                // app.RC.Viewport((int)_pos.X, (int)(((_windowHeight - _size.Y)) - _pos.Y), (int)_size.X, (int)_size.Y);
 
-                // rendering
                 app.RenderAFrame();
             }
 
@@ -400,12 +460,67 @@ namespace Fusee.Examples.Simple.Desktop
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
+            #endregion
+
             //////////////// --- IMGUI GOES HERE --- //////////////
 
+            // Set Window flags for Dockspace
+            var wndDockspaceFlags =
+                    ImGuiWindowFlags.NoDocking
+                    | ImGuiWindowFlags.NoTitleBar
+                    | ImGuiWindowFlags.NoCollapse
+                    | ImGuiWindowFlags.NoResize
+                    | ImGuiWindowFlags.NoMove
+                    | ImGuiWindowFlags.NoBringToFrontOnFocus
+                    | ImGuiWindowFlags.NoFocusOnAppearing
+                   ;
 
-            ImGui.Begin("Viewport", ref _viewportOpen,
-                ImGuiWindowFlags.NoScrollbar |
-                ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.DockNodeHost);
+            var dockspaceFlags = ImGuiDockNodeFlags.PassthruCentralNode /*| ImGuiDockNodeFlags.AutoHideTabBar*/;
+
+            var viewport = ImGui.GetMainViewport();
+
+            // Set the parent window's position, size, and viewport to match that of the main viewport. This is so the parent window
+            // completely covers the main viewport, giving it a "full-screen" feel.
+            ImGui.SetNextWindowPos(viewport.WorkPos);
+            ImGui.SetNextWindowSize(viewport.WorkSize);
+            ImGui.SetNextWindowViewport(viewport.ID);
+
+            // Set the parent window's styles to match that of the main viewport:
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f); // No corner rounding on the window
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f); // No border around the window
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(0.0f, 0.0f));
+
+            // Create Dockspace
+            ImGui.Begin("DockSpace", ref _dockspaceOpen, wndDockspaceFlags);
+
+            var dockspace_id = ImGui.GetID("DockSpace");
+            ImGui.DockSpace(dockspace_id, new System.Numerics.Vector2(0.0f, 0.0f), dockspaceFlags);
+
+            ImGui.PopStyleVar();
+            ImGui.PopStyleVar();
+            ImGui.PopStyleVar();
+
+            // Titlebar
+            if (ImGui.BeginMainMenuBar())
+            {
+                if (ImGui.BeginMenu("Menu"))
+                {
+                    if (ImGui.MenuItem("Open"))
+                    {
+
+                    }
+                    if (ImGui.MenuItem("Exit"))
+                    {
+                        Environment.Exit(0);
+                    }
+                    ImGui.EndMenu();
+                }
+            }
+            ImGui.EndMainMenuBar();
+
+
+            ImGui.Begin("Viewport",
+                 ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse);
 
             var parentMin = ImGui.GetWindowContentRegionMin();
             var parentMax = ImGui.GetWindowContentRegionMax();
@@ -421,24 +536,87 @@ namespace Fusee.Examples.Simple.Desktop
 
             GL.BindTexture(TextureTarget.Texture2D, _renderTexture);
             ImGui.Image(new IntPtr(_renderTexture), _size,
-                new System.Numerics.Vector2(0, 1),
-                new System.Numerics.Vector2(1, 0));
+                new Vector2(0, 1),
+                new Vector2(1, 0));
+
+            app.RC.ViewportXStart = (int)_pos.X;
+            app.RC.ViewportYStart = (int)((_windowHeight - _size.Y) - _pos.Y);
 
             ImGui.CaptureMouseFromApp();
 
             ImGui.EndChild();
+            ImGui.End();
+
+
+            ImGui.Begin("Settings");
+            ImGui.Text("Fusee PointCloud Rendering");
+            ImGui.Text($"Application average {1000.0f / ImGui.GetIO().Framerate:0.00} ms/frame ({ImGui.GetIO().Framerate:0} FPS)");
+            ImGui.NewLine();
+            ImGui.Button("Open File");
+            ImGui.SameLine();
+            ImGui.Button("Reset Camera");
+            ImGui.SameLine();
+            ImGui.Button("Show Octree");
+
+            ImGui.NewLine();
+            ImGui.Spacing();
+            ImGui.BeginGroup();
+            ImGui.Text("Visibility");
+            ImGui.InputFloat("Threshold", ref _threshold);
+            ImGui.SliderFloat("Min. Projection Size Modifier", ref _minProj, 0f, 1f);
+            ImGui.EndGroup();
+
+
+            ImGui.NewLine();
+            ImGui.Spacing();
+            ImGui.BeginGroup();
+            ImGui.Text("Lighting");
+            ImGui.SliderInt("EDL Neighbour Px", ref _edlNeighbour, 0, 5);
+            ImGui.SliderFloat("EDL Strength", ref _edlStrength, -1f, 5f);
+            ImGui.EndGroup();
+
+            ImGui.NewLine();
+            ImGui.Spacing();
+            ImGui.BeginGroup();
+            ImGui.Text("Point Shape");
+            ImGui.Combo("PointShape", ref _currentPtShape, new string[] { "Paraboloid", "Box", "Square" }, 3);
+            ImGui.EndGroup();
+
+            ImGui.NewLine();
+            ImGui.Spacing();
+            ImGui.BeginGroup();
+            ImGui.Text("Point Size Method");
+            ImGui.Combo("Point Size Method", ref _currentPtSizeMethod, new string[] { "FixedPixelSize", "Adaptive", "Third" }, 3);
+            ImGui.SliderFloat("Point Size", ref _ptSize, 0.2f, 20f);
+            ImGui.EndGroup();
+
+            ImGui.NewLine();
+            ImGui.Spacing();
+            ImGui.BeginGroup();
+            ImGui.Text("Color Mode");
+            if (ImGui.ColorButton("Toggle Color Picker", _ptColor))
+            {
+                _colorPickerOpen = !_colorPickerOpen;
+
+            }
+            if (_colorPickerOpen)
+            {
+                ImGui.Begin("Color Picker", ref _colorPickerOpen, ImGuiWindowFlags.AlwaysAutoResize);
+                ImGui.ColorPicker4("Color", ref _ptColor);
+                ImGui.End();
+            }
+
+
+
+            ImGui.EndGroup();
+
+
 
             ImGui.End();
 
-            ImGui.ShowDemoWindow();
 
-
-            if (_frameBegun)
-            {
-                _frameBegun = false;
-                ImGui.Render();
-                RenderImDrawData(ImGui.GetDrawData());
-            }
+            ImGui.Render();
+            RenderImDrawData(ImGui.GetDrawData());
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             app.Present();
@@ -446,7 +624,18 @@ namespace Fusee.Examples.Simple.Desktop
             Input.Instance.PostRender();
         }
 
-        private unsafe static void RenderImDrawData(ImDrawDataPtr draw_data)
+        private static float _threshold;
+        private static int _edlNeighbour;
+        private static float _edlStrength;
+        private static int _currentPtShape;
+        private static int _currentPtSizeMethod;
+        private static float _ptSize;
+        private static float _minProj;
+        private static Vector4 _ptColor;
+        private static bool _colorPickerOpen = false;
+
+
+        private static unsafe void RenderImDrawData(ImDrawDataPtr draw_data)
         {
             uint vertexOffsetInVertices = 0;
             uint indexOffsetInElements = 0;
@@ -502,7 +691,7 @@ namespace Fusee.Examples.Simple.Desktop
 
             // Setup orthographic projection matrix into our constant buffer
             ImGuiIOPtr io = ImGui.GetIO();
-            Matrix4 mvp = Matrix4.CreateOrthographicOffCenter(
+            OpenTK.Mathematics.Matrix4 mvp = OpenTK.Mathematics.Matrix4.CreateOrthographicOffCenter(
                0.0f,
                io.DisplaySize.X,
                io.DisplaySize.Y,
@@ -561,7 +750,6 @@ namespace Fusee.Examples.Simple.Desktop
             GL.Enable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthTest);
         }
-
 
         #endregion
 

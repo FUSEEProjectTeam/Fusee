@@ -47,28 +47,6 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
 
-            _rocketScene = new SceneContainer
-            {
-                Children = new System.Collections.Generic.List<SceneNode>
-                {
-                    new SceneNode
-                    {
-                        Components = new System.Collections.Generic.List<SceneComponent>
-                        {
-                            new Transform(),
-                            MakeEffect.FromDiffuseSpecular(float4.One),
-                            new Cube(),
-                            new Transform
-                            {
-                                Translation = new float3(-0.5f, -0.5f ,0)
-                            },
-                            MakeEffect.FromDiffuseSpecular(new float4(1,0,1,0.5f)),
-                            new Cube()
-                        }
-                    }
-                }
-            };
-
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -97,9 +75,13 @@ namespace Fusee.Examples.Simple.Core
 
             if (Mouse.LeftButton)
             {
+                // only if Mouse is inside viewport
+                if (Mouse.Position.x > RC.ViewportXStart + RC.ViewportWidth || Mouse.Position.x < RC.ViewportXStart ||
+                    Mouse.Position.y > RC.ViewportHeight - RC.ViewportYStart || Mouse.Position.y < RC.ViewportYStart)
+                    return;
+
                 _keys = false;
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
-                Console.WriteLine(Mouse.XVel);
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
             else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
@@ -128,7 +110,6 @@ namespace Fusee.Examples.Simple.Core
             _angleVert += _angleVelVert;
         }
 
-        bool open = true;
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -138,7 +119,7 @@ namespace Fusee.Examples.Simple.Core
             var mtxCam = float4x4.LookAt(0, 2, -10, 0, 2, 0, 0, 1, 0);
 
             var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)RC.ViewportWidth / RC.ViewportWidth, ZNear, ZFar);
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)RC.ViewportWidth / RC.ViewportHeight, ZNear, ZFar);
             var orthographic = float4x4.CreateOrthographic(RC.ViewportWidth, RC.ViewportHeight, ZNear, ZFar);
 
             // Render the scene loaded in Init()
@@ -149,12 +130,12 @@ namespace Fusee.Examples.Simple.Core
             //Constantly check for interactive objects.
             RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, RC.ViewportWidth, RC.ViewportHeight);
-            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), RC.ViewportWidth, RC.ViewportHeight);
-            }
+            //if (!Mouse.Desc.Contains("Android"))
+            //    _sih.CheckForInteractiveObjects(RC, Mouse.Position, RC.ViewportWidth, RC.ViewportHeight);
+            //if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            //{
+            //    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), RC.ViewportWidth, RC.ViewportHeight);
+            //}
 
             _guiRenderer.Render(RC);
         }

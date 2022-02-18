@@ -421,5 +421,10 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             OocLoader.DeleteWireframeOctants(_scene);
             IsSceneLoaded = true;
         }
+
+        public void InitApp()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
