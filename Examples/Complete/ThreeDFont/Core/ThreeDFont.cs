@@ -206,9 +206,9 @@ namespace Fusee.Examples.ThreeDFont.Core
             float2 speed = float2.Zero;
             if (Mouse.LeftButton)
                 speed = Mouse.Velocity;
-            else if(Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
                 speed = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-            
+
             _alpha += speed.x * 0.0001f;
             _beta += speed.y * 0.0001f;
 

@@ -53,7 +53,7 @@ namespace Fusee.Engine.Core.Scene
         public SceneNode()
         {
             Components = new List<SceneComponent>();
-            Children = new ChildList();            
+            Children = new ChildList();
         }
 
         /// <summary>

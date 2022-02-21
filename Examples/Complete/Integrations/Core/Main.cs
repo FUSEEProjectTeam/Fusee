@@ -111,7 +111,7 @@ namespace Fusee.Examples.Integrations.Core
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
-            
+
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             _camTransform.RotationMatrix = mtxRot;
 

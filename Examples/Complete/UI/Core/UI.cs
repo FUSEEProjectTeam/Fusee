@@ -67,7 +67,7 @@ namespace Fusee.Examples.UI.Core
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
         private float _canvasHeight = 9;
-        
+
         private Transform _camPivot;
 
         private readonly float4 _canvasDefaultColor = (float4)ColorUint.Red;

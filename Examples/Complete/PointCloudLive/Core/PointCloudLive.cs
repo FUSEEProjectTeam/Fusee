@@ -43,7 +43,7 @@ namespace Fusee.Examples.PointCloudLive.Core
         public override void Init()
         {
             VSync = false;
-            
+
             _node = new SceneNode();
 
             _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32_Accessor(), PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes, true));

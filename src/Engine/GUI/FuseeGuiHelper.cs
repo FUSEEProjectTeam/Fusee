@@ -114,7 +114,7 @@ namespace Fusee.Engine.Gui
                                 Active = useCamera,
                                 ClearColor = false
                             }
-                        } 
+                        }
                     },
                     canvas
                 }

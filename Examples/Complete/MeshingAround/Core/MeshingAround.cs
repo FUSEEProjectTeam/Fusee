@@ -122,9 +122,9 @@ namespace Fusee.Examples.MeshingAround.Core
                 }
             };
             ///////////////////////////////////////////////////////////
-            SceneNode sceneNodeCube = new() 
-            { 
-                Components = new List<SceneComponent>() 
+            SceneNode sceneNodeCube = new()
+            {
+                Components = new List<SceneComponent>()
                 {
                     new Transform()
                     {
@@ -138,12 +138,12 @@ namespace Fusee.Examples.MeshingAround.Core
                         Triangles = cube.Triangles,
                         Normals = cube.Normals,
                     }
-                    
+
                 }
             };
             //////////////////////////////////////////////////////////////////
-            SceneNode sceneNodeCTri = new() 
-            { 
+            SceneNode sceneNodeCTri = new()
+            {
                 Components = new List<SceneComponent>()
                 {
                     new Transform()
@@ -168,9 +168,9 @@ namespace Fusee.Examples.MeshingAround.Core
 
             _camPivotTransform = new Transform();
 
-            var sc = new SceneContainer 
-            { 
-                Children = new List<SceneNode> 
+            var sc = new SceneContainer
+            {
+                Children = new List<SceneNode>
                 {
                     new SceneNode()
                     {
@@ -197,8 +197,8 @@ namespace Fusee.Examples.MeshingAround.Core
                             }
                         }
                     },
-                    parentNode 
-                } 
+                    parentNode
+                }
             };
 
             _renderer = new SceneRendererForward(sc);

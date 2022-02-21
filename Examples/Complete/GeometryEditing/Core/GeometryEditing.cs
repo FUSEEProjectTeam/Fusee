@@ -113,7 +113,7 @@ namespace Fusee.Examples.GeometryEditing.Core
                     _mainCam
                 }
             };
-            
+
             _parentNode.Children.Add(camNode);
 
             _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };
