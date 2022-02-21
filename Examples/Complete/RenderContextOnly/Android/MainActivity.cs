@@ -73,7 +73,7 @@ namespace Fusee.Examples.RenderContextOnly.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.Simple();
+                var app = new Simple.Core.Simple();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 var rci = new RenderCanvasImp(ApplicationContext, null, delegate
@@ -86,8 +86,8 @@ namespace Fusee.Examples.RenderContextOnly.Android
 
                 SetContentView(rci.View);
 
-                Engine.Core.Input.AddDriverImp(
-                    new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
+                Input.AddDriverImp(
+                    new RenderCanvasInputDriverImp(app.CanvasImplementor));
                 // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvasImplementor));
                 // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
             }
