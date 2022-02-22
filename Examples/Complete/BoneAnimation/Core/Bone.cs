@@ -304,6 +304,7 @@ namespace Fusee.Examples.BoneAnimation.Core
             _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = float4x4.CreateOrthographic(Width, Height, 0.1f, 1000);
             _guiRenderer.Render(RC);
 

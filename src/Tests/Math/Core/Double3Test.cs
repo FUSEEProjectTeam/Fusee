@@ -84,6 +84,69 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(new double3(1, 2, 3), actual);
         }
 
+        [Fact]
+        public void Constructor_FromFloat3()
+        {
+            var d3 = new float3(1, 2, 3);
+
+            var actual = new double3(d3);
+
+            Assert.Equal(new double3(1, 2, 3), actual);
+        }
+
+        #endregion
+
+        #region Instance
+
+        [Fact]
+        public void Length_Is3()
+        {
+            var vec = new double3(1, 2, 2);
+
+            var actual = vec.Length;
+
+            Assert.Equal(3, actual);
+        }
+
+        [Fact]
+        public void LengthSquared_Is3()
+        {
+            var vec = new double3(1, 1, 1);
+
+            var actual = vec.LengthSquared;
+
+            Assert.Equal(3, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetNormalize))]
+        public void Normalize_Instance(double3 vec, double3 expected)
+        {
+            var actual = vec.Normalize();
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetNormalize))]
+        public void NormalizeFast_Instance(double3 vec, double3 expected)
+        {
+            var actual = vec.NormalizeFast();
+
+            Assert.Equal(expected.x, actual.x, 7);
+            Assert.Equal(expected.y, actual.y, 7);
+        }
+
+        [Fact]
+        public void ToArray_IsArray()
+        {
+            var vec = new double3(1, 2, 3);
+
+            var actual = vec.ToArray();
+
+            Assert.Equal(new double[] { 1, 2, 3 }, actual);
+        }
+
         #endregion
 
         #region this
@@ -128,7 +191,7 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(ThisException))]
         public void Invalid_SetWithIdx_Exception(int idx, string expected)
         {
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var d3 = new double3(0, 0, 0); d3[idx] = 10; });
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var f3 = new double3(0, 0, 0); f3[idx] = 10; });
 
             Assert.Equal(expected, actual.ParamName);
         }
@@ -137,62 +200,6 @@ namespace Fusee.Tests.Math.Core
         {
             yield return new object[] { 7, "Index 7 not eligible for a double3 type" };
             yield return new object[] { 6, "Index 6 not eligible for a double3 type" };
-        }
-
-        #endregion
-
-        #region Instance
-
-        [Fact]
-        public void Length_Is3()
-        {
-            var vec = new double3(1, 2, 2);
-
-            var actual = vec.Length;
-
-            Assert.Equal(3, actual);
-        }
-
-        [Fact]
-        public void LengthSquared_Is3()
-        {
-            var vec = new double3(1, 1, 1);
-
-            var actual = vec.LengthSquared;
-
-            Assert.Equal(3, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetNormalize))]
-        public void Normalize_Instance(double3 vec, double3 expected)
-        {
-            var actual = vec.Normalize();
-
-            Assert.Equal(expected.x, actual.x, 14);
-            Assert.Equal(expected.y, actual.y, 14);
-            Assert.Equal(expected.z, actual.z, 14);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetNormalize))]
-        public void NormalizeFast_Instance(double3 vec, double3 expected)
-        {
-            var actual = vec.NormalizeFast();
-
-            Assert.Equal(expected.x, actual.x, 7);
-            Assert.Equal(expected.y, actual.y, 7);
-            Assert.Equal(expected.z, actual.z, 7);
-        }
-
-        [Fact]
-        public void ToArray_IsArray()
-        {
-            var vec = new double3(1, 2, 3);
-
-            var actual = vec.ToArray();
-
-            Assert.Equal(new double[] { 1, 2, 3 }, actual);
         }
 
         #endregion
@@ -211,10 +218,28 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Theory]
+        [MemberData(nameof(GetAddition))]
+        public void Add_VectorScalar_Static(double3 left, double3 right, double3 expected)
+        {
+            var actual = double3.Add(left, right.x);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
         [MemberData(nameof(GetSubtraction))]
         public void Subtract_TwoVectors_Static(double3 left, double3 right, double3 expected)
         {
             var actual = double3.Subtract(left, right);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSubtraction))]
+        public void Subtract_VectorScalar_Static(double3 left, double3 right, double3 expected)
+        {
+            var actual = double3.Subtract(left, right.x);
 
             Assert.Equal(expected, actual);
         }
@@ -322,9 +347,7 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = double3.Normalize(vec);
 
-            Assert.Equal(expected.x, actual.x, 14);
-            Assert.Equal(expected.y, actual.y, 14);
-            Assert.Equal(expected.z, actual.z, 14);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -335,7 +358,6 @@ namespace Fusee.Tests.Math.Core
 
             Assert.Equal(expected.x, actual.x, 7);
             Assert.Equal(expected.y, actual.y, 7);
-            Assert.Equal(expected.z, actual.z, 7);
         }
 
         #endregion
@@ -381,6 +403,15 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [MemberData(nameof(GetLerp3))]
+        public void Lerp_TestLerp3(double3 left, double3 right, double3 blend, double3 expected)
+        {
+            var actual = double3.Lerp(left, right, blend);
+
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
 
         #region Barycentric
@@ -405,6 +436,20 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(vExpected, vActual);
         }
 
+        [Theory]
+        [MemberData(nameof(GetBarycentric))]
+        public void PointInTriangle_CornersInTriangle(double3 a, double3 b, double3 c, double _1, double _2, double3 point)
+        {
+            Assert.True(double3.PointInTriangle(a, b, c, point, out var _, out var _));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetPointInTriangle_Outside))]
+        public void PointInTriangle_IsNotIntriangle(double3 a, double3 b, double3 c, double3 point)
+        {
+            Assert.False(double3.PointInTriangle(a, b, c, point, out var _, out var _));
+        }
+
         #endregion
 
         #region CalculateAngle
@@ -417,7 +462,7 @@ namespace Fusee.Tests.Math.Core
 
             var actual = double3.CalculateAngle(x, y);
 
-            Assert.Equal(M.DegreesToRadians(90), actual, 6);
+            Assert.Equal(M.DegreesToRadiansD(90), actual);
         }
 
         #endregion
@@ -430,9 +475,7 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = double3.Rotate(euler, vec, true);
 
-            Assert.Equal(expected.x, actual.x, 14);
-            Assert.Equal(expected.y, actual.y, 14);
-            Assert.Equal(expected.z, actual.z, 14);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -448,26 +491,91 @@ namespace Fusee.Tests.Math.Core
 
         #endregion
 
+        [Theory]
+        [MemberData(nameof(GetStep))]
+        public void Step(double3 edge, double3 val, double3 expected)
+        {
+            Assert.Equal(expected, double3.Step(edge, val));
+        }
+
         #endregion
 
         #region Swizzle
 
         [Fact]
-        public void Swizzle_double2_Get()
+        public void Swizzle_Float2_Get()
         {
             var actual = new double3(1, 2, 3);
 
             Assert.Equal(new double2(1, 2), actual.xy);
+            Assert.Equal(new double2(1, 3), actual.xz);
+            Assert.Equal(new double2(2, 1), actual.yx);
+            Assert.Equal(new double2(2, 3), actual.yz);
+            Assert.Equal(new double2(3, 1), actual.zx);
+            Assert.Equal(new double2(3, 2), actual.zy);
         }
 
         [Fact]
-        public void Swizzle_double2_Set()
+        public void Swizzle_Float2_Set()
         {
             var actual = new double3
             {
                 xy = new double2(1, 2)
             };
             Assert.Equal(new double3(1, 2, 0), actual);
+
+            actual.xz = new double2(3, 1);
+            Assert.Equal(new double3(3, 2, 1), actual);
+
+            actual.yx = new double2(3, 2);
+            Assert.Equal(new double3(2, 3, 1), actual);
+
+            actual.yz = new double2(1, 3);
+            Assert.Equal(new double3(2, 1, 3), actual);
+
+            actual.zx = new double2(2, 3);
+            Assert.Equal(new double3(3, 1, 2), actual);
+
+            actual.zy = new double2(1, 2);
+            Assert.Equal(new double3(3, 2, 1), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Double3_Get()
+        {
+            var actual = new double3(1, 2, 3);
+
+            Assert.Equal(new double3(1, 2, 3), actual.xyz);
+            Assert.Equal(new double3(1, 3, 2), actual.xzy);
+            Assert.Equal(new double3(2, 3, 1), actual.yzx);
+            Assert.Equal(new double3(2, 1, 3), actual.yxz);
+            Assert.Equal(new double3(3, 1, 2), actual.zxy);
+            Assert.Equal(new double3(3, 2, 1), actual.zyx);
+        }
+
+        [Fact]
+        public void Swizzle_Double3_Set()
+        {
+            var actual = new double3
+            {
+                xyz = new double3(1, 2, 3)
+            };
+            Assert.Equal(new double3(1, 2, 3), actual);
+
+            actual.xzy = new double3(1, 2, 3);
+            Assert.Equal(new double3(1, 3, 2), actual);
+
+            actual.yzx = new double3(1, 2, 3);
+            Assert.Equal(new double3(3, 1, 2), actual);
+
+            actual.yxz = new double3(1, 2, 3);
+            Assert.Equal(new double3(2, 1, 3), actual);
+
+            actual.zxy = new double3(1, 2, 3);
+            Assert.Equal(new double3(2, 3, 1), actual);
+
+            actual.zyx = new double3(1, 2, 3);
+            Assert.Equal(new double3(3, 2, 1), actual);
         }
 
         #endregion
@@ -484,10 +592,28 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Theory]
+        [MemberData(nameof(GetAddition))]
+        public void Add_VectorScalar_Operator(double3 left, double3 right, double3 expected)
+        {
+            var actual = left + right.x;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
         [MemberData(nameof(GetSubtraction))]
         public void Subtract_TwoVectors_Operator(double3 left, double3 right, double3 expected)
         {
             var actual = left - right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSubtraction))]
+        public void Subtract_VectorScalar_Operator(double3 left, double3 right, double3 expected)
+        {
+            var actual = left - right.x;
 
             Assert.Equal(expected, actual);
         }
@@ -574,6 +700,16 @@ namespace Fusee.Tests.Math.Core
             var b = new double3(0, 0, 0);
 
             Assert.True(a != b);
+        }
+
+        [Fact]
+        public void Cast_FromFloat3()
+        {
+            var vec = new float3(1, 2, 3);
+
+            var actual = (double3)vec;
+
+            Assert.Equal(new double3(1, 2, 3), actual);
         }
 
         #endregion
@@ -711,7 +847,7 @@ namespace Fusee.Tests.Math.Core
 
             yield return new object[] { new double3(2, 2, 2), zero, one, one };
             yield return new object[] { new double3(-1, -1, -1), zero, one, zero };
-            yield return new object[] { new double3(0.5f, 0.5f, 0.5f), zero, one, new double3(0.5f, 0.5f, 0.5f) };
+            yield return new object[] { new double3(0.5, 0.5, 0.5), zero, one, new double3(0.5, 0.5, 0.5) };
         }
 
         public static IEnumerable<object[]> GetLerp()
@@ -719,9 +855,19 @@ namespace Fusee.Tests.Math.Core
             var one = new double3(1, 1, 1);
             var zero = new double3(0, 0, 0);
 
-            yield return new object[] { zero, one, 0.5f, new double3(0.5f, 0.5f, 0.5f) };
+            yield return new object[] { zero, one, 0.5, new double3(0.5, 0.5, 0.5) };
             yield return new object[] { zero, one, 0, zero };
             yield return new object[] { zero, one, 1, one };
+        }
+
+        public static IEnumerable<object[]> GetLerp3()
+        {
+            var one = new double3(1, 1, 1);
+            var zero = new double3(0, 0, 0);
+
+            yield return new object[] { zero, one, new double3(0.5, 0.5, 0.5), new double3(0.5, 0.5, 0.5) };
+            yield return new object[] { zero, one, double3.Zero, zero };
+            yield return new object[] { zero, one, double3.One, one };
         }
 
         public static IEnumerable<object[]> GetBarycentric()
@@ -733,6 +879,17 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { x, y, z, 0, 0, z };
             yield return new object[] { x, y, z, 1, 0, x };
             yield return new object[] { x, y, z, 0, 1, y };
+        }
+
+        public static IEnumerable<object[]> GetPointInTriangle_Outside()
+        {
+            var x = new double3(1, 0, 0);
+            var y = new double3(0, 1, 0);
+            var z = new double3(0, 0, 1);
+
+            yield return new object[] { x, y, z, new double3(1, 1, 0) };
+            yield return new object[] { x, y, z, new double3(0, 1, 1) };
+            yield return new object[] { x, y, z, new double3(1, 0, 1) };
         }
 
         public static IEnumerable<object[]> GetEuler()
@@ -761,6 +918,14 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { zRot, x, y };
         }
 
+        public static IEnumerable<object[]> GetStep()
+        {
+            var x = new double3(2.222, 2.222, 2.222);
+            var y = new double3(1.111, 1.111, 1.111);
+            yield return new object[] { x, y, double3.Zero };
+            yield return new object[] { y, x, double3.One };
+        }
+
         #endregion
 
         #region ToString/Parse
@@ -775,60 +940,60 @@ namespace Fusee.Tests.Math.Core
         public void ToString_InvariantCulture()
         {
             string s = "(1.5, 1.5, 1.5)";
-            double3 d = double3.One * 1.5f;
+            double3 f = double3.One * 1.5;
 
-            Assert.Equal(s, d.ToString(CultureInfo.InvariantCulture));
+            Assert.Equal(s, f.ToString(CultureInfo.InvariantCulture));
         }
 
         [Fact]
         public void ToString_CultureDE()
         {
             string s = "(1,5; 1,5; 1,5)";
-            double3 d = double3.One * 1.5d;
+            double3 f = double3.One * 1.5;
 
-            Assert.Equal(s, d.ToString(new CultureInfo("de-DE")));
+            Assert.Equal(s, f.ToString(new CultureInfo("de-DE")));
         }
 
         [Fact]
         public void Parse_InvariantCulture()
         {
             string s = "(1.5, 1.5, 1.5)";
-            double3 d = double3.One * 1.5d;
+            double3 f = double3.One * 1.5;
 
-            Assert.Equal(d, double3.Parse(s, CultureInfo.InvariantCulture));
+            Assert.Equal(f, double3.Parse(s, CultureInfo.InvariantCulture));
         }
 
         [Fact]
         public void Parse_CultureDE()
         {
             string s = "(1,5; 1,5; 1,5)";
-            double3 d = double3.One * 1.5d;
+            double3 f = double3.One * 1.5;
 
-            Assert.Equal(d, double3.Parse(s, new CultureInfo("de-DE")));
+            Assert.Equal(f, double3.Parse(s, new CultureInfo("de-DE")));
         }
 
         [Fact]
         public void Parse_ToString_NoCulture()
         {
-            double3 d = double3.One * 1.5d;
+            double3 f = double3.One * 1.5;
 
-            Assert.Equal(d, double3.Parse(d.ToString()));
+            Assert.Equal(f, double3.Parse(f.ToString()));
         }
 
         [Fact]
         public void Parse_ToString_InvariantCulture()
         {
-            double3 d = double3.One * 1.5d;
+            double3 f = double3.One * 1.5;
 
-            Assert.Equal(d, double3.Parse(d.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
+            Assert.Equal(f, double3.Parse(f.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
         }
 
         [Fact]
         public void Parse_ToString_CultureDE()
         {
-            double3 d = double3.One * 1.5d;
+            double3 f = double3.One * 1.5;
 
-            Assert.Equal(d, double3.Parse(d.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
+            Assert.Equal(f, double3.Parse(f.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
         }
 
         [Fact]

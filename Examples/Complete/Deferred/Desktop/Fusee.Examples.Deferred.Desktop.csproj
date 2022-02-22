@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Examples\Deferred\Desktop\</OutputPath>
-
+		<DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
 		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 

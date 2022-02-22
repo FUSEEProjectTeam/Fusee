@@ -107,7 +107,7 @@ namespace Fusee.Math.Core
         /// The length.
         /// </value>
         /// <see cref="LengthSquared" />
-        public float Length => (float)System.Math.Sqrt(LengthSquared);
+        public float Length => MathF.Sqrt(LengthSquared);
 
         #endregion public float Length
 
@@ -612,6 +612,22 @@ namespace Fusee.Math.Core
 
         #endregion Barycentric
 
+        #region Rectangle
+
+        /// <summary>
+        /// Checks if the given point lies within the given rectangle using screen coordinates (meaning top is smaller than bottom).
+        /// </summary>
+        /// <param name="topLeft">The top left point of the rectangle.</param>
+        /// <param name="bottomRight">The bottom right point of the triangle.</param>
+        /// <param name="point">The point to check.</param>
+        /// <returns>True if the point lies withing the rectangle. False if the point lies outside the rectangle.</returns>
+        public static bool PointInRectangle(float2 topLeft, float2 bottomRight, float2 point)
+        {
+            return (topLeft.x <= point.x && point.x <= bottomRight.x) && (topLeft.y <= point.y && point.y <= bottomRight.y);
+        }
+
+        #endregion Rectangle
+
         #endregion Static
 
         #region Swizzle
@@ -900,8 +916,8 @@ namespace Fusee.Math.Core
         public bool Equals(float2 other)
         {
             return
-                x == other.x &&
-                y == other.y;
+                MathF.Abs(x - other.x) < M.EpsilonFloat &&
+                MathF.Abs(y - other.y) < M.EpsilonFloat;
         }
 
         #endregion IEquatable<float2> Members
