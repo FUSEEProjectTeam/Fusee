@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Fusee.Tests.Math.Core
 {
-    public class QuaternionTest
+    public class QuaternionFTest
     {
         #region Fields
 

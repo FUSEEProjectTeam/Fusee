@@ -568,7 +568,7 @@ namespace Fusee.Math.Core
         /// </remarks>
         public static QuaternionD FromEuler(double3 e, bool inDegrees = false)
         {
-            return FromEuler(e, inDegrees);
+            return FromEuler(e.x, e.y, e.z, inDegrees);
         }
 
         /// <summary>
