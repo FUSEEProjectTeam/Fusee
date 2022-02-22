@@ -205,7 +205,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public RenderCanvasImp(Icon appIcon, bool isMultithreaded = false)
         {
             //TODO: Select correct monitor
-            Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
+            MonitorInfo mon = Monitors.GetMonitors()[0];
 
             int width = 1280;
             int height = 720;
@@ -285,7 +285,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 //TODO: Select correct monitor
-                Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
+                MonitorInfo mon = Monitors.GetMonitors()[0];
 
                 var oneScreenWidth = mon.HorizontalResolution;
                 var oneScreenHeight = mon.VerticalResolution;
@@ -327,7 +327,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="borderHidden">Show the window border or not.</param>
         public void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false)
         {
-            Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
+            MonitorInfo mon = Monitors.GetMonitors()[0];
 
             BaseWidth = width;
             BaseHeight = height;
