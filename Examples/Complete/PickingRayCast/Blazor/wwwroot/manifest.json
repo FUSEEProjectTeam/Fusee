@@ -1,6 +1,6 @@
 {
-  "name": "Fusee.Examples.Picking.Blazor",
-  "short_name": "Fusee.Examples.Picking.Blazor",
+  "name": "Fusee.Examples.PickingRayCast.Blazor",
+  "short_name": "Fusee.Examples.PickingRayCast.Blazor",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

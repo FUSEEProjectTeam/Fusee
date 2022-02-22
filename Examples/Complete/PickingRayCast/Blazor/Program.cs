@@ -10,7 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.Examples.Simple.Blazor
+namespace Fusee.Examples.PickingRayCast.Blazor
 {
     public class Program
     {
