@@ -341,7 +341,7 @@ namespace Fusee.Engine.Core
                                 _ => throw new System.InvalidOperationException(
     "Unknown lerp type: animTrackContainer.LerpType: " +
     (int)animChnannelContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
-                                            // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
+                                         // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
                             };
                             var channel = new Channel<float3>(lerpFunc);
                             var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
@@ -370,7 +370,7 @@ namespace Fusee.Engine.Core
                 }
                 i++;
             }
-            _currentNode.AddComponent(anim);  
+            _currentNode.AddComponent(anim);
         }
         ///<summary>
         /// Converts the XForm component.
