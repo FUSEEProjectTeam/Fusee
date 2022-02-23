@@ -388,7 +388,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             App.UseWPF = true;
 
             //Inject Fusee.Engine InjectMe dependencies(hard coded)
-            App.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(true);
+            App.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp();
             App.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(App.CanvasImplementor);
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(App.CanvasImplementor));
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(App.CanvasImplementor));

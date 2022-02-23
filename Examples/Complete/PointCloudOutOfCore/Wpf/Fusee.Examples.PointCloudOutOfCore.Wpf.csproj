@@ -33,7 +33,6 @@
 		<ProjectReference Include="..\Core\Fusee.Examples.PointCloudOutOfCore.Core.csproj" />
 
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 	</ItemGroup>
 
 </Project>

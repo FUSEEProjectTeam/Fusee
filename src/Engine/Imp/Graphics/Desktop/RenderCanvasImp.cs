@@ -4,12 +4,15 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using Image = OpenTK.Windowing.Common.Input.Image;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
-using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -229,10 +232,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
 
-            // convert icon to OpenTKImage
-            if (icon != null)
-                _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, icon.PixelData) });
-
             WindowHandle = new WindowHandle()
             {
                 Handle = _gameWindow.Context.WindowPtr
@@ -241,6 +240,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _gameWindow.CenterWindow();
             if (_gameWindow.IsMultiThreaded)
                 _gameWindow.Context.MakeNoneCurrent();
+
+            // convert icon to OpenTKImage
+            if (icon != null)
+            {
+                // convert Bgra to Rgba for OpenTK.WindowIcon
+                var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(icon.PixelData, icon.Width, icon.Height);
+                var bgra = pxData.CloneAs<Rgba32>();
+                bgra.Mutate(x => x.AutoOrient());
+                bgra.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+
+                if (!bgra.TryGetSinglePixelSpan(out var res))
+                {
+                    Diagnostics.Warn("Couldn't convert icon image to Rgba32!");
+                    return;
+                }
+                var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
+                _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, resBytes.ToArray()) });
+            }
         }
 
         /// <summary>
@@ -421,18 +438,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="width">The width of the window, and therefore image to render.</param>
         /// <param name="height">The height of the window, and therefore image to render.</param>
         /// <returns></returns>
-        public Bitmap ShootCurrentFrame(int width, int height)
+        public SixLabors.ImageSharp.Image ShootCurrentFrame(int width, int height)
         {
             DoInit();
             DoRender();
             DoResize(width, height);
 
-            var bmp = new Bitmap(this.Width, this.Height, SDPixelFormat.Format32bppArgb);
-            var mem = bmp.LockBits(new System.Drawing.Rectangle(0, 0, Width, Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, SDPixelFormat.Format32bppArgb);
-            GL.PixelStore(PixelStoreParameter.PackRowLength, mem.Stride / 4);
-            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, mem.Scan0);
-            bmp.UnlockBits(mem);
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            var bmp = new Image<Rgba32>(Width, Height);
+            bmp.TryGetSinglePixelSpan(out var mem);
+            GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
+            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, ref mem[0]);
+
+            bmp.Mutate(x => x.AutoOrient());
+            bmp.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+
             return bmp;
         }
 
@@ -622,7 +641,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
             }
 
-            GL.ClearColor(Color.MidnightBlue);
+            GL.ClearColor(25, 25, 112, byte.MaxValue);
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
