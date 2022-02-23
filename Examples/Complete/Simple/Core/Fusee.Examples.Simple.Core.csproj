@@ -6,9 +6,7 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\anim.fus" />
     <None Remove="Assets\RocketFus.fus" />
-    <None Remove="Assets\scaletesting.fus" />
   </ItemGroup>
 	<ItemGroup>
 		<Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />

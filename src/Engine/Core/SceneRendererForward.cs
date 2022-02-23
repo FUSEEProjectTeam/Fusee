@@ -10,7 +10,7 @@ using Fusee.Xirkit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Animation = Fusee.Xirkit.Animation;
+using AnimTimeline = Fusee.Xirkit.AnimTimeline;
 
 namespace Fusee.Engine.Core
 {

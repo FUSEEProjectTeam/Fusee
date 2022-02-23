@@ -8,7 +8,7 @@ namespace Fusee.Xirkit
     /// <summary>
     /// The Animation Class is capable of storing and handling different types of Channels.
     /// </summary>
-    public class Animation
+    public class AnimTimeline
     {
         /// <summary>
         /// The _channels List stores all Animation Channels that are derived from the ChannelBase Class.
@@ -52,7 +52,7 @@ namespace Fusee.Xirkit
         /// Initializes a new instance of the <see cref="Animation"/> class.
         /// </summary>
         /// <param name="animMode">The parameter sets the AnimationMode</param>
-        public Animation(int animMode = 0)
+        public void Animation(int animMode = 0)
         {
             _time = 0;
             _animMode = animMode;

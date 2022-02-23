@@ -301,7 +301,8 @@ namespace Fusee.Examples.BoneAnimation.Core
             //Diagnostics.Log(_scene.Children[0].GetComponent<TransformComponent>().Translation);
 
             // Tick any animations and Render the scene loaded in Init()
-            _sceneRenderer.Animate();
+            // Doesn't exist anymore. Is a Visit Method now.
+            //_sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
             RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);

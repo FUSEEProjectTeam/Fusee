@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Xirkit;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.Scene
 {
@@ -8,10 +9,9 @@ namespace Fusee.Engine.Core.Scene
     public class Animation : SceneComponent
     {
         /// <summary>
-        /// The animation tracks making up this animation data. 
-        /// Each animation track controls a single value.
+        /// The Xirkit Animation thats going to be filled in the FusSceneConverter class
         /// </summary>
-        public Xirkit.Animation animation = new Xirkit.Animation();
+        public AnimTimeline animation = new AnimTimeline();
 
     }
 }

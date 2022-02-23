@@ -1,0 +1,23 @@
+﻿@page "/"
+@using System.Runtime.CompilerServices
+@using System.Diagnostics.CodeAnalysis
+@inject IJSRuntime JS
+
+
+@code
+{
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {         
+            var program = new Fusee.Base.Imp.Blazor.BlazorProgramm();
+            var main = new Main();
+            program.Start(main, (IJSInProcessRuntime)JS);
+        }
+
+
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
