@@ -28,7 +28,7 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 
-		<PackageReference Include="OpenTK" Version="4.6.7" />
+		<PackageReference Include="OpenTK" Version="4.7.1" />
 		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 	</ItemGroup>
 
