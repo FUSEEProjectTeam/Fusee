@@ -4,6 +4,7 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -108,6 +109,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         public Cull CullMode { get; private set; }
 
+
+        protected SceneContainer _sc;
+
+        internal PrePassVisitor PrePassVisitor { get; private set; }
+
         #region State
         /// <summary>
         /// The raycaster state upon scene traversal.
@@ -139,11 +145,14 @@ namespace Fusee.Engine.Core
         /// The constructor to initialize a new SceneRayCaster.
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to use.</param>
-        /// <param name="cullMode"></param>
+        /// <param name="cullMode">The <see cref="Cull"/> mode to use.</param>
         public SceneRayCaster(SceneContainer scene, Cull cullMode = Cull.None)
             : base(scene.Children)
         {
             CullMode = cullMode;
+
+            PrePassVisitor = new PrePassVisitor();
+            _sc = scene;
         }
 
         /// <summary>
@@ -158,11 +167,59 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns a collection of objects that are hit by the ray and that can be iterated over.
         /// </summary>
-        /// <param name="ray"></param>
+        /// <param name="ray">The ray to test.</param>
         /// <returns>A collection of <see cref="RayCastResult"/> that can be iterated over.</returns>
         public IEnumerable<RayCastResult> RayCast(RayF ray)
         {
             Ray = ray;
+            return Viserate();
+        }
+
+        /// <summary>
+        /// Returns a collection of objects that are hit by the ray and that can be iterated over.
+        /// </summary>
+        /// <param name="rc"></param>
+        /// <param name="pickPos"></param>
+        /// <returns></returns>
+        public IEnumerable<RayCastResult> RayPick(RenderContext rc, float2 pickPos)
+        {
+            PrePassVisitor.PrePassTraverse(_sc);
+            var cams = PrePassVisitor.CameraPrepassResults;
+
+            float2 pickPosClip = float2.Zero;
+
+            if (cams.Count == 0)
+            {
+                pickPosClip = (pickPos * new float2(2.0f / rc.ViewportWidth, -2.0f / rc.ViewportHeight)) + new float2(-1, 1);
+                Ray = new RayF(pickPosClip, rc.View, rc.Projection);
+                return Viserate();
+            }
+
+            Tuple<SceneNode, CameraResult> pickCam = null;
+            Rectangle pickCamRect = new();
+
+            foreach (var cam in cams)
+            {
+                Rectangle camRect = new();
+                camRect.Left = (int)((cam.Item2.Camera.Viewport.x * rc.ViewportWidth) / 100);
+                camRect.Top = (int)((cam.Item2.Camera.Viewport.y * rc.ViewportHeight) / 100);
+                camRect.Right = (int)((cam.Item2.Camera.Viewport.z * rc.ViewportWidth) / 100) + camRect.Left;
+                camRect.Bottom = (int)((cam.Item2.Camera.Viewport.w * rc.ViewportHeight) / 100) + camRect.Top;
+
+
+                if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos)) continue;
+
+                if (pickCam == null || cam.Item2.Camera.Layer > pickCam.Item2.Camera.Layer)
+                {
+                    pickCam = cam;
+                    pickCamRect = camRect;
+                }
+            }
+
+            // Calculate pickPosClip
+            pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
+            Ray = new RayF(pickPosClip, float4x4.Invert(pickCam.Item1.GetTransform().Matrix), pickCam.Item2.Camera.GetProjectionMat(rc.ViewportWidth, rc.ViewportHeight, out _));
+
             return Viserate();
         }
 
@@ -187,7 +244,8 @@ namespace Fusee.Engine.Core
         {
             if (!mesh.Active) return;
 
-            if (!mesh.BoundingBox.IntersectRay(Ray)) return;
+            AABBf box = State.Model * mesh.BoundingBox;
+            if (!box.IntersectRay(Ray)) return;
 
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
