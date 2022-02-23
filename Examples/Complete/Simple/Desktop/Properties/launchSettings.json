@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Fusee.Examples.Simple.Desktop": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

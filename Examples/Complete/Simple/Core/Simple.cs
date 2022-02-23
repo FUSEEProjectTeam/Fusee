@@ -128,16 +128,16 @@ namespace Fusee.Examples.Simple.Core
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
-            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
-            RC.Projection = orthographic;
-            //if (!Mouse.Desc.Contains("Android"))
-            //    _sih.CheckForInteractiveObjects(RC, Mouse.Position, RC.ViewportWidth, RC.ViewportHeight);
-            //if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            //{
-            //    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), RC.ViewportWidth, RC.ViewportHeight);
-            //}
-
-            _guiRenderer.Render(RC);
+            //RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
+            //RC.Projection = orthographic;
+            ////if (!Mouse.Desc.Contains("Android"))
+            ////    _sih.CheckForInteractiveObjects(RC, Mouse.Position, RC.ViewportWidth, RC.ViewportHeight);
+            ////if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            ////{
+            ////    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), RC.ViewportWidth, RC.ViewportHeight);
+            ////}
+            //
+            //_guiRenderer.Render(RC);
         }
     }
 }

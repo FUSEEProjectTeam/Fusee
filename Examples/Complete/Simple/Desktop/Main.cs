@@ -20,6 +20,8 @@ using System.Numerics;
 using ImVec4 = System.Numerics.Vector4;
 using System.Drawing;
 using Font = Fusee.Base.Core.Font;
+using static System.Net.Mime.MediaTypeNames;
+
 
 namespace Fusee.Examples.Simple.Desktop
 {
@@ -144,10 +146,14 @@ namespace Fusee.Examples.Simple.Desktop
         private static int _viewportFB;
         private static int _renderTexture;
         private static int _depthRenderbuffer;
+        private static int _texture4ImGui;
+        private static int _intermediateFBO;
         private static Vector2 _min = new(0, 0);
         private static Vector2 _max = new(0, 0);
         private static Vector2 _size = new(0, 0);
         private static Vector2 _pos = new(0, 0);
+
+        private static bool _initialized = false;
 
         private static void InitImGUI(object sender, InitEventArgs args)
         {
@@ -156,11 +162,12 @@ namespace Fusee.Examples.Simple.Desktop
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
+
             var io = ImGui.GetIO();
             io.Fonts.AddFontFromFileTTF("Assets/Lato-Black.ttf", 14);
 
+
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
-            io.BackendFlags |= ImGuiBackendFlags.RendererHasViewports;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
 
@@ -236,7 +243,8 @@ namespace Fusee.Examples.Simple.Desktop
 
             SetPerFrameImGuiData(1f / 60f);
 
-            ImGui.NewFrame();
+            _initialized = true;
+
         }
 
         private static void CreateDeviceResources()
@@ -338,6 +346,11 @@ namespace Fusee.Examples.Simple.Desktop
             GL.CreateFramebuffers(1, out _viewportFB);
             GL.GenTextures(1, out _renderTexture);
             GL.GenRenderbuffers(1, out _depthRenderbuffer);
+
+            // Set up texture to blt to
+            _texture4ImGui = GL.GenTexture();
+            GL.CreateFramebuffers(1, out _intermediateFBO);
+
         }
 
         private static unsafe void RecreateFontDeviceTexture()
@@ -389,34 +402,43 @@ namespace Fusee.Examples.Simple.Desktop
 
         private static void UpdateImGUI(object sender, RenderEventArgs args)
         {
+            if (!app.IsLoaded) return;
+            if (!_initialized) return;
+
             SetPerFrameImGuiData(_renderCanvas.DeltaTimeUpdate);
             UpdateImGuiInput();
+
             ImGui.NewFrame();
         }
 
         private static void UpdateRenderTexture(int width, int height)
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _viewportFB);
-            // "Bind" the newly created texture : all future texture functions will modify this texture
-            GL.BindTexture(TextureTarget.Texture2D, _renderTexture);
-
-            // Give an empty image to OpenGL ( the last "0" )
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _intermediateFBO);
+            GL.BindTexture(TextureTarget.Texture2D, _texture4ImGui);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height, 0, PixelFormat.Bgr, PixelType.UnsignedByte, new IntPtr());
-            // GL.TexStorage2DMultisample(TextureTargetMultisample2d.Texture2DMultisample, 32, SizedInternalFormat.Rgba8, width, height, false);
-
-
-            // Poor filtering. Needed !
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _texture4ImGui, 0);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            GL.Enable(EnableCap.Multisample);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _viewportFB);
+            // "Bind" the newly created texture : all future texture functions will modify this texture
+            GL.BindTexture(TextureTarget.Texture2DMultisample, _renderTexture);
+
+            // Give an empty image to OpenGL ( the last "0" )
+            GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.Rgb, width, height, true);
 
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _depthRenderbuffer);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, width, height);
+            GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, 4, RenderbufferStorage.DepthComponent24, width, height);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, _depthRenderbuffer);
 
-            GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, _renderTexture, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, _renderTexture, 0);
 
             GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
 
@@ -429,7 +451,8 @@ namespace Fusee.Examples.Simple.Desktop
         }
 
         private static bool _dockspaceOpen = true;
-        private static bool _viewportOpen = true;
+        private static readonly bool _viewportOpen = true;
+        private static bool _render = true;
 
         private static void RenderImGUI(object sender, RenderEventArgs args)
         {
@@ -440,28 +463,40 @@ namespace Fusee.Examples.Simple.Desktop
             Input.Instance.PreRender();
             Time.Instance.DeltaTimeIncrement = _renderCanvas.DeltaTime;
 
+
+
             #region FuseeRender
 
             if (_size.X != 0)
             {
+                //GL.ClearColor(0.9f, 0.9f, 0.9f, 1);
+
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+                app.RC.Viewport(0, 0, (int)_size.X, (int)_size.Y);
 
                 // Enable FB
-                UpdateRenderTexture((int)_size.X, (int)_size.Y);
-                app.RC.Viewport(0, 0, (int)_size.X, (int)_size.Y);
-                // app.RC.Viewport((int)_pos.X, (int)(((_windowHeight - _size.Y)) - _pos.Y), (int)_size.X, (int)_size.Y);
+                if (_render)
+                {
+                    UpdateRenderTexture((int)_size.X, (int)_size.Y);
+                    // app.RC.Viewport((int)_pos.X, (int)(((_windowHeight - _size.Y)) - _pos.Y), (int)_size.X, (int)_size.Y);
+                    app.RenderAFrame();
 
-                app.RenderAFrame();
+                    // after rendering, blt result into _texture4ImGui
+                    GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _viewportFB);
+                    GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _intermediateFBO);
+                    GL.BlitFramebuffer(0, 0, (int)_size.X, (int)_size.Y, 0, 0, (int)_size.X, (int)_size.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+                }
             }
 
             // Disable FB
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
             GL.Viewport(0, 0, _windowWidth, _windowHeight);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             #endregion
-
             //////////////// --- IMGUI GOES HERE --- //////////////
 
             // Set Window flags for Dockspace
@@ -472,8 +507,7 @@ namespace Fusee.Examples.Simple.Desktop
                     | ImGuiWindowFlags.NoResize
                     | ImGuiWindowFlags.NoMove
                     | ImGuiWindowFlags.NoBringToFrontOnFocus
-                    | ImGuiWindowFlags.NoFocusOnAppearing
-                   ;
+                    | ImGuiWindowFlags.NoFocusOnAppearing;
 
             var dockspaceFlags = ImGuiDockNodeFlags.PassthruCentralNode /*| ImGuiDockNodeFlags.AutoHideTabBar*/;
 
@@ -488,13 +522,13 @@ namespace Fusee.Examples.Simple.Desktop
             // Set the parent window's styles to match that of the main viewport:
             ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f); // No corner rounding on the window
             ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f); // No border around the window
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(0.0f, 0.0f));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(0.0f, 0.0f));
 
             // Create Dockspace
             ImGui.Begin("DockSpace", ref _dockspaceOpen, wndDockspaceFlags);
 
             var dockspace_id = ImGui.GetID("DockSpace");
-            ImGui.DockSpace(dockspace_id, new System.Numerics.Vector2(0.0f, 0.0f), dockspaceFlags);
+            ImGui.DockSpace(dockspace_id, new Vector2(0.0f, 0.0f), dockspaceFlags);
 
             ImGui.PopStyleVar();
             ImGui.PopStyleVar();
@@ -518,9 +552,13 @@ namespace Fusee.Examples.Simple.Desktop
             }
             ImGui.EndMainMenuBar();
 
-
             ImGui.Begin("Viewport",
                  ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse);
+
+            if (ImGui.Button(_render ? "Pause" : "Continue"))
+            {
+                _render = !_render;
+            }
 
             var parentMin = ImGui.GetWindowContentRegionMin();
             var parentMax = ImGui.GetWindowContentRegionMax();
@@ -528,16 +566,19 @@ namespace Fusee.Examples.Simple.Desktop
 
             // Using a Child allow to fill all the space of the window.
             // It also allows customization
+
             ImGui.BeginChild("GameRender", size, true, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+
             _min = ImGui.GetWindowContentRegionMin();
             _max = ImGui.GetWindowContentRegionMax();
             _size = _max - _min;
             _pos = ImGui.GetWindowPos();
 
-            GL.BindTexture(TextureTarget.Texture2D, _renderTexture);
-            ImGui.Image(new IntPtr(_renderTexture), _size,
+            GL.BindTexture(TextureTarget.Texture2D, _texture4ImGui);
+            ImGui.Image(new IntPtr(_texture4ImGui), _size,
                 new Vector2(0, 1),
                 new Vector2(1, 0));
+
 
             app.RC.ViewportXStart = (int)_pos.X;
             app.RC.ViewportYStart = (int)((_windowHeight - _size.Y) - _pos.Y);
@@ -571,7 +612,7 @@ namespace Fusee.Examples.Simple.Desktop
             ImGui.Spacing();
             ImGui.BeginGroup();
             ImGui.Text("Lighting");
-            ImGui.SliderInt("EDL Neighbour Px", ref _edlNeighbour, 0, 5);
+            ImGui.SliderInt("EDL Neighbor Px", ref _edlNeighbour, 0, 5);
             ImGui.SliderFloat("EDL Strength", ref _edlStrength, -1f, 5f);
             ImGui.EndGroup();
 
@@ -606,23 +647,39 @@ namespace Fusee.Examples.Simple.Desktop
                 ImGui.End();
             }
 
+            ImGui.EndGroup();
 
+            ImGui.BeginGroup();
+
+            ImGui.SliderAngle("Colorpicker", ref color);
 
             ImGui.EndGroup();
 
-
-
             ImGui.End();
+
+            // ImGui.ShowDemoWindow();
+
 
 
             ImGui.Render();
+
             RenderImDrawData(ImGui.GetDrawData());
+
+
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             app.Present();
 
             Input.Instance.PostRender();
         }
+
+        private static ImDrawListPtr _drawList;
+
+        private static float[] _view;
+        private static float[] _model;
+        private static float[] _proj;
+
+        private static float color;
 
         private static float _threshold;
         private static int _edlNeighbour;
@@ -637,6 +694,7 @@ namespace Fusee.Examples.Simple.Desktop
 
         private static unsafe void RenderImDrawData(ImDrawDataPtr draw_data)
         {
+
             uint vertexOffsetInVertices = 0;
             uint indexOffsetInElements = 0;
 
@@ -676,7 +734,7 @@ namespace Fusee.Examples.Simple.Desktop
 
             for (int i = 0; i < draw_data.CmdListsCount; i++)
             {
-                ImDrawListPtr cmd_list = draw_data.CmdListsRange[i];
+                var cmd_list = draw_data.CmdListsRange[i];
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
                 GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)(vertexOffsetInVertices * Unsafe.SizeOf<ImDrawVert>()), cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
@@ -687,8 +745,13 @@ namespace Fusee.Examples.Simple.Desktop
                 vertexOffsetInVertices += (uint)cmd_list.VtxBuffer.Size;
                 indexOffsetInElements += (uint)cmd_list.IdxBuffer.Size;
             }
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
+            // render Imguizmo
+
+
+
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             // Setup orthographic projection matrix into our constant buffer
             ImGuiIOPtr io = ImGui.GetIO();
             OpenTK.Mathematics.Matrix4 mvp = OpenTK.Mathematics.Matrix4.CreateOrthographicOffCenter(
@@ -754,4 +817,149 @@ namespace Fusee.Examples.Simple.Desktop
         #endregion
 
     }
+
+
+    //public class FilePicker
+    //{
+    //    private const string FilePickerID = "###FilePicker";
+    //    private static readonly Dictionary<object, FilePicker> s_filePickers = new Dictionary<object, FilePicker>();
+    //    private static readonly Vector2 DefaultFilePickerSize = new Vector2(600, 400);
+
+    //    public string CurrentFolder { get; set; }
+    //    public string SelectedFile { get; set; }
+
+    //    public static FilePicker GetFilePicker(object o, string startingPath)
+    //    {
+    //        if (File.Exists(startingPath))
+    //        {
+    //            startingPath = new FileInfo(startingPath).DirectoryName;
+    //        }
+    //        else if (string.IsNullOrEmpty(startingPath) || !Directory.Exists(startingPath))
+    //        {
+    //            startingPath = Application.Instance.ProjectContext.GetAssetRootPath();
+    //            if (string.IsNullOrEmpty(startingPath))
+    //            {
+    //                startingPath = AppContext.BaseDirectory;
+    //            }
+    //        }
+
+    //        if (!s_filePickers.TryGetValue(o, out FilePicker fp))
+    //        {
+    //            fp = new FilePicker();
+    //            fp.CurrentFolder = startingPath;
+    //            s_filePickers.Add(o, fp);
+    //        }
+
+    //        return fp;
+    //    }
+
+    //    public bool Draw(ref string selected)
+    //    {
+    //        string label = null;
+    //        if (selected != null)
+    //        {
+    //            if (Util.TryGetFileInfo(selected, out FileInfo realFile))
+    //            {
+    //                label = realFile.Name;
+    //            }
+    //            else
+    //            {
+    //                label = "<Select File>";
+    //            }
+    //        }
+    //        if (ImGui.Button(label))
+    //        {
+    //            ImGui.OpenPopup(FilePickerID);
+    //        }
+
+    //        bool result = false;
+    //        ImGui.SetNextWindowSize(DefaultFilePickerSize, Condition.FirstUseEver);
+    //        if (ImGui.BeginPopupModal(FilePickerID, WindowFlags.NoTitleBar))
+    //        {
+    //            result = DrawFolder(ref selected, true);
+    //            ImGui.EndPopup();
+    //        }
+
+    //        return result;
+    //    }
+
+    //    private bool DrawFolder(ref string selected, bool returnOnSelection = false)
+    //    {
+    //        ImGui.Text("Current Folder: " + CurrentFolder);
+    //        bool result = false;
+
+    //        if (ImGui.BeginChildFrame(1, new Vector2(0, 600), WindowFlags.Default))
+    //        {
+    //            DirectoryInfo di = new DirectoryInfo(CurrentFolder);
+    //            if (di.Exists)
+    //            {
+    //                if (di.Parent != null)
+    //                {
+    //                    ImGui.PushStyleColor(ColorTarget.Text, RgbaFloat.Yellow.ToVector4());
+    //                    if (ImGui.Selectable("../", false, SelectableFlags.DontClosePopups))
+    //                    {
+    //                        CurrentFolder = di.Parent.FullName;
+    //                    }
+    //                    ImGui.PopStyleColor();
+    //                }
+    //                foreach (var fse in Directory.EnumerateFileSystemEntries(di.FullName))
+    //                {
+    //                    if (Directory.Exists(fse))
+    //                    {
+    //                        string name = Path.GetFileName(fse);
+    //                        ImGui.PushStyleColor(ColorTarget.Text, RgbaFloat.Yellow.ToVector4());
+    //                        if (ImGui.Selectable(name + "/", false, SelectableFlags.DontClosePopups))
+    //                        {
+    //                            CurrentFolder = fse;
+    //                        }
+    //                        ImGui.PopStyleColor();
+    //                    }
+    //                    else
+    //                    {
+    //                        string name = Path.GetFileName(fse);
+    //                        bool isSelected = SelectedFile == fse;
+    //                        if (ImGui.Selectable(name, isSelected, SelectableFlags.DontClosePopups))
+    //                        {
+    //                            SelectedFile = fse;
+    //                            if (returnOnSelection)
+    //                            {
+    //                                result = true;
+    //                                selected = SelectedFile;
+    //                            }
+    //                        }
+    //                        if (ImGui.IsMouseDoubleClicked(0))
+    //                        {
+    //                            result = true;
+    //                            selected = SelectedFile;
+    //                            ImGui.CloseCurrentPopup();
+    //                        }
+    //                    }
+    //                }
+    //            }
+
+    //        }
+    //        ImGui.EndChildFrame();
+
+
+    //        if (ImGui.Button("Cancel"))
+    //        {
+    //            result = false;
+    //            ImGui.CloseCurrentPopup();
+    //        }
+
+    //        if (SelectedFile != null)
+    //        {
+    //            ImGui.SameLine();
+    //            if (ImGui.Button("Open"))
+    //            {
+    //                result = true;
+    //                selected = SelectedFile;
+    //                ImGui.CloseCurrentPopup();
+    //            }
+    //        }
+
+    //        return result;
+    //    }
+    //}
 }
+
