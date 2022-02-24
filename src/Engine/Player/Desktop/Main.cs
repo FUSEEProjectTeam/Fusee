@@ -123,7 +123,7 @@ namespace Fusee.Engine.Player.Desktop
 
             #region FAP
 
-            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(assetDirs);
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
@@ -158,7 +158,6 @@ namespace Fusee.Engine.Player.Desktop
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                 });
-
             AssetStorage.RegisterProvider(fap);
 
             #endregion
@@ -178,7 +177,8 @@ namespace Fusee.Engine.Player.Desktop
                     player.ModelFile = modelFile;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
+                var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
+                app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(icon);
                 app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));

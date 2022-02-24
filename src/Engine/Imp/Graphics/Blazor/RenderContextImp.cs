@@ -86,7 +86,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     magFilter = (int)LINEAR;
                     break;
                 case TextureFilterMode.NearestMipmapLinear:
-                    minFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    minFilter = (int)LINEAR;// TODO(mr): NEAREST_MIPMAP_LINEAR; breaks everything with invalid enum, don't know WHY?
                     magFilter = (int)LINEAR;
                     break;
                 case TextureFilterMode.LinearMipmapLinear:

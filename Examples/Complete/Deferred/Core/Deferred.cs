@@ -4,7 +4,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 using System.Linq;
@@ -172,6 +171,30 @@ namespace Fusee.Examples.Deferred.Core
 
         public override void Update()
         {
+            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f) * DeltaTime * 50, 0 ,0));
+
+            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
+            if (deg < 0)
+                deg = (360 + deg);
+
+            var normalizedDeg = (deg) / 360;
+            float localLerp;
+
+            if (normalizedDeg <= 0.5)
+            {
+                _backgroundColor = _backgroundColorDay;
+                localLerp = normalizedDeg / 0.5f;
+                _backgroundColor.xyz = float3.Lerp(_backgroundColorDay.xyz, _backgroundColorNight.xyz, localLerp);
+            }
+            else
+            {
+                _backgroundColor = _backgroundColorNight;
+                localLerp = (normalizedDeg - 0.5f) / (0.5f);
+                _backgroundColor.xyz = float3.Lerp(_backgroundColorNight.xyz, _backgroundColorDay.xyz, localLerp);
+            }
+
+            _campComp.BackgroundColor = _backgroundColor;
+
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {

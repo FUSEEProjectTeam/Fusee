@@ -15,6 +15,12 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public event EventHandler<AddChildEventArgs> OnAdd;
 
+        public new void Add(SceneNode sn)
+        {
+            AddSceneNode(sn);
+            base.Add(sn);
+        }
+
         /// <summary>
         /// Inserts the item at the given index.
         /// </summary>

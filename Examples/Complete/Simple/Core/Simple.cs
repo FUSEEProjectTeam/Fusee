@@ -15,7 +15,7 @@ namespace Fusee.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -31,6 +31,8 @@ namespace Fusee.Examples.Simple.Core
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
 
+        private Transform _camPivotTransform;
+
         private bool _keys;
 
         private async Task Load()
@@ -44,6 +46,28 @@ namespace Fusee.Examples.Simple.Core
 
             // Load the rocket model
             _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
+            _camPivotTransform = new Transform();
+            var camNode = new SceneNode()
+            {
+                Name = "CamPivoteNode",
+                Children = new ChildList()
+                {
+                    new SceneNode()
+                    {
+                        Name = "MainCam",
+                        Components = new System.Collections.Generic.List<SceneComponent>()
+                        {
+                            new Transform() { Translation = new float3(0, 2, -10) },
+                            new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy) { BackgroundColor = float4.One }
+                        }
+                    }
+                },
+                Components = new System.Collections.Generic.List<SceneComponent>()
+                {
+                    _camPivotTransform
+                }
+            };
+            _rocketScene.Children.Add(camNode);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
@@ -59,8 +83,7 @@ namespace Fusee.Examples.Simple.Core
         // Init is called on startup.
         public override void Init()
         {
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+
         }
 
         public override void Update()
@@ -74,22 +97,22 @@ namespace Fusee.Examples.Simple.Core
             if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
+                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
             else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
+                _angleVelHorz = RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
                 else
                 {
@@ -107,35 +130,17 @@ namespace Fusee.Examples.Simple.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 2, -10, 0, 2, 0, 0, 1, 0);
-
-            var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-
-            // Render the scene loaded in Init()
-            RC.View = view;
-            RC.Projection = perspective;
+            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
-            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
-            RC.Projection = orthographic;
+            _guiRenderer.Render(RC);
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
             if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
-            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
