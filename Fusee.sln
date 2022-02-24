@@ -227,8 +227,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Core", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Common", "src\PointCloud\Common\Fusee.PointCloud.Common.csproj", "{28C06484-229D-44C6-B463-C29762D586BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.OoCReaderWriter", "src\PointCloud\OoCReaderWriter\Fusee.PointCloud.OoCReaderWriter.csproj", "{F5846F6B-9827-45D3-901F-36037F2C7B80}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PickingRayCast", "PickingRayCast", "{425DDCA8-659F-44FB-832E-117C7DED152E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PickingRayCast.Core", "Examples\Complete\PickingRayCast\Core\Fusee.Examples.PickingRayCast.Core.csproj", "{6EDE886A-D55E-4A73-BC16-8CDB9DB2D2A4}"
@@ -285,6 +283,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Las.Desktop", "src\PointCloud\Las\Desktop\Fusee.PointCloud.Las.Desktop.csproj", "{F28634E7-52B8-4935-B19E-CB8A6844E6F1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Potree", "src\PointCloud\Potree\Fusee.PointCloud.Potree.csproj", "{1B99F3FD-C685-4D72-8EBA-94A1214469B5}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RenderContextOnly", "RenderContextOnly", "{E6E73351-7DED-4B97-B254-A0E903D769C1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.RenderContextOnly.Core", "Examples\Complete\RenderContextOnly\Core\Fusee.Examples.RenderContextOnly.Core.csproj", "{81209326-E0D1-48C7-878F-F3DEA131BFB1}"
@@ -294,6 +293,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.RenderContextOnly.Blazor", "Examples\Complete\RenderContextOnly\Blazor\Fusee.Examples.RenderContextOnly.Blazor.csproj", "{FF0DEE54-C91E-480F-B103-593FB00E92FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.RenderContextOnly.Android", "Examples\Complete\RenderContextOnly\Android\Fusee.Examples.RenderContextOnly.Android.csproj", "{ED0AC25F-615E-4AE6-A491-ADD41ABEB2D2}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PickingRayCast.Blazor", "Examples\Complete\PickingRayCast\Blazor\Fusee.Examples.PickingRayCast.Blazor.csproj", "{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1}"
 EndProject
 Global
@@ -1353,19 +1353,6 @@ Global
 		{28C06484-229D-44C6-B463-C29762D586BD}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{28C06484-229D-44C6-B463-C29762D586BD}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{28C06484-229D-44C6-B463-C29762D586BD}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{6EDE886A-D55E-4A73-BC16-8CDB9DB2D2A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6EDE886A-D55E-4A73-BC16-8CDB9DB2D2A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EDE886A-D55E-4A73-BC16-8CDB9DB2D2A4}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1832,7 +1819,6 @@ Global
 		{64D9E294-28BD-402C-97C9-234070FA8F49} = {86C1CD6F-F5D8-4183-9032-3E323C33672C}
 		{7DC4C82A-CBE1-4564-9B62-733545DB892B} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
 		{28C06484-229D-44C6-B463-C29762D586BD} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
-		{F5846F6B-9827-45D3-901F-36037F2C7B80} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
 		{425DDCA8-659F-44FB-832E-117C7DED152E} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
 		{6EDE886A-D55E-4A73-BC16-8CDB9DB2D2A4} = {425DDCA8-659F-44FB-832E-117C7DED152E}
 		{027608D0-ACAF-488E-AA8B-F2BA547CBC71} = {425DDCA8-659F-44FB-832E-117C7DED152E}

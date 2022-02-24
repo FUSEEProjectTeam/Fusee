@@ -57,7 +57,8 @@ namespace Fusee.Examples.PointCloudPotree2.Desktop
             var app = new Core.PointCloudPotree2();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
-            app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp();
+            var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
+            app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(icon);
             app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
