@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Imp.Desktop;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Common.Accessors;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -13,6 +14,8 @@ namespace Fusee.PointCloud.Las.Desktop
     /// </summary>
     public class LasPointReader : IDisposable, IPointReader
     {
+        public IPointAccessor PointAccessor { get; private set; }
+
         /// <summary>
         /// The point cloud meta data, usually stored in the header of the las file.
         /// </summary>
@@ -21,7 +24,7 @@ namespace Fusee.PointCloud.Las.Desktop
         private IntPtr _ptrToLASClass = new();
         private string _filename;
 
-        public PointCloudBase GetPointCloudComponent(string filename)
+        public IPointCloud GetPointCloudComponent(string filename)
         {
             _filename = filename;
             OpenFile(_filename);
@@ -31,6 +34,11 @@ namespace Fusee.PointCloud.Las.Desktop
         public IPointCloudOctree GetOctree()
         {
             //convert to potree octree
+            throw new NotImplementedException();
+        }
+
+        public TPoint[] LoadNodeData<TPoint>(string id) where TPoint : new()
+        {
             throw new NotImplementedException();
         }
 
@@ -235,10 +243,5 @@ namespace Fusee.PointCloud.Las.Desktop
 
         [DllImport("libLASlib", EntryPoint = "CS_Delete")]
         private static extern void Delete(ref IntPtr lasFileHandle);
-
-        public IPointCloudImp GetPointCloudImp()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
