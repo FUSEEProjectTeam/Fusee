@@ -121,7 +121,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             PtRenderingParams.Instance.EdlNoOfNeighbourPx = (int)e.NewValue;
         }
 
-        #endregion       
+        #endregion
 
         #region point size
         private void PtSize_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -226,7 +226,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 if (App != null)
                 {
                     App.ClosingRequested = true;
-                    SpinWait.SpinUntil(() => App.ReadyToLoadNewFile); //End of frame                    
+                    SpinWait.SpinUntil(() => App.ReadyToLoadNewFile); //End of frame
                     App.CloseGameWindow();
                     SpinWait.SpinUntil(() => !App.IsAlive);
                     AssetStorage.UnRegisterAllAssetProviders();
@@ -388,8 +388,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             App.UseWPF = true;
 
             //Inject Fusee.Engine InjectMe dependencies(hard coded)
-            System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-            App.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon, true);
+            App.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp();
             App.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(App.CanvasImplementor);
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(App.CanvasImplementor));
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(App.CanvasImplementor));

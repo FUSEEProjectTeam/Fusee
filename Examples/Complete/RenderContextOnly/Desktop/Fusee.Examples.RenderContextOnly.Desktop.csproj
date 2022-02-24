@@ -16,3 +16,7 @@
 	</ItemGroup>
 
 </Project>
+		<ProjectReference Include="..\Core\Fusee.Examples.BoneAnimation.Core.csproj" />
+	</ItemGroup>
+
+</Project>
