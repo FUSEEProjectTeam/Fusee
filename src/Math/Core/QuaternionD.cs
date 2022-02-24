@@ -509,41 +509,41 @@ namespace Fusee.Math.Core
         #region Conversion
 
         /// <summary>
-        ///     Convert Euler angle to QuaternionD rotation.
+        /// Convert Euler angle to Quaternion rotation.
         /// </summary>
-        /// <param name="e">Euler angle to convert.</param>
+        /// <param name="x">Angle around x.</param>
+        /// <param name="y">Angle around x.</param>
+        /// <param name="z">Angle around x.</param>
         /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
-        /// <returns>A QuaternionD representing the euler angle passed to this method.</returns>
+        /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
         /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
         /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
         /// the range of [-PI, PI].
         ///
-        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternionD/index.htm">the euclideanspace website</a>.
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
         /// </remarks>
-        public static QuaternionD FromEuler(double3 e, bool inDegrees = false)
+        public static QuaternionD FromEuler(double x, double y, double z, bool inDegrees = false)
         {
             if (inDegrees)
             {
                 // Converts all degrees angles to radians.
-                var rX = M.DegreesToRadiansD(e.x);
-                var rY = M.DegreesToRadiansD(e.y);
-                var rZ = M.DegreesToRadiansD(e.z);
-
-                e = new double3(rX, rY, rZ);
+                x = M.DegreesToRadiansD(x);
+                y = M.DegreesToRadiansD(y);
+                z = M.DegreesToRadiansD(z);
             }
 
             var q = new QuaternionD();
 
             double3 s, c;
 
-            s.x = System.Math.Sin(e.x * 0.5);
-            c.x = System.Math.Cos(e.x * 0.5);
+            s.x = System.Math.Sin(x * 0.5);
+            c.x = System.Math.Cos(x * 0.5);
 
-            s.y = System.Math.Sin(e.y * 0.5);
-            c.y = System.Math.Cos(e.y * 0.5);
+            s.y = System.Math.Sin(y * 0.5);
+            c.y = System.Math.Cos(y * 0.5);
 
-            s.z = System.Math.Sin(e.z * 0.5);
-            c.z = System.Math.Cos(e.z * 0.5);
+            s.z = System.Math.Sin(z * 0.5);
+            c.z = System.Math.Cos(z * 0.5);
 
             q.x = s.x * c.y * c.z + s.y * s.z * c.x;
             q.y = s.y * c.x * c.z - s.x * s.z * c.y;
@@ -551,6 +551,24 @@ namespace Fusee.Math.Core
             q.w = c.x * c.y * c.z + s.y * s.z * s.x;
 
             return q;
+        }
+
+
+        /// <summary>
+        ///     Convert Euler angle to Quaternion rotation.
+        /// </summary>
+        /// <param name="e">Euler angle to convert.</param>
+        /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
+        /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
+        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
+        /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
+        /// the range of [-PI, PI].
+        ///
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
+        /// </remarks>
+        public static QuaternionD FromEuler(double3 e, bool inDegrees = false)
+        {
+            return FromEuler(e.x, e.y, e.z, inDegrees);
         }
 
         /// <summary>

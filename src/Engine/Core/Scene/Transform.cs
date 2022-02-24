@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core.Scene
         private float3 _scaleVec;
 
         private bool _rotationQuatDirty = true;
-        private Quaternion _rotationQuat;
+        private QuaternionF _rotationQuat;
 
         #endregion Fields
 
@@ -58,7 +58,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="translation"></param>
         /// <param name="rotation"></param>
         /// <param name="scale"></param>
-        public Transform(float3 translation, Quaternion rotation, float3 scale)
+        public Transform(float3 translation, QuaternionF rotation, float3 scale)
         {
             Translation = translation;
             RotationQuaternion = rotation;
@@ -267,13 +267,13 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The rotation (orientation) of the node.
         /// </summary>
-        public Quaternion RotationQuaternion
+        public QuaternionF RotationQuaternion
         {
             get
             {
                 if (_rotationQuatDirty)
                 {
-                    _rotationQuat = Quaternion.FromRotationMatrix(_rotationMtx);
+                    _rotationQuat = QuaternionF.FromRotationMatrix(_rotationMtx);
                     _rotationQuatDirty = false;
                 }
 
