@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -25,10 +25,11 @@ namespace Fusee.Engine.Gui
         /// <param name="rc">The <see cref="RenderCanvas"/>.</param>
         /// <param name="canvasRenderMode">The <see cref="CanvasRenderMode"/> which is used to render the GUI.</param>
         /// <param name="title">The app title.</param>
+        /// <param name="useCamera">Default is "true". If set to "false" this will deactivate the <see cref="Camera"/> Component and the view and projection matrices need to be set on the <see cref="RenderContext"/> </param>
         /// <returns></returns>
-        public static SceneContainer CreateDefaultGui(RenderCanvas rc, CanvasRenderMode canvasRenderMode, string title)
+        public static SceneContainer CreateDefaultGui(RenderCanvas rc, CanvasRenderMode canvasRenderMode, string title, bool useCamera = true)
         {
-            return CreateDefaultGuiAsync(rc, canvasRenderMode, title).Result;
+            return CreateDefaultGuiAsync(rc, canvasRenderMode, title, useCamera).Result;
         }
 
         /// <summary>
@@ -37,8 +38,9 @@ namespace Fusee.Engine.Gui
         /// <param name="rc">The <see cref="RenderCanvas"/>.</param>
         /// <param name="canvasRenderMode">The <see cref="CanvasRenderMode"/> which is used to render the GUI.</param>
         /// <param name="title">The app title.</param>
+        /// <param name="useCamera">Default is "true". If set to "false" this will deactivate the <see cref="Camera"/> Component and the view and projection matrices need to be set on the <see cref="RenderContext"/> </param>
         /// <returns></returns>
-        public static async Task<SceneContainer> CreateDefaultGuiAsync(RenderCanvas rc, CanvasRenderMode canvasRenderMode, string title)
+        public static async Task<SceneContainer> CreateDefaultGuiAsync(RenderCanvas rc, CanvasRenderMode canvasRenderMode, string title, bool useCamera = true)
         {
             var canvasWidth = rc.Width / 100f;
             var canvasHeight = rc.Height / 100f;
@@ -98,6 +100,7 @@ namespace Fusee.Engine.Gui
                 {
                     new SceneNode()
                     {
+                        Name = "GuiCam",
                         Components = new List<SceneComponent>()
                         {
                             new Transform()
@@ -105,13 +108,15 @@ namespace Fusee.Engine.Gui
                                 Translation = new float3(0, 0, 0),
                                 Rotation = float3.Zero,
                                 Scale = float3.One
+                            },
+                            new Camera(canvasRenderMode == CanvasRenderMode.Screen ? ProjectionMethod.Orthographic : ProjectionMethod.Perspective, 0.01f, 500, M.PiOver4)
+                            {
+                                Active = useCamera,
+                                ClearColor = false
                             }
-                        },
-                        Children = new ChildList()
-                        {
-                            canvas
                         }
-                    }
+                    },
+                    canvas
                 }
             };
 

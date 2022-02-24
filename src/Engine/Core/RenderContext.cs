@@ -1214,7 +1214,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="hash">Effect parameter hash (generated from its name).</param>
         /// <param name="value">Effect parameter value.</param>
-        internal void SetGlobalEffectParam(int hash, object value)
+        public void SetGlobalEffectParam(int hash, object value)
         {
             if (GlobalFXParams.TryGetValue(hash, out var param))
             {

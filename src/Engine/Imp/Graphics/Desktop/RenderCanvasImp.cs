@@ -1,13 +1,18 @@
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using Image = OpenTK.Windowing.Common.Input.Image;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
-using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -194,19 +199,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        public RenderCanvasImp() : this(null)
+        public RenderCanvasImp() : this(null, false)
         {
+
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        /// <param name="appIcon">The icon for the render window.</param>
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
-        public RenderCanvasImp(Icon appIcon, bool isMultithreaded = false)
+        /// <param name="icon">The window icon to use</param>
+        public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false)
         {
             //TODO: Select correct monitor
-            Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
+            MonitorInfo mon = Monitors.GetMonitors()[0];
 
             int width = 1280;
             int height = 720;
@@ -234,6 +240,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _gameWindow.CenterWindow();
             if (_gameWindow.IsMultiThreaded)
                 _gameWindow.Context.MakeNoneCurrent();
+
+            // convert icon to OpenTKImage
+            if (icon != null)
+            {
+                // convert Bgra to Rgba for OpenTK.WindowIcon
+                var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(icon.PixelData, icon.Width, icon.Height);
+                var bgra = pxData.CloneAs<Rgba32>();
+                bgra.Mutate(x => x.AutoOrient());
+                bgra.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+
+                if (!bgra.TryGetSinglePixelSpan(out var res))
+                {
+                    Diagnostics.Warn("Couldn't convert icon image to Rgba32!");
+                    return;
+                }
+                var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
+                _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, resBytes.ToArray()) });
+            }
         }
 
         /// <summary>
@@ -286,7 +310,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 //TODO: Select correct monitor
-                Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
+                MonitorInfo mon = Monitors.GetMonitors()[0];
 
                 var oneScreenWidth = mon.HorizontalResolution;
                 var oneScreenHeight = mon.VerticalResolution;
@@ -328,7 +352,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="borderHidden">Show the window border or not.</param>
         public void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false)
         {
-            Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
+            MonitorInfo mon = Monitors.GetMonitors()[0];
 
             BaseWidth = width;
             BaseHeight = height;
@@ -414,18 +438,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="width">The width of the window, and therefore image to render.</param>
         /// <param name="height">The height of the window, and therefore image to render.</param>
         /// <returns></returns>
-        public Bitmap ShootCurrentFrame(int width, int height)
+        public SixLabors.ImageSharp.Image ShootCurrentFrame(int width, int height)
         {
             DoInit();
             DoRender();
             DoResize(width, height);
 
-            var bmp = new Bitmap(this.Width, this.Height, SDPixelFormat.Format32bppArgb);
-            var mem = bmp.LockBits(new System.Drawing.Rectangle(0, 0, Width, Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, SDPixelFormat.Format32bppArgb);
-            GL.PixelStorei(PixelStoreParameter.PackRowLength, mem.Stride / 4);
-            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, mem.Scan0);
-            bmp.UnlockBits(mem);
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            var bmp = new Image<Rgba32>(Width, Height);
+            bmp.TryGetSinglePixelSpan(out var mem);
+            GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
+            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, ref mem[0]);
+
+            bmp.Mutate(x => x.AutoOrient());
+            bmp.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+
             return bmp;
         }
 

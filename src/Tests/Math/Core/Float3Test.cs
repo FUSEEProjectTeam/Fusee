@@ -478,7 +478,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetQuaternion))]
-        public void Rotate_Quaternion(Quaternion quat, float3 vec, float3 expected)
+        public void Rotate_Quaternion(QuaternionF quat, float3 vec, float3 expected)
         {
             var actual = float3.Rotate(quat, vec);
 
@@ -905,9 +905,9 @@ namespace Fusee.Tests.Math.Core
             var y = new float3(0, 1, 0);
             var z = new float3(0, 0, 1);
 
-            var xRot = new Quaternion((float)System.Math.Sqrt(0.5), 0, 0, (float)System.Math.Sqrt(0.5));
-            var yRot = new Quaternion(0, (float)System.Math.Sqrt(0.5), 0, (float)System.Math.Sqrt(0.5));
-            var zRot = new Quaternion(0, 0, (float)System.Math.Sqrt(0.5), (float)System.Math.Sqrt(0.5));
+            var xRot = new QuaternionF((float)System.Math.Sqrt(0.5), 0, 0, (float)System.Math.Sqrt(0.5));
+            var yRot = new QuaternionF(0, (float)System.Math.Sqrt(0.5), 0, (float)System.Math.Sqrt(0.5));
+            var zRot = new QuaternionF(0, 0, (float)System.Math.Sqrt(0.5), (float)System.Math.Sqrt(0.5));
 
             yield return new object[] { xRot, y, z };
             yield return new object[] { yRot, z, x };
