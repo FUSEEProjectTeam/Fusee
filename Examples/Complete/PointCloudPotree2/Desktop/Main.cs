@@ -3,7 +3,6 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Examples.PointCloudPotree2.Core;
 using Fusee.Serialization;
 using System;
 using System.IO;
@@ -55,7 +54,7 @@ namespace Fusee.Examples.PointCloudPotree2.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new PointCloudOutOfCore();
+            var app = new Core.PointCloudPotree2();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

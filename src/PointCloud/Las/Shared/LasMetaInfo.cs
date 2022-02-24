@@ -1,7 +1,6 @@
-﻿using Fusee.PointCloud.Common;
-namespace Fusee.PointCloud.FileReader.Las.Desktop
+﻿namespace Fusee.PointCloud.Las.Desktop
 {
-    public struct LasMetaInfo : IPointCloudMetaInfo
+    public struct LasMetaInfo
     {
         public string Filename;
 

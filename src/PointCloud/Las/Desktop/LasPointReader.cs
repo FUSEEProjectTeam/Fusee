@@ -4,8 +4,9 @@ using Fusee.PointCloud.Common;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
-namespace Fusee.PointCloud.FileReader.Las.Desktop
+namespace Fusee.PointCloud.Las.Desktop
 {
     /// <summary>
     /// A reader for points in LAZ or LAS format
@@ -13,18 +14,27 @@ namespace Fusee.PointCloud.FileReader.Las.Desktop
     public class LasPointReader : IDisposable, IPointReader
     {
         /// <summary>
-        /// The point format description.
-        /// </summary>
-        public IPointFormat Format { get; private set; }
-
-        /// <summary>
         /// The point cloud meta data, usually stored in the header of the las file.
         /// </summary>
-        public IPointCloudMetaInfo MetaInfo { get; private set; }
+        public LasMetaInfo MetaInfo { get; private set; }
 
         private IntPtr _ptrToLASClass = new();
+        private string _filename;
 
-        public void OpenFile(string filename)
+        public PointCloudBase GetPointCloudComponent(string filename)
+        {
+            _filename = filename;
+            OpenFile(_filename);
+            throw new NotImplementedException();
+        }
+
+        public IPointCloudOctree GetOctree()
+        {
+            //convert to potree octree
+            throw new NotImplementedException();
+        }
+
+        private void OpenFile(string filename)
         {
             EmbeddedResourcesDllHandler.LoadEmbeddedDll("libLASlib.dll", "Fusee.PointCloud.Las.Desktop.Natives.libLASlib.dll");
 
@@ -51,9 +61,6 @@ namespace Fusee.PointCloud.FileReader.Las.Desktop
                 ScaleFactorY = header.ScaleFactorY,
                 ScaleFactorZ = header.ScaleFactorZ
             };
-
-            // Set format
-            Format = ParsePointDataByteFormatToFormatStruct((LasMetaInfo)MetaInfo);
         }
 
         /// <summary>
@@ -127,53 +134,57 @@ namespace Fusee.PointCloud.FileReader.Las.Desktop
             var currentPoint = new LasInternalPoint();
             GetPoint(_ptrToLASClass, ref currentPoint);
 
-            var currentFormat = (LasPointFormat)Format;
-            var currentHeader = (LasMetaInfo)MetaInfo;
-
             var typedAccessor = (PointAccessor<TPoint>)pa;
-
-            if (typedAccessor.PositionType == PointPositionType.Double3)
-                typedAccessor.SetPositionFloat3_64(ref point, new double3(currentPoint.X * currentHeader.ScaleFactorX, currentPoint.Y * currentHeader.ScaleFactorY, currentPoint.Z * currentHeader.ScaleFactorZ));
-
-            if (currentFormat.HasIntensity && typedAccessor.IntensityType == PointIntensityType.UInt_16)
-                typedAccessor.SetIntensityUInt_16(ref point, currentPoint.Intensity);
-
-            if (currentFormat.HasClassification && typedAccessor.LabelType == PointLabelType.UInt_8)
-            {
-                //TODO: HACK!! label was somehow written to UserData and not to classification
-                if (currentPoint.Classification != 0)
-                    typedAccessor.SetLabelUInt_8(ref point, currentPoint.Classification);
-                else
-                    typedAccessor.SetLabelUInt_8(ref point, currentPoint.UserData);
-            }
-
-            if (currentFormat.HasColor && typedAccessor.ColorType == PointColorType.Float3)
+            
+            if ((MetaInfo.PointDataFormat == 2 || MetaInfo.PointDataFormat == 3) && typedAccessor.ColorType == PointColorType.Float3)
                 typedAccessor.SetColorFloat3_32(ref point, new float3(currentPoint.R, currentPoint.G, currentPoint.B));
+
+            //TODO: Complete
+            //if (typedAccessor.PositionType == PointPositionType.Double3)
+            // -> always the case right now
+            typedAccessor.SetPositionFloat3_64(ref point, new double3(currentPoint.X * MetaInfo.ScaleFactorX, currentPoint.Y * MetaInfo.ScaleFactorY, currentPoint.Z * MetaInfo.ScaleFactorZ));
+
+            //if (currentFormat.HasIntensity && typedAccessor.IntensityType == PointIntensityType.UInt_16)
+            // -> always true right now!
+            typedAccessor.SetIntensityUInt_16(ref point, currentPoint.Intensity);
+
+            // -> never the case right now!
+            //if (currentFormat.HasClassification && typedAccessor.LabelType == PointLabelType.UInt_8)
+            //{
+            //    //TODO: HACK!! label was somehow written to UserData and not to classification
+            //    if (currentPoint.Classification != 0)
+            //        typedAccessor.SetLabelUInt_8(ref point, currentPoint.Classification);
+            //    else
+            //        typedAccessor.SetLabelUInt_8(ref point, currentPoint.UserData);
+            //}
 
             return true;
         }
 
-        private static LasPointFormat ParsePointDataByteFormatToFormatStruct(LasMetaInfo info)
+        public PointType GetPointType()
         {
-            return info.PointDataFormat switch
+            //TODO: Complete
+            switch (MetaInfo.PointDataFormat)
             {
-                // 1 is the same as 0 with the addition of a GPS time field
-                0 or 1 => new LasPointFormat
-                {
-                    HasClassification = true,
-                    HasColor = false,
-                    HasIntensity = true,
-                    HasUserData = false
-                },
-                2 or 3 => new LasPointFormat
-                {
-                    HasClassification = true,
-                    HasColor = true,
-                    HasIntensity = true,
-                    HasUserData = false
-                },
-                _ => throw new ArgumentException($"Point data format with byte {info.PointDataFormat} not recognized!"),
-            };
+                case 0:
+                case 1:
+                    return PointType.PosD3InUs;
+                case 2:
+                case 3:
+                    return PointType.PosD3ColF3InUs;
+                default:
+                    throw new ArgumentException($"Point data format with byte {MetaInfo.PointDataFormat} not recognized!");
+            }
+        }
+
+        public Task<TPoint[]> LoadPointsForNodeAsync<TPoint>(string guid, IPointAccessor pointAccessor) where TPoint : new()
+        {
+            throw new NotImplementedException();
+        }
+
+        public TPoint[] LoadNodeData<TPoint>(string id, IPointAccessor pointAccessor) where TPoint : new()
+        {
+            throw new NotImplementedException();
         }
 
         #region IDisposable Support
@@ -224,5 +235,10 @@ namespace Fusee.PointCloud.FileReader.Las.Desktop
 
         [DllImport("libLASlib", EntryPoint = "CS_Delete")]
         private static extern void Delete(ref IntPtr lasFileHandle);
+
+        public IPointCloudImp GetPointCloudImp()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

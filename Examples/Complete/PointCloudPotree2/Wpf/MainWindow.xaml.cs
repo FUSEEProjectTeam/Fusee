@@ -24,7 +24,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        public Core.PointCloudOutOfCore app;
+        public Core.PointCloudPotree2 app;
         private bool _areOctantsShown;
 
         //private bool _ptSizeDragStarted;
@@ -264,13 +264,13 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
 
             if (!_areOctantsShown)
             {
-                app.DoShowOctants = true;
+                //app.DoShowOctants = true;
                 _areOctantsShown = true;
                 ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants_on.png", UriKind.Relative));
             }
             else
             {
-                app.DoShowOctants = false;
+                //app.DoShowOctants = false;
                 _areOctantsShown = false;
                 ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
             }
@@ -343,7 +343,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
 
             AssetStorage.RegisterProvider(fap);
 
-            app = new Core.PointCloudOutOfCore();
+            app = new Core.PointCloudPotree2();
 
             PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
             PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;

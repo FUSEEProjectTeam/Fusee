@@ -1,6 +1,4 @@
-﻿using Fusee.Math.Core;
-
-namespace Fusee.PointCloud.Common
+﻿namespace Fusee.PointCloud.Common
 {
     public interface IPointCloudOctree
     {

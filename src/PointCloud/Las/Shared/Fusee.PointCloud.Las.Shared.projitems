@@ -12,6 +12,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)LasInternalHeader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LasInternalPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LasMetaInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LasPointFormat.cs" />
   </ItemGroup>
 </Project>

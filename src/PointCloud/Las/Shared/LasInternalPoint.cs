@@ -1,4 +1,4 @@
-﻿namespace Fusee.PointCloud.FileReader.Las.Desktop
+﻿namespace Fusee.PointCloud.Las.Desktop
 {
     internal struct LasInternalPoint
     {

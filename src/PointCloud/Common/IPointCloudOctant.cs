@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Fusee.Math.Core;
 using Fusee.Structures;
-using Fusee.Math.Core;
 
 namespace Fusee.PointCloud.Common
 {

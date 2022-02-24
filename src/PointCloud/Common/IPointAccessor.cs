@@ -1,4 +1,6 @@
-﻿namespace Fusee.PointCloud.Common
+﻿using Fusee.PointCloud.Common.Accessors;
+
+namespace Fusee.PointCloud.Common
 {
     public interface IPointAccessor
     {

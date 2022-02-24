@@ -1,5 +1,5 @@
-using Fusee.PointCloud.Common;
 using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
 
 namespace Fusee.PointCloud.Core
 {

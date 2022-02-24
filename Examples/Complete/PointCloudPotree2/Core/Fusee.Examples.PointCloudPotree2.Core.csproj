@@ -20,7 +20,7 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Scene\Fusee.PointCloud.Scene.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Potree\Fusee.PointCloud.Potree.csproj" />
   </ItemGroup>
 </Project>
 

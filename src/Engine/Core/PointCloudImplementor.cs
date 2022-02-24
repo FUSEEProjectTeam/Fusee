@@ -32,15 +32,6 @@ namespace Fusee.Engine.Core
         }
         private CreateGpuMesh _createGpuMesh;
 
-        //Object that can read "native" points from las/e57 or other common point file formats.
-        //Allows the injection of platform specific implementation.
-        public static IPointReader NativePointReader
-        {
-            get { return Instance._pointReader; }
-            set { Instance._pointReader = value; }
-        }
-        private IPointReader _pointReader;
-
         #region Dispose
         public void Dispose()
         {
@@ -58,7 +49,6 @@ namespace Fusee.Engine.Core
                 if (disposing)
                 {
                     // Dispose managed resources.
-                    NativePointReader.Dispose();
                 }
                 disposed = true;
             }

@@ -1,6 +1,6 @@
 ﻿using Fusee.Math.Core;
-using Fusee.Structures;
 using Fusee.PointCloud.Common;
+using Fusee.Structures;
 
 namespace Fusee.PointCloud.Core
 {
