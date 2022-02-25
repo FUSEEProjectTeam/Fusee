@@ -317,8 +317,8 @@ namespace Fusee.Engine.Core
 
             if (tex != null)
                 _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
-            else
-                _rc.SetRenderTarget();
+            //else
+            //    _rc.SetRenderTarget();
 
             _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out var viewport);
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);

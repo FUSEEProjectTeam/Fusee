@@ -17,7 +17,6 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Avalonia\Desktop\Fusee.Avalonia.Desktop.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
     <ProjectReference Include="..\Core\Fusee.Examples.Integrations.Core.csproj" />
   </ItemGroup>

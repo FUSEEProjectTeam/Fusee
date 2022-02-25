@@ -956,8 +956,8 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Viewport(int x, int y, int width, int height)
         {
-            //if (ViewportXStart == x && ViewportYStart == y && ViewportWidth == width && ViewportHeight == height)
-            //    return;
+           //if (ViewportXStart == x && ViewportYStart == y && ViewportWidth == width && ViewportHeight == height)
+           //    return;
 
             _rci.Scissor(x, y, width, height);
             _rci.Viewport(x, y, width, height);

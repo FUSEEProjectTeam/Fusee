@@ -82,12 +82,6 @@ namespace Fusee.Examples.Simple.Core
             await base.InitAsync();
         }
 
-        // Init is called on startup.
-        public override void Init()
-        {
-
-        }
-
         public override void Update()
         {
             // Mouse and keyboard movement
@@ -98,14 +92,10 @@ namespace Fusee.Examples.Simple.Core
 
             if (Mouse.LeftButton)
             {
-                // only if Mouse is inside viewport
-                if (Mouse.Position.x > RC.ViewportXStart + RC.ViewportWidth || Mouse.Position.x < RC.ViewportXStart ||
-                    Mouse.Position.y > RC.ViewportHeight - RC.ViewportYStart || Mouse.Position.y < RC.ViewportYStart)
-                    return;
-
                 _keys = false;
                 _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
                 _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
+                Console.WriteLine(Mouse.XVel);
             }
             else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {

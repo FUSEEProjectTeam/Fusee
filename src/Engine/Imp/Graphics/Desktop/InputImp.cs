@@ -13,6 +13,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class RenderCanvasInputDriverImp : IInputDriverImp
     {
+
         /// <summary>
         /// Constructor. Use this in platform specific application projects.
         /// </summary>
@@ -156,7 +157,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private readonly int DeviceID;
         private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
 
-        internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
+        public GamePadDeviceImp(GameWindow window, int deviceID = 0)
         {
             _gameWindow = window;
             DeviceID = deviceID;
@@ -529,7 +530,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Should be called by the driver only.
         /// </summary>
         /// <param name="gameWindow"></param>
-        internal KeyboardDeviceImp(GameWindow gameWindow)
+        public KeyboardDeviceImp(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
             _keymapper = new Keymapper();
