@@ -53,7 +53,6 @@
 		<PackageReference Include="Google.Protobuf.Tools" Version="3.11.4" />
 
 		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 	</ItemGroup>
 
 	<!-- BUILD THE BLENDER ADDON (Re-Generate Python .fus Serialization code and build zip file)
