@@ -705,7 +705,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 Barycentric(double3 a, double3 b, double3 c, double u, double v)
         {
-            return u * a + v * b + (1.0 - u - v) * c;
+            return u * a + v * b + (1.0f - u - v) * c;
         }
 
         /// <summary>
@@ -790,7 +790,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="euler">The angles used for the rotation.</param>
         /// <param name="vec">The vector to rotate.</param>
-        /// <param name="inDegrees">Optional: Whether the angles are given in degrees (true) or radians (false). Defautl is radians.</param>
+        /// <param name="inDegrees">Optional: Whether the angles are given in degrees (true) or radians (false). Default is radians.</param>
         /// <returns>The rotated vector.</returns>
         public static double3 Rotate(double3 euler, double3 vec, bool inDegrees = false)
         {
@@ -1200,10 +1200,10 @@ namespace Fusee.Math.Core
         #region public override int GetHashCode()
 
         /// <summary>
-        /// Returns the hashcode for this instance.
+        /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A System.Int32 containing the unique hashcode for this instance.
+        /// A System.Int32 containing the unique hash code for this instance.
         /// </returns>
         public override int GetHashCode()
         {

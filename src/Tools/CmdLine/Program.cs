@@ -32,11 +32,6 @@ namespace Fusee.Tools.CmdLine
                 })
                 .WithNotParsed(errs =>
                 {
-                    /*foreach (var error in errs)
-                    {
-                        Console.Error.WriteLine(error);
-                    }
-                    */
                     Environment.Exit((int)ErrorCode.CommandLineSyntax);
                 });
         }

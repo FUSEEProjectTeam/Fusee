@@ -94,8 +94,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnCamera(Camera camComp)
         {
-            var scale = float4x4.GetScale(_state.Model);
             var view = _state.Model;
+            var scale = float4x4.GetScale(view);
 
             if (scale.x != 1)
             {

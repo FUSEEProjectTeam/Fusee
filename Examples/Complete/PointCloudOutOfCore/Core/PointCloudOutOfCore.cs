@@ -2,7 +2,6 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
@@ -161,9 +160,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 return;
             }
 
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
             if (IsSceneLoaded)
             {
                 var isSpaceMouseMoving = SpaceMouseMoving(out float3 velPos, out float3 velRot);
@@ -272,10 +268,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             }
 
             //Render GUI
-            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
-            RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-            // Constantly check for interactive objects.
-            if (Mouse != null) //Mouse is null when the pointer is outside the GameWindow?
+            _guiRenderer.Render(RC);
+            if (Mouse != null)
             {
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
@@ -284,9 +278,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                     _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
                 }
             }
-            _guiRenderer.Render(RC);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
 
             ReadyToLoadNewFile = true;

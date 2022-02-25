@@ -713,7 +713,7 @@ namespace Fusee.Math.Core
         /// <param name="quat">The quaternion used for the rotation.</param>
         /// <param name="vec">The vector to rotate.</param>
         /// <returns>The rotated vector.</returns>
-        public static float3 Rotate(Quaternion quat, int3 vec)
+        public static float3 Rotate(QuaternionF quat, int3 vec)
         {
             float3 temp, result;
             var tempfloat3 = new float3(vec.x, vec.y, vec.z);

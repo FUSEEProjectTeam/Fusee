@@ -21,10 +21,8 @@ namespace Fusee.Examples.Labyrinth.Core
     [FuseeApplication(Name = "FUSEE Labyrinth Example", Description = "A very squiggly example.")]
     public class Labyrinth : RenderCanvas
     {
-        // My var
-
         // Angle variables
-        private static float _angleVert = 0, _angleVelVert, _angle;
+        private static float _angle, _angleVelVert;
 
         // Mouse rotation speed
         private const float _rotationSpeed = 7;
@@ -46,54 +44,36 @@ namespace Fusee.Examples.Labyrinth.Core
         private float _oldY;
         private readonly int[,] _bmp = Bmp();
 
-        // Cam pos for changing
-        private float3 _cam = new(10, 5, 10);
-
-        private int _cases = 0;
-
-        // Movment
+        private int _camViewCase = 1;
         private float _moveX, _moveZ;
 
-        // Timer display
         private GuiText _timertext;
-
-        private FontMap _timeMap;
-
-        // Winning display
-
-        private FontMap _winMap;
-
-        // Font
         private readonly Font _fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
-        // Call winningdisplay method only once
-        private bool _readonce = true;
+        // Call winning display method only once
+        private bool _isGuiCreated = false;
 
         // Bool for Character movement
-        private bool _movement = true;
+        private bool _isMoving = true;
 
-        private bool _win = false;
+        private Transform _mainCamTransform;
+        private Camera _mainCam;
 
-        // Camera
-        private float4x4 _mtxCam;
+        private SceneNode _overViewCamNode;
+        private Transform _overviewCamTransform;
+        private Camera _overviewCam;
 
-        private float _camAngle = 0;
+        private bool _isGameWon = false;
 
         // Transform and SceneContainer
-        private Transform _head;
-
-        private Transform _body;
-        private Transform _bodytrans;
+        private Transform _headTransform;
+        private Transform _bodyTransform;
+        private SceneNode _bodyNode;
+        private Transform _bodyPivotTransform;
         private SceneContainer _scene;
         private readonly Transform mazeTransform = new();
 
-        // Other var
         private SceneRendererForward _sceneRenderer;
-
-        private const float ZNear = 1f;
-        private const float ZFar = 1000;
-        private readonly float _fovy = M.PiOver4;
-
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
@@ -101,14 +81,38 @@ namespace Fusee.Examples.Labyrinth.Core
 
         private SceneContainer CreateScene()
         {
-            // Load the Nodes in
-            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
+            // Load the Nodes
+            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset_tga.fus");
             SceneNode cornerstone = mazeScene.Children.FindNodes(n => n.Name == "Cornerstone").First();
             SceneNode wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
             SceneNode wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
             SceneNode ball = mazeScene.Children.FindNodes(n => n.Name == "Body").First();
             SceneNode head = mazeScene.Children.FindNodes(n => n.Name == "Head").First();
             Cube _ground = new();
+
+            _mainCamTransform = new Transform()
+            {
+                Rotation = new float3(M.PiOver6, 0, 0),
+                Translation = new float3(0, 7, -10),
+                Scale = float3.One
+            };
+            _mainCam = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4)
+            {
+                BackgroundColor = float4.UnitW
+            };
+
+            _overviewCamTransform = new Transform()
+            {
+                Translation = new float3(_length / 2, 100, _length / 2),
+                Rotation = new float3(M.PiOver2, 0, 0),
+                Scale = float3.One
+            };
+
+            _overviewCam = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4)
+            {
+                Active = false,
+                BackgroundColor = float4.UnitW
+            };
 
             SceneNode maze = new()
             {
@@ -184,49 +188,58 @@ namespace Fusee.Examples.Labyrinth.Core
                         maze.Children.Add(new SceneNode
                         {
                             Components = new List<SceneComponent>
+                            {
+                                new Transform
                                 {
-                                    new Transform
-                                    {
-                                        Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _ballradius, countY * (_wallZbox.z + _cornerbox.z)/2),
-                                    },
-                                    head.GetComponent<SurfaceEffect>(),
-                                    head.GetComponent<Mesh>()
+                                    Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _ballradius, countY * (_wallZbox.z + _cornerbox.z)/2),
                                 },
+                                head.GetComponent<SurfaceEffect>(),
+                                head.GetComponent<Mesh>()
+                            },
                             Name = "Head",
 
                             Children = new ChildList
                             {
                                 new SceneNode
                                 {
+                                    Name = "MainCam",
                                     Components = new List<SceneComponent>
                                     {
-                                    new Transform
+                                        _mainCamTransform,
+                                        _mainCam
+                                    }
+                                },
+
+                                new SceneNode
+                                {
+                                    Components = new List<SceneComponent>
+                                    {
+                                        new Transform
                                         {
                                             Translation = new float3(0,0,0)
                                         },
                                     },
-                                Name = "Bodytrans",
+                                    Name = "Bodytrans",
 
-                                Children = new ChildList
-                                {
-                                    new SceneNode
+                                    Children = new ChildList
                                     {
-                                        Components = new List<SceneComponent>
+                                        new SceneNode
                                         {
-                                        new Transform
+                                            Components = new List<SceneComponent>
                                             {
-                                                Translation = new float3(0,0,0)
+                                            new Transform
+                                                {
+                                                    Translation = new float3(0,0,0)
+                                                },
+                                                ball.GetComponent<SurfaceEffect>(),
+                                                ball.GetComponent<Mesh>()
                                             },
-                                            ball.GetComponent<SurfaceEffect>(),
-                                            ball.GetComponent<Mesh>()
-                                        },
-                                    Name = "Body",
-                                    }
-                                },
+                                        Name = "Body",
+                                        }
+                                    },
                                 }
                             },
-                        }
-                        );
+                        });
                     }
                 }
             }
@@ -248,10 +261,20 @@ namespace Fusee.Examples.Labyrinth.Core
             }
             );
 
+            _overViewCamNode = new SceneNode()
+            {
+                Components = new List<SceneComponent>
+                {
+                    _overviewCamTransform,
+                    _overviewCam
+                }
+            };
+
             return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {
+                    _overViewCamNode,
                     maze
                 }
             };
@@ -260,11 +283,8 @@ namespace Fusee.Examples.Labyrinth.Core
         // Init is called on startup.
         public override void Init()
         {
-            _timeMap = new FontMap(_fontLato, 24);
             _gui = CreateGui();
-            Resize(new ResizeEventArgs(Width, Height));
             _sih = new SceneInteractionHandler(_gui);
-            RC.ClearColor = new float4(0, 0, 0, 1);
 
             // Find the ball and create AABB
             FindBall();
@@ -286,58 +306,64 @@ namespace Fusee.Examples.Labyrinth.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             // Get Nodes from _scene
-            _head = _scene.Children.FindNodes(node => node.Name == "Head")?.FirstOrDefault()?.GetTransform();
-            _body = _scene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault()?.GetTransform();
-            _bodytrans = _scene.Children.FindNodes(node => node.Name == "Bodytrans")?.FirstOrDefault()?.GetTransform();
+            _headTransform = _scene.Children.FindNodes(node => node.Name == "Head")?.FirstOrDefault()?.GetTransform();
+
+            _bodyPivotTransform = _scene.Children.FindNodes(node => node.Name == "Bodytrans").FirstOrDefault()?.GetTransform();
+            _bodyNode = _scene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault();
+            _bodyTransform = _bodyNode?.GetTransform();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            if (!_isGameWon && Keyboard.IsKeyUp(KeyCodes.C))
+                _isGameWon = true;
 
             // Mouse movement
             if (Mouse.LeftButton)
-            {
-                _angleVelVert = -_rotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-            }
+                _angleVelVert = _rotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
             else
-            {
                 _angleVelVert = 0;
-            }
 
-            _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
 
-            if (Mouse.IsButtonDown(2))
+            _angle = (_angle + _angleVelVert) % (2 * M.Pi);
+
+            if (Mouse.IsButtonDown(2) && _isMoving)
             {
-                switch (_cases)
+                switch (_camViewCase)
                 {
                     case 0:
-                        _cam = new float3(1, 0, 1);
-                        _cases++;
+                        _mainCamTransform.Rotation = new float3(M.PiOver6, 0, 0);
+                        _mainCamTransform.Translation = new float3(0, 7, -10);
+                        _camViewCase = 1;
                         break;
 
                     case 1:
-                        _cam = new float3(10, 5, 10);
-                        _cases %= 1;
+                        _mainCamTransform.Rotation = new float3(0, 0, 0);
+                        _mainCamTransform.Translation = new float3(0, 0, 0);
+                        _camViewCase = 0;
                         break;
                 };
             }
 
-            Ballmovement();
+            if (!_isMoving)
+            {
+                _overviewCam.Active = true;
+                _mainCam.Active = false;
+            }
+            else
+            {
+                _overviewCam.Active = false;
+                _mainCam.Active = true;
+            }
+
             Collision();
-            Winner();
+            Ballmovement();
+            OnWonGame();
 
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-
-            RC.Projection = perspective;
             _sceneRenderer.Render(RC);
 
-
-            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
-            RC.Projection = orthographic;
+            _guiRenderer.Render(RC);
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
@@ -346,14 +372,133 @@ namespace Fusee.Examples.Labyrinth.Core
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            _guiRenderer.Render(RC);
-
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
         private SceneContainer CreateGui()
         {
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
+
+            var btnFuseeLogo = new GuiButton
+            {
+                Name = "Canvas_Button"
+            };
+            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
+            btnFuseeLogo.OnMouseExit += BtnLogoExit;
+            btnFuseeLogo.OnMouseDown += BtnLogoDown;
+
+            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            var fuseeLogo = TextureNode.Create(
+                "fuseeLogo",
+                //Set the albedo texture you want to use.
+                guiFuseeLogo,
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                //Define Offset and therefor the size of the element.
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
+                );
+            fuseeLogo.AddComponent(btnFuseeLogo);
+
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var guiLatoBlack = new FontMap(fontLato, 24);
+            var guiLatoBlackSmall = new FontMap(fontLato, 16);
+
+            var text = TextNode.Create(
+                "FUSEE Labyrinth Example",
+                "ButtonText",
+                GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                guiLatoBlack,
+                (float4)ColorUint.Greenery,
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
+
+            var instructions = TextNode.Create(
+                "Controls:\n" +
+                "W, S, A, D: Move Robot\n" +
+                "Left Click & move mouse: rotate camera\n" +
+                "Right Click: Toggle between first and third person\n" +
+                "Hold E: labyrinth overview ",
+                "ButtonText",
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0.125f, canvasHeight - 2), canvasHeight, canvasWidth, new float2(8, 1)),
+                guiLatoBlackSmall,
+                (float4)ColorUint.White,
+                HorizontalTextAlignment.Left,
+                VerticalTextAlignment.Top);
+
+            // Create stopwatch
+            var timer = TextNode.Create(
+                "00:00.00",
+                "Timer",
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),
+                new MinMaxRect
+                {
+                    Min = new float2(-2, 0),
+                    Max = new float2(-0.3f, -1)
+                },
+                 new FontMap(_fontLato, 24),
+                (float4)ColorUint.Greenery,
+                HorizontalTextAlignment.Right,
+                VerticalTextAlignment.Center
+            );
+
+            _timertext = timer.GetComponentsInChildren<GuiText>().FirstOrDefault();
+
+            var canvas = new CanvasNode(
+                "Canvas",
+                _canvasRenderMode,
+                new MinMaxRect
+                {
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
+            {
+                Children = new ChildList()
+                {
+                    // Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text,
+                    timer,
+                    instructions
+                }
+            };
+
+            return new SceneContainer
+            {
+                Children = new List<SceneNode>
+                {
+                    new SceneNode()
+                    {
+                        Name = "GuiCam",
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Translation = new float3(0, 0, 0),
+                                Rotation = float3.Zero,
+                                Scale = float3.One
+                            },
+                            new Camera(ProjectionMethod.Orthographic, 0.01f, 500, M.PiOver4)
+                            {
+                                ClearColor = false
+                            }
+                        }
+                    },
+                    // Add canvas.
+                    canvas
+                }
+            };
+        }
+
+        // Creates winning display
+        private SceneContainer CreateWinningGui()
+        {
+            var winMap = new FontMap(_fontLato, 55);
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 
@@ -392,23 +537,21 @@ namespace Fusee.Examples.Labyrinth.Core
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
-            // Create stopwatch
-            var timer = TextNode.Create(
-                "00:00.00",
+            var endtime = TextNode.Create(
+                "SOLVED\n" +
+                _timertext.Text,
                 "Timer",
-                GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),
+                GuiElementPosition.GetAnchors(AnchorPos.Middle),
                 new MinMaxRect
                 {
-                    Min = new float2(-2, 0),
-                    Max = new float2(-0.3f, -1)
+                    Min = new float2(0.01f, 0),
+                    Max = new float2(0, 0.01f)
                 },
-                 _timeMap,
+                 winMap,
                 (float4)ColorUint.Greenery,
-                HorizontalTextAlignment.Right,
+                HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center
             );
-
-            _timertext = timer.GetComponentsInChildren<GuiText>().FirstOrDefault();
 
             var canvas = new CanvasNode(
                 "Canvas",
@@ -424,7 +567,7 @@ namespace Fusee.Examples.Labyrinth.Core
                     // Simple Texture Node, contains the fusee logo.
                     fuseeLogo,
                     text,
-                    timer
+                    endtime
                 }
             };
 
@@ -432,98 +575,94 @@ namespace Fusee.Examples.Labyrinth.Core
             {
                 Children = new List<SceneNode>
                 {
+                    new SceneNode()
+                    {
+                        Name = "GuiCam",
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform
+                            {
+                                Translation = float3.Zero,
+                                Rotation = float3.Zero,
+                                Scale = float3.One
+                            },
+                            new Camera(ProjectionMethod.Orthographic, 0.01f, 500, M.PiOver4)
+                            {
+                                ClearColor = false
+                            }
+                        }
+                    },
                     // Add canvas.
                     canvas
                 }
             };
         }
 
-        public void BtnLogoEnter(CodeComponent sender)
+        private void BtnLogoEnter(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
-        public void BtnLogoExit(CodeComponent sender)
+        private void BtnLogoExit(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
-
-        public void BtnLogoDown(CodeComponent sender)
+        private void BtnLogoDown(CodeComponent sender)
         {
             OpenLink("http://fusee3d.org");
         }
 
-        // My methods
-        public void Ballmovement()
+        private void Ballmovement()
         {
-            if (_movement || !_win)
+            if (_isGameWon) return;
+
+            // Create camera angle
+            if (Keyboard.GetKey(KeyCodes.E))
+            {
+                _isMoving = false;
+            }
+            else
+            {
+                _headTransform.Rotate(new float3(0, _angleVelVert, 0));
+                _isMoving = true;
+            }
+
+            if (_isMoving)
             {
                 // Set time for stopwatch
-                int minutes = (int)Time.TimeSinceStart / 60;
-                var seconds = Time.TimeSinceStart % 59.5f;
-                var miliseconds = Time.TimeSinceStart % 0.99f;
+                int minutes = (int)TimeSinceStart / 60;
+                var seconds = TimeSinceStart % 59.5f;
+                var miliseconds = TimeSinceStart % 0.99f;
                 _timertext.Text = minutes.ToString("00") + ":" + seconds.ToString("00") + miliseconds.ToString(".00", new System.Globalization.CultureInfo("en-US"));
 
-                // Create camera angle
-                _angle = _angleVert;
-                if (Keyboard.GetKey(KeyCodes.E))
-                {
-                    _mtxCam = float4x4.LookAt(_length / 2, 100, _height / 2, _length / 2, 0, _height / 2, -1, 0, 0);
-                    _movement = false;
-                }
-                else
-                {
-                    _mtxCam = float4x4.LookAt(_head.Translation.x - _cam.x * M.Sin(_angle), _head.Translation.y + _cam.y, _head.Translation.z - _cam.z * M.Cos(_angle), _head.Translation.x, _head.Translation.y, _head.Translation.z, 0, 1, 0);
-                    _head.Rotation = new float3(_head.Rotation.x, +_angle, _head.Rotation.z);
-                    _bodytrans.Rotation = new float3(0, -_angle, 0);
-                    _movement = true;
-                }
-                RC.View = _mtxCam;
+                //Get old positions of the head
+                _oldX = _headTransform.Translation.x;
+                _oldY = _headTransform.Translation.z;
 
-                if (_movement)
-                {
-                    // Get old positions of the head
-                    _oldX = _head.Translation.x;
-                    _oldY = _head.Translation.z;
+                //Move the ball
+                _moveX = Keyboard.WSAxis * _speed * DeltaTime;
+                _moveZ = Keyboard.ADAxis * _speed * DeltaTime;
 
-                    // move the ball
+                var headTranslation = _headTransform.Translation;
+                headTranslation.x += _moveX * M.Sin(_angle);
+                headTranslation.z += _moveX * M.Cos(_angle);
+                headTranslation.x += _moveZ * M.Cos(_angle);
+                headTranslation.z -= _moveZ * M.Sin(_angle);
+                _headTransform.Translation = headTranslation;
 
-                    // WS Axis
-                    _moveX = Keyboard.WSAxis * _speed * DeltaTime;
-                    _moveZ = Keyboard.ADAxis * _speed * DeltaTime;
-
-                    if (_moveX != 0 && (!Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D)))
-                    {
-                        var headTranslation = _head.Translation;
-                        headTranslation.x += _moveX * M.Sin(_angle);
-                        headTranslation.z += _moveX * M.Cos(_angle);
-                        _head.Translation = headTranslation;
-
-                        _body.Rotate(Quaternion.ToEuler(Quaternion.FromAxisAngle(new float3(-M.Cos(_angle), 0, M.Sin(_angle)), -_moveX)), 0);
-                    }
-
-                    // AD Axis
-
-                    if (_moveZ != 0 && (!Keyboard.GetKey(KeyCodes.W) && !Keyboard.GetKey(KeyCodes.S)))
-                    {
-                        var headTranslation = _head.Translation;
-                        headTranslation.x += _moveZ * M.Cos(_angle);
-                        headTranslation.z -= _moveZ * M.Sin(_angle);
-                        _head.Translation = headTranslation;
-                        _body.Rotate(Quaternion.ToEuler(Quaternion.FromAxisAngle(new float3(M.Sin(_angle), 0, M.Cos(_angle)), -_moveZ)), 0);
-                    }
-                }
+                _bodyPivotTransform.RotationQuaternion = QuaternionF.Invert(_headTransform.RotationQuaternion);
+                _bodyTransform.RotationQuaternion *= _bodyPivotTransform.RotationQuaternion * QuaternionF.FromEuler(new float3(_moveX, 0, -_moveZ)) * QuaternionF.Invert(_bodyPivotTransform.RotationQuaternion);
             }
         }
 
-        public void Collision()
+        private void Collision()
         {
-            var headTranslation = _head.Translation;
+            var headTranslation = _headTransform.Translation;
 
             // Changes the ballbmp when the character moves around
             if (_translation[_ballbmp[0], _ballbmp[1]].x <= headTranslation.x)
@@ -657,8 +796,8 @@ namespace Fusee.Examples.Labyrinth.Core
             {
                 if (headTranslation.z - _translation[_ballbmp[0] - 1, _ballbmp[1]].w < _ballradius)
                 {
-                    _movement = false;
-                    _win = true;
+                    _isMoving = false;
+                    _isGameWon = true;
                 }
             }
 
@@ -666,8 +805,8 @@ namespace Fusee.Examples.Labyrinth.Core
             {
                 if (_translation[_ballbmp[0] + 1, _ballbmp[1]].y - headTranslation.z < _ballradius)
                 {
-                    _movement = false;
-                    _win = true;
+                    _isMoving = false;
+                    _isGameWon = true;
                 }
             }
 
@@ -675,8 +814,8 @@ namespace Fusee.Examples.Labyrinth.Core
             {
                 if (headTranslation.x - _translation[_ballbmp[0], _ballbmp[1] - 1].z < _ballradius)
                 {
-                    _movement = false;
-                    _win = true;
+                    _isMoving = false;
+                    _isGameWon = true;
                 }
             }
 
@@ -684,131 +823,34 @@ namespace Fusee.Examples.Labyrinth.Core
             {
                 if (_translation[_ballbmp[0], _ballbmp[1] + 1].x - headTranslation.x < _ballradius)
                 {
-                    _movement = false;
-                    _win = true;
+                    _isMoving = false;
+                    _isGameWon = true;
                 }
             }
 
-            _head.Translation = headTranslation;
+            _headTransform.Translation = headTranslation;
         }
 
-        // Check for win
-        public void Winner()
+        private void OnWonGame()
         {
-            if (_win)
+            if (_isGameWon)
             {
-                // Sets the camera in the sky and rotates it
-                _camAngle += 0.2f * M.Pi / 180;
-                var mtxRot = float4x4.CreateRotationZ(_camAngle);
-                var mtxPos = float4x4.LookAt(_length / 2, 100, _height / 2, _length / 2, 0, _height / 2, 1, 0, 0);
-                var view = mtxRot * mtxPos;
-                RC.View = view;
-
-                // Create the winningdisplay once
-                if (_readonce)
+                // Create the winning display once
+                if (!_isGuiCreated)
                 {
-                    _winMap = new FontMap(_fontLato, 55);
-
-                    _gui = WinningDisplay();
-
-                    Resize(new ResizeEventArgs(Width, Height));
-                    // Creates the interaction handler
+                    _gui = CreateWinningGui();
                     _sih = new SceneInteractionHandler(_gui);
-
                     _guiRenderer = new SceneRendererForward(_gui);
-
-                    _readonce = false;
+                    _isGuiCreated = true;
                 }
+
+                _overviewCam.Active = true;
+                _mainCam.Active = false;
+                _overviewCamTransform.RotateGlobal(QuaternionF.FromEuler(new float3(0, 0.2f * M.Pi / 180, 0)), QuaternionF.Identity);
             }
         }
 
-        // Creates winning display
-        public SceneContainer WinningDisplay()
-        {
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
-
-            var btnFuseeLogo = new GuiButton
-            {
-                Name = "Canvas_Button"
-            };
-            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
-            btnFuseeLogo.OnMouseExit += BtnLogoExit;
-            btnFuseeLogo.OnMouseDown += BtnLogoDown;
-
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = TextureNode.Create(
-                "fuseeLogo",
-                //Set the albedo texture you want to use.
-                guiFuseeLogo,
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                //Define Offset and therefor the size of the element.
-                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
-                float2.One
-                );
-            fuseeLogo.AddComponent(btnFuseeLogo);
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
-
-            var text = TextNode.Create(
-                "FUSEE Labyrinth Example",
-                "ButtonText",
-                GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                GuiElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                (float4)ColorUint.Greenery,
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-            var endtime = TextNode.Create(
-                "SOLVED\n" +
-                _timertext.Text,
-                "Timer",
-                GuiElementPosition.GetAnchors(AnchorPos.Middle),
-                new MinMaxRect
-                {
-                    Min = new float2(0.01f, 0),
-                    Max = new float2(0, 0.01f)
-                },
-                 _winMap,
-                (float4)ColorUint.Greenery,
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center
-            );
-
-            var canvas = new CanvasNode(
-                "Canvas",
-                _canvasRenderMode,
-                new MinMaxRect
-                {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    // Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text,
-                    endtime
-                }
-            };
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    // Add canvas.
-                    canvas
-                }
-            };
-        }
-
-        // Creates the AABB
-        public void MakeBox()
+        private void MakeBox()
         {
             SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
 
@@ -828,7 +870,7 @@ namespace Fusee.Examples.Labyrinth.Core
         }
 
         // Create an Array with the positions
-        public void CreatePositions()
+        private void CreatePositions()
         {
             for (int countY = 0; countY < _bmp.GetLength(0); countY++)
             {
@@ -857,8 +899,8 @@ namespace Fusee.Examples.Labyrinth.Core
             }
         }
 
-        // Finds the startpoint of the character
-        public void FindBall()
+        // Finds the start point of the character
+        private void FindBall()
         {
             for (int countY = 0; countY < _bmp.GetLength(1); countY++)
             {
@@ -873,7 +915,7 @@ namespace Fusee.Examples.Labyrinth.Core
         }
 
         // Creates the Maze out of a Image
-        public static int[,] Bmp()
+        private static int[,] Bmp()
         {
             int x = 25;
             int y = 25;
@@ -919,7 +961,7 @@ namespace Fusee.Examples.Labyrinth.Core
         }
 
         // Checks the all Pixel from the Image and orders them in ARB 2D-Array
-        public static Color[,] Imageorder(byte[] arr, int width, int height)
+        private static Color[,] Imageorder(byte[] arr, int width, int height)
         {
             Color[,] image = new Color[width, height];
 
@@ -935,7 +977,7 @@ namespace Fusee.Examples.Labyrinth.Core
         }
 
         // Gets one defined Pixel ARGB/RGB/Intensity color
-        public static ColorUint GetPixel(ImageData img, int x, int y)
+        private static ColorUint GetPixel(ImageData img, int x, int y)
         {
             return img.PixelFormat switch
             {
@@ -944,25 +986,6 @@ namespace Fusee.Examples.Labyrinth.Core
                 { BytesPerPixel: 1, ColorFormat: ColorFormat.Intensity } => new ColorUint(0, 0, 0, img.PixelData[1 * (img.Width * y + x) + 3]),
                 _ => new ColorUint(0, 0, 0, 0)
             };
-
-
-            //int bpp = img.PixelFormat.BytesPerPixel;
-            //switch (bpp)
-            //{
-            //    case 4:
-            //        return new ColorUint(img.PixelData[bpp * (img.Width * y + x) + 2], img.PixelData[bpp * (img.Width * y + x) + 1], img.PixelData[bpp * (img.Width * y + x)], img.PixelData[bpp * (img.Width * y + x) + 3]);
-
-            //    case 3:
-            //        return new ColorUint(img.PixelData[bpp * (img.Width * y + x) + 2], img.PixelData[bpp * (img.Width * y + x) + 1], img.PixelData[bpp * (img.Width * y + x)], 255);
-
-            //    case 1:
-            //        return new ColorUint(0, 0, 0, img.PixelData[bpp * (img.Width * y + x) + 3]);
-
-            //    default:
-            //        return new ColorUint(0, 0, 0, 0);
-
-            //}
-
         }
     }
 }

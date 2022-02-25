@@ -6,7 +6,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -24,10 +24,6 @@ namespace Fusee.Examples.Integrations.Core
         private SceneContainer _rocketScene;
         private SceneRendererDeferred _sceneRenderer;
 
-        private const float ZNear = 1f;
-        private const float ZFar = 1000;
-        private readonly float _fovy = M.PiOver4;
-
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
@@ -35,10 +31,13 @@ namespace Fusee.Examples.Integrations.Core
         private bool _keys;
 
         public event EventHandler<FusEvent> FusToWpfEvents;
-
         private Transform rocketTransform;
 
-        public float FPS { get; private set; } = 0f;
+        private readonly Camera _mainCam = new(ProjectionMethod.Perspective, 0.1f, 1000, M.PiOver4)
+        {
+            BackgroundColor = float4.One
+        };
+        private Transform _camTransform;
 
         // Init is called on startup.
         public async Task Load()
@@ -48,32 +47,22 @@ namespace Fusee.Examples.Integrations.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
-
             // Load the rocket model
-            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
-            //_rocketScene = new SceneContainer
-            //{
-            //    Children = new System.Collections.Generic.List<SceneNode>
-            //    {
-            //        new SceneNode
-            //        {
-            //            Components = new System.Collections.Generic.List<SceneComponent>
-            //            {
-            //                new Transform(),
-            //                MakeEffect.FromDiffuseSpecular(float4.One * 0.5f),
-            //                new Cube(),
-            //                new Transform
-            //                {
-            //                    Translation = new float3(-0.5f, -0.5f ,0)
-            //                },
-            //                MakeEffect.FromDiffuseSpecular(new float4(1,0,1,0.5f)),
-            //                new Cube()
-            //            }
-            //        }
-            //    }
-            //};
+            _rocketScene = AssetStorage.Get<SceneContainer>("RocketFus.fus");
+            _camTransform = new Transform()
+            {
+                Translation = new float3(0, 2, -10),
+                Scale = float3.One
+            };
+            var camNode = new SceneNode()
+            {
+                Components = new List<SceneComponent>()
+                {
+                    _camTransform,
+                    _mainCam
+                }
+            };
+            _rocketScene.Children.Add(camNode);
 
 
             // Wrap a SceneRenderer around the model.
@@ -95,13 +84,6 @@ namespace Fusee.Examples.Integrations.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            FPS = FramesPerSecondAverage;
-
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            RC.Viewport(0, 0, Width, Height);
-
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -139,21 +121,13 @@ namespace Fusee.Examples.Integrations.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
+            _camTransform.RotationMatrix = mtxRot;
 
-            var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-
-            // Render the scene loaded in Init()
-            RC.View = view;
-            RC.Projection = perspective;
             _sceneRenderer.Render(RC);
+            FusToWpfEvents?.Invoke(this, new FpsEvent(FramesPerSecondAverage));
 
-            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
-            RC.Projection = orthographic;
+            _guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
@@ -162,11 +136,6 @@ namespace Fusee.Examples.Integrations.Core
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            FusToWpfEvents?.Invoke(this, new FpsEvent(Time.FramesPerSecondAverage));
-
-            _guiRenderer.Render(RC);
-
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
