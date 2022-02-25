@@ -2,6 +2,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using SixLabors.ImageSharp;
@@ -212,7 +213,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false)
         {
             //TODO: Select correct monitor
-            MonitorInfo mon = Monitors.GetMonitors()[0];
+            Monitors.TryGetMonitorInfo(0, out var mon);
 
             int width = 1280;
             int height = 720;
@@ -310,7 +311,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 //TODO: Select correct monitor
-                MonitorInfo mon = Monitors.GetMonitors()[0];
+               Monitors.TryGetMonitorInfo(0, out var mon);
 
                 var oneScreenWidth = mon.HorizontalResolution;
                 var oneScreenHeight = mon.VerticalResolution;
@@ -352,7 +353,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="borderHidden">Show the window border or not.</param>
         public void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false)
         {
-            MonitorInfo mon = Monitors.GetMonitors()[0];
+            Monitors.TryGetMonitorInfo(0, out var mon);
 
             BaseWidth = width;
             BaseHeight = height;
@@ -446,7 +447,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             var bmp = new Image<Rgba32>(Width, Height);
             bmp.TryGetSinglePixelSpan(out var mem);
-            GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
+            GL.PixelStorei(PixelStoreParameter.PackRowLength, 1);
             GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, ref mem[0]);
 
             bmp.Mutate(x => x.AutoOrient());
@@ -641,7 +642,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
             }
 
-            GL.ClearColor(new Color4<Rgba>(Color.MidnightBlue.R, Color.MidnightBlue.G, Color.MidnightBlue.B, Color.MidnightBlue.A));
+            GL.ClearColor(new Color4<Rgba>(0.1f, 0.1f, 0.47f, 1));
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);

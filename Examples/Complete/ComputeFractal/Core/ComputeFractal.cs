@@ -39,7 +39,7 @@ namespace Fusee.Examples.ComputeFractal.Core
         {
             _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Fractal Magnification Factor: " + _depthFactor);
             _guiRenderer = new SceneRendererForward(_gui);
-            _depthFactorText = _gui.Children[0].Children[0].Children[1].Children[0].GetComponent<GuiText>();
+            _depthFactorText = _gui.Children[1].Children[1].Children[0].GetComponent<GuiText>();
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
