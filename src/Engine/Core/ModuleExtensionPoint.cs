@@ -40,6 +40,10 @@ namespace Fusee.Engine.Core
         private CreateGpuMesh _createGpuMesh;
 
         #region Dispose
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(disposing: true);
@@ -47,9 +51,19 @@ namespace Fusee.Engine.Core
         }
 
         private bool disposed;
-        protected void Dispose(bool disposing)
-        {
 
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        private void Dispose(bool disposing)
+        {
             if (!disposed)
             {
 
@@ -61,6 +75,9 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
         ~ModuleExtensionPoint()
         {
             Dispose(disposing: false);

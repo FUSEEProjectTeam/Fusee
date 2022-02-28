@@ -1814,6 +1814,10 @@ namespace Fusee.Engine.Core
             return new float2(n, f);
         }
 
+        /// <summary>
+        /// Creates a platform specific <see cref="IMeshImp"/>.
+        /// </summary>
+        /// <returns></returns>
         public IMeshImp CreateMeshImp()
         {
             return _rci.CreateMeshImp();

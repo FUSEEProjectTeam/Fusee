@@ -14,15 +14,6 @@ using Animation = Fusee.Xirkit.Animation;
 
 namespace Fusee.Engine.Core
 {
-    public interface IRendererModule : IVisitorModule
-    {
-        public RenderLayers RenderLayer { get; set; }
-
-        public void SetContext(RenderContext rc);
-
-        public void SetState(RendererState state);
-    }
-
     /// <summary>
     /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and s) in order
     /// to have each visited element contribute to the result rendered against a given render context.

@@ -173,13 +173,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     //internalFormat = RGB32F;
                     //format = RGB;
                     //pxType = FLOAT;
-                    break;
                 case ColorFormat.fRGB16:
                     throw new NotSupportedException("WebGL 2.0: fRGB16 not supported");
                     //internalFormat = RGB16F;
                     //format = RGB;
                     //pxType = HALF_FLOAT;
-                    break;
                 case ColorFormat.fRGBA16:
                     internalFormat = RGBA16F;
                     format = RGBA;
@@ -624,7 +622,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
 
         /// <summary>
-        /// Sets a <see cref="float2[]" /> shader parameter.
+        /// Sets a <see cref="float2" /> array as shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>

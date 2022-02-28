@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 namespace Fusee.PointCloud.Core
 {
     /// <summary>
-    /// Delegate for a method that tries to get the mesh(es) of an octant. If they are not cached yet, they should be created an added to the MeshCache.
+    /// Delegate for a method that tries to get the mesh(es) of an octant. If they are not cached yet, they should be created an added to the _meshCache.
     /// </summary>
     /// <param name="guid"></param>
     /// <returns></returns>
     public delegate IEnumerable<GpuMesh> GetMeshes(string guid);
 
     /// <summary>
-    /// Called in "determine visibility for node" - if the PointCache does not contain the points load them.
+    /// Called in "determine visibility for node" - if the _pointCache does not contain the points load them.
     /// </summary>
     /// <param name="guid">Unique ID of an octant.</param>
     public delegate void TriggerPointLoading(string guid);
@@ -49,12 +49,12 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        public MemoryCache<string, TPoint[]> PointCache { get; private set; }
+        private readonly MemoryCache<string, TPoint[]> _pointCache;
 
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        public MemoryCache<string, IEnumerable<GpuMesh>> MeshCache { get; private set; }
+        private readonly MemoryCache<string, IEnumerable<GpuMesh>> _meshCache;
 
         private readonly PointAccessor<TPoint> _pointAccessor;
         private readonly CreateMesh<TPoint> _createMeshHandler;
@@ -71,10 +71,10 @@ namespace Fusee.PointCloud.Core
         /// <param name="loadPointsHandler">The method that is able to load the points from the hard drive/file.</param>
         public PointCloudDataHandler(PointAccessor<TPoint> pointAccessor, CreateMesh<TPoint> createMeshHandler, LoadPointsHandler<TPoint> loadPointsHandler)
         {
-            PointCache = new();
-            MeshCache = new();
-            MeshCache.SlidingExpiration = 30;
-            MeshCache.ExpirationScanFrequency = 31;
+            _pointCache = new();
+            _meshCache = new();
+            _meshCache.SlidingExpiration = 30;
+            _meshCache.ExpirationScanFrequency = 31;
 
             _createMeshHandler = createMeshHandler;
             _loadPointsHandler = loadPointsHandler;
@@ -83,40 +83,40 @@ namespace Fusee.PointCloud.Core
             LoadingQueue = new((8 ^ 8) / 8);
             DisposeQueue = new Dictionary<string, IEnumerable<GpuMesh>>((8 ^ 8) / 8);
 
-            MeshCache.HandleEvictedItem = OnItemEvictedFromCache;
+            _meshCache.HandleEvictedItem = OnItemEvictedFromCache;
         }
 
         /// <summary>
         /// First looks in the mesh cache, if there are meshes return, 
         /// else look in the DisposeQueue, if there are meshes return,
-        /// else look in the point cache, if there are points create a mesh and add to the MeshCache.
+        /// else look in the point cache, if there are points create a mesh and add to the _meshCache.
         /// </summary>
         /// <param name="guid">The unique id of an octant.</param>
         /// <returns></returns>
         public override IEnumerable<GpuMesh> GetMeshes(string guid)
         {
-            if (MeshCache.TryGetValue(guid, out var meshes))
+            if (_meshCache.TryGetValue(guid, out var meshes))
                 return meshes;
             else if (DisposeQueue.TryGetValue(guid, out meshes))
             {
                 lock (LockDisposeQueue)
                 {
                     DisposeQueue.Remove(guid);
-                    MeshCache.Add(guid, meshes);
+                    _meshCache.Add(guid, meshes);
                     return meshes;
                 }
             }
-            else if (PointCache.TryGetValue(guid, out var points))
+            else if (_pointCache.TryGetValue(guid, out var points))
             {
                 meshes = MeshMaker.CreateMeshes(_pointAccessor, points, _createMeshHandler);
-                MeshCache.Add(guid, meshes);
+                _meshCache.Add(guid, meshes);
             }
             //no points yet, probably in loading queue
             return null;
         }
 
         /// <summary>
-        /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the MeshCache.
+        /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the _meshCache.
         /// </summary>
         public override void ProcessDisposeQueue()
         {
@@ -160,10 +160,10 @@ namespace Fusee.PointCloud.Core
 
                 _ = Task.Run(() =>
                 {
-                    if (!PointCache.TryGetValue(guid, out var points))
+                    if (!_pointCache.TryGetValue(guid, out var points))
                     {
                         points = _loadPointsHandler.Invoke(guid);
-                        PointCache.Add(guid, points);
+                        _pointCache.Add(guid, points);
                     }
 
                     lock (LockLoadingQueue)
@@ -206,8 +206,8 @@ namespace Fusee.PointCloud.Core
             {
                 if (disposing)
                 {
-                    PointCache.Dispose();
-                    MeshCache.Dispose();
+                    _pointCache.Dispose();
+                    _meshCache.Dispose();
 
                     LockDisposeQueue = null;
                     LockLoadingQueue = null;
