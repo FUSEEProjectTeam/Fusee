@@ -5,6 +5,9 @@ using System;
 
 namespace Fusee.PointCloud.Core.Scene
 {
+    /// <summary>
+    /// Allows to add the visit/render method for the <see cref="PointCloudComponent"/> to a <see cref="SceneRendererForward"/> or <see cref="SceneRendererDeferred"/>.
+    /// </summary>
     public class PointCloudRenderModule : IRendererModule
     {
         RenderContext _rc;
@@ -50,7 +53,7 @@ namespace Fusee.PointCloud.Core.Scene
         }
 
         /// <summary>
-        /// Determines visible points of a point cloud (using the components <see cref="VisibilityTester{TPoint}"/>) and renders them.
+        /// Determines visible points of a point cloud (using the components <see cref="VisibilityTester"/>) and renders them.
         /// </summary>
         /// <param name="pointCloud">The point cloud component.</param>
         [VisitMethod]

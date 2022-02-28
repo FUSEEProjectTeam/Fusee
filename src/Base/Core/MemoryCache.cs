@@ -5,8 +5,9 @@ namespace Fusee.Base.Core
 {
     /// <summary>
     /// Generic implementation of <see cref="MemoryCache"/>.
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TItem"></typeparam>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TItem">The type of the cached item.</typeparam>
+    /// </summary>
     public class MemoryCache<TKey, TItem> : IDisposable
     {
         /// <summary>
