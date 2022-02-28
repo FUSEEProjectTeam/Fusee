@@ -304,7 +304,6 @@ namespace Fusee.DImGui.Desktop
 
             // Using a Child allow to fill all the space of the window.
             // It also allows customization
-
             ImGui.BeginChild("GameRender", size, true, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
             FuseeViewportMin = ImGui.GetWindowContentRegionMin();
@@ -316,11 +315,6 @@ namespace Fusee.DImGui.Desktop
             ImGui.Image(new IntPtr(_texture4ImGui), FuseeViewportSize,
                 new Vector2(0, 1),
                 new Vector2(1, 0));
-
-            //app.RC.ViewportXStart = (int)FuseeViewportPos.X;
-            //app.RC.ViewportYStart = (int)((_windowHeight - FuseeViewportSize.Y) - FuseeViewportPos.Y);
-
-            ImGui.CaptureMouseFromApp();
 
             ImGui.EndChild();
             ImGui.End();
@@ -353,10 +347,8 @@ namespace Fusee.DImGui.Desktop
             GL.Enable(EnableCap.Multisample);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, ViewportFramebuffer);
-            // "Bind" the newly created texture : all future texture functions will modify this texture
             GL.BindTexture(TextureTarget.Texture2DMultisample, ViewportRenderTexture);
 
-            // Give an empty image to OpenGL ( the last "0" )
             GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.Rgb, width, height, true);
 
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _depthRenderbuffer);
