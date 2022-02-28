@@ -1268,10 +1268,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int vertsBytes = bitangents.Length * 3 * sizeof(float);
             if (((MeshImp)mr).BitangentBufferObject == 0)
-                {
-                    GL.GenBuffers(1, out int bufferIdx);
-                    ((MeshImp)mr).BitangentBufferObject = bufferIdx;
-                }
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).BitangentBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), bitangents, BufferUsage.StaticDraw);
@@ -1299,10 +1299,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int normsBytes = normals.Length * 3 * sizeof(float);
             if (((MeshImp)mr).NormalBufferObject == 0)
-                {
-                    GL.GenBuffers(1, out int bufferIdx);
-                    ((MeshImp)mr).NormalBufferObject = bufferIdx;
-                }
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).NormalBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsage.StaticDraw);
@@ -1329,10 +1329,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int indicesBytes = boneIndices.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneIndexBufferObject == 0)
-                {
-                    GL.GenBuffers(1, out int bufferIdx);
-                    ((MeshImp)mr).BoneIndexBufferObject = bufferIdx;
-                }
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).BoneIndexBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsage.StaticDraw);

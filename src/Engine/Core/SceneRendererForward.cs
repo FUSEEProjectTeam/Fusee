@@ -46,14 +46,14 @@ namespace Fusee.Engine.Core
         public RenderLayers RenderLayer
         {
             get => _renderLayer;
-            set 
+            set
             {
                 _renderLayer = value;
                 foreach (var module in VisitorModules)
                 {
                     ((IRendererModule)module).RenderLayer = _renderLayer;
                 }
-	        }
+            }
         }
         private RenderLayers _renderLayer;
 
@@ -163,7 +163,7 @@ namespace Fusee.Engine.Core
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
             IgnoreInactiveComponents = true;
-            _state = new RendererState();            
+            _state = new RendererState();
             InitAnimations(_sc);
         }
 
@@ -298,8 +298,8 @@ namespace Fusee.Engine.Core
         {
             foreach (var module in VisitorModules)
             {
-                ((IRendererModule) module).RenderLayer = _renderLayer;
-                ((IRendererModule) module).SetState(_state);
+                ((IRendererModule)module).RenderLayer = _renderLayer;
+                ((IRendererModule)module).SetState(_state);
             }
         }
 

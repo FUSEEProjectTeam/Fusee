@@ -7,7 +7,6 @@ using Android.Widget;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Android;
@@ -19,7 +18,7 @@ namespace Fusee.Examples.Camera.Android
 {
     [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
-		HardwareAccelerated=false,
+        HardwareAccelerated = false,
 #endif
         ConfigurationChanges = ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.SingleTask)]
     public class MainActivity : Activity

@@ -1,6 +1,5 @@
 ﻿using Fusee.Base.Core;
 using SixLabors.Fonts;
-using System;
 using System.IO;
 using System.Linq;
 

@@ -39,7 +39,7 @@ namespace Fusee.Base.Core
         }
 
         public void Add(TKey key, TItem cacheEntry)
-        {            
+        {
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetPriority(CacheItemPriority.High)
                 // Keep in cache for this time, reset time if accessed.
@@ -54,11 +54,11 @@ namespace Fusee.Base.Core
 
             // Key not in cache, so get data.
             _cache.Set(key, cacheEntry, cacheEntryOptions);
-            
+
         }
 
         public void AddOrUpdate(TKey key, TItem cacheEntry)
-        {           
+        {
             if (!_cache.TryGetValue(key, out cacheEntry))
             {
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -77,7 +77,7 @@ namespace Fusee.Base.Core
                 _cache.Set(key, cacheEntry, cacheEntryOptions);
             }
         }
-        
+
         public void Dispose()
         {
             Dispose(disposing: true);
@@ -85,7 +85,7 @@ namespace Fusee.Base.Core
         }
 
         private bool _disposed;
-        
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -94,13 +94,13 @@ namespace Fusee.Base.Core
                 {
                     // Dispose managed resources.
                     _cache.Dispose();
-                    
+
                 }
                 _disposed = true;
             }
         }
 
-       
+
         ~MemoryCache()
         {
             Dispose(disposing: false);

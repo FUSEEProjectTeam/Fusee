@@ -1,7 +1,6 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Common.Accessors;
 using Fusee.PointCloud.Core.Accessors;
 using Microsoft.Extensions.Caching.Memory;
 using System;

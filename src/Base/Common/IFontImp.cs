@@ -1,5 +1,4 @@
 ﻿using Fusee.Math.Core;
-using System;
 
 namespace Fusee.Base.Common
 {

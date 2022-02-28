@@ -17,7 +17,7 @@ namespace Fusee.PointCloud.Core.Accessors
             IntensityType = PointIntensityType.UShort;
             NormalType = PointNormalType.Double3;
         }
-        
+
         /// <summary>
         /// Sets the position of a point cloud point if <see cref="PointPositionType.Double3"/> is true.
         /// </summary>

@@ -9,7 +9,6 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using Image = OpenTK.Windowing.Common.Input.Image;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
