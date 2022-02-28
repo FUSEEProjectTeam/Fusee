@@ -4,7 +4,9 @@ using Fusee.Structures;
 
 namespace Fusee.PointCloud.Core
 {
-
+    /// <summary>
+    /// Used in <see cref="PointCloudOctree"/>. This octant does not contain actual point data.
+    /// </summary>
     public class PointCloudOctant : IPointCloudOctant
     {
         /// <summary>
@@ -32,12 +34,24 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public double Size { get; set; }
 
+        /// <summary>
+        /// List of child octants.
+        /// </summary>
         public IEmptyOctant<double3, double>[] Children { get; private set; }
 
+        /// <summary>
+        /// If true this octant does not have any children.
+        /// </summary>
         public bool IsLeaf { get; set; }
 
+        /// <summary>
+        /// Position in the parent octant/cube.
+        /// </summary>
         public int PosInParent { get; private set; }
 
+        /// <summary>
+        /// Level/ depth of this octant in the octree.
+        /// </summary>
         public int Level { get; private set; }
 
         /// <summary>
@@ -81,6 +95,10 @@ namespace Fusee.PointCloud.Core
             ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
         }
 
+        /// <summary>
+        /// Instantiates a child octant at the given position.
+        /// </summary>
+        /// <param name="atPosInParent">The <see cref="PosInParent"/> the new child has.</param>
         public IEmptyOctant<double3, double> CreateChild(int atPosInParent)
         {
             throw new System.NotImplementedException();

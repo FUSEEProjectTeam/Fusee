@@ -8,6 +8,9 @@ namespace Fusee.PointCloud.Core.Accessors
     /// </summary>
     public class PosD3NorF3ColF3Accessor : PointAccessor<PosD3NorF3ColF3>
     {
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
         public PosD3NorF3ColF3Accessor()
         {
             PositionType = PointPositionType.Double3;

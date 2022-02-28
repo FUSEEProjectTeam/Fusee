@@ -804,13 +804,12 @@ namespace Fusee.Engine.Core
             Model = float4x4.Identity;
             Projection = DefaultState.Projection;
 
-            // mesh management
+            // mesh, texture and effect management
             _meshManager = new MeshManager(_rci);
-
-            // texture management
             _textureManager = new TextureManager(_rci);
-
             _effectManager = new EffectManager(this);
+
+            ModuleExtensionPoint.CreateGpuMesh = CreateGpuMesh;
         }
 
         /// <summary>
@@ -1820,6 +1819,22 @@ namespace Fusee.Engine.Core
             return _rci.CreateMeshImp();
         }
 
+        /// <summary>
+        /// Creates a <see cref="GpuMesh"/>, registers it in the <see cref="MeshManager"/> and uploads the data to the gpu.
+        /// </summary>
+        /// <param name="primitiveType"></param>
+        /// <param name="vertices">The vertex data of the mesh.</param>
+        /// <param name="triangles">The triangle indices of the mesh.</param>
+        /// <param name="normals">The normal vectors of the mesh.</param>
+        /// <param name="colors">The first color set of the mesh.</param>
+        /// <param name="colors1">The second color set of the mesh.</param>
+        /// <param name="colors2">The third color set of the mesh.</param>
+        /// <param name="uvs">The uv coordinates of the mesh.</param>
+        /// <param name="tangents">The tangent vectors of the mesh.</param>
+        /// <param name="bitangents">The bitangent vectors of the mesh.</param>
+        /// <param name="boneIndices">The bone indices of the mesh.</param>
+        /// <param name="boneWeights">The bone weights of the mesh.</param>
+        /// <returns></returns>
         public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, ushort[] triangles = null,
             float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null, float2[] uvs = null,
             float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)

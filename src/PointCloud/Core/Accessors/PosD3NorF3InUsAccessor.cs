@@ -8,10 +8,13 @@ namespace Fusee.PointCloud.Core.Accessors
     /// </summary>
     public class PosD3NorF3InUsAccessor : PointAccessor<PosD3NorF3InUs>
     {
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
         public PosD3NorF3InUsAccessor()
         {
             PositionType = PointPositionType.Double3;
-            IntensityType = PointIntensityType.UInt_16;
+            IntensityType = PointIntensityType.UShort;
             NormalType = PointNormalType.Double3;
         }
         
@@ -33,7 +36,7 @@ namespace Fusee.PointCloud.Core.Accessors
             return ref point.Position;
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UShort"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref ushort GetIntensityUInt_16(ref PosD3NorF3InUs point)
@@ -41,7 +44,7 @@ namespace Fusee.PointCloud.Core.Accessors
             return ref point.Intensity;
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UShort"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>

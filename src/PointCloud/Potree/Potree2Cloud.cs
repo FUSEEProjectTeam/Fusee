@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace Fusee.PointCloud.Potree
 {
     /// <summary>
-    /// Point type specific implementation of Potree2 clouds.
+    /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
     public class Potree2Cloud : IPointCloudImp, IDisposable
     {
@@ -18,12 +18,12 @@ namespace Fusee.PointCloud.Potree
         public List<GpuMesh> MeshesToRender { get; set; }
 
         /// <summary>
-        /// Nows which octants are visible and when to invoke a point loading event.
+        /// Nows which octants are visible and when to trigger the point loading.
         /// </summary>
         public VisibilityTester VisibilityTester { get; }
 
         /// <summary>
-        /// Nows which octants are visible and when to invoke a point loading event.
+        /// Handles the point and mesh data.
         /// </summary>
         public PointCloudDataHandlerBase DataHandler { get; }
 
@@ -73,14 +73,19 @@ namespace Fusee.PointCloud.Potree
             }
         }
 
+        /// <summary>
+        /// The center of the point clouds AABB / Octree root.
+        /// </summary>
         public float3 Center => (float3)VisibilityTester.Octree.Root.Center;
 
+        /// <summary>
+        /// The size (longest edge) of the point clouds AABB / Octree root.
+        /// </summary>
         public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
 
-        private bool _disposed;
         private readonly GetMeshes _getMeshes;
-
         private bool _doUpdate = true;
+        private bool _disposed;
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
@@ -93,7 +98,14 @@ namespace Fusee.PointCloud.Potree
             _getMeshes = dataHandler.GetMeshes;
         }
 
-
+        /// <summary>
+        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TPoint}"/> to update the visible meshes.
+        /// Called every frame.
+        /// </summary>
+        /// <param name="fov">The camera's field of view.</param>
+        /// <param name="viewportHeight">The viewport height.</param>
+        /// <param name="renderFrustum">The camera's frustum.</param>
+        /// <param name="camPos">The camera position in world coordinates.</param>
         public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos)
         {
             DataHandler.ProcessDisposeQueue();

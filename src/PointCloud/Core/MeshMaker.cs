@@ -2,11 +2,15 @@
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common.Accessors;
+using Fusee.PointCloud.Core.Accessors;
 using System;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Core
 {
+    /// <summary>
+    /// Static class that provides generic methods that take point cloud points and return <see cref="GpuMesh"/>s.
+    /// </summary>
     public static class MeshMaker
     {
         /// <summary>
@@ -45,7 +49,7 @@ namespace Fusee.PointCloud.Core
                 {
                     pointsPerMesh = points;
                 }
-                var mesh = createMeshHandler(pointAccessor, pointsPerMesh, PointCloudImplementor.CreateGpuMesh);
+                var mesh = createMeshHandler(pointAccessor, pointsPerMesh, ModuleExtensionPoint.CreateGpuMesh);
 
                 meshes.Add(mesh);
                 meshCnt++;

@@ -94,7 +94,7 @@ namespace Fusee.PointCloud.Core
         public VisibilityTester(IPointCloudOctree octree, TriggerPointLoading tryAddPointsToCacheHandler)
         {
             _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, PointCloudOctant>();
-            var numberOfNodes = ((int)System.Math.Pow(8, octree.MaxLevel + 1) - 1) / 7 - 1;
+            var numberOfNodes = ((int)System.Math.Pow(8, octree.Depth + 1) - 1) / 7 - 1;
             VisibleNodes = new(numberOfNodes / 4);
             Octree = octree;
             _triggerPointLoading = tryAddPointsToCacheHandler;

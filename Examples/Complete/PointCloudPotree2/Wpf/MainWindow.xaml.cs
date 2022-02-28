@@ -371,7 +371,6 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
 
             app.InitApp();
-            PointCloudImplementor.CreateGpuMesh = app.RC.CreateGpuMesh;
         }
     }
 }

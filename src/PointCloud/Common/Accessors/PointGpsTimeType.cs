@@ -1,50 +1,53 @@
 ﻿namespace Fusee.PointCloud.Common.Accessors
 {
+    /// <summary>
+    /// Declares valid data types for a point cloud's gps time data.
+    /// </summary>
     public enum PointGpsTimeType
     {
         /// <summary>
         /// A point cloud point without gps time.
         /// </summary>
-        None,        
+        None,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="sbyte"/>.
         /// </summary>
-        Int_8,
+        SByte,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="short"/>.
         /// </summary>
-        Int_16,
+        Short,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="int"/>.
         /// </summary>
-        Int_32,
+        Int,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="long"/>.
         /// </summary>
-        Int_64,
+        Long,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="byte"/>.
         /// </summary>
-        UInt_8,
+        Byte,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="ushort"/>.
         /// </summary>
-        UInt_16,
+        UShort,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="uint"/>.
         /// </summary>
-        UInt_32,
+        Uint,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="ulong"/>.
         /// </summary>
-        UInt_64,
+        ULong,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="float"/>.
         /// </summary>
-        Float32,
+        Float,
         /// <summary>
         /// A point cloud point has a gps time value of type <see cref="double"/>.
         /// </summary>
-        Float64
+        Double
     }
 }

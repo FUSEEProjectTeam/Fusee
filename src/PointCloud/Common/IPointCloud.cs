@@ -2,10 +2,13 @@
 
 namespace Fusee.PointCloud.Common
 {
+    /// <summary>
+    /// Interface for file type independent point cloud implementations.
+    /// </summary>
     public interface IPointCloud
     {
         /// <summary>
-        /// File type independent properties for point cloud rendering.
+        /// Non-Point-type-specific out-out-of-core point cloud implementation.
         /// </summary>
         public IPointCloudImp PointCloudImp { get; }
 

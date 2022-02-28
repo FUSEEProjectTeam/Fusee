@@ -12,20 +12,26 @@ using System.IO;
 
 namespace Fusee.PointCloud.Potree.V2
 {
+    /// <summary>
+    /// Reads Potree V2 files and is able to create a point cloud scene component, that can be rendered.
+    /// </summary>
     public class Potree2Reader : IPointReader
     {
+        /// <summary>
+        /// A PointAccessor allows access to the point information (position, color, ect.) without casting it to a specific <see cref="PointType"/>.
+        /// </summary>
         public IPointAccessor PointAccessor { get; private set; }
 
-        public PotreeData Instance
+        internal PotreeData FileDataInstance
         {
             get
             {
                 if (_instance == null)
                 {
                     _instance = new PotreeData();
-                    Instance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(_metadataFilePath));
-                    Instance.Hierarchy = LoadHierarchy(_fileFolderPath);
-                    Instance.Metadata.FolderPath = _fileFolderPath;
+                    FileDataInstance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(_metadataFilePath));
+                    FileDataInstance.Hierarchy = LoadHierarchy(_fileFolderPath);
+                    FileDataInstance.Metadata.FolderPath = _fileFolderPath;
                 }
                 return _instance;
             }
@@ -36,15 +42,21 @@ namespace Fusee.PointCloud.Potree.V2
         }
 
         private static PotreeData _instance;
-
         private string _fileFolderPath;
         private string _metadataFilePath;
 
+        /// <summary>
+        /// Returns the point type.
+        /// </summary>
         public PointType GetPointType()
         {
             return PointType.PosD3ColF3LblB;
         }
 
+        /// <summary>
+        /// Returns a renderable point cloud component.
+        /// </summary>
+        /// <param name="fileFolderPath">Path to the file.</param>
         public IPointCloud GetPointCloudComponent(string fileFolderPath)
         {
             _fileFolderPath = fileFolderPath;
@@ -54,7 +66,6 @@ namespace Fusee.PointCloud.Potree.V2
             switch (ptType)
             {
                 default:
-                case PointType.Undefined:
                 case PointType.PosD3:
                 case PointType.PosD3ColF3InUs:
                 case PointType.PosD3InUs:
@@ -74,7 +85,7 @@ namespace Fusee.PointCloud.Potree.V2
         }
 
         /// <summary>
-        /// Reads the meta.json and .hierarchy files and returns an octree.
+        /// Reads the Potree file and returns an octree.
         /// </summary>
         /// <returns></returns>
         public IPointCloudOctree GetOctree()
@@ -83,32 +94,38 @@ namespace Fusee.PointCloud.Potree.V2
 
             int pointSize = 0;
 
-            if (Instance.Metadata != null)
+            if (FileDataInstance.Metadata != null)
             {
-                foreach (var metaAttributeItem in Instance.Metadata.Attributes)
+                foreach (var metaAttributeItem in FileDataInstance.Metadata.Attributes)
                 {
                     pointSize += metaAttributeItem.Size;
                 }
 
-                Instance.Metadata.PointSize = pointSize;
+                FileDataInstance.Metadata.PointSize = pointSize;
             }
 
-            var center = double3.Zero; // Instance.Hierarchy.TreeRoot.Aabb.Center;
-            var size = Instance.Hierarchy.TreeRoot.Aabb.Size.y;
-            var maxLvl = Instance.Metadata.Hierarchy.Depth;
+            var center = FileDataInstance.Hierarchy.TreeRoot.Aabb.Center - FileDataInstance.Metadata.Offset;
+            var size = FileDataInstance.Hierarchy.TreeRoot.Aabb.Size.y;
+            var maxLvl = FileDataInstance.Metadata.Hierarchy.Depth;
 
             var octree = new PointCloudOctree(center, size, maxLvl);
 
-            MapChildNodesRecursive(octree.Root, Instance.Hierarchy.TreeRoot);
+            MapChildNodesRecursive(octree.Root, FileDataInstance.Hierarchy.TreeRoot);
 
             return octree;
         }
 
+        /// <summary>
+        /// Returns the points for one octant as generic array.
+        /// </summary>
+        /// <typeparam name="TPoint">The generic point type.</typeparam>
+        /// <param name="id">The unique id of the octant.</param>
+        /// <returns></returns>
         public TPoint[] LoadNodeData<TPoint>(string id) where TPoint : new()
         {
             var node = FindNode(id);
 
-            var octreeFilePath = Path.Combine(Instance.Metadata.FolderPath, Constants.OctreeFileName);
+            var octreeFilePath = Path.Combine(FileDataInstance.Metadata.FolderPath, Constants.OctreeFileName);
             var binaryReader = new BinaryReader(File.OpenRead(octreeFilePath));
             TPoint[] points = LoadNodeData<TPoint>(node, binaryReader);
 
@@ -130,17 +147,17 @@ namespace Fusee.PointCloud.Potree.V2
 
             var attributeOffset = 0;
 
-            foreach (var metaitem in Instance.Metadata.Attributes)
+            foreach (var metaitem in FileDataInstance.Metadata.Attributes)
             {
                 if (metaitem.Name == "position")
                 {
                     for (int i = 0; i < node.NumPoints; i++)
                     {
-                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * FileDataInstance.Metadata.PointSize;
 
-                        double x = (binaryReader.ReadInt32() * Instance.Metadata.Scale.x); // + Instance.Metadata.Offset.x;
-                        double y = (binaryReader.ReadInt32() * Instance.Metadata.Scale.y); // + Instance.Metadata.Offset.y;
-                        double z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z); // + Instance.Metadata.Offset.z;
+                        double x = (binaryReader.ReadInt32() * FileDataInstance.Metadata.Scale.x); // + Instance.Metadata.Offset.x;
+                        double y = (binaryReader.ReadInt32() * FileDataInstance.Metadata.Scale.y); // + Instance.Metadata.Offset.y;
+                        double z = (binaryReader.ReadInt32() * FileDataInstance.Metadata.Scale.z); // + Instance.Metadata.Offset.z;
 
                         double3 position = new(x, y, z);
                         ((PointAccessor<TPoint>)PointAccessor).SetPositionFloat3_64(ref points[i], position);
@@ -150,7 +167,7 @@ namespace Fusee.PointCloud.Potree.V2
                 {
                     for (int i = 0; i < node.NumPoints; i++)
                     {
-                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * FileDataInstance.Metadata.PointSize;
 
                         ushort r = binaryReader.ReadUInt16();
                         ushort g = binaryReader.ReadUInt16();
@@ -168,7 +185,7 @@ namespace Fusee.PointCloud.Potree.V2
                 {
                     for (int i = 0; i < node.NumPoints; i++)
                     {
-                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i + Instance.Metadata.PointSize;
+                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i + FileDataInstance.Metadata.PointSize;
 
                         byte label = (byte)binaryReader.ReadSByte();
                         ((PointAccessor<TPoint>)PointAccessor).SetLabelUInt_8(ref points[i], label);
@@ -189,7 +206,7 @@ namespace Fusee.PointCloud.Potree.V2
             {
                 if (potreeNode.children[i] != null)
                 {
-                    var octant = new PointCloudOctant(potreeNode.children[i].Aabb.Center - Instance.Metadata.Offset, potreeNode.children[i].Aabb.Size.y, potreeNode.children[i].Name);
+                    var octant = new PointCloudOctant(potreeNode.children[i].Aabb.Center - FileDataInstance.Metadata.Offset, potreeNode.children[i].Aabb.Size.y, potreeNode.children[i].Name);
 
                     if (potreeNode.children[i].NodeType == NodeType.LEAF)
                     {
@@ -207,16 +224,16 @@ namespace Fusee.PointCloud.Potree.V2
         {
             var hierarchyFilePath = Path.Combine(fileFolderPath, Constants.HierarchyFileName);
 
-            var firstChunkSize = Instance.Metadata.Hierarchy.FirstChunkSize;
-            var stepSize = Instance.Metadata.Hierarchy.StepSize;
-            var depth = Instance.Metadata.Hierarchy.Depth;
+            var firstChunkSize = FileDataInstance.Metadata.Hierarchy.FirstChunkSize;
+            var stepSize = FileDataInstance.Metadata.Hierarchy.StepSize;
+            var depth = FileDataInstance.Metadata.Hierarchy.Depth;
 
             var data = File.ReadAllBytes(hierarchyFilePath);
 
             PotreeNode root = new PotreeNode()
             {
                 Name = "r",
-                Aabb = new AABBd(Instance.Metadata.BoundingBox.Min, Instance.Metadata.BoundingBox.Max)
+                Aabb = new AABBd(FileDataInstance.Metadata.BoundingBox.Min, FileDataInstance.Metadata.BoundingBox.Max)
             };
 
             var hierarchy = new PotreeHierarchy();
@@ -232,6 +249,7 @@ namespace Fusee.PointCloud.Potree.V2
 
             return hierarchy;
         }
+
         private void LoadHierarchyRecursive(ref PotreeNode root, ref byte[] data, long offset, long size)
         {
             int bytesPerNode = 22;
@@ -331,7 +349,7 @@ namespace Fusee.PointCloud.Potree.V2
 
         private PotreeNode FindNode(string id)
         {
-            return Instance.Hierarchy.Nodes.Find(n => n.Name == id);
+            return FileDataInstance.Hierarchy.Nodes.Find(n => n.Name == id);
         }
     }
 }

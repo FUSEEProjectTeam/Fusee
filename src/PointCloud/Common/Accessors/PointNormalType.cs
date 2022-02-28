@@ -2,6 +2,9 @@
 
 namespace Fusee.PointCloud.Common.Accessors
 {
+    /// <summary>
+    /// Declares valid data types for a point cloud's normal vectors.
+    /// </summary>
     public enum PointNormalType
     {
         /// <summary>

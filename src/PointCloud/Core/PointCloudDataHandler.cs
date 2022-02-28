@@ -2,6 +2,7 @@
 using Fusee.Engine.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Common.Accessors;
+using Fusee.PointCloud.Core.Accessors;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,13 @@ using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Core
 {
+    /// <summary>
+    /// Delegate for a method that tries to get the mesh(es) of an octant. If they are not cached yet, they should be created an added to the MeshCache.
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns></returns>
     public delegate IEnumerable<GpuMesh> GetMeshes(string guid);
-    
+
     /// <summary>
     /// Called in "determine visibility for node" - if the PointCache does not contain the points load them.
     /// </summary>
@@ -23,7 +29,7 @@ namespace Fusee.PointCloud.Core
     /// </summary>
     /// <param name="guid">Unique ID of an octant.</param>
     public delegate TPoint[] LoadPointsHandler<TPoint>(string guid);
-    
+
     /// <summary>
     /// Generic delegate to inject a method that nows how to actually create a GpuMesh for the given point type.
     /// The injected methods decide which point values are assigned to which mesh properties (primarily important for the various color values).
@@ -35,6 +41,10 @@ namespace Fusee.PointCloud.Core
     /// <returns></returns>
     public delegate GpuMesh CreateMesh<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, CreateGpuMesh createMesh);
 
+    /// <summary>
+    /// Manages the caching and loading of point and mesh data.
+    /// </summary>
+    /// <typeparam name="TPoint"></typeparam>
     public class PointCloudDataHandler<TPoint> : PointCloudDataHandlerBase where TPoint : new()
     {
         /// <summary>
@@ -54,13 +64,19 @@ namespace Fusee.PointCloud.Core
         private float _deltaTimeSinceLastDisposal;
         private bool _disposed;
 
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="pointAccessor">The point accessor that allows to access the point data.</param>
+        /// <param name="createMeshHandler">Method that knows how to create a mesh for the explicit point type (see <see cref="MeshMaker"/>).</param>
+        /// <param name="loadPointsHandler">The method that is able to load the points from the hard drive/file.</param>
         public PointCloudDataHandler(PointAccessor<TPoint> pointAccessor, CreateMesh<TPoint> createMeshHandler, LoadPointsHandler<TPoint> loadPointsHandler)
         {
             PointCache = new();
             MeshCache = new();
             MeshCache.SlidingExpiration = 30;
             MeshCache.ExpirationScanFrequency = 31;
-            
+
             _createMeshHandler = createMeshHandler;
             _loadPointsHandler = loadPointsHandler;
             _pointAccessor = pointAccessor;
@@ -100,14 +116,9 @@ namespace Fusee.PointCloud.Core
             return null;
         }
 
-        private void OnItemEvictedFromCache(object guid, object meshes, EvictionReason reason, object state)
-        {
-            lock (LockDisposeQueue)
-            {
-                DisposeQueue.Add((string)guid, (IEnumerable<GpuMesh>)meshes);
-            }
-        }
-
+        /// <summary>
+        /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the MeshCache.
+        /// </summary>
         public override void ProcessDisposeQueue()
         {
             if (_deltaTimeSinceLastDisposal < DisposeRate)
@@ -135,6 +146,10 @@ namespace Fusee.PointCloud.Core
             }
         }
 
+        /// <summary>
+        /// Loads points from the hard drive if they are neither in the loading queue nor in the PointCahce.
+        /// </summary>
+        /// <param name="guid">The octant for which the points should be loaded.</param>
         public override void TriggerPointLoading(string guid)
         {
             if (!LoadingQueue.Contains(guid) && LoadingQueue.Count <= MaxNumberOfNodesToLoad)
@@ -146,7 +161,11 @@ namespace Fusee.PointCloud.Core
 
                 _ = Task.Run(() =>
                 {
-                    TryAddPointsToCache(guid);
+                    if (!PointCache.TryGetValue(guid, out var points))
+                    {
+                        points = _loadPointsHandler.Invoke(guid);
+                        PointCache.Add(guid, points);
+                    }
 
                     lock (LockLoadingQueue)
                     {
@@ -156,15 +175,14 @@ namespace Fusee.PointCloud.Core
             }
         }
 
-        private void TryAddPointsToCache(string guid)
+        private void OnItemEvictedFromCache(object guid, object meshes, EvictionReason reason, object state)
         {
-            if (!PointCache.TryGetValue(guid, out var points))
+            lock (LockDisposeQueue)
             {
-                points = _loadPointsHandler.Invoke(guid);
-                PointCache.Add(guid, points);
+                DisposeQueue.Add((string)guid, (IEnumerable<GpuMesh>)meshes);
             }
         }
-                
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

@@ -2,6 +2,7 @@
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Common.Accessors;
+using Fusee.PointCloud.Core.Accessors;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -28,12 +29,31 @@ namespace Fusee.PointCloud.Las.Desktop
         {
             _filename = filename;
             OpenFile(_filename);
+
+            var pointType = GetPointType();
+            switch (pointType)
+            {
+                case PointType.Undefined:
+                case PointType.PosD3:
+                case PointType.PosD3ColF3InUs:
+                case PointType.PosD3InUs:
+                case PointType.PosD3ColF3:
+                case PointType.PosD3LblB:
+                case PointType.PosD3NorF3ColF3InUs:
+                case PointType.PosD3NorF3InUs:
+                case PointType.PosD3NorF3ColF3:
+                case PointType.PosD3ColF3LblB:
+                case PointType.PosD3ColF3InUsLblB:
+                default:
+                    break;
+            }
+
             throw new NotImplementedException();
         }
 
         public IPointCloudOctree GetOctree()
         {
-            //convert to potree octree
+            //convert to potree octree            
             throw new NotImplementedException();
         }
 
@@ -143,7 +163,7 @@ namespace Fusee.PointCloud.Las.Desktop
             GetPoint(_ptrToLASClass, ref currentPoint);
 
             var typedAccessor = (PointAccessor<TPoint>)pa;
-            
+
             if ((MetaInfo.PointDataFormat == 2 || MetaInfo.PointDataFormat == 3) && typedAccessor.ColorType == PointColorType.Float3)
                 typedAccessor.SetColorFloat3_32(ref point, new float3(currentPoint.R, currentPoint.G, currentPoint.B));
 

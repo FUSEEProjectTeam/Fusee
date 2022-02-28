@@ -8,15 +8,18 @@ namespace Fusee.PointCloud.Core.Accessors
     /// </summary>
     public class PosD3ColF3LblBAccessor : PointAccessor<PosD3ColF3LblB>
     {
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
         public PosD3ColF3LblBAccessor()
         {
             PositionType = PointPositionType.Double3;
             ColorType = PointColorType.Float;
-            LabelType = PointLabelType.UInt_8;
+            LabelType = PointLabelType.Byte;
         }
 
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Sets the color of a point cloud point.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -25,7 +28,7 @@ namespace Fusee.PointCloud.Core.Accessors
             point.Color = val;
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Returns the normal color of a point cloud point.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref float3 GetColorFloat3_32(ref PosD3ColF3LblB point)
@@ -34,7 +37,7 @@ namespace Fusee.PointCloud.Core.Accessors
         }
 
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -43,7 +46,7 @@ namespace Fusee.PointCloud.Core.Accessors
             point.Position = val;
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref PosD3ColF3LblB point)
@@ -51,7 +54,7 @@ namespace Fusee.PointCloud.Core.Accessors
             return ref point.Position;
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelUInt_8"/> is true.
+        /// Sets the label of a point cloud point.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -60,7 +63,7 @@ namespace Fusee.PointCloud.Core.Accessors
             point.Label = val;
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelUInt_8"/> is true.
+        /// Returns the label of a point cloud point.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref byte GetLabelUInt_8(ref PosD3ColF3LblB point)

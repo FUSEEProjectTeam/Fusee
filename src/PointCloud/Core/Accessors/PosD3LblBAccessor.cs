@@ -8,14 +8,17 @@ namespace Fusee.PointCloud.Core.Accessors
     /// </summary>
     public class PosD3LblBAccessor : PointAccessor<PosD3LblB>
     {
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
         public PosD3LblBAccessor()
         {
             PositionType = PointPositionType.Double3;
-            LabelType = PointLabelType.UInt_8;
+            LabelType = PointLabelType.Byte;
         }
 
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="PointLabelType.UInt_8"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.Byte"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -24,7 +27,7 @@ namespace Fusee.PointCloud.Core.Accessors
             point.Label = val;
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="PointLabelType.UInt_8"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.Byte"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref byte GetLabelUInt_8(ref PosD3LblB point)

@@ -4,6 +4,6 @@
     {
         public IPointCloudOctant Root { get; }
 
-        public int MaxLevel { get; }
+        public int Depth { get; }
     }
 }

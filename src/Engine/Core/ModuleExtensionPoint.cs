@@ -1,21 +1,25 @@
-﻿using Fusee.Engine.Common;
-using System;
+﻿using System;
 
 namespace Fusee.Engine.Core
 {
-    //Properties that can be injected in the Main.cs of an example.
-    public sealed class PointCloudImplementor : IDisposable
+    /// <summary>
+    /// Allows the use of Engine specific objects, properties and methods in Modules, e.g. PointCloud.
+    /// </summary>
+    public sealed class ModuleExtensionPoint : IDisposable
     {
         #region Singleton 
-        private static readonly PointCloudImplementor _instance = new();
+        private static readonly ModuleExtensionPoint _instance = new();
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
-        static PointCloudImplementor() { }
+        static ModuleExtensionPoint() { }
 
-        private PointCloudImplementor() { }
+        private ModuleExtensionPoint() { }
 
-        public static PointCloudImplementor Instance
+        /// <summary>
+        /// Static instance property.
+        /// </summary>
+        public static ModuleExtensionPoint Instance
         {
             get
             {
@@ -24,7 +28,10 @@ namespace Fusee.Engine.Core
         }
         #endregion
 
-        //Inject the method that knows how to create a GpuMesh - without passing the RenderContext down into the PointCloudImp
+        /// <summary>
+        /// Delegate of the method that knows how to create a GpuMesh - without passing the RenderContext down into the module.
+        /// Set in the constructor the RenderContext.
+        /// </summary>
         public static CreateGpuMesh CreateGpuMesh
         {
             get { return Instance._createGpuMesh; }
@@ -54,7 +61,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        ~PointCloudImplementor()
+        ~ModuleExtensionPoint()
         {
             Dispose(disposing: false);
         }

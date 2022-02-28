@@ -10,13 +10,16 @@ namespace Fusee.PointCloud.Core.Accessors
     /// </summary>
     public class PosD3Accessor : PointAccessor<PosD3>
     {
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
         public PosD3Accessor()
         {
             PositionType = PointPositionType.Double3;
         }
 
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="PointPositionType.Double3"/> is true.
+        /// Sets the position of a point cloud point.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -26,7 +29,7 @@ namespace Fusee.PointCloud.Core.Accessors
         }
 
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="PointPositionType.Double3"/> is true.
+        /// Returns the position of a point cloud point.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref PosD3 point)

@@ -63,7 +63,6 @@ namespace Fusee.Examples.PointCloudPotree2.Desktop
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
             app.InitApp();
-            PointCloudImplementor.CreateGpuMesh = app.RC.CreateGpuMesh;
 
             // Start the app
             app.Run();

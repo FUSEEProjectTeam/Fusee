@@ -18,6 +18,9 @@ namespace Fusee.PointCloud.Common.Accessors
     /// </summary>
     public enum PointType
     {
+        /// <summary>
+        /// Point type is not set yet.
+        /// </summary>
         Undefined,
 
         /// <summary>

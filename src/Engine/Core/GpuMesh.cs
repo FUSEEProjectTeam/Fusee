@@ -30,6 +30,9 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class GpuMesh : SceneComponent, IManagedMesh
     {
+        /// <summary>
+        /// The bounding box of this geometry.
+        /// </summary>
         public AABBf BoundingBox;
 
         /// <summary>
