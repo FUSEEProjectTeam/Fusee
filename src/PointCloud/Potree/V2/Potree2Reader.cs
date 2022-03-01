@@ -73,6 +73,14 @@ namespace Fusee.PointCloud.Potree.V2
             return octree;
         }
 
+        private double4x4 YZflip = new double4x4()
+        {
+            M11 = 1, M12 = 0, M13 = 0, M14 = 0,
+            M21 = 0, M22 = 0, M23 = 1, M24 = 0,
+            M31 = 0, M32 = 1, M33 = 0, M34 = 0,
+            M41 = 0, M42 = 0, M43 = 0, M44 = 1
+        };
+
         public async Task<TPoint[]> LoadPointsForNodeAsync<TPoint>(string guid, IPointAccessor pointAccessor) where TPoint : new()
         {
             return await Task.Run(() => { return LoadNodeData<TPoint>(guid, pointAccessor); });
@@ -117,6 +125,8 @@ namespace Fusee.PointCloud.Potree.V2
                         double z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z); // + Instance.Metadata.Offset.z;
 
                         double3 position = new(x, y, z);
+                        position = YZflip * position;
+
                         pointAccessor.SetPositionFloat3_64(ref points[i], position);
                     }
                 }
