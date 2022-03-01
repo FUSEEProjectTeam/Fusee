@@ -34,10 +34,10 @@ namespace Fusee.DImGui.Desktop
 
             _keyboard = new KeyboardDeviceImp(_gameWindow);
             _mouse = new MouseDeviceImp(_gameWindow);
-            _gamePad0 = new GamePadDeviceImp(_gameWindow, 0);
-            _gamePad1 = new GamePadDeviceImp(_gameWindow, 1);
-            _gamePad2 = new GamePadDeviceImp(_gameWindow, 2);
-            _gamePad3 = new GamePadDeviceImp(_gameWindow, 3);
+            //_gamePad0 = new GamePadDeviceImp(_gameWindow, 0);
+            //_gamePad1 = new GamePadDeviceImp(_gameWindow, 1);
+            //_gamePad2 = new GamePadDeviceImp(_gameWindow, 2);
+            //_gamePad3 = new GamePadDeviceImp(_gameWindow, 3);
         }
 
         /// <summary>
@@ -47,12 +47,12 @@ namespace Fusee.DImGui.Desktop
         {
             get
             {
-                yield return _mouse;
                 yield return _keyboard;
-                yield return _gamePad0;
-                yield return _gamePad1;
-                yield return _gamePad2;
-                yield return _gamePad3;
+                yield return _mouse;
+                //yield return _gamePad0;
+                //yield return _gamePad1;
+                //yield return _gamePad2;
+                //yield return _gamePad3;
 
             }
         }

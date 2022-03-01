@@ -144,9 +144,10 @@ namespace Fusee.DImGui.Desktop
 
         protected internal void DoUpdate()
         {
-            Update?.Invoke(this, new RenderEventArgs());
-
             if (!_initialized) return;
+
+            Input.Instance.PreRender();
+            Update?.Invoke(this, new RenderEventArgs());
 
             _controller.UpdateImGui(DeltaTimeUpdate);
         }
@@ -154,9 +155,6 @@ namespace Fusee.DImGui.Desktop
         protected internal void DoRender()
         {
             if (!_initialized) return;
-
-            Input.Instance.PreRender();
-            Time.Instance.DeltaTimeIncrement = DeltaTime;
 
             #region FuseeRender
 
@@ -170,7 +168,12 @@ namespace Fusee.DImGui.Desktop
                 // Enable FB
                 _controller.UpdateRenderTexture(Width, Height);
                 DoResize(Width, Height);
+
+                Time.Instance.DeltaTimeIncrement = DeltaTime;
+
                 Render?.Invoke(this, new RenderEventArgs());
+
+                Input.Instance.PostRender();
 
                 // after rendering, blt result into ViewportRenderTexture
                 GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _controller.ViewportFramebuffer);
@@ -188,8 +191,6 @@ namespace Fusee.DImGui.Desktop
             #endregion
 
             _controller.RenderImGui();
-            Input.Instance.PostRender();
-            _gameWindow.SwapBuffers();
         }
 
         protected internal void DoUnLoad()

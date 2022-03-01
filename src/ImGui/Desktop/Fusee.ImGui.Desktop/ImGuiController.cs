@@ -325,9 +325,7 @@ namespace Fusee.DImGui.Desktop
 
             RenderImDrawData(ImGui.GetDrawData());
 
-            Input.Instance.PostRender();
-
-            //_gameWindow?.SwapBuffers();
+            _gameWindow?.SwapBuffers();
         }
 
         public void UpdateRenderTexture(int width, int height)
