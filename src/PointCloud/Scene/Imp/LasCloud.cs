@@ -32,7 +32,7 @@ namespace Fusee.PointCloud.Scene.Imp
         /// <param name="box"></param>
         /// <param name="doExchangeYZ"></param>
         /// <returns></returns>
-        private List<GpuMesh> GetMeshsFromLasFile(CreateGpuMesh createGpuMesh, out AABBf box, bool doExchangeYZ = false)
+        private List<GpuMesh> GetMeshsFromLasFile(CreateGpuMesh createGpuMesh, out AABBf box)
         {
             var pointCnt = ((IPointReader)PointCloudImplementor.NativePointReader).MetaInfo.PointCount;
             int maxVertCount = ushort.MaxValue - 1;
@@ -54,7 +54,7 @@ namespace Fusee.PointCloud.Scene.Imp
                     numberOfPointsInMesh = maxVertCount;
                 points = ((IPointReader)PointCloudImplementor.NativePointReader).ReadNPoints<PosD3ColF3InUsLblB>(numberOfPointsInMesh, ptAccessor);
 
-                GpuMesh mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3InUsLblB(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh);
+                GpuMesh mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3InUsLblB(ptAccessor, points, float3.Zero, createGpuMesh);
                 if (i == 0)
                     box = mesh.BoundingBox;
                 else

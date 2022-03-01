@@ -332,7 +332,7 @@ namespace Fusee.PointCloud.Scene.Imp
                             {
                                 points = args.Points;
                             }
-                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3((PosD3Accessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, PointCloudImplementor.CreateGpuMesh);
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3((PosD3Accessor)PointCloudLoader.PtAccessor, points, float3.Zero, PointCloudImplementor.CreateGpuMesh);
 
                             meshes.Add(mesh);
                             meshCnt++;
@@ -367,7 +367,7 @@ namespace Fusee.PointCloud.Scene.Imp
                             {
                                 points = args.Points;
                             }
-                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3InUs((PosD3ColF3InUsAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, PointCloudImplementor.CreateGpuMesh);
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3InUs((PosD3ColF3InUsAccessor)PointCloudLoader.PtAccessor, points, float3.Zero, PointCloudImplementor.CreateGpuMesh);
 
                             meshes.Add(mesh);
                             meshCnt++;
@@ -402,7 +402,7 @@ namespace Fusee.PointCloud.Scene.Imp
                             {
                                 points = args.Points;
                             }
-                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3InUs((PosD3InUsAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, PointCloudImplementor.CreateGpuMesh);
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3InUs((PosD3InUsAccessor)PointCloudLoader.PtAccessor, points, float3.Zero, PointCloudImplementor.CreateGpuMesh);
 
                             meshes.Add(mesh);
                             meshCnt++;
@@ -437,7 +437,7 @@ namespace Fusee.PointCloud.Scene.Imp
                             {
                                 points = args.Points;
                             }
-                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3((PosD3ColF3Accessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, PointCloudImplementor.CreateGpuMesh);
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3((PosD3ColF3Accessor)PointCloudLoader.PtAccessor, points, float3.Zero, PointCloudImplementor.CreateGpuMesh);
 
                             meshes.Add(mesh);
                             meshCnt++;
@@ -472,7 +472,7 @@ namespace Fusee.PointCloud.Scene.Imp
                             {
                                 points = args.Points;
                             }
-                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3((PosD3ColF3Accessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, PointCloudImplementor.CreateGpuMesh);
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3((PosD3ColF3Accessor)PointCloudLoader.PtAccessor, points, float3.Zero, PointCloudImplementor.CreateGpuMesh);
 
                             meshes.Add(mesh);
                             meshCnt++;
@@ -507,7 +507,7 @@ namespace Fusee.PointCloud.Scene.Imp
                             {
                                 points = args.Points;
                             }
-                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3NorF3ColF3InUs((PosD3NorF3ColF3InUsAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, PointCloudImplementor.CreateGpuMesh);
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3NorF3ColF3InUs((PosD3NorF3ColF3InUsAccessor)PointCloudLoader.PtAccessor, points, float3.Zero, PointCloudImplementor.CreateGpuMesh);
 
                             meshes.Add(mesh);
                             meshCnt++;
@@ -542,7 +542,7 @@ namespace Fusee.PointCloud.Scene.Imp
                             {
                                 points = args.Points;
                             }
-                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3NorF3InUs((PosD3NorF3InUsAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, PointCloudImplementor.CreateGpuMesh);
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3NorF3InUs((PosD3NorF3InUsAccessor)PointCloudLoader.PtAccessor, points, float3.Zero, PointCloudImplementor.CreateGpuMesh);
 
                             meshes.Add(mesh);
                             meshCnt++;
@@ -577,7 +577,7 @@ namespace Fusee.PointCloud.Scene.Imp
                             {
                                 points = args.Points;
                             }
-                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3NorF3ColF3((PosD3NorF3ColF3Accessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, PointCloudImplementor.CreateGpuMesh);
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3NorF3ColF3((PosD3NorF3ColF3Accessor)PointCloudLoader.PtAccessor, points, float3.Zero, PointCloudImplementor.CreateGpuMesh);
 
                             meshes.Add(mesh);
                             meshCnt++;
@@ -612,7 +612,7 @@ namespace Fusee.PointCloud.Scene.Imp
                             {
                                 points = args.Points;
                             }
-                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3LblB((PosD3ColF3LblBAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, PointCloudImplementor.CreateGpuMesh);
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3LblB((PosD3ColF3LblBAccessor)PointCloudLoader.PtAccessor, points, float3.Zero, PointCloudImplementor.CreateGpuMesh);
 
                             meshes.Add(mesh);
                             meshCnt++;
