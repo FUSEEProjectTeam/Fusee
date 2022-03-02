@@ -154,7 +154,7 @@ namespace Fusee.PointCloud.Potree.V2
             hierarchy.Nodes = new();
             root.Traverse(n => hierarchy.Nodes.Add(n));
 
-            hierarchy.TreeRoot = root;
+            hierarchy.Root = root;
 
             return hierarchy;
         }
@@ -208,7 +208,7 @@ namespace Fusee.PointCloud.Potree.V2
 
                         child.Aabb = childAABB(currentNode.Aabb, childIndex);
                         child.Name = childName;
-                        currentNode.children[childIndex] = child;
+                        currentNode.Children[childIndex] = child;
                         child.Parent = currentNode;
 
                         nodes.Add(child);

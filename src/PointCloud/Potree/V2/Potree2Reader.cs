@@ -29,23 +29,23 @@ namespace Fusee.PointCloud.Potree.V2
                 if (_instance == null)
                 {
                     _instance = new PotreeData();
-                    Instance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(_metadataFilePath));
-                    Instance.Hierarchy = LoadHierarchy(_fileFolderPath);
-                    Instance.Metadata.FolderPath = _fileFolderPath;
+                    FileDataInstance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(_metadataFilePath));
+                    FileDataInstance.Hierarchy = LoadHierarchy(_fileFolderPath);
+                    FileDataInstance.Metadata.FolderPath = _fileFolderPath;
 
                     // Changing AABBs to have local coordinates
                     // Fliping all YZ coordinates
-                    for (int i = 0; i < Instance.Hierarchy.Nodes.Count; i++ )
+                    for (int i = 0; i < FileDataInstance.Hierarchy.Nodes.Count; i++)
                     {
-                        var node = Instance.Hierarchy.Nodes[i];
-                        node.Aabb = new AABBd(Constants.YZflip * (node.Aabb.min - Instance.Metadata.Offset), Constants.YZflip * (node.Aabb.max - Instance.Metadata.Offset));
+                        var node = FileDataInstance.Hierarchy.Nodes[i];
+                        node.Aabb = new AABBd(Constants.YZflip * (node.Aabb.min - FileDataInstance.Metadata.Offset), Constants.YZflip * (node.Aabb.max - FileDataInstance.Metadata.Offset));
                     }
-                    Instance.Metadata.OffsetList = new List<double>(3) { Instance.Metadata.Offset.x, Instance.Metadata.Offset.z, Instance.Metadata.Offset.y };
-                    Instance.Metadata.ScaleList = new List<double>(3) { Instance.Metadata.Scale.x, Instance.Metadata.Scale.z, Instance.Metadata.Scale.y };
+                    FileDataInstance.Metadata.OffsetList = new List<double>(3) { FileDataInstance.Metadata.Offset.x, FileDataInstance.Metadata.Offset.z, FileDataInstance.Metadata.Offset.y };
+                    FileDataInstance.Metadata.ScaleList = new List<double>(3) { FileDataInstance.Metadata.Scale.x, FileDataInstance.Metadata.Scale.z, FileDataInstance.Metadata.Scale.y };
 
                     // Setting the metadata BoundingBox to the values of the root node. No fliping required since that was done in the for loop
-                    Instance.Metadata.BoundingBox.MinList = new List<double>(3) { Instance.Hierarchy.Root.Aabb.min.x, Instance.Hierarchy.Root.Aabb.min.y, Instance.Hierarchy.Root.Aabb.min.z };
-                    Instance.Metadata.BoundingBox.MaxList = new List<double>(3) { Instance.Hierarchy.Root.Aabb.max.x, Instance.Hierarchy.Root.Aabb.max.y, Instance.Hierarchy.Root.Aabb.max.z };
+                    FileDataInstance.Metadata.BoundingBox.MinList = new List<double>(3) { FileDataInstance.Hierarchy.Root.Aabb.min.x, FileDataInstance.Hierarchy.Root.Aabb.min.y, FileDataInstance.Hierarchy.Root.Aabb.min.z };
+                    FileDataInstance.Metadata.BoundingBox.MaxList = new List<double>(3) { FileDataInstance.Hierarchy.Root.Aabb.max.x, FileDataInstance.Hierarchy.Root.Aabb.max.y, FileDataInstance.Hierarchy.Root.Aabb.max.z };
                 }
                 return _instance;
             }
@@ -118,17 +118,17 @@ namespace Fusee.PointCloud.Potree.V2
                 FileDataInstance.Metadata.PointSize = pointSize;
             }
 
-            var center = double3.Zero; // Instance.Hierarchy.TreeRoot.Aabb.Center;
-            var size = Instance.Hierarchy.Root.Aabb.Size.y;
-            var maxLvl = Instance.Metadata.Hierarchy.Depth;
+            var center = FileDataInstance.Hierarchy.Root.Aabb.Center;
+            var size = FileDataInstance.Hierarchy.Root.Aabb.Size.y;
+            var maxLvl = FileDataInstance.Metadata.Hierarchy.Depth;
 
             var octree = new PointCloudOctree(center, size, maxLvl);
 
-            MapChildNodesRecursive(octree.Root, Instance.Hierarchy.Root);
+            MapChildNodesRecursive(octree.Root, FileDataInstance.Hierarchy.Root);
 
             return octree;
         }
-        
+
 
         /// <summary>
         /// Returns the points for one octant as generic array.
@@ -170,14 +170,14 @@ namespace Fusee.PointCloud.Potree.V2
                     {
                         binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * FileDataInstance.Metadata.PointSize;
 
-                        double x = (binaryReader.ReadInt32() * FileDataInstance.Metadata.Scale.x); // + Instance.Metadata.Offset.x;
-                        double y = (binaryReader.ReadInt32() * FileDataInstance.Metadata.Scale.y); // + Instance.Metadata.Offset.y;
-                        double z = (binaryReader.ReadInt32() * FileDataInstance.Metadata.Scale.z); // + Instance.Metadata.Offset.z;
+                        double x = (binaryReader.ReadInt32() * FileDataInstance.Metadata.Scale.x);
+                        double y = (binaryReader.ReadInt32() * FileDataInstance.Metadata.Scale.y);
+                        double z = (binaryReader.ReadInt32() * FileDataInstance.Metadata.Scale.z);
 
                         double3 position = new(x, y, z);
                         position = Constants.YZflip * position;
 
-                        pointAccessor.SetPositionFloat3_64(ref points[i], position);
+                        ((PointAccessor<TPoint>)PointAccessor).SetPositionFloat3_64(ref points[i], position);
                     }
                 }
                 else if (metaitem.Name.Contains("rgb"))
@@ -220,7 +220,7 @@ namespace Fusee.PointCloud.Potree.V2
                                 break;
                         }
 
-                        pointAccessor.SetLabelUInt_8(ref points[i], label);
+                        ((PointAccessor<TPoint>)PointAccessor).SetLabelUInt_8(ref points[i], label);
                     }
                 }
 
@@ -238,7 +238,7 @@ namespace Fusee.PointCloud.Potree.V2
             {
                 if (potreeNode.Children[i] != null)
                 {
-                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center - Instance.Metadata.Offset, potreeNode.Children[i].Aabb.Size.y, potreeNode.Children[i].Name);
+                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center - FileDataInstance.Metadata.Offset, potreeNode.Children[i].Aabb.Size.y, potreeNode.Children[i].Name);
 
                     if (potreeNode.Children[i].NodeType == NodeType.LEAF)
                     {
