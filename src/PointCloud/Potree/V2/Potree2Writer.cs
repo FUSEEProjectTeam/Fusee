@@ -1,12 +1,10 @@
 using Fusee.Math.Core;
-using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Core;
+using Fusee.PointCloud.Common.Accessors;
+using Fusee.PointCloud.Potree.V2.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
-using Fusee.PointCloud.Potree.V2.Data;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -19,10 +17,22 @@ namespace Fusee.PointCloud.Potree.V2
 
         private double4x4 YZflip = new double4x4()
         {
-            M11 = 1, M12 = 0, M13 = 0, M14 = 0,
-            M21 = 0, M22 = 0, M23 = 1, M24 = 0,
-            M31 = 0, M32 = 1, M33 = 0, M34 = 0,
-            M41 = 0, M42 = 0, M43 = 0, M44 = 1
+            M11 = 1,
+            M12 = 0,
+            M13 = 0,
+            M14 = 0,
+            M21 = 0,
+            M22 = 0,
+            M23 = 1,
+            M24 = 0,
+            M31 = 0,
+            M32 = 1,
+            M33 = 0,
+            M34 = 0,
+            M41 = 0,
+            M42 = 0,
+            M43 = 0,
+            M44 = 1
         };
 
         public long LableMinMax(double3 min, double3 max, byte Label)
