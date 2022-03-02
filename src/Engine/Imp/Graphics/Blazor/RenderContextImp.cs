@@ -170,14 +170,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     break;
                 case ColorFormat.fRGB32:
                     throw new NotSupportedException("WebGL 2.0: fRGB32 not supported");
-                    //internalFormat = RGB32F;
-                    //format = RGB;
-                    //pxType = FLOAT;
+                //internalFormat = RGB32F;
+                //format = RGB;
+                //pxType = FLOAT;
                 case ColorFormat.fRGB16:
                     throw new NotSupportedException("WebGL 2.0: fRGB16 not supported");
-                    //internalFormat = RGB16F;
-                    //format = RGB;
-                    //pxType = HALF_FLOAT;
+                //internalFormat = RGB16F;
+                //format = RGB;
+                //pxType = HALF_FLOAT;
                 case ColorFormat.fRGBA16:
                     internalFormat = RGBA16F;
                     format = RGBA;
