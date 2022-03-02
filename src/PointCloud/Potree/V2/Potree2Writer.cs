@@ -17,18 +17,18 @@ namespace Fusee.PointCloud.Potree.V2
             GetOctree(filepath);
         }
 
-        private double4x4 XYflipZup = new double4x4()
+        private double4x4 YZflip = new double4x4()
         {
-            M11 = 0, M12 = 1, M13 = 0, M14 = 0,
-            M21 = 1, M22 = 0, M23 = 0, M24 = 0,
-            M31 = 0, M32 = 0, M33 = -1, M34 = 0,
-            M41 = 0, M42 = 0, M43 = 0, M44 = 0
+            M11 = 1, M12 = 0, M13 = 0, M14 = 0,
+            M21 = 0, M22 = 0, M23 = 1, M24 = 0,
+            M31 = 0, M32 = 1, M33 = 0, M34 = 0,
+            M41 = 0, M42 = 0, M43 = 0, M44 = 1
         };
 
         public long LableMinMax(double3 min, double3 max, byte Label)
         {
-            min = XYflipZup * min;
-            max = XYflipZup * max;
+            min = YZflip * min;
+            max = YZflip * max;
 
             var octreeFilePath = Path.Combine(Instance.Metadata.FolderPath, Constants.OctreeFileName);
             var aabb = new AABBd(min, max);
