@@ -10,13 +10,14 @@ namespace Fusee.PointCloud.Potree.V2.Data
         }
 
         public string Name = "";
-        public AABBd Aabb;
-        public PotreeNode Parent;
-        public PotreeNode[] children = new PotreeNode[8];
+
+        public AABBd Aabb { get; set; }
+        public PotreeNode Parent { get; set; }
+        public PotreeNode[] Children = new PotreeNode[8];
         public NodeType NodeType = NodeType.UNSET;
-        public long ByteOffset;
-        public long ByteSize;
-        public long NumPoints;
+        public long ByteOffset { get; set; }
+        public long ByteSize { get; set; }
+        public long NumPoints { get; set; }
 
         public bool IsLoaded = false;
 
@@ -29,7 +30,7 @@ namespace Fusee.PointCloud.Potree.V2.Data
         {
             callback(this);
 
-            foreach (var child in children)
+            foreach (var child in Children)
             {
                 if (child != null)
                 {
