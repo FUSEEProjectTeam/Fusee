@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<DefineConstants>$(DefineConstants);PLATFORM_BLAZOR</DefineConstants>
-		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>		
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 		<RunAOTCompilation>true</RunAOTCompilation>
 	</PropertyGroup>
 
@@ -23,10 +23,9 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
-		<PackageReference Include="Microsoft.JSInterop" Version="6.0.0" />
+		<PackageReference Include="Microsoft.JSInterop" Version="6.0.2" />
 
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.2" />
-		<PackageReference Include="Microsoft.JSInterop" Version="6.0.2" />
 	</ItemGroup>
-	
+
 </Project>
