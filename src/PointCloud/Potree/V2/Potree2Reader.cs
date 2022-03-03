@@ -238,7 +238,7 @@ namespace Fusee.PointCloud.Potree.V2
             {
                 if (potreeNode.Children[i] != null)
                 {
-                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center - FileDataInstance.Metadata.Offset, potreeNode.Children[i].Aabb.Size.y, potreeNode.Children[i].Name);
+                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, potreeNode.Children[i].Name);
 
                     if (potreeNode.Children[i].NodeType == NodeType.LEAF)
                     {
@@ -262,7 +262,7 @@ namespace Fusee.PointCloud.Potree.V2
 
             var data = File.ReadAllBytes(hierarchyFilePath);
 
-            PotreeNode root = new PotreeNode()
+            PotreeNode root = new()
             {
                 Name = "r",
                 Aabb = new AABBd(FileDataInstance.Metadata.BoundingBox.Min, FileDataInstance.Metadata.BoundingBox.Max)
