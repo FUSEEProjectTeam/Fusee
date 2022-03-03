@@ -308,31 +308,9 @@ namespace Fusee.DImGui.Desktop
             // It also allows customization
             ImGui.BeginChild("GameRender", size, true, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
-
             var rc = Simple.RenderContext;
-            var camDistance = 8;
-            var fov = 27f;
-            var viewWidth = 10f; // for orthographic
-            var camYAngle = -165f / 180f * 3.14159f;
-            var camXAngle = 32f / 180f * 3.14159f;
-
-
-            var width = ImGui.GetWindowWidth();
-            var height = ImGui.GetWindowHeight();
-            //var size = new Vector2(width, height);
             var pos = ImGui.GetWindowPos();
-
-
-            var eye = new float3(M.Cos(camYAngle) * M.Cos(camXAngle) * camDistance, M.Sin(camXAngle) * camDistance, M.Sin(camYAngle) * M.Cos(camXAngle) * camDistance);
-            var at = float3.Zero;
-            var up = float3.UnitY;
-            var cameraView = float4x4.LookAt(eye, at, up);
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, size.X / size.Y, 0.1f, 100f);
-
-
-            Grid.DrawGrid(cameraView, projection, float4x4.Identity, 100f, size, pos);
-
-
+            Grid.DrawGrid(rc.View, rc.Projection, float4x4.Identity, 100f, size, pos);
 
             FuseeViewportMin = ImGui.GetWindowContentRegionMin();
             FuseeViewportMax = ImGui.GetWindowContentRegionMax();
