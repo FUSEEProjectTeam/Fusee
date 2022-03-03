@@ -76,7 +76,7 @@ namespace Fusee.PointCloud.Potree.V2
                 Instance.Metadata.PointSize = pointSize;
             }
 
-            var center = double3.Zero; // Instance.Hierarchy.TreeRoot.Aabb.Center;
+            var center = Instance.Hierarchy.Root.Aabb.Center;
             var size = Instance.Hierarchy.Root.Aabb.Size.y;
             var maxLvl = Instance.Metadata.Hierarchy.Depth;
 
@@ -95,15 +95,19 @@ namespace Fusee.PointCloud.Potree.V2
         public TPoint[] LoadNodeData<TPoint>(string id, IPointAccessor pointAccessor) where TPoint : new()
         {
             var node = FindNode(id);
+            TPoint[] points = null;
 
-            var octreeFilePath = Path.Combine(Instance.Metadata.FolderPath, Constants.OctreeFileName);
-            var binaryReader = new BinaryReader(File.OpenRead(octreeFilePath));
-            TPoint[] points = LoadNodeData<TPoint>((PointAccessor<TPoint>)pointAccessor, node, binaryReader);
+            if (node != null)
+            {
+                var octreeFilePath = Path.Combine(Instance.Metadata.FolderPath, Constants.OctreeFileName);
+                var binaryReader = new BinaryReader(File.OpenRead(octreeFilePath));
+                points = LoadNodeData<TPoint>((PointAccessor<TPoint>)pointAccessor, node, binaryReader);
 
-            node.IsLoaded = true;
+                node.IsLoaded = true;
 
-            binaryReader.Close();
-            binaryReader.Dispose();
+                binaryReader.Close();
+                binaryReader.Dispose();
+            }
 
             return points;
         }
@@ -136,7 +140,72 @@ namespace Fusee.PointCloud.Potree.V2
                         pointAccessor.SetPositionFloat3_64(ref points[i], position);
                     }
                 }
-                else if (metaitem.Name.Contains("rgb"))
+                //else if (metaitem.Name.Equals("intensity"))
+                //{
+                //    for (int i = 0; i < node.NumPoints; i++)
+                //    {
+                //        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+
+                //        Int16 intensity = binaryReader.ReadInt16();
+                //    }
+                //}
+                //else if (metaitem.Name.Equals("return number"))
+                //{
+                //    for (int i = 0; i < node.NumPoints; i++)
+                //    {
+                //        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+
+                //        byte returnNumber = binaryReader.ReadByte();
+                //    }
+                //}
+                //else if (metaitem.Name.Equals("number of returns"))
+                //{
+                //    for (int i = 0; i < node.NumPoints; i++)
+                //    {
+                //        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+
+                //        byte numberOfReturns = binaryReader.ReadByte();
+                //    }
+                //}
+                else if (metaitem.Name.Equals("classification"))
+                {
+                    for (int i = 0; i < node.NumPoints; i++)
+                    {
+                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+
+                        byte label = binaryReader.ReadByte();
+
+                        pointAccessor.SetLabelUInt_8(ref points[i], label);
+                    }
+                }
+                //else if (metaitem.Name.Equals("scan angle rank"))
+                //{
+                //    for (int i = 0; i < node.NumPoints; i++)
+                //    {
+                //        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+
+                //        byte scanAnleRank = binaryReader.ReadByte();
+                //    }
+                //}
+                //else if (metaitem.Name.Equals("user data"))
+                //{
+                //    for (int i = 0; i < node.NumPoints; i++)
+                //    {
+                //        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+
+                //        byte userData = binaryReader.ReadByte();
+                //    }
+                //}
+                //else if (metaitem.Name.Equals("point source id"))
+                //{
+                //    for (int i = 0; i < node.NumPoints; i++)
+                //    {
+                //        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+
+                //        byte pointSourceId = binaryReader.ReadByte();
+                //    }
+                //}
+                else if (metaitem.Name.Equals("rgb"))
                 {
                     for (int i = 0; i < node.NumPoints; i++)
                     {
@@ -154,31 +223,6 @@ namespace Fusee.PointCloud.Potree.V2
                         pointAccessor.SetColorFloat3_32(ref points[i], color);
                     }
                 }
-                else if (metaitem.Name.Equals("classification"))
-                {
-                    for (int i = 0; i < node.NumPoints; i++)
-                    {
-                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i + Instance.Metadata.PointSize;
-
-                        byte label = (byte)binaryReader.ReadSByte();
-
-                        switch (label)
-                        {
-                            case 0:
-                                break;
-                            case 1:
-                                break;
-                            case 2:
-                                break;
-                            case 3:
-                                break;
-                            default:
-                                break;
-                        }
-
-                        pointAccessor.SetLabelUInt_8(ref points[i], label);
-                    }
-                }
 
                 attributeOffset += metaitem.Size;
             }
@@ -194,7 +238,7 @@ namespace Fusee.PointCloud.Potree.V2
             {
                 if (potreeNode.Children[i] != null)
                 {
-                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center - Instance.Metadata.Offset, potreeNode.Children[i].Aabb.Size.y, potreeNode.Children[i].Name);
+                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, potreeNode.Children[i].Name);
 
                     if (potreeNode.Children[i].NodeType == NodeType.LEAF)
                     {
