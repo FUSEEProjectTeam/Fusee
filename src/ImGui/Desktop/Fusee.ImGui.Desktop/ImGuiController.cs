@@ -311,6 +311,12 @@ namespace Fusee.DImGui.Desktop
             var rc = Simple.RenderContext;
             var pos = ImGui.GetWindowPos();
             Grid.DrawGrid(rc.View, rc.Projection, float4x4.Identity, 100f, size, pos);
+            var viewManipulateRight = ImGui.GetWindowPos().X + size.X - 128;
+            var viewManipulateTop = ImGui.GetWindowPos().Y;
+
+            ViewManipulateCube.DrawManipulateCube(rc.View, rc.Projection.M22,
+                new Vector2(viewManipulateRight, viewManipulateTop),
+                new Vector2(128, 128), 0x10101010);
 
             FuseeViewportMin = ImGui.GetWindowContentRegionMin();
             FuseeViewportMax = ImGui.GetWindowContentRegionMax();
