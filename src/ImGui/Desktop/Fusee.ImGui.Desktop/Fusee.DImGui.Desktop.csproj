@@ -9,6 +9,7 @@
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+		<ProjectReference Include="..\..\..\..\Examples\Complete\Simple\Core\Fusee.Examples.Simple.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

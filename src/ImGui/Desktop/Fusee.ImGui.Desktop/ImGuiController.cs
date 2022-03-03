@@ -1,5 +1,7 @@
 ﻿using Fusee.Base.Core;
+using Fusee.DImGui.Desktop.Gizmos;
 using Fusee.Engine.Core;
+using Fusee.Examples.Simple.Core;
 using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
@@ -306,6 +308,32 @@ namespace Fusee.DImGui.Desktop
             // It also allows customization
             ImGui.BeginChild("GameRender", size, true, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
+
+            var rc = Simple.RenderContext;
+            var camDistance = 8;
+            var fov = 27f;
+            var viewWidth = 10f; // for orthographic
+            var camYAngle = -165f / 180f * 3.14159f;
+            var camXAngle = 32f / 180f * 3.14159f;
+
+
+            var width = ImGui.GetWindowWidth();
+            var height = ImGui.GetWindowHeight();
+            //var size = new Vector2(width, height);
+            var pos = ImGui.GetWindowPos();
+
+
+            var eye = new float3(M.Cos(camYAngle) * M.Cos(camXAngle) * camDistance, M.Sin(camXAngle) * camDistance, M.Sin(camYAngle) * M.Cos(camXAngle) * camDistance);
+            var at = float3.Zero;
+            var up = float3.UnitY;
+            var cameraView = float4x4.LookAt(eye, at, up);
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, size.X / size.Y, 0.1f, 100f);
+
+
+            Grid.DrawGrid(cameraView, projection, float4x4.Identity, 100f, size, pos);
+
+
+
             FuseeViewportMin = ImGui.GetWindowContentRegionMin();
             FuseeViewportMax = ImGui.GetWindowContentRegionMax();
             FuseeViewportSize = FuseeViewportMax - FuseeViewportMin;
@@ -315,6 +343,8 @@ namespace Fusee.DImGui.Desktop
             ImGui.Image(new IntPtr(_texture4ImGui), FuseeViewportSize,
                 new Vector2(0, 1),
                 new Vector2(1, 0));
+
+
 
             ImGui.EndChild();
             ImGui.End();
@@ -332,7 +362,7 @@ namespace Fusee.DImGui.Desktop
         {
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, IntermediateFrameBuffer);
             GL.BindTexture(TextureTarget.Texture2D, _texture4ImGui);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height, 0, PixelFormat.Bgr, PixelType.UnsignedByte, new IntPtr());
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, new IntPtr());
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
@@ -347,7 +377,7 @@ namespace Fusee.DImGui.Desktop
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, ViewportFramebuffer);
             GL.BindTexture(TextureTarget.Texture2DMultisample, ViewportRenderTexture);
 
-            GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.Rgb, width, height, true);
+            GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.Rgba, width, height, true);
 
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _depthRenderbuffer);
             GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, 4, RenderbufferStorage.DepthComponent24, width, height);
@@ -365,7 +395,7 @@ namespace Fusee.DImGui.Desktop
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
         }
 
-        private static unsafe void RenderImDrawData(ImDrawDataPtr draw_data)
+        internal static unsafe void RenderImDrawData(ImDrawDataPtr draw_data)
         {
 
             uint vertexOffsetInVertices = 0;
@@ -420,6 +450,7 @@ namespace Fusee.DImGui.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
             // Setup orthographic projection matrix into our constant buffer
             ImGuiIOPtr io = ImGui.GetIO();
             OpenTK.Mathematics.Matrix4 mvp = OpenTK.Mathematics.Matrix4.CreateOrthographicOffCenter(
@@ -431,6 +462,8 @@ namespace Fusee.DImGui.Desktop
                1.0f);
 
             GL.UseProgram(_shaderProgram);
+
+            // Column order notation
             GL.UniformMatrix4(_uniformVarToLocation["projection_matrix"].Location, false, ref mvp);
             GL.Uniform1(_uniformVarToLocation["in_fontTexture"].Location, 0);
 
@@ -480,6 +513,8 @@ namespace Fusee.DImGui.Desktop
             GL.Disable(EnableCap.ScissorTest);
             GL.Enable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthTest);
+
+            draw_data.Clear();
         }
 
 

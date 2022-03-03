@@ -27,7 +27,7 @@ namespace Fusee.Examples.Simple.Desktop
 {
     public class Simple
     {
-        private static Core.Simple app;
+        public static Core.Simple app;
         private static RenderCanvasImp _renderCanvas;
         private static RenderContextImp _renderCtx;
 

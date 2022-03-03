@@ -16,6 +16,8 @@ namespace Fusee.Examples.Simple.Core
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
+        public static RenderContext RenderContext;
+
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
@@ -39,6 +41,8 @@ namespace Fusee.Examples.Simple.Core
 
         private async Task Load()
         {
+            RenderContext = RC;
+
             Console.WriteLine("Loading scene ...");
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
@@ -60,7 +64,7 @@ namespace Fusee.Examples.Simple.Core
                         Components = new System.Collections.Generic.List<SceneComponent>()
                         {
                             new Transform() { Translation = new float3(0, 2, -10) },
-                            new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy) { BackgroundColor = float4.One }
+                            new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy) { BackgroundColor = new float4(0,0,0,0) }
                         }
                     }
                 },
