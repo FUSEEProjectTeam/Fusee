@@ -47,7 +47,7 @@ namespace Fusee.Engine.Core.Effects
         /// User-defined input struct. Must derive from <see cref="DiffuseInput"/>. 
         /// Used in the <see cref="SurfOutFragMethod"/> to modify the parameters of the chosen <see cref="SurfaceOutput"/>.
         /// </summary>
-        public SurfaceInput SurfaceInput { get; set; }
+        public SurfaceEffectInput SurfaceInput { get; set; }
         //======================================================//
 
         //================== Surface Shard ==========================//
@@ -176,7 +176,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="surfaceInput"><see cref="SurfaceInput"/>. Provides the values used to modify the <see cref="SurfaceOut"/>.</param>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
         public SurfaceEffectBase
-            (SurfaceInput surfaceInput, RenderStateSet renderStateSet = null)
+            (SurfaceEffectInput surfaceInput, RenderStateSet renderStateSet = null)
         {
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
             ParamDecl = new Dictionary<int, IFxParamDeclaration>();

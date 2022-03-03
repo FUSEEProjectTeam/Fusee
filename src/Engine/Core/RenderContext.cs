@@ -1028,7 +1028,7 @@ namespace Fusee.Engine.Core
             string cs = string.Empty;
 
             var efType = ef.GetType();
-            if (efType != typeof(ComputeShader))
+            if (efType != typeof(ComputeEffect))
             {
                 try // to compile all the shaders
                 {
@@ -1101,7 +1101,7 @@ namespace Fusee.Engine.Core
             {
                 try
                 {
-                    var computeShader = (ComputeShader)ef;
+                    var computeShader = (ComputeEffect)ef;
                     cs = computeShader.ComputeShaderSrc;
 
                     var shaderOnGpu = _rci.CreateShaderProgramCompute(cs);
@@ -1716,7 +1716,7 @@ namespace Fusee.Engine.Core
         public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
         {
             if (_currentEffect == null) throw new NullReferenceException("No Compute Shader bound.");
-            if (_currentEffect.GetType() != typeof(ComputeShader)) throw new NullReferenceException("Bound Effect isn't a Compute Shader.");
+            if (_currentEffect.GetType() != typeof(ComputeEffect)) throw new NullReferenceException("Bound Effect isn't a Compute Shader.");
 
             try
             {

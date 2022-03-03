@@ -1,7 +1,8 @@
 ﻿namespace Fusee.Engine.Common
 {
     /// <summary>
-    /// Declares buffer locations.
+    /// Declares buffer locations. OpenGL specific error: GL_INVALID_VALUE is generated if index is greater than or equal to GL_MAX_VERTEX_ATTRIBS.
+    /// GL_MAX_VERTEX_ATTRIBS seems to be 16.
     /// </summary>
     public static class AttributeLocations
     {
@@ -59,5 +60,34 @@
         /// The Fusee platform id attribute location index.
         /// </summary>
         public static readonly int FuseePlatformIdLocation = 10;
+
+        /// <summary>
+        /// First attribute location for the instanced model matrix.
+        /// Vertex Attributes can be of type vec4 at maximum.
+        /// </summary>
+        public static readonly int InstancedModelMat1 = 11;
+
+        /// <summary>
+        /// Second attribute location for the instanced model matrix.
+        /// Vertex Attributes can be of type vec4 at maximum.
+        /// </summary>
+        public static readonly int InstancedModelMat2 = 12;
+
+        /// <summary>
+        /// Third attribute location for the instanced model matrix.
+        /// Vertex Attributes can be of type vec4 at maximum.
+        /// </summary>
+        public static readonly int InstancedModelMat3 = 13;
+
+        /// <summary>
+        /// Fourth attribute location for the instanced model matrix.
+        /// Vertex Attributes can be of type vec4 at maximum.
+        /// </summary>
+        public static readonly int InstancedModelMat4 = 14;
+
+        /// <summary>
+        /// Attribute location for the instanced color.
+        /// </summary>
+        public static readonly int InstancedColor = 15;
     }
 }

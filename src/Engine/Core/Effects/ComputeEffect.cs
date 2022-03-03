@@ -6,7 +6,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// Class that contains information on how to build a compute shader program.
     /// </summary>
-    public class ComputeShader : Effect, IDisposable
+    public class ComputeEffect : Effect, IDisposable
     {
         /// <summary>
         /// The Compute Shader code.
@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="shaderCode">The compute shader code.</param>
         /// <param name="effectParameters">The uniform parameters as collections of <see cref="IFxParamDeclaration"/>.</param>
-        public ComputeShader(string shaderCode, IEnumerable<IFxParamDeclaration> effectParameters)
+        public ComputeEffect(string shaderCode, IEnumerable<IFxParamDeclaration> effectParameters)
         {
             ParamDecl = new Dictionary<int, IFxParamDeclaration>();
             ComputeShaderSrc = shaderCode;
@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
         /// </summary>
-        ~ComputeShader()
+        ~ComputeEffect()
         {
             Dispose();
         }

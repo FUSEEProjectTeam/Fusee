@@ -22,7 +22,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         public string PathToOocFile = @"Assets\Cube1030301\Potree";
 
         public ShaderEffect DepthPassEf;
-        public PointCloudSurfaceEffect ColorPassEf;
+        public SurfaceEffectPointCloud ColorPassEf;
 
         private PointShape _shape = PointShape.Paraboloid;
         public PointShape Shape
@@ -153,9 +153,9 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             };
         }
 
-        internal PointCloudSurfaceEffect CreateColorPassEffect()
+        internal SurfaceEffectPointCloud CreateColorPassEffect()
         {
-            var fx = new PointCloudSurfaceEffect
+            var fx = new SurfaceEffectPointCloud
             {
                 PointSize = _size,
                 ColorMode = (int)_colorMode,

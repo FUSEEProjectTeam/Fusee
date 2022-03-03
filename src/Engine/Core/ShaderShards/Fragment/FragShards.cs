@@ -14,7 +14,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// Returns a default method body for a given lighting calculation.
         /// <param name="surfInput">The surface input class. Needed to receive the shading model and texture setup.</param>
         /// </summary>
-        internal static List<string> SurfOutBody(SurfaceInput surfInput)
+        internal static List<string> SurfOutBody(SurfaceEffectInput surfInput)
         {
             var res = new List<string>();
 

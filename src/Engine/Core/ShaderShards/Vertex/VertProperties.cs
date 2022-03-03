@@ -7,6 +7,17 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
     /// </summary>
     public static class VertProperties
     {
+        public static string InParamsInstanced()
+        {
+            var vertProps = new List<string>
+            {
+                GLSL.CreateIn(GLSL.Type.Mat4, UniformNameDeclarations.InstancedModelMat),
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.InstancedColor),
+            };
+
+            return string.Join("\n", vertProps);
+        }
+
         //TODO: don't add all of them.... do we need to add some mesh property flags?
         /// <summary>
         /// Creates the in (with prefix "fu") and out parameters of the vertex shader, depending on the given ShaderEffectProps.

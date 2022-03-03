@@ -15,7 +15,7 @@ namespace Fusee.Examples.ComputeFractal.Core
     {
         private readonly Plane _plane = new();
         private WritableTexture RWTexture;
-        private ComputeShader _computeShader;
+        private ComputeEffect _computeShader;
         private ShaderEffect _renderEffect;
         private bool _move;
         private bool _inputChange;
@@ -65,7 +65,7 @@ namespace Fusee.Examples.ComputeFractal.Core
                     _colorData[i] += new float4(Sawtooth(i * 4, 256) / 256, 0, 0, 1);
                 i++;
             }
-            _computeShader = new ComputeShader(
+            _computeShader = new ComputeEffect(
             shaderCode: AssetStorage.Get<string>("MandelbrotFractal.comp"),
             effectParameters: new IFxParamDeclaration[]
             {

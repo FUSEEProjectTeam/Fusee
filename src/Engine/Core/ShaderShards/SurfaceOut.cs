@@ -81,7 +81,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// This effect uses eye dome lighting and is used for point cloud rendering.
         /// CAUTION: it will only work with <see cref="SurfaceEffectBase"/>s that have the needed unirom paramters.
-        /// See: <see cref="PointCloudSurfaceEffect.EDLStrength"/> and <see cref="PointCloudSurfaceEffect.EDLNeighbourPixels"/>
+        /// See: <see cref="SurfaceEffectPointCloud.EDLStrength"/> and <see cref="SurfaceEffectPointCloud.EDLNeighbourPixels"/>
         /// </summary>
         Edl = 32
     }

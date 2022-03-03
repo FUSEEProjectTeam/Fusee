@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// </summary>
         /// <param name="surfInput">The surface input class. Needed to receive the shading model.</param>
         /// <returns></returns>
-        internal static List<string> SurfOutBody(SurfaceInput surfInput)
+        internal static List<string> SurfOutBody(SurfaceEffectInput surfInput)
         {
             var res = new List<string>();
             switch (surfInput.ShadingModel)

@@ -11,7 +11,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// <see cref="SurfaceEffectBase"/> for Rendering Point Clouds.
     /// </summary>
-    public class PointCloudSurfaceEffect : SurfaceEffect
+    public class SurfaceEffectPointCloud : SurfaceEffect
     {
         /// <summary>
         /// The depth texture, used for eye dome lighting.
@@ -46,7 +46,7 @@ namespace Fusee.Engine.Core.Effects
         private float _edlStrength;
 
         /// <summary>
-        /// Determines how many neighbouring pixels shall be used in the eye dome lighting calculation.
+        /// Determines how many neighboring pixels shall be used in the eye dome lighting calculation.
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Uniform)]
@@ -231,7 +231,7 @@ namespace Fusee.Engine.Core.Effects
         /// Creates a new instance of type PointCloudSurfaceEffect.
         /// </summary>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
-        public PointCloudSurfaceEffect(RenderStateSet rendererStates = null)
+        public SurfaceEffectPointCloud(RenderStateSet rendererStates = null)
             : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) },
                   VertShards.SurfOutBody(ShadingModel.Edl).Concat(CalculateVaryings).Concat(CalculatePointSizeMode).ToList(),
                   FragShards.SurfOutBody(ShadingModel.Edl, TextureSetup.NoTextures).Concat(CalculatePointShape).ToList(),
