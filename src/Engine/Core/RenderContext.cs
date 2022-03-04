@@ -1445,6 +1445,28 @@ namespace Fusee.Engine.Core
                 {
                     ConnectBufferToShaderStorage(buffer, param.Info.Name);
                 }
+
+                else if (param.Value is float4x4[] float4x4ArrayVal)
+                {
+                    _rci.SetShaderParam(param.Info.Handle, float4x4ArrayVal);
+                }
+                else if (param.Value is float2[] float2ArrayVal)
+                {
+                    _rci.SetShaderParam(param.Info.Handle, float2ArrayVal);
+                }
+                else if (param.Value is float3[] float3ArrayVal)
+                {
+                    _rci.SetShaderParam(param.Info.Handle, float3ArrayVal);
+                }
+                else if (param.Value is float4[] float4ArrayVal)
+                {
+                    _rci.SetShaderParam(param.Info.Handle, float4ArrayVal);
+                }
+
+                else
+                {
+                    throw new ArgumentException($"{param} has a unknown type.");
+                }
             }
             else
             {
@@ -1478,9 +1500,12 @@ namespace Fusee.Engine.Core
                             _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
                         }
                     }
+                    else
+                    {
+                        throw new ArgumentException($"{param} has a unknown type.");
+                    }
                 }
             }
-
         }
 
         #endregion
@@ -1710,26 +1735,20 @@ namespace Fusee.Engine.Core
         {
             if (_currentEffect == null) throw new NullReferenceException("No Compute Shader bound.");
             if (_currentEffect.GetType() != typeof(ComputeEffect)) throw new NullReferenceException("Bound Effect isn't a Compute Shader.");
+            
+            var cFx = GetCompiledFxForRenderMethod(true);
+            SetCompiledFx(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+            SetGlobalParamsInCurrentFx(cFx);
+            UpdateAllActiveFxParams(cFx);
 
-            try
-            {
-                var cFx = GetCompiledFxForRenderMethod(true);
-                SetCompiledFx(cFx.GpuHandle);
-                SetRenderStateSet(_currentEffect.RendererStates);
-                SetGlobalParamsInCurrentFx(cFx);
-                UpdateAllActiveFxParams(cFx);
+            _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
 
-                _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
-
-                // After rendering always cleanup pending meshes, textures and shader effects
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
-                _effectManager.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass ", ex);
-            }
+            // After rendering always cleanup pending meshes, textures and shader effects
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+            _effectManager.Cleanup();
+            
         }
 
         /// <summary>
@@ -1743,26 +1762,19 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh mesh, InstanceData instanceData, bool doRenderForward = true)
         {
-            try
-            {
-                var cFx = GetCompiledFxForRenderMethod(doRenderForward);
-                SetCompiledFx(cFx.GpuHandle);
-                SetRenderStateSet(_currentEffect.RendererStates);
-                SetGlobalParamsInCurrentFx(cFx);
-                UpdateAllActiveFxParams(cFx);
+            var cFx = GetCompiledFxForRenderMethod(doRenderForward);
+            SetCompiledFx(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+            SetGlobalParamsInCurrentFx(cFx);
+            UpdateAllActiveFxParams(cFx);
 
-                var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
-                _rci.Render(meshImp);
+            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
+            _rci.Render(meshImp);
 
-                // After rendering always cleanup pending meshes, textures and shader effects
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
-                _effectManager.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass ", ex);
-            }
+            // After rendering always cleanup pending meshes, textures and shader effects
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+            _effectManager.Cleanup();            
         }
 
         /// <summary>
@@ -1776,26 +1788,19 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh mesh, bool doRenderForward = true)
         {
-            try
-            {
-                var cFx = GetCompiledFxForRenderMethod(doRenderForward);
-                SetCompiledFx(cFx.GpuHandle);
-                SetRenderStateSet(_currentEffect.RendererStates);
-                SetGlobalParamsInCurrentFx(cFx);
-                UpdateAllActiveFxParams(cFx);
+            var cFx = GetCompiledFxForRenderMethod(doRenderForward);
+            SetCompiledFx(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+            SetGlobalParamsInCurrentFx(cFx);
+            UpdateAllActiveFxParams(cFx);
 
-                var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
-                _rci.Render(meshImp);
+            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
+            _rci.Render(meshImp);
 
-                // After rendering always cleanup pending meshes, textures and shader effects
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
-                _effectManager.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass ", ex);
-            }
+            // After rendering always cleanup pending meshes, textures and shader effects
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+            _effectManager.Cleanup();            
         }
 
         /// <summary>
@@ -1809,26 +1814,19 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(GpuMesh mesh, bool doRenderForward = true)
         {
-            try
-            {
-                var cFx = GetCompiledFxForRenderMethod(doRenderForward);
-                SetCompiledFx(cFx.GpuHandle);
-                SetRenderStateSet(_currentEffect.RendererStates);
-                SetGlobalParamsInCurrentFx(cFx);
-                UpdateAllActiveFxParams(cFx);
+            var cFx = GetCompiledFxForRenderMethod(doRenderForward);
+            SetCompiledFx(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+            SetGlobalParamsInCurrentFx(cFx);
+            UpdateAllActiveFxParams(cFx);
 
-                var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
-                _rci.Render(meshImp);
+            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
+            _rci.Render(meshImp);
 
-                // After rendering always cleanup pending meshes, textures and shader effects
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
-                _effectManager.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass ", ex);
-            }
+            // After rendering always cleanup pending meshes, textures and shader effects
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+            _effectManager.Cleanup();            
         }
 
         private float2 CalculateClippingPlanesFromProjection()
