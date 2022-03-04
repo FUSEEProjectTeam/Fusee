@@ -1384,71 +1384,39 @@ namespace Fusee.Engine.Core
         {
             if (param.HasValueChanged)
             {
-                if (param.Info.Type == typeof(bool))
+                if (param.Value is bool boolVal)
                 {
-                    _rci.SetShaderParam(param.Info.Handle, (bool)param.Value ? 1 : 0);
+                    _rci.SetShaderParam(param.Info.Handle, boolVal ? 1 : 0);
                 }
-                if (param.Info.Type == typeof(int))
+                else if (param.Value is int intVal)
                 {
-                    _rci.SetShaderParam(param.Info.Handle, (int)param.Value);
+                    _rci.SetShaderParam(param.Info.Handle, intVal);
                 }
-                else if (param.Info.Type == typeof(float))
+                else if (param.Value is float floatVal)
                 {
-                    _rci.SetShaderParam(param.Info.Handle, (float)param.Value);
+                    _rci.SetShaderParam(param.Info.Handle, floatVal);
                 }
-                else if (param.Info.Type == typeof(double))
+                else if (param.Value is double doubleVal)
                 {
-                    _rci.SetShaderParam(param.Info.Handle, (double)param.Value);
+                    _rci.SetShaderParam(param.Info.Handle, doubleVal);
                 }
-                else if (param.Info.Type == typeof(float2))
+                else if (param.Value is float2 float2Val)
                 {
-                    if (param.Info.Size > 1)
-                    {
-                        // parameter is an array
-                        var paramArray = (float2[])param.Value;
-                        _rci.SetShaderParam(param.Info.Handle, paramArray);
-                        return;
-                    }
-                    _rci.SetShaderParam(param.Info.Handle, (float2)param.Value);
-                }
-                else if (param.Info.Type == typeof(float3))
+                    _rci.SetShaderParam(param.Info.Handle, float2Val);
+                } 
+                else if (param.Value is float3 float3Val)
                 {
-                    if (param.Info.Size > 1)
-                    {
-                        // parameter is an array
-                        var paramArray = (float3[])param.Value;
-                        _rci.SetShaderParam(param.Info.Handle, paramArray);
-                        return;
-                    }
-                    _rci.SetShaderParam(param.Info.Handle, (float3)param.Value);
+                    _rci.SetShaderParam(param.Info.Handle, float3Val);
                 }
-                else if (param.Info.Type == typeof(float4))
+                else if (param.Value is float4 float4Val)
                 {
-                    if (param.Info.Size > 1)
-                    {
-                        // parameter is an array
-                        var paramArray = (float4[])param.Value;
-                        _rci.SetShaderParam(param.Info.Handle, paramArray);
-                        return;
-                    }
-                    _rci.SetShaderParam(param.Info.Handle, (float4)param.Value);
+                    _rci.SetShaderParam(param.Info.Handle, float4Val);
                 }
-                else if (param.Info.Type == typeof(float4x4))
+                else if (param.Value is float4x4 float4x4Val)
                 {
-                    if (param.Info.Size > 1)
-                    {
-                        // parameter is an array
-                        var paramArray = (float4x4[])param.Value;
-                        _rci.SetShaderParam(param.Info.Handle, paramArray);
-                        return;
-                    }
-                    _rci.SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+                    _rci.SetShaderParam(param.Info.Handle, float4x4Val);
                 }
-                else if (param.Info.Type == typeof(float4x4[]))
-                {
-                    _rci.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
-                }
-
+                
                 else if (param.Value is IWritableArrayTexture)
                 {
                     SetShaderParamTexture(param.Info.Handle, ((WritableArrayTexture)param.Value));
