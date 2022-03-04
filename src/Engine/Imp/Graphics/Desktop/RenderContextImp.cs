@@ -621,7 +621,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
-            GL.BindAttribLocation(program, AttributeLocations.FuseePlatformIdLocation, UniformNameDeclarations.FuseePlatformId);
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
 

@@ -507,7 +507,7 @@ namespace Fusee.Engine.Gui
                                     new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
                                     new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
                                     new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = float2.One},
-                                    new FxParamDeclaration<int> {Name= UniformNameDeclarations.FuseePlatformId, Value = 0}
+                                    new FxParamDeclaration<int> {Name = UniformNameDeclarations.FuseePlatformId, Value = -1}
                                 }),
                         textMesh,
                      }

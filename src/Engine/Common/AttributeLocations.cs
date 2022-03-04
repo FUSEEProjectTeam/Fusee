@@ -57,11 +57,6 @@
         public static readonly int BoneIndexAttribLocation = 9;
 
         /// <summary>
-        /// The Fusee platform id attribute location index.
-        /// </summary>
-        public static readonly int FuseePlatformIdLocation = 10;
-
-        /// <summary>
         /// First attribute location for the instanced model matrix.
         /// Vertex Attributes can be of type vec4 at maximum.
         /// </summary>
