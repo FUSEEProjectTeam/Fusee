@@ -41,8 +41,8 @@ namespace Fusee.PointCloud.Potree.V2
                             binaryReader.BaseStream.Position = node.ByteOffset + 0 + i * Instance.Metadata.PointSize;
 
                             point.x = (binaryReader.ReadInt32() * Instance.Metadata.Scale.x);
-                            point.y = (binaryReader.ReadInt32() * Instance.Metadata.Scale.y);
-                            point.z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z);
+                            point.z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.y);
+                            point.y = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z);
 
                             if (pointSelector(point))
                             {
