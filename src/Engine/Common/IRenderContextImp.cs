@@ -142,7 +142,6 @@ namespace Fusee.Engine.Common
         /// <remarks>
         /// The returned handle can be used to assign values to a (uniform) shader parameter.
         /// </remarks>
-        /// <seealso cref="SetShaderParam(IUniformHandle,float)"/>
         IUniformHandle GetShaderUniformParam(IShaderHandle shaderProgram, string paramName);
 
         /// <summary>
@@ -154,7 +153,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, float val);
+        void SetShaderParam(IUniformHandle param, in float val);
 
         /// <summary>
         /// Sets the specified shader parameter to a double value.
@@ -165,7 +164,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, double val);
+        void SetShaderParam(IUniformHandle param, in double val);
 
         /// <summary>
         /// Sets the shader parameter to a float2 value.
@@ -176,7 +175,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, float2 val);
+        void SetShaderParam(IUniformHandle param, in float2 val);
 
         /// <summary>
         /// Sets the shader parameter to a float2 array.
@@ -187,7 +186,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, float2[] val);
+        void SetShaderParam(IUniformHandle param, in float2[] val);
 
         /// <summary>
         /// Sets the shader parameter to a float3 value.
@@ -198,7 +197,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, float3 val);
+        void SetShaderParam(IUniformHandle param, in float3 val);
 
         /// <summary>
         /// Sets the shader parameter to a float3 array.
@@ -209,7 +208,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, float3[] val);
+        void SetShaderParam(IUniformHandle param, in float3[] val);
 
         /// <summary>
         /// Sets the shader parameter to a float4 value.
@@ -220,7 +219,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, float4 val);
+        void SetShaderParam(IUniformHandle param, in float4 val);
 
         /// <summary>
         /// Sets the shader parameter to a float4 array.
@@ -231,7 +230,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, float4[] val);
+        void SetShaderParam(IUniformHandle param, in float4[] val);
 
         /// <summary>
         /// Sets the shader parameter to a float4x4 matrix value.
@@ -242,7 +241,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, float4x4 val);
+        void SetShaderParam(IUniformHandle param, in float4x4 val);
 
         /// <summary>
         /// Sets the shader parameter to a float4x4 matrix array.
@@ -253,14 +252,14 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, float4x4[] val);
+        void SetShaderParam(IUniformHandle param, in float4x4[] val);
 
         /// <summary>
         /// Sets a <see cref="int2" /> shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, int2 val);
+        public void SetShaderParam(IUniformHandle param, in int2 val);
 
         /// <summary>
         /// Sets the shader parameter to a integer value.
@@ -271,7 +270,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IUniformHandle param, int val);
+        void SetShaderParam(IUniformHandle param, in int val);
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.

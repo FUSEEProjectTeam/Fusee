@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -772,7 +773,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, float val)
+        public void SetShaderParam(IUniformHandle param, in float val)
         {
             GL.Uniform1(((UniformHandle)param).handle, val);
         }
@@ -782,7 +783,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, double val)
+        public void SetShaderParam(IUniformHandle param, in double val)
         {
             GL.Uniform1(((UniformHandle)param).handle, val);
         }
@@ -792,7 +793,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, float2 val)
+        public void SetShaderParam(IUniformHandle param, in float2 val)
         {
             GL.Uniform2(((UniformHandle)param).handle, val.x, val.y);
         }
@@ -802,7 +803,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IUniformHandle param, float2[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, in float2[] val)
         {
             fixed (float2* pFlt = &val[0])
                 GL.Uniform2(((UniformHandle)param).handle, val.Length, (float*)pFlt);
@@ -813,7 +814,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, float3 val)
+        public void SetShaderParam(IUniformHandle param, in float3 val)
         {
             GL.Uniform3(((UniformHandle)param).handle, val.x, val.y, val.z);
         }
@@ -823,7 +824,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IUniformHandle param, float3[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, in float3[] val)
         {
             fixed (float3* pFlt = &val[0])
                 GL.Uniform3(((UniformHandle)param).handle, val.Length, (float*)pFlt);
@@ -834,27 +835,32 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, float4 val)
+        public void SetShaderParam(IUniformHandle param, in float4 val)
         {
             GL.Uniform4(((UniformHandle)param).handle, val.x, val.y, val.z, val.w);
         }
-
+ 
         /// <summary>
         /// Sets a <see cref="float4x4" /> shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, float4x4 val)
+        public unsafe void SetShaderParam(IUniformHandle param, in float4x4 val)
         {
-            unsafe
+            fixed (void* pt = new byte[Marshal.SizeOf(val)])
             {
-                var mF = (float*)(&val);
-                // Row order notation
-                // GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
-
-                // Column order notation
-                GL.UniformMatrix4(((UniformHandle)param).handle, 1, true, mF);
+                var intPtr = new IntPtr(pt);
+                Marshal.StructureToPtr(val, intPtr, true);
+                GL.UniformMatrix4(((UniformHandle)param).handle, 1, true, (float*)intPtr);
             }
+
+            //var mF = (float*)&val;
+            
+            // Row order notation
+            // GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
+
+            // Column order notation
+            //GL.UniformMatrix4(((UniformHandle)param).handle, 1, true, mF);
         }
 
         /// <summary>
@@ -862,7 +868,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IUniformHandle param, float4[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, in float4[] val)
         {
             fixed (float4* pFlt = &val[0])
                 GL.Uniform4(((UniformHandle)param).handle, val.Length, (float*)pFlt);
@@ -873,7 +879,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, int2 val)
+        public void SetShaderParam(IUniformHandle param, in int2 val)
         {
             GL.Uniform2(((UniformHandle)param).handle, val.x, val.y);
         }
@@ -883,20 +889,25 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IUniformHandle param, float4x4[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, in float4x4[] val)
         {
-            var tmpArray = new float4[val.Length * 4];
-
-            for (var i = 0; i < val.Length; i++)
+            fixed (float4x4* pFlt = &val[0])
             {
-                tmpArray[i * 4] = val[i].Column1;
-                tmpArray[i * 4 + 1] = val[i].Column2;
-                tmpArray[i * 4 + 2] = val[i].Column3;
-                tmpArray[i * 4 + 3] = val[i].Column4;
+                GL.UniformMatrix4(((UniformHandle)param).handle, val.Length, true, (float*)pFlt);
             }
 
-            fixed (float4* pMtx = &tmpArray[0])
-                GL.UniformMatrix4(((UniformHandle)param).handle, val.Length, false, (float*)pMtx);
+            //var tmpArray = new float4[val.Length * 4];
+
+            //for (var i = 0; i < val.Length; i++)
+            //{
+            //    tmpArray[i * 4] = val[i].Column1;
+            //    tmpArray[i * 4 + 1] = val[i].Column2;
+            //    tmpArray[i * 4 + 2] = val[i].Column3;
+            //    tmpArray[i * 4 + 3] = val[i].Column4;
+            //}
+
+            //fixed (float4* pMtx = &tmpArray[0])
+            //    GL.UniformMatrix4(((UniformHandle)param).handle, val.Length, false, (float*)pMtx);
         }
 
         /// <summary>
@@ -904,7 +915,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, int val)
+        public void SetShaderParam(IUniformHandle param, in int val)
         {
             GL.Uniform1(((UniformHandle)param).handle, val);
         }

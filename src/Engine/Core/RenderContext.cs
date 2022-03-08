@@ -1232,7 +1232,7 @@ namespace Fusee.Engine.Core
         {
             foreach (var fxParam in cFx.ActiveUniforms.Values)
             {
-                SetShaderParamT(fxParam);
+                SetShaderParamT(in fxParam);
                 fxParam.HasValueChanged = false;
             }
         }
@@ -1275,7 +1275,7 @@ namespace Fusee.Engine.Core
         /// Note that this will change the parameter value in the currently bound shader.
         /// </summary>
         /// <param name="param">The shader parameter.</param>
-        private void SetShaderParamT(IFxParam param)
+        private void SetShaderParamT(in IFxParam param)
         {
             if (param.HasValueChanged)
             {
@@ -1285,27 +1285,27 @@ namespace Fusee.Engine.Core
                 }
                 else if (param.Value is int intVal)
                 {
-                    _rci.SetShaderParam(param.Handle, intVal);
+                    _rci.SetShaderParam(param.Handle, in intVal);
                 }
                 else if (param.Value is float floatVal)
                 {
-                    _rci.SetShaderParam(param.Handle, floatVal);
+                    _rci.SetShaderParam(param.Handle, in floatVal);
                 }
                 else if (param.Value is double doubleVal)
                 {
-                    _rci.SetShaderParam(param.Handle, doubleVal);
+                    _rci.SetShaderParam(param.Handle, in doubleVal);
                 }
                 else if (param.Value is float2 float2Val)
                 {
-                    _rci.SetShaderParam(param.Handle, float2Val);
+                    _rci.SetShaderParam(param.Handle, in float2Val);
                 }
                 else if (param.Value is float3 float3Val)
                 {
-                    _rci.SetShaderParam(param.Handle, float3Val);
+                    _rci.SetShaderParam(param.Handle, in float3Val);
                 }
                 else if (param.Value is float4 float4Val)
                 {
-                    _rci.SetShaderParam(param.Handle, float4Val);
+                    _rci.SetShaderParam(param.Handle, in float4Val);
                 }
                 else if (param.Value is float4x4 float4x4Val)
                 {
@@ -1313,7 +1313,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (param.Value is int2 int2Val)
                 {
-                    _rci.SetShaderParam(param.Handle, int2Val);
+                    _rci.SetShaderParam(param.Handle, in int2Val);
                 }
 
                 else if (param.Value is IWritableArrayTexture)
@@ -1364,7 +1364,7 @@ namespace Fusee.Engine.Core
 
                 else
                 {
-                    throw new ArgumentException($"{param} has a unknown type.");
+                    throw new ArgumentException($"{param} has an unknown type {param.Value.GetType().Name}.");
                 }
             }
             else
