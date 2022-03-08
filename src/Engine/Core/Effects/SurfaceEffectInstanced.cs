@@ -1,13 +1,44 @@
-﻿using Fusee.Engine.Core.ShaderShards;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.Effects
 {
+
+    public struct InstanceData : IInstanceData
+    {
+        public float3[] Translations { get; }
+
+        public float4[] Colors { get; }
+
+        public int Amount { get; }
+
+        public InstanceData(int amount, float3[] translations, float4[] colors = null)
+        {
+            Amount = amount;
+            if (Amount != translations.Length)
+                throw new ArgumentOutOfRangeException();
+            Translations = new float3[amount];
+
+            if (colors != null)
+            {
+                if (Amount != colors.Length)
+                    throw new ArgumentOutOfRangeException();
+                Colors = new float4[amount];
+            }
+            else
+                Colors = null;
+        }
+    }
+
     public class SurfaceEffectInstanced : SurfaceEffectBase
     {
+        public InstanceData InstanceData;
+
         #region Internal/Global Uniforms (set by the Engine)
 
         /// <summary>

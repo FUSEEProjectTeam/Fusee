@@ -3,6 +3,7 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 

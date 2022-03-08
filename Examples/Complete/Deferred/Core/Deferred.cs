@@ -232,6 +232,7 @@ namespace Fusee.Examples.Deferred.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            //Diagnostics.Warn(FramesPerSecond);
             //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f) * DeltaTime * 50, 0 ,0));
 
             var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;

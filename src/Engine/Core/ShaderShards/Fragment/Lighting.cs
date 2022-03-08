@@ -1245,6 +1245,18 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public string IsCastingShadows;
         public string Bias;
 
+        public int PositionViewSpaceHash;
+        public int IntensitiesHash;
+        public int MaxDistanceHash;
+        public int StrengthHash;
+        public int OuterAngleHash;
+        public int InnerAngleHash;
+        public int DirectionHash;
+        public int LightTypeHash;
+        public int IsActiveHash;
+        public int IsCastingShadowsHash;
+        public int BiasHash;
+
         public LightParamStrings(int arrayPos)
         {
             PositionViewSpace = $"allLights[{arrayPos}].position";
@@ -1258,6 +1270,18 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             IsActive = $"allLights[{arrayPos}].isActive";
             IsCastingShadows = $"allLights[{arrayPos}].isCastingShadows";
             Bias = $"allLights[{arrayPos}].bias";
+
+            PositionViewSpaceHash = PositionViewSpace.GetHashCode();
+            IntensitiesHash = Intensities.GetHashCode();
+            MaxDistanceHash = MaxDistance.GetHashCode();
+            StrengthHash = Strength.GetHashCode();
+            OuterAngleHash = OuterAngle.GetHashCode();
+            InnerAngleHash = InnerAngle.GetHashCode();
+            DirectionHash = Direction.GetHashCode();
+            LightTypeHash = LightType.GetHashCode();
+            IsActiveHash = IsActive.GetHashCode();
+            IsCastingShadowsHash = IsCastingShadows.GetHashCode();
+            BiasHash = Bias.GetHashCode();
         }
     }
 }

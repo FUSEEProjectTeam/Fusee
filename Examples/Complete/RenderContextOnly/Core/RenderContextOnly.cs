@@ -166,15 +166,15 @@ namespace Fusee.Examples.RenderContextOnly.Core
             var lightParamStrings = new LightParamStrings(0);
 
             // Set parameters in view/camera space.
-            RC.SetGlobalEffectParam(lightParamStrings.PositionViewSpace.GetHashCode(), float3.Zero);
-            RC.SetGlobalEffectParam(lightParamStrings.Intensities.GetHashCode(), light.Color);
-            RC.SetGlobalEffectParam(lightParamStrings.MaxDistance.GetHashCode(), light.MaxDistance);
-            RC.SetGlobalEffectParam(lightParamStrings.Strength.GetHashCode(), strength);
-            RC.SetGlobalEffectParam(lightParamStrings.OuterAngle.GetHashCode(), M.DegreesToRadians(light.OuterConeAngle));
-            RC.SetGlobalEffectParam(lightParamStrings.InnerAngle.GetHashCode(), M.DegreesToRadians(light.InnerConeAngle));
-            RC.SetGlobalEffectParam(lightParamStrings.Direction.GetHashCode(), float3.UnitZ);
-            RC.SetGlobalEffectParam(lightParamStrings.LightType.GetHashCode(), (int)light.Type);
-            RC.SetGlobalEffectParam(lightParamStrings.IsActive.GetHashCode(), light.Active ? 1 : 0);
+            RC.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, lightParamStrings.PositionViewSpaceHash, float3.Zero);
+            RC.SetGlobalEffectParam(lightParamStrings.Intensities, lightParamStrings.IntensitiesHash, light.Color);
+            RC.SetGlobalEffectParam(lightParamStrings.MaxDistance, lightParamStrings.MaxDistanceHash, light.MaxDistance);
+            RC.SetGlobalEffectParam(lightParamStrings.Strength, lightParamStrings.StrengthHash, strength);
+            RC.SetGlobalEffectParam(lightParamStrings.OuterAngle, lightParamStrings.OuterAngleHash, M.DegreesToRadians(light.OuterConeAngle));
+            RC.SetGlobalEffectParam(lightParamStrings.InnerAngle, lightParamStrings.InnerAngleHash, M.DegreesToRadians(light.InnerConeAngle));
+            RC.SetGlobalEffectParam(lightParamStrings.Direction, lightParamStrings.DirectionHash, float3.UnitZ);
+            RC.SetGlobalEffectParam(lightParamStrings.LightType, lightParamStrings.LightTypeHash, (int)light.Type);
+            RC.SetGlobalEffectParam(lightParamStrings.IsActive, lightParamStrings.IsActiveHash, light.Active ? 1 : 0);
         }
     }
 }

@@ -2,7 +2,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.Imp.Shared;
+using Fusee.Engine.Imp.SharedAll;
 using Fusee.Math.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -669,45 +669,45 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="shaderProgram">The shader program.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
+        public IUniformHandle GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
             int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, paramName);
-            return (h == -1) ? null : new ShaderParam { handle = h };
+            return (h == -1) ? null : new UniformHandle { handle = h };
         }
 
         /// <summary>
-        /// Gets the float parameter value inside a shader program by using a <see cref="IShaderParam" /> as search reference.
+        /// Gets the float parameter value inside a shader program by using a <see cref="IUniformHandle" /> as search reference.
         /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
         /// </summary>
         /// <param name="program">The program.</param>
         /// <param name="param">The parameter.</param>
         /// <returns>A float number (default is 0).</returns>
-        public float GetParamValue(IShaderHandle program, IShaderParam param)
+        public float GetParamValue(IShaderHandle program, IUniformHandle param)
         {
-            GL.GetUniform(((ShaderHandleImp)program).Handle, ((ShaderParam)param).handle, out float f);
+            GL.GetUniform(((ShaderHandleImp)program).Handle, ((UniformHandle)param).handle, out float f);
             return f;
         }
 
         /// <summary>
-        /// Returns a List of type <see cref="ShaderParamInfo"/> for all ShaderStorageBlocks
+        /// Returns a List of type <see cref="FxParam"/> for all ShaderStorageBlocks
         /// </summary>
         /// <param name="shaderProgram">The shader program to query.</param>
-        public IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        public IList<IFxParam> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
-            var paramList = new List<ShaderParamInfo>();
+            var paramList = new List<IFxParam>();
             var sProg = (ShaderHandleImp)shaderProgram;
             GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.MaxNameLength, out int ssboMaxLen);
             GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.ActiveResources, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
-                var paramInfo = new ShaderParamInfo();
+                var param = new FxParam();
                 GL.GetProgramResourceName(sProg.Handle, ProgramInterface.ShaderStorageBlock, i, ssboMaxLen, out _, out string name);
-                paramInfo.Name = name;
+                param.Name = name;
 
                 int h = GL.GetProgramResourceIndex(sProg.Handle, ProgramInterface.ShaderStorageBlock, name);
-                paramInfo.Handle = (h == -1) ? null : new ShaderParam { handle = h };
-                paramList.Add(paramInfo);
+                param.Handle = (h == -1) ? null : new UniformHandle { handle = h };
+                paramList.Add(param);
             }
 
             return paramList;
@@ -719,37 +719,40 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
+        public IList<IFxParam> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             var sProg = (ShaderHandleImp)shaderProgram;
-            var paramList = new List<ShaderParamInfo>();
+            var paramList = new List<IFxParam>();
 
             GL.GetProgram(sProg.Handle, GetProgramParameterName.ActiveUniforms, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
-                var paramInfo = new ShaderParamInfo();
-                paramInfo.Name = GL.GetActiveUniform(sProg.Handle, i, out paramInfo.Size, out ActiveUniformType uType);
+                var paramInfo = new FxParam
+                {
+                    Name = GL.GetActiveUniform(sProg.Handle, i, out var paramSize, out ActiveUniformType uType)
+                };
                 paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
+                paramInfo.Size = paramSize;
 
                 //Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
 
-                paramInfo.Type = uType switch
-                {
-                    ActiveUniformType.Int => typeof(int),
-                    ActiveUniformType.Bool => typeof(bool),
-                    ActiveUniformType.Float => typeof(float),
-                    ActiveUniformType.Double => typeof(double),
-                    ActiveUniformType.IntVec2 => typeof(float2),
-                    ActiveUniformType.FloatVec2 => typeof(float2),
-                    ActiveUniformType.FloatVec3 => typeof(float3),
-                    ActiveUniformType.FloatVec4 => typeof(float4),
-                    ActiveUniformType.FloatMat4 => typeof(float4x4),
-                    ActiveUniformType.Sampler2D or ActiveUniformType.UnsignedIntSampler2D or ActiveUniformType.IntSampler2D or ActiveUniformType.Sampler2DShadow or ActiveUniformType.Image2D => typeof(ITextureBase),
-                    ActiveUniformType.SamplerCube or ActiveUniformType.SamplerCubeShadow => typeof(IWritableCubeMap),
-                    ActiveUniformType.Sampler2DArray or ActiveUniformType.Sampler2DArrayShadow => typeof(IWritableArrayTexture),
-                    _ => throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown."),
-                };
+                //paramInfo.Type = uType switch
+                //{
+                //    ActiveUniformType.Int => typeof(int),
+                //    ActiveUniformType.Bool => typeof(bool),
+                //    ActiveUniformType.Float => typeof(float),
+                //    ActiveUniformType.Double => typeof(double),
+                //    ActiveUniformType.IntVec2 => typeof(float2),
+                //    ActiveUniformType.FloatVec2 => typeof(float2),
+                //    ActiveUniformType.FloatVec3 => typeof(float3),
+                //    ActiveUniformType.FloatVec4 => typeof(float4),
+                //    ActiveUniformType.FloatMat4 => typeof(float4x4),
+                //    ActiveUniformType.Sampler2D or ActiveUniformType.UnsignedIntSampler2D or ActiveUniformType.IntSampler2D or ActiveUniformType.Sampler2DShadow or ActiveUniformType.Image2D => typeof(ITextureBase),
+                //    ActiveUniformType.SamplerCube or ActiveUniformType.SamplerCubeShadow => typeof(IWritableCubeMap),
+                //    ActiveUniformType.Sampler2DArray or ActiveUniformType.Sampler2DArrayShadow => typeof(IWritableArrayTexture),
+                //    _ => throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown."),
+                //};
                 paramList.Add(paramInfo);
             }
             return paramList;
@@ -769,9 +772,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float val)
+        public void SetShaderParam(IUniformHandle param, float val)
         {
-            GL.Uniform1(((ShaderParam)param).handle, val);
+            GL.Uniform1(((UniformHandle)param).handle, val);
         }
 
         /// <summary>
@@ -779,9 +782,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, double val)
+        public void SetShaderParam(IUniformHandle param, double val)
         {
-            GL.Uniform1(((ShaderParam)param).handle, val);
+            GL.Uniform1(((UniformHandle)param).handle, val);
         }
 
         /// <summary>
@@ -789,9 +792,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float2 val)
+        public void SetShaderParam(IUniformHandle param, float2 val)
         {
-            GL.Uniform2(((ShaderParam)param).handle, val.x, val.y);
+            GL.Uniform2(((UniformHandle)param).handle, val.x, val.y);
         }
 
         /// <summary>
@@ -799,10 +802,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float2[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, float2[] val)
         {
             fixed (float2* pFlt = &val[0])
-                GL.Uniform2(((ShaderParam)param).handle, val.Length, (float*)pFlt);
+                GL.Uniform2(((UniformHandle)param).handle, val.Length, (float*)pFlt);
         }
 
         /// <summary>
@@ -810,9 +813,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float3 val)
+        public void SetShaderParam(IUniformHandle param, float3 val)
         {
-            GL.Uniform3(((ShaderParam)param).handle, val.x, val.y, val.z);
+            GL.Uniform3(((UniformHandle)param).handle, val.x, val.y, val.z);
         }
 
         /// <summary>
@@ -820,10 +823,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float3[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, float3[] val)
         {
             fixed (float3* pFlt = &val[0])
-                GL.Uniform3(((ShaderParam)param).handle, val.Length, (float*)pFlt);
+                GL.Uniform3(((UniformHandle)param).handle, val.Length, (float*)pFlt);
         }
 
         /// <summary>
@@ -831,9 +834,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4 val)
+        public void SetShaderParam(IUniformHandle param, float4 val)
         {
-            GL.Uniform4(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
+            GL.Uniform4(((UniformHandle)param).handle, val.x, val.y, val.z, val.w);
         }
 
         /// <summary>
@@ -841,7 +844,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4x4 val)
+        public void SetShaderParam(IUniformHandle param, float4x4 val)
         {
             unsafe
             {
@@ -850,7 +853,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 // GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
 
                 // Column order notation
-                GL.UniformMatrix4(((ShaderParam)param).handle, 1, true, mF);
+                GL.UniformMatrix4(((UniformHandle)param).handle, 1, true, mF);
             }
         }
 
@@ -859,10 +862,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float4[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, float4[] val)
         {
             fixed (float4* pFlt = &val[0])
-                GL.Uniform4(((ShaderParam)param).handle, val.Length, (float*)pFlt);
+                GL.Uniform4(((UniformHandle)param).handle, val.Length, (float*)pFlt);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="int2" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IUniformHandle param, int2 val)
+        {
+            GL.Uniform2(((UniformHandle)param).handle, val.x, val.y);
         }
 
         /// <summary>
@@ -870,7 +883,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float4x4[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, float4x4[] val)
         {
             var tmpArray = new float4[val.Length * 4];
 
@@ -883,7 +896,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             fixed (float4* pMtx = &tmpArray[0])
-                GL.UniformMatrix4(((ShaderParam)param).handle, val.Length, false, (float*)pMtx);
+                GL.UniformMatrix4(((UniformHandle)param).handle, val.Length, false, (float*)pMtx);
         }
 
         /// <summary>
@@ -891,9 +904,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, int val)
+        public void SetShaderParam(IUniformHandle param, int val)
         {
-            GL.Uniform1(((ShaderParam)param).handle, val);
+            GL.Uniform1(((UniformHandle)param).handle, val);
         }
 
         private void BindImage(TextureType texTarget, ITextureHandle texId, int texUint, TextureAccess access, SizedInternalFormat format)
@@ -940,9 +953,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="param">The shader parameter, associated with this texture.</param>
         /// <param name="texId">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
+        public void SetActiveAndBindTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
             {
                 _textureCountPerShader++;
@@ -954,9 +967,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             BindTextureByTarget(texId, texTarget);
         }
 
-        private void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access, out int texUnit)
+        private void SetActiveAndBindImage(IUniformHandle param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access, out int texUnit)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
             {
                 _textureCountPerShader++;
@@ -977,9 +990,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texId">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="texUnit">The texture unit.</param>
-        public void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget, out int texUnit)
+        public void SetActiveAndBindTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget, out int texUnit)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
             {
                 _textureCountPerShader++;
@@ -997,9 +1010,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
         /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
+        public void SetActiveAndBindTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             int[] texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
@@ -1026,9 +1039,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="texUnitArray">The texture units.</param>
-        public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray)
+        public void SetActiveAndBindTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
@@ -1055,10 +1068,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="format">The internal sized format of the texture.</param>
-        public void SetShaderParamImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
+        public void SetShaderParamImage(IUniformHandle param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
         {
             SetActiveAndBindImage(param, texId, texTarget, format, TextureAccess.ReadWrite, out int texUnit);
-            GL.Uniform1(((ShaderParam)param).handle, texUnit);
+            GL.Uniform1(((UniformHandle)param).handle, texUnit);
         }
 
         /// <summary>
@@ -1067,10 +1080,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
+        public void SetShaderParamTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget)
         {
             SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);
-            GL.Uniform1(((ShaderParam)param).handle, texUnit);
+            GL.Uniform1(((UniformHandle)param).handle, texUnit);
         }
 
         /// <summary>
@@ -1079,12 +1092,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public unsafe void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
+        public unsafe void SetShaderParamTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget)
         {
             SetActiveAndBindTextureArray(param, texIds, texTarget, out int[] texUnitArray);
 
             fixed (int* pFlt = &texUnitArray[0])
-                GL.Uniform1(((ShaderParam)param).handle, texUnitArray.Length, pFlt);
+                GL.Uniform1(((UniformHandle)param).handle, texUnitArray.Length, pFlt);
         }
 
         #endregion
@@ -1670,6 +1683,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
         {
             GL.DispatchCompute(threadGroupsX, threadGroupsY, threadGroupsZ);
+        }
+
+        public void Render(IMeshImp mesh, IInstanceData instanceData)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

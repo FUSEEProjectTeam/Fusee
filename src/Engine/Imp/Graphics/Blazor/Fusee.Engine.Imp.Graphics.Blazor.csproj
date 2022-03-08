@@ -28,4 +28,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.2" />
 	</ItemGroup>
 
+	<Import Project="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.projitems" Label="Shared" />
+
 </Project>

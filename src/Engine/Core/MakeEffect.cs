@@ -30,7 +30,7 @@ namespace Fusee.Engine.Core
         /// <param name="screenParams">The width and height of the screen.</param>
         // see: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
         // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
-        public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
+        public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, int2 screenParams)
         {
             return new ShaderEffect(
 
@@ -47,7 +47,7 @@ namespace Fusee.Engine.Core
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<WritableTexture> { Name = RenderTargetTextureTypes.Albedo.ToString(), Value = srcTex},
-                new FxParamDeclaration<float2> { Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
+                new FxParamDeclaration<int2> { Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
             });
         }
 
@@ -58,7 +58,7 @@ namespace Fusee.Engine.Core
         /// <param name="kernelLength">SSAO kernel size.</param>
         /// <param name="screenParams">Width and Height of the screen.</param>
         /// <param name="noiseTexSize">Width and height of the noise texture.</param>
-        public static ShaderEffect SSAORenderTargetTextureEffect(IRenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
+        public static ShaderEffect SSAORenderTargetTextureEffect(IRenderTarget geomPassRenderTarget, int kernelLength, int2 screenParams, int noiseTexSize)
         {
             var ssaoKernel = FuseeSsaoHelper.CreateKernel(kernelLength);
             var ssaoNoiseTex = FuseeSsaoHelper.CreateNoiseTex(noiseTexSize);
@@ -92,7 +92,7 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
 
-                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
+                new FxParamDeclaration<int2> {Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
                 new FxParamDeclaration<float3[]> {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
                 new FxParamDeclaration<Texture> {Name = UniformNameDeclarations.NoiseTex, Value = ssaoNoiseTex},
                 new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},

@@ -5,7 +5,7 @@
     ///  The implementation is render-platform specific and differs among platforms 
     ///  like OpenGL, DirectX, or WebGL
     /// </summary>
-    public interface IShaderParam
+    public interface IUniformHandle
     {
         // this is a markup-only
     }

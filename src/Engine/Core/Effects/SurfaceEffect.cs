@@ -82,6 +82,13 @@ namespace Fusee.Engine.Core.Effects
             FUSEE_MVP = float4x4.Identity;
             FUSEE_ITMV = float4x4.Identity;
             FUSEE_MVP = float4x4.Identity;
+
+            //TODO: try to suppress adding these parameters if the effect is used only for deferred rendering.
+            //May be difficult because we'd need to remove or add them (and only them) depending on the render method
+            VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, VertMain.VertexMain(SurfaceInput.ShadingModel, SurfaceInput.TextureSetup)));
+            foreach (var dcl in CreateForwardLightingParamDecls(Lighting.NumberOfLightsForward))
+                ParamDecl.Add(dcl.Hash, dcl);
+
             HandleFieldsAndProps();
         }
     }

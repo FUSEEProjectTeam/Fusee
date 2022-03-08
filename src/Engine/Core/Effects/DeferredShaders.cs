@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core.Effects
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
 
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.LightedSceneTexture));
-                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ViewportPx));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.IVec2, UniformNameDeclarations.ViewportPx));
 
                 sb.AppendLine(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.ColorOut));
 
@@ -59,7 +59,7 @@ namespace Fusee.Engine.Core.Effects
                     $"",
                     $"// ---- 0. Detecting where to apply FXAA",
                     $"",
-                    $"vec2 inverseScreenSize = vec2(1.0/{UniformNameDeclarations.ViewportPx}.x, 1.0/{UniformNameDeclarations.ViewportPx}.y);",
+                    $"vec2 inverseScreenSize = vec2(1.0/float({UniformNameDeclarations.ViewportPx}.x), 1.0/float({UniformNameDeclarations.ViewportPx}.y));",
                     $"vec3 colorCenter = texture({UniformNameDeclarations.LightedSceneTexture}, {VaryingNameDeclarations.TextureCoordinates}).rgb;",
                     $"",
                     $"// Luma at the current fragment",

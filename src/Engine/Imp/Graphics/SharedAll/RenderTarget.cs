@@ -1,9 +1,9 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using System;
 
-namespace Fusee.Engine.Imp.Blazor
+namespace Fusee.Engine.Imp.SharedAll
 {
     /// <summary>
     /// Use this if you want to render into buffer object, associated with one or more textures.
@@ -61,7 +61,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// <param name="tex">The type of the texture.</param>
         public void SetTextureFromRenderTarget(IRenderTarget src, RenderTargetTextureTypes tex)
         {
-            IWritableTexture srcTex = src.RenderTextures[(int)tex];
+            var srcTex = src.RenderTextures[(int)tex];
             RenderTextures[(int)tex] = srcTex ?? throw new ArgumentException("Texture from source target is null!");
         }
 
@@ -84,11 +84,19 @@ namespace Fusee.Engine.Imp.Blazor
         }
 
         /// <summary>
+        /// Generates a albedo and specular (alpha channel) texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>       
+        public void SetAlbedoTex()
+        {
+            RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
+        }
+
+        /// <summary>
         /// Generates a normal texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
         public void SetNormalTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Normal] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
+            RenderTextures[(int)RenderTargetTextureTypes.Normal] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGB32));
         }
 
         /// <summary>
@@ -104,7 +112,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void SetSSAOTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
+            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA16));
         }
 
         /// <summary>
@@ -112,15 +120,23 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void SetSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
+            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA16));
         }
 
         /// <summary>
-        /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
+        /// Generates a emissive texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
         public void SetEmissiveTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
+        }
+
+        /// <summary>
+        /// Generates a subsurface texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
+        public void SetSubsurfaceTex()
+        {
+            RenderTextures[(int)RenderTargetTextureTypes.Subsurface] = WritableTexture.CreateSubsurfaceTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
 
         /// <summary>
@@ -148,16 +164,6 @@ namespace Fusee.Engine.Imp.Blazor
             }
 
             Disposed = true;
-        }
-
-        public void SetAlbedoTex()
-        {
-            RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
-        }
-
-        public void SetSubsurfaceTex()
-        {
-            RenderTextures[(int)RenderTargetTextureTypes.Subsurface] = WritableTexture.CreateSubsurfaceTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
 
         /// <summary>
