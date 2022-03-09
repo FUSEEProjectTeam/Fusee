@@ -1,10 +1,10 @@
 using Fusee.Math.Core;
-using Fusee.PointCloud.Common.Accessors;
-using Fusee.PointCloud.Potree.V2.Data;
+using Fusee.PointCloud.Common;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Fusee.PointCloud.Potree.V2.Data;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -15,35 +15,12 @@ namespace Fusee.PointCloud.Potree.V2
             GetOctree(filepath);
         }
 
-        private double4x4 YZflip = new double4x4()
+        public (long octants, long points) Label(Predicate<PotreeNode> nodeSelector, Predicate<double3> pointSelector, byte Label, bool dryrun = false)
         {
-            M11 = 1,
-            M12 = 0,
-            M13 = 0,
-            M14 = 0,
-            M21 = 0,
-            M22 = 0,
-            M23 = 1,
-            M24 = 0,
-            M31 = 0,
-            M32 = 1,
-            M33 = 0,
-            M34 = 0,
-            M41 = 0,
-            M42 = 0,
-            M43 = 0,
-            M44 = 1
-        };
-
-        public long LableMinMax(double3 min, double3 max, byte Label)
-        {
-            min = YZflip * min;
-            max = YZflip * max;
+            long octantCount = 0;
+            long pointsCount = 0;
 
             var octreeFilePath = Path.Combine(Instance.Metadata.FolderPath, Constants.OctreeFileName);
-            var aabb = new AABBd(min, max);
-
-            long cnt = 0;
 
             using (Stream readStream = File.Open(octreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (Stream writeStream = File.Open(octreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
@@ -51,31 +28,38 @@ namespace Fusee.PointCloud.Potree.V2
                 BinaryReader binaryReader = new BinaryReader(readStream);
                 BinaryWriter binaryWriter = new BinaryWriter(writeStream);
 
+                double3 point = double3.Zero;
+
                 foreach (var node in Instance.Hierarchy.Nodes)
                 {
-                    if (aabb.Intersects(node.Aabb))
+                    if (nodeSelector(node))
                     {
+                        octantCount++;
+
                         for (int i = 0; i < node.NumPoints; i++)
                         {
                             binaryReader.BaseStream.Position = node.ByteOffset + 0 + i * Instance.Metadata.PointSize;
 
-                            double x = (binaryReader.ReadInt32() * Instance.Metadata.Scale.x); //- Instance.Metadata.Offset.x;
-                            double y = (binaryReader.ReadInt32() * Instance.Metadata.Scale.y); //- Instance.Metadata.Offset.y;
-                            double z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z); //- Instance.Metadata.Offset.z;
+                            point.x = (binaryReader.ReadInt32() * Instance.Metadata.Scale.x);
+                            point.z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.y);
+                            point.y = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z);
 
-                            if (x > aabb.min.x && y > aabb.min.y && z > aabb.min.z &&
-                                x < aabb.max.x && y < aabb.max.y && z < aabb.max.z)
+                            if (pointSelector(point))
                             {
-                                //binaryWriter.BaseStream.Position = node.ByteOffset + 16 + i + Instance.Metadata.PointSize;
-                                //binaryWriter.Write((sbyte)Label);
+                                if (!dryrun)
+                                {
+                                    binaryWriter.BaseStream.Position = node.ByteOffset + 16 + i * Instance.Metadata.PointSize;
+                                    binaryWriter.Write(Label);
+                                }
 
-                                cnt++;
+                                pointsCount++;
                             }
                         }
                     }
                 }
             }
-            return cnt;
+
+            return (octantCount, pointsCount);
         }
 
         public PotreeData Instance
@@ -88,6 +72,20 @@ namespace Fusee.PointCloud.Potree.V2
                     Instance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(_metadataFilePath));
                     Instance.Hierarchy = LoadHierarchy(_fileFolderPath);
                     Instance.Metadata.FolderPath = _fileFolderPath;
+
+                    // Changing AABBs to have local coordinates
+                    // Fliping all YZ coordinates
+                    for (int i = 0; i < Instance.Hierarchy.Nodes.Count; i++)
+                    {
+                        var node = Instance.Hierarchy.Nodes[i];
+                        node.Aabb = new AABBd(Constants.YZflip * (node.Aabb.min - Instance.Metadata.Offset), Constants.YZflip * (node.Aabb.max - Instance.Metadata.Offset));
+                    }
+                    Instance.Metadata.OffsetList = new List<double>(3) { Instance.Metadata.Offset.x, Instance.Metadata.Offset.z, Instance.Metadata.Offset.y };
+                    Instance.Metadata.ScaleList = new List<double>(3) { Instance.Metadata.Scale.x, Instance.Metadata.Scale.z, Instance.Metadata.Scale.y };
+
+                    // Setting the metadata BoundingBox to the values of the root node. No fliping required since that was done in the for loop
+                    Instance.Metadata.BoundingBox.MinList = new List<double>(3) { Instance.Hierarchy.Root.Aabb.min.x, Instance.Hierarchy.Root.Aabb.min.y, Instance.Hierarchy.Root.Aabb.min.z };
+                    Instance.Metadata.BoundingBox.MaxList = new List<double>(3) { Instance.Hierarchy.Root.Aabb.max.x, Instance.Hierarchy.Root.Aabb.max.y, Instance.Hierarchy.Root.Aabb.max.z };
                 }
                 return _instance;
             }
@@ -129,7 +127,7 @@ namespace Fusee.PointCloud.Potree.V2
             }
         }
 
-        private PotreeHierarchy LoadHierarchy(string fileFolderPath)
+        public PotreeHierarchy LoadHierarchy(string fileFolderPath)
         {
             var hierarchyFilePath = Path.Combine(fileFolderPath, Constants.HierarchyFileName);
 
@@ -142,7 +140,7 @@ namespace Fusee.PointCloud.Potree.V2
             PotreeNode root = new PotreeNode()
             {
                 Name = "r",
-                Aabb = new AABBd(Instance.Metadata.BoundingBox.Min - Instance.Metadata.Offset, Instance.Metadata.BoundingBox.Max - Instance.Metadata.Offset)
+                Aabb = new AABBd(Instance.Metadata.BoundingBox.Min, Instance.Metadata.BoundingBox.Max)
             };
 
             var hierarchy = new PotreeHierarchy();
