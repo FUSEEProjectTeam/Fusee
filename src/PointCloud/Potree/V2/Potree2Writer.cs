@@ -1,11 +1,11 @@
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Common.Accessors;
+using Fusee.PointCloud.Potree.V2.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Fusee.PointCloud.Potree.V2.Data;
-using Fusee.PointCloud.Common.Accessors;
 
 namespace Fusee.PointCloud.Potree.V2
 {
