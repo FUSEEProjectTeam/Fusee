@@ -143,9 +143,9 @@ namespace Fusee.PointCloud.Potree.V2
 
             if (node != null)
             {
-                var octreeFilePath = Path.Combine(Instance.Metadata.FolderPath, Constants.OctreeFileName);
+                var octreeFilePath = Path.Combine(FileDataInstance.Metadata.FolderPath, Constants.OctreeFileName);
                 var binaryReader = new BinaryReader(File.OpenRead(octreeFilePath));
-                points = LoadNodeData<TPoint>((PointAccessor<TPoint>)pointAccessor, node, binaryReader);
+                points = LoadNodeData<TPoint>(node, binaryReader);
 
                 node.IsLoaded = true;
 
@@ -219,7 +219,7 @@ namespace Fusee.PointCloud.Potree.V2
 
                         byte label = binaryReader.ReadByte();
 
-                        pointAccessor.SetLabelUInt_8(ref points[i], label);
+                        ((PointAccessor<TPoint>)PointAccessor).SetLabelUInt_8(ref points[i], label);
                     }
                 }
                 //else if (metaitem.Name.Equals("scan angle rank"))
@@ -253,7 +253,7 @@ namespace Fusee.PointCloud.Potree.V2
                 {
                     for (int i = 0; i < node.NumPoints; i++)
                     {
-                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
+                        binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * FileDataInstance.Metadata.PointSize;
 
                         ushort r = binaryReader.ReadUInt16();
                         ushort g = binaryReader.ReadUInt16();
