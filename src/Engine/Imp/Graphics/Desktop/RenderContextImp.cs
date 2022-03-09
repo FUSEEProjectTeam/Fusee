@@ -552,7 +552,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.DetachShader(program, computeObject);
             GL.DeleteShader(computeObject);
 
-            return new ShaderHandleImp { Handle = program };
+            return new ShaderHandle { Handle = program };
         }
 
         /// <summary>
@@ -630,7 +630,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.DeleteShader(fragmentObject);
             GL.DeleteShader(vertexObject);
 
-            return new ShaderHandleImp { Handle = program };
+            return new ShaderHandle { Handle = program };
         }
 
         /// <inheritdoc />
@@ -640,7 +640,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="sp"></param>
         public void RemoveShader(IShaderHandle sp)
         {
-            var program = ((ShaderHandleImp)sp).Handle;
+            var program = ((ShaderHandle)sp).Handle;
 
             // wait for all threads to be finished
             GL.Finish();
@@ -659,7 +659,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _textureCountPerShader = 0;
             _shaderParam2TexUnit.Clear();
 
-            GL.UseProgram(((ShaderHandleImp)program).Handle);
+            GL.UseProgram(((ShaderHandle)program).Handle);
         }
 
         /// <summary>
@@ -672,7 +672,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
         public IUniformHandle GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
-            int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, paramName);
+            int h = GL.GetUniformLocation(((ShaderHandle)shaderProgram).Handle, paramName);
             return (h == -1) ? null : new UniformHandle { handle = h };
         }
 
@@ -685,7 +685,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>A float number (default is 0).</returns>
         public float GetParamValue(IShaderHandle program, IUniformHandle param)
         {
-            GL.GetUniform(((ShaderHandleImp)program).Handle, ((UniformHandle)param).handle, out float f);
+            GL.GetUniform(((ShaderHandle)program).Handle, ((UniformHandle)param).handle, out float f);
             return f;
         }
 
@@ -696,7 +696,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public IList<IFxParam> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
             var paramList = new List<IFxParam>();
-            var sProg = (ShaderHandleImp)shaderProgram;
+            var sProg = (ShaderHandle)shaderProgram;
             GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.MaxNameLength, out int ssboMaxLen);
             GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.ActiveResources, out int nParams);
 
@@ -722,7 +722,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public IList<IFxParam> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
-            var sProg = (ShaderHandleImp)shaderProgram;
+            var sProg = (ShaderHandle)shaderProgram;
             var paramList = new List<IFxParam>();
 
             GL.GetProgram(sProg.Handle, GetProgramParameterName.ActiveUniforms, out int nParams);
@@ -2555,7 +2555,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="ssboName">The SSBO's name.</param>
         public void ConnectBufferToShaderStorage(IShaderHandle currentProgram, IStorageBuffer buffer, string ssboName)
         {
-            var shaderProgram = ((ShaderHandleImp)currentProgram).Handle;
+            var shaderProgram = ((ShaderHandle)currentProgram).Handle;
             var resInx = GL.GetProgramResourceIndex(shaderProgram, ProgramInterface.ShaderStorageBlock, ssboName);
             GL.ShaderStorageBlockBinding(shaderProgram, resInx, buffer.BindingIndex);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, buffer.BindingIndex, ((StorageBufferHandle)buffer.BufferHandle).Handle);

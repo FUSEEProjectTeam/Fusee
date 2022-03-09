@@ -1232,6 +1232,7 @@ namespace Fusee.Engine.Core
         {
             foreach (var fxParam in cFx.ActiveUniforms.Values)
             {
+                if (fxParam.Value == null) continue;
                 SetShaderParamT(in fxParam);
                 fxParam.HasValueChanged = false;
             }
@@ -1318,7 +1319,7 @@ namespace Fusee.Engine.Core
 
                 else if (param.Value is IWritableArrayTexture)
                 {
-                    SetShaderParamTexture(param.Handle, ((WritableArrayTexture)param.Value));
+                    SetShaderParamTexture(param.Handle, (WritableArrayTexture)param.Value);
                 }
                 else if (param.Value is IWritableCubeMap)
                 {

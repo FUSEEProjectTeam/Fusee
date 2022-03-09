@@ -565,7 +565,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.DetachShader(program, computeObject);
             GL.DeleteShader(computeObject);
 
-            return new ShaderHandleImp { Handle = program };
+            return new ShaderHandle { Handle = program };
         }
 
         /// <summary>
@@ -626,7 +626,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
 
             GL.LinkProgram(program);
-            return new ShaderHandleImp { Handle = program };
+            return new ShaderHandle { Handle = program };
         }
 
         /// <inheritdoc />
@@ -638,7 +638,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             if (_androidContext == null) return; // if no RenderContext is available return - otherwise memory read error
 
-            var program = ((ShaderHandleImp)sp).Handle;
+            var program = ((ShaderHandle)sp).Handle;
 
             // wait for all threads to be finished
             GL.Finish();
@@ -658,7 +658,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             _textureCountPerShader = 0;
             _shaderParam2TexUnit.Clear();
 
-            GL.UseProgram(((ShaderHandleImp)program).Handle);
+            GL.UseProgram(((ShaderHandle)program).Handle);
         }
 
         /// <summary>
@@ -681,7 +681,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public IUniformHandle GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
             StringBuilder sbParamName = new(paramName);
-            int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, sbParamName.ToString());
+            int h = GL.GetUniformLocation(((ShaderHandle)shaderProgram).Handle, sbParamName.ToString());
             return (h == -1) ? null : new UniformHandle { handle = h };
         }
 
@@ -694,7 +694,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>A float number (default is 0).</returns>
         public float GetParamValue(IShaderHandle program, IUniformHandle param)
         {
-            GL.GetUniform(((ShaderHandleImp)program).Handle, ((UniformHandle)param).handle, out float f);
+            GL.GetUniform(((ShaderHandle)program).Handle, ((UniformHandle)param).handle, out float f);
             return f;
         }
 
@@ -705,7 +705,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public IList<FxParam> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
             var paramList = new List<FxParam>();
-            var sProg = (ShaderHandleImp)shaderProgram;
+            var sProg = (ShaderHandle)shaderProgram;
             GL.GetProgramInterface(sProg.Handle, All.ShaderStorageBlock, All.MaxNameLength, out int ssboMaxLen);
             GL.GetProgramInterface(sProg.Handle, All.ShaderStorageBlock, All.ActiveResources, out int nParams);
 
@@ -732,7 +732,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         public IList<FxParam> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
-            var sProg = (ShaderHandleImp)shaderProgram;
+            var sProg = (ShaderHandle)shaderProgram;
             var paramList = new List<FxParam>();
 
             GL.GetProgram(sProg.Handle, ProgramParameter.ActiveUniforms, out int nParams);

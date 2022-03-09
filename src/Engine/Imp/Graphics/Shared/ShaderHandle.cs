@@ -9,7 +9,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// <summary>
     /// Implementation of <see cref="IShaderHandle" /> for usage with OpenTK framework.
     /// </summary>
-    public class ShaderHandleImp : IShaderHandle
+    public class ShaderHandle : IShaderHandle
     {
         internal int Handle;
     }
