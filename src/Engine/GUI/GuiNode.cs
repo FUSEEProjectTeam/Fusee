@@ -277,40 +277,37 @@ namespace Fusee.Engine.Gui
                     Name = name + "_XForm",
                 },
                 new ShaderEffect(
-                        new FxPassDeclaration
+                    new IFxParamDeclaration[]
+                    {
+                        new FxParamDeclaration<Texture>
                         {
-                            VS = vs,
-                            PS = ps,
-                            StateSet = new RenderStateSet
-                            {
-                                AlphaBlendEnable = true,
-                                SourceBlend = Blend.SourceAlpha,
-                                DestinationBlend = Blend.InverseSourceAlpha,
-                                BlendOperation = BlendOperation.Add,
-                                ZEnable = false
-                            }
+                            Name = UniformNameDeclarations.AlbedoTexture,
+                            Value = tex
                         },
-                        new IFxParamDeclaration[]
+                        new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
+                        new FxParamDeclaration<float2> {Name = "Tile", Value = tiles},
+                        new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 1f},
+                        new FxParamDeclaration<float4>
                         {
-                            new FxParamDeclaration<Texture>
-                            {
-                                Name = UniformNameDeclarations.AlbedoTexture,
-                                Value = tex
-                            },
-                            new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
-                            new FxParamDeclaration<float2> {Name = "Tile", Value = tiles},
-                            new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 1f},
-                            new FxParamDeclaration<float4>
-                            {
-                                Name = "borders",
-                                Value = borders
-                            },
-                            new FxParamDeclaration<float4> {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
-                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
-                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
-                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.View, Value = float4x4.Identity},
-                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity}
-                        }),
+                            Name = "borders",
+                            Value = borders
+                        },
+                        new FxParamDeclaration<float4> {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
+                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
+                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
+                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.View, Value = float4x4.Identity},
+                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity}
+                    },
+                    new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        SourceBlend = Blend.SourceAlpha,
+                        DestinationBlend = Blend.InverseSourceAlpha,
+                        BlendOperation = BlendOperation.Add,
+                        ZEnable = false
+                    },
+                    vs,
+                    ps),
                 new NineSlicePlane()
             };
 
@@ -366,32 +363,30 @@ namespace Fusee.Engine.Gui
                     Name = name + "_XForm",
                 },
                 new ShaderEffect(
-                        new FxPassDeclaration
+                    new IFxParamDeclaration[]
+                    {
+                        new FxParamDeclaration<Texture>
                         {
-                            VS = vs,
-                            PS = ps,
-                            StateSet = new RenderStateSet
-                            {
-                                AlphaBlendEnable = true,
-                                SourceBlend = Blend.SourceAlpha,
-                                DestinationBlend = Blend.InverseSourceAlpha,
-                                BlendOperation = BlendOperation.Add,
-                                ZEnable = false
-                            }
+                            Name = UniformNameDeclarations.AlbedoTexture,
+                            Value = tex
                         },
-                        new IFxParamDeclaration[]
-                        {
-                            new FxParamDeclaration<Texture>
-                            {
-                                Name = UniformNameDeclarations.AlbedoTexture,
-                                Value = tex
-                            },
-                            new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
-                            new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 1f},
-                            new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = diffuseTexTiles},
-                            new FxParamDeclaration<float4x4> {Name =UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
-                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
-                        }),
+                        new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
+                        new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 1f},
+                        new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = diffuseTexTiles},
+                        new FxParamDeclaration<float4x4> {Name =UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
+                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
+                    },
+                    new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        SourceBlend = Blend.SourceAlpha,
+                        DestinationBlend = Blend.InverseSourceAlpha,
+                        BlendOperation = BlendOperation.Add,
+                        ZEnable = false
+
+                    },
+                    vs,
+                    ps),
                 new Plane()
             };
 
@@ -478,37 +473,34 @@ namespace Fusee.Engine.Gui
                     {
                         xFormText,
                         new ShaderEffect(
-                                new FxPassDeclaration
+                            new IFxParamDeclaration[]
+                            {
+                                new FxParamDeclaration<Texture>
                                 {
-                                    VS = vs,
-                                    PS = ps,
-                                    StateSet = new RenderStateSet
-                                    {
-                                        AlphaBlendEnable = true,
-                                        SourceBlend = Blend.SourceAlpha,
-                                        DestinationBlend = Blend.InverseSourceAlpha,
-                                        BlendOperation = BlendOperation.Add,
-                                        ZEnable = false
-                                    }
+                                    Name = UniformNameDeclarations.AlbedoTexture,
+                                    Value = new Texture(fontMap.Image)
                                 },
-                                new IFxParamDeclaration[]
+                                new FxParamDeclaration<float4>
                                 {
-                                    new FxParamDeclaration<Texture>
-                                    {
-                                        Name = UniformNameDeclarations.AlbedoTexture,
-                                        Value = new Texture(fontMap.Image)
-                                    },
-                                    new FxParamDeclaration<float4>
-                                    {
-                                        Name = UniformNameDeclarations.Albedo, Value = color
-                                    },
-                                    new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 0.0f},
-                                    new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
-                                    new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
-                                    new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
-                                    new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = float2.One},
-                                    new FxParamDeclaration<int> {Name = UniformNameDeclarations.FuseePlatformId, Value = 0}
-                                }),
+                                    Name = UniformNameDeclarations.Albedo, Value = color
+                                },
+                                new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 0.0f},
+                                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
+                                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
+                                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
+                                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = float2.One},
+                                new FxParamDeclaration<int> {Name = UniformNameDeclarations.FuseePlatformId, Value = 0}
+                            },
+                            new RenderStateSet
+                            {
+                                AlphaBlendEnable = true,
+                                SourceBlend = Blend.SourceAlpha,
+                                DestinationBlend = Blend.InverseSourceAlpha,
+                                BlendOperation = BlendOperation.Add,
+                                ZEnable = false
+                            },
+                            vs,
+                            ps),
                         textMesh,
                      }
                 }

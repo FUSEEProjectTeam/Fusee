@@ -126,16 +126,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         internal ShaderEffect CreateDepthPassEffect()
         {
             return new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = AssetStorage.Get<string>("PointCloud.vert"),
-                PS = AssetStorage.Get<string>("PointDepth.frag"),
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = true,
-                    ZEnable = true,
-                }
-            },
             new List<IFxParamDeclaration>
             {
                 new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
@@ -147,7 +137,14 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = _size},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)_shape},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)_ptMode},
-            })
+            },
+            new RenderStateSet
+            {
+                AlphaBlendEnable = true,
+                ZEnable = true,
+            },
+               AssetStorage.Get<string>("PointCloud.vert"),
+               AssetStorage.Get<string>("PointDepth.frag"))
             {
                 Active = false
             };

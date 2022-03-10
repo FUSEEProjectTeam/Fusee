@@ -28,18 +28,17 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The constructor to create a shader effect.
         /// </summary>
-        /// <param name="effectPass">See <see cref="FxPassDeclaration"/>.</param>
         /// <param name="effectParameters">The list of (uniform) parameters. The concrete type of the object also indicates the parameter's type.
         /// </param>
         /// <remarks> Make sure to insert all uniform variable in "effectParameters" that are declared in the shader code.</remarks>
-        public ShaderEffect(FxPassDeclaration effectPass, IEnumerable<IFxParamDeclaration> effectParameters)
+        public ShaderEffect(IEnumerable<IFxParamDeclaration> effectParameters, RenderStateSet rendererStates, string vs, string ps, string gs = null)
         {
             ParamDecl = new Dictionary<int, IFxParamDeclaration>();
 
-            RendererStates = effectPass.StateSet;
-            VertexShaderSrc = effectPass.VS;
-            PixelShaderSrc = effectPass.PS;
-            GeometryShaderSrc = effectPass.GS;
+            RendererStates = rendererStates;
+            VertexShaderSrc = vs;
+            PixelShaderSrc = ps;
+            GeometryShaderSrc = gs;
 
             if (effectParameters != null)
             {

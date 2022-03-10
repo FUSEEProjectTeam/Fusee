@@ -76,20 +76,17 @@ namespace Fusee.Examples.ComputeFractal.Core
             });
 
             _renderEffect = new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = AssetStorage.Get<string>("RenderTexToScreen.vert"),
-                PS = AssetStorage.Get<string>("RenderTexToScreen.frag"),
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = false,
-                    ZEnable = true,
-                }
-            },
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<WritableTexture> { Name = "srcTex", Value = RWTexture}
-            });
+            },
+            new RenderStateSet
+            {
+                AlphaBlendEnable = false,
+                ZEnable = true,
+            },
+            AssetStorage.Get<string>("RenderTexToScreen.vert"),
+            AssetStorage.Get<string>("RenderTexToScreen.frag"));
 
             RC.SetEffect(_computeShader);
             _rect.SetData(_rectData);

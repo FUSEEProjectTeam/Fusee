@@ -33,22 +33,18 @@ namespace Fusee.Engine.Core
         public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, int2 screenParams)
         {
             return new ShaderEffect(
-
-            new FxPassDeclaration
-            {
-                VS = DeferredShaders.DeferredVert,
-                PS = DeferredShaders.FXAAFrag,
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = false,
-                    ZEnable = true,
-                }
-            },
-            new IFxParamDeclaration[]
+            effectParameters: new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<WritableTexture> { Name = RenderTargetTextureTypes.Albedo.ToString(), Value = srcTex},
                 new FxParamDeclaration<int2> { Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
-            });
+            },
+            rendererStates: new RenderStateSet
+            {
+                AlphaBlendEnable = false,
+                ZEnable = true,
+            },
+            vs: DeferredShaders.DeferredVert,
+            ps: DeferredShaders.FXAAFrag);
         }
 
         /// <summary>
@@ -74,18 +70,6 @@ namespace Fusee.Engine.Core
             }
 
             return new ShaderEffect(
-
-            new FxPassDeclaration
-            {
-                VS = DeferredShaders.DeferredVert,
-                PS = ps,
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = false,
-                    ZEnable = true,
-                }
-
-            },
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
@@ -96,7 +80,14 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<float3[]> {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
                 new FxParamDeclaration<Texture> {Name = UniformNameDeclarations.NoiseTex, Value = ssaoNoiseTex},
                 new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
-            });
+            },
+            new RenderStateSet
+            {
+                AlphaBlendEnable = false,
+                ZEnable = true,
+            },
+            DeferredShaders.DeferredVert,
+            ps);
 
         }
 
@@ -122,22 +113,18 @@ namespace Fusee.Engine.Core
             }
 
             return new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = DeferredShaders.DeferredVert,
-                PS = frag,
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = false,
-                    ZEnable = true,
-                }
-
-            },
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<WritableTexture> { Name = "InputTex", Value = ssaoRenderTex},
 
-            });
+            },
+            new RenderStateSet
+            {
+                AlphaBlendEnable = false,
+                ZEnable = true,
+            },
+            DeferredShaders.DeferredVert,
+            frag);
         }
 
         /// <summary>
@@ -168,21 +155,18 @@ namespace Fusee.Engine.Core
             effectParams.AddRange(DeferredLightParams(lc.Type));
 
             return new ShaderEffect(
-            new FxPassDeclaration
+            effectParams.ToArray(),
+            new RenderStateSet
             {
-                VS = DeferredShaders.DeferredVert,
-                PS = CreateDeferredLightingPixelShader(lc),
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = true,
-                    ZEnable = true,
-                    BlendOperation = BlendOperation.Add,
-                    SourceBlend = Blend.One,
-                    DestinationBlend = Blend.One,
-                    ZFunc = Compare.LessEqual,
-                }
+                AlphaBlendEnable = true,
+                ZEnable = true,
+                BlendOperation = BlendOperation.Add,
+                SourceBlend = Blend.One,
+                DestinationBlend = Blend.One,
+                ZFunc = Compare.LessEqual,
             },
-            effectParams.ToArray());
+            DeferredShaders.DeferredVert,
+            CreateDeferredLightingPixelShader(lc));
         }
 
         /// <summary>
@@ -212,11 +196,9 @@ namespace Fusee.Engine.Core
             effectParams.AddRange(DeferredLightParams(lc.Type));
 
             return new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = DeferredShaders.DeferredVert,
-                PS = CreateDeferredLightingPixelShader(lc, true, numberOfCascades),
-                StateSet = new RenderStateSet
+
+                effectParams.ToArray(),
+                new RenderStateSet
                 {
                     AlphaBlendEnable = true,
                     ZEnable = true,
@@ -224,10 +206,10 @@ namespace Fusee.Engine.Core
                     SourceBlend = Blend.One,
                     DestinationBlend = Blend.One,
                     ZFunc = Compare.LessEqual,
-                }
-
-            },
-            effectParams.ToArray());
+                },
+                DeferredShaders.DeferredVert,
+                CreateDeferredLightingPixelShader(lc, true, numberOfCascades)
+            );
         }
 
         /// <summary>
@@ -246,22 +228,18 @@ namespace Fusee.Engine.Core
             };
 
             return new ShaderEffect(
-            new FxPassDeclaration
+            effectParamDecls.ToArray(),
+            new RenderStateSet
             {
-                VS = DeferredShaders.ShadowCubeMapVert,
-                GS = DeferredShaders.ShadowCubeMapPointPrimitiveGeom,
-                PS = DeferredShaders.ShadowCubeMapFrag,
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = false,
-                    ZEnable = true,
-                    CullMode = Cull.Clockwise,
-                    ZFunc = Compare.LessEqual,
-                    FillMode = FillMode.Point,
-                }
-
+                AlphaBlendEnable = false,
+                ZEnable = true,
+                CullMode = Cull.Clockwise,
+                ZFunc = Compare.LessEqual,
+                FillMode = FillMode.Point,
             },
-            effectParamDecls.ToArray());
+            DeferredShaders.ShadowCubeMapVert,
+            DeferredShaders.ShadowCubeMapFrag,
+            DeferredShaders.ShadowCubeMapPointPrimitiveGeom);
         }
 
         /// <summary>
@@ -280,21 +258,17 @@ namespace Fusee.Engine.Core
             };
 
             return new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = DeferredShaders.ShadowCubeMapVert,
-                GS = DeferredShaders.ShadowCubeMapGeom,
-                PS = DeferredShaders.ShadowCubeMapFrag,
-                StateSet = new RenderStateSet
+                effectParamDecls.ToArray(),
+                new RenderStateSet
                 {
                     AlphaBlendEnable = false,
                     ZEnable = true,
                     CullMode = Cull.Clockwise,
                     ZFunc = Compare.LessEqual,
-                }
-
-            },
-            effectParamDecls.ToArray());
+                },
+                DeferredShaders.ShadowCubeMapVert,
+                DeferredShaders.ShadowCubeMapFrag,
+                DeferredShaders.ShadowCubeMapGeom);
         }
 
         /// <summary>
@@ -304,23 +278,20 @@ namespace Fusee.Engine.Core
         public static ShaderEffect ShadowMapEffect()
         {
             return new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = DeferredShaders.ShadowMapVert,
-                PS = DeferredShaders.ShadowMapFrag,
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = false,
-                    ZEnable = true,
-                    CullMode = Cull.Clockwise,
-                    ZFunc = Compare.LessEqual,
-                }
-            },
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
-            });
+            },
+            new RenderStateSet
+            {
+                AlphaBlendEnable = false,
+                ZEnable = true,
+                CullMode = Cull.Clockwise,
+                ZFunc = Compare.LessEqual,
+            },
+            DeferredShaders.ShadowMapVert,
+            DeferredShaders.ShadowMapFrag);
         }
 
         private static List<IFxParamDeclaration> DeferredLightingEffectParams(IRenderTarget srcRenderTarget, float4 backgroundColor)
