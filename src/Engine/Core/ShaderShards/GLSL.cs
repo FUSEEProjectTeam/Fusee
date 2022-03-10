@@ -154,6 +154,8 @@ namespace Fusee.Engine.Core.ShaderShards
                 return "float";
             else if (type == typeof(int))
                 return "int";
+            else if (type == typeof(int2))
+                return "ivec2";
             else if (type == typeof(Texture) ||
                 type == typeof(WritableTexture))
                 return "sampler2D";

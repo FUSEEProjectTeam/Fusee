@@ -703,6 +703,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             for (var i = 0; i < nParams; i++)
             {
                 var param = new FxParam();
+                param.HasValueChanged = true;
                 GL.GetProgramResourceName(sProg.Handle, ProgramInterface.ShaderStorageBlock, i, ssboMaxLen, out _, out string name);
                 param.Name = name;
 
@@ -731,7 +732,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 var paramInfo = new FxParam
                 {
-                    Name = GL.GetActiveUniform(sProg.Handle, i, out var paramSize, out ActiveUniformType uType)
+                    Name = GL.GetActiveUniform(sProg.Handle, i, out var paramSize, out ActiveUniformType uType),
+                    HasValueChanged = true
                 };
                 paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
                 paramInfo.Size = paramSize;

@@ -575,7 +575,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 var paramInfo = new FxParam()
                 {
                     Name = activeInfo.Name,
-                    Size = activeInfo.Size
+                    Size = activeInfo.Size,
+                    HasValueChanged = true
                 };
                 uint uType = activeInfo.Type;//activeInfo.GlType;
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);

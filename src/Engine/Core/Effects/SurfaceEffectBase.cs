@@ -665,9 +665,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="memberName">The name of the member which this event originated from.</param>
         protected void PropertyChangedHandler(object sender, SurfaceEffectEventArgs args, string memberName)
         {
-            GetType().GetMethods().Where(m => m.Name == "SetFxParam").Where(item => item.GetParameters()[0].ParameterType == typeof(string)).First()
-            .MakeGenericMethod(args.Type)
-            .Invoke(this, new object[] { memberName + "." + args.Name, args.Value });
+            SetFxParam(memberName + "." + args.Name, args.Value);
         }
 
         private PropertyInfo[] GetPublicProperties(Type type)

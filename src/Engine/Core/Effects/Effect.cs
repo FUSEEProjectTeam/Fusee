@@ -41,7 +41,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="name">Name of the uniform variable</param>
         /// <param name="value">Value of the uniform variable</param>
-        public void SetFxParam<T>(string name, T value)
+        public void SetFxParam(string name, object value)
         {
             if (ParamDecl != null)
             {
@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="hash">Hash of the uniform variable. Retrieved by name.GetHashCode().</param>
         /// <param name="value">Value of the uniform variable</param>
-        public void SetFxParam<T>(int hash, T value)
+        public void SetFxParam(int hash, object value)
         {
             if (ParamDecl.ContainsKey(hash))
             {

@@ -711,14 +711,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             for (var i = 0; i < nParams; i++)
             {
-                var paramInfo = new FxParam();
+                var param = new FxParam();
+                param.HasValueChanged = true;
                 var name = new StringBuilder();
                 GL.GetProgramResourceName(sProg.Handle, All.ShaderStorageBlock, i, ssboMaxLen, out _, name);
-                paramInfo.Name = name.ToString();
+                param.Name = name.ToString();
 
                 int h = GL.GetProgramResourceIndex(sProg.Handle, All.ShaderStorageBlock, name);
-                paramInfo.Handle = (h == -1) ? null : new UniformHandle { handle = h };
-                paramList.Add(paramInfo);
+                param.Handle = (h == -1) ? null : new UniformHandle { handle = h };
+                paramList.Add(param);
             }
 
             return paramList;
@@ -740,6 +741,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             for (var i = 0; i < nParams; i++)
             {
                 var param = new FxParam();
+                param.HasValueChanged = true;
                 StringBuilder sbName = new(512);
                 GL.GetActiveUniform(sProg.Handle, i, 511, out _, out var size, out ActiveUniformType uType, sbName);
                 param.Size = size;

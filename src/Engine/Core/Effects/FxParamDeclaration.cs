@@ -29,6 +29,12 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="val"></param>
         /// <returns></returns>
         bool SetValue(object val);
+
+        /// <summary>
+        /// Gets the value of this parameter declaration. Implementations should provide a type check using <see cref="ParamType"/>.
+        /// </summary>
+        /// <returns></returns>
+        object GetValue();
     }
 
     /// <summary>
@@ -84,6 +90,11 @@ namespace Fusee.Engine.Core.Effects
                 Value = (T)val;
                 return true;
             }
+        }
+
+        public object GetValue()
+        {
+            return Value;
         }
     }
 }

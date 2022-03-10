@@ -54,7 +54,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.InternalUniform)]
-        public float2 FUSEE_ViewportPx;
+        public int2 FUSEE_ViewportPx;
 
         #endregion
 
@@ -78,10 +78,6 @@ namespace Fusee.Engine.Core.Effects
                 SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, input.ShadingModel);
             else
                 SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(VertShards.SurfOutBody(input), input.ShadingModel);
-
-            FUSEE_MVP = float4x4.Identity;
-            FUSEE_ITMV = float4x4.Identity;
-            FUSEE_MVP = float4x4.Identity;
 
             //TODO: try to suppress adding these parameters if the effect is used only for deferred rendering.
             //May be difficult because we'd need to remove or add them (and only them) depending on the render method
