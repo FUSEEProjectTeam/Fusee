@@ -22,7 +22,7 @@
     /// <summary>
     /// Available color modes.
     /// </summary>
-    public enum ColorMode
+    public enum PointColorMode
     {
         /// <summary>
         /// RGB value of the point.
@@ -62,7 +62,7 @@
     /// <summary>
     /// Available Lighting methods.
     /// </summary>
-    public enum Lighting
+    public enum PointCloudLighting
     {
         /// <summary>
         /// Albedo only - no lighting is calculated.
@@ -72,11 +72,6 @@
         /// <summary>
         /// Eye dome lighting
         /// </summary>
-        Edl = 1,
-
-        /// <summary>
-        /// Only occlusion, calculated in screen space.
-        /// </summary>
-        SsaoOnly = 3
+        Edl = 1
     }
 }

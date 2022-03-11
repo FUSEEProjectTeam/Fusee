@@ -170,16 +170,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     break;
                 case ColorFormat.fRGB32:
                     throw new NotSupportedException("WebGL 2.0: fRGB32 not supported");
-                    //internalFormat = RGB32F;
-                    //format = RGB;
-                    //pxType = FLOAT;
-                    break;
+                //internalFormat = RGB32F;
+                //format = RGB;
+                //pxType = FLOAT;
                 case ColorFormat.fRGB16:
                     throw new NotSupportedException("WebGL 2.0: fRGB16 not supported");
-                    //internalFormat = RGB16F;
-                    //format = RGB;
-                    //pxType = HALF_FLOAT;
-                    break;
+                //internalFormat = RGB16F;
+                //format = RGB;
+                //pxType = HALF_FLOAT;
                 case ColorFormat.fRGBA16:
                     internalFormat = RGBA16F;
                     format = RGBA;
@@ -624,7 +622,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
 
         /// <summary>
-        /// Sets a <see cref="float2[]" /> shader parameter.
+        /// Sets a <see cref="float2" /> array as shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
@@ -1550,34 +1548,34 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
                 switch (((MeshImp)mr).MeshType)
                 {
-                    case OpenGLPrimitiveType.Triangles:
+                    case PrimitiveType.Triangles:
                     default:
                         gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.Points:
+                    case PrimitiveType.Points:
                         gl2.DrawElements(POINTS, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.Lines:
+                    case PrimitiveType.Lines:
                         gl2.DrawElements(LINES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LineLoop:
+                    case PrimitiveType.LineLoop:
                         gl2.DrawElements(LINE_LOOP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LineStrip:
+                    case PrimitiveType.LineStrip:
                         gl2.DrawElements(LINE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.Patches:
+                    case PrimitiveType.Patches:
                         gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         Diagnostics.Warn("Mesh type set to triangles due to unavailability of PATCHES");
                         break;
-                    case OpenGLPrimitiveType.QuadStrip:
+                    case PrimitiveType.QuadStrip:
                         gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         Diagnostics.Warn("Mesh type set to triangles due to unavailability of QUAD_STRIP");
                         break;
-                    case OpenGLPrimitiveType.TriangleFan:
+                    case PrimitiveType.TriangleFan:
                         gl2.DrawElements(TRIANGLE_FAN, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.TriangleStrip:
+                    case PrimitiveType.TriangleStrip:
                         gl2.DrawElements(TRIANGLE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                 }

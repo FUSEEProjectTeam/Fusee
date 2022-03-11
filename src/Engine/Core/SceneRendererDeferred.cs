@@ -10,7 +10,6 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -191,7 +190,47 @@ namespace Fusee.Engine.Core
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
             {
-                if (mesh.MeshType == (int)OpenGLPrimitiveType.Points)
+                if (mesh.MeshType == PrimitiveType.Points)
+                    _rc.SetEffect(_shadowCubeMapEffectPointPrimitives, true);
+                else
+                    _rc.SetEffect(_shadowCubeMapEffect, true);
+            }
+            _rc.Render(mesh, _currentPass == RenderPasses.Shadow);
+            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
+        }
+
+        /// <summary>
+        /// If a Mesh is visited the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.
+        /// </summary>
+        /// <param name="mesh">The Mesh.</param>
+        [VisitMethod]
+        public new void RenderMesh(GpuMesh mesh)
+        {
+            if (!mesh.Active) return;
+            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
+                return;
+
+            if (DoFrumstumCulling)
+            {
+                FrustumF frustum;
+                if (_currentPass == RenderPasses.Shadow)
+                    frustum = _lightFrustum;
+                else
+                    frustum = _rc.RenderFrustum;
+
+                //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
+                if (mesh.BoundingBox.Size != float3.Zero)
+                {
+                    var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+                    if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustum))
+                        return;
+                }
+            }
+
+            var renderStatesBefore = _rc.CurrentRenderState.Copy();
+            if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
+            {
+                if (mesh.MeshType == PrimitiveType.Points)
                     _rc.SetEffect(_shadowCubeMapEffectPointPrimitives, true);
                 else
                     _rc.SetEffect(_shadowCubeMapEffect, true);
@@ -417,6 +456,7 @@ namespace Fusee.Engine.Core
         public void Render(RenderContext rc, WritableTexture renderTex = null)
         {
             SetContext(rc);
+            SetStateAndRenderLayerInModules();
 
             PrePassVisitor.PrePassTraverse(_sc);
             AccumulateLight();
@@ -948,6 +988,15 @@ namespace Fusee.Engine.Core
 
                 InitRenderTextures();
                 InitState();
+            }
+        }
+
+        private void SetStateAndRenderLayerInModules()
+        {
+            foreach (var module in VisitorModules)
+            {
+                //((IRendererModule)module).RenderLayer = _renderLayer;
+                ((IRendererModule)module).SetState(_state);
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;

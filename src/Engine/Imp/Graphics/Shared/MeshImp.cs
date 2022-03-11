@@ -20,23 +20,23 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// This is the implementation of the <see cref="IMeshImp" /> interface.
     /// It is used to check the status of the informations of a mesh and flush informations if required.
     /// </summary>
-    public class MeshImp : IMeshImp
+    internal class MeshImp : IMeshImp
     {
         #region Internal Fields
 
-        internal int VertexArrayObject;
-        internal int VertexBufferObject;
-        internal int NormalBufferObject;
-        internal int ColorBufferObject;
-        internal int ColorBufferObject1;
-        internal int ColorBufferObject2;
-        internal int UVBufferObject;
-        internal int BoneIndexBufferObject;
-        internal int BoneWeightBufferObject;
-        internal int ElementBufferObject;
-        internal int TangentBufferObject;
-        internal int BitangentBufferObject;
-        internal int NElements;
+        public int VertexArrayObject { get; set; }
+        public int VertexBufferObject { get; set; }
+        public int NormalBufferObject { get; set; }
+        public int ColorBufferObject { get; set; }
+        public int ColorBufferObject1 { get; set; }
+        public int ColorBufferObject2 { get; set; }
+        public int UVBufferObject { get; set; }
+        public int BoneIndexBufferObject { get; set; }
+        public int BoneWeightBufferObject { get; set; }
+        public int ElementBufferObject { get; set; }
+        public int TangentBufferObject { get; set; }
+        public int BitangentBufferObject { get; set; }
+        public int NElements { get; set; }
 
         #endregion Internal Fields
 
@@ -226,7 +226,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
         /// </summary>
-        public OpenGLPrimitiveType MeshType { get; set; }
+        public PrimitiveType MeshType { get; set; }
 
         #endregion Public Fields & Members pairs
     }
