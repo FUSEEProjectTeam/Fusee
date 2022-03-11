@@ -64,7 +64,7 @@ namespace Fusee.DImGui.Desktop
         {
             get
             {
-                const string pf = "ImGui";
+                string pf = "ImGui";
                 return "ImGui and OpenTk GameWindow Mouse and Keyboard input driver for " + pf;
             }
         }

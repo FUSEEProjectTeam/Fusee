@@ -1,85 +1,71 @@
 ﻿using Fusee.Math.Core;
+using ImGuiNET;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 namespace Fusee.DImGui.Desktop.Gizmos
 {
-    public enum MODE
-    {
-        LOCAL,
-        WORLD
-    };
-
-    [Flags]
-    public enum OPERATION : uint
-    {
-        TRANSLATE_X = (1u << 0),
-        TRANSLATE_Y = (1u << 1),
-        TRANSLATE_Z = (1u << 2),
-        ROTATE_X = (1u << 3),
-        ROTATE_Y = (1u << 4),
-        ROTATE_Z = (1u << 5),
-        ROTATE_SCREEN = (1u << 6),
-        SCALE_X = (1u << 7),
-        SCALE_Y = (1u << 8),
-        SCALE_Z = (1u << 9),
-        BOUNDS = (1u << 10),
-        SCALE_XU = (1u << 11),
-        SCALE_YU = (1u << 12),
-        SCALE_ZU = (1u << 13),
-
-        TRANSLATE = TRANSLATE_X | TRANSLATE_Y | TRANSLATE_Z,
-        ROTATE = ROTATE_X | ROTATE_Y | ROTATE_Z | ROTATE_SCREEN,
-        SCALE = SCALE_X | SCALE_Y | SCALE_Z,
-        SCALEU = SCALE_XU | SCALE_YU | SCALE_ZU, // universal
-        UNIVERSAL = TRANSLATE | ROTATE | SCALEU
-    };
-
     public static class Manipulate
     {
-        /// <summary>
-        /// Allow axis to flip
-        /// When true (default), the guizmo axis flip for better visibility
-        /// When false, they always stay along the positive world/local axis
-        /// </summary>
-        public static bool AllowAxisFlip { get; set; }
 
-        public static int SetID { get; set; }
-
-        public static void DrawManipulate(
+        public static bool DrawManipulate(
             float4x4 view,
             float4x4 projection,
             OPERATION operation, MODE mode,
-            out float4x4 matrix,
-            out float4x4 deltaMatrix,
-            out float4x4 snap,
-            out float4x4 localBounds,
-            out float4x4 boundsSnap)
+            ref float4x4 matrix,
+            ref float4x4 deltaMatrix,
+            ref float[] snap,
+            ref float[] localBounds,
+            ref float[] boundsSnap)
         {
             matrix = float4x4.Identity;
             deltaMatrix = float4x4.Identity;
-            snap = float4x4.Identity;
-            localBounds = float4x4.Identity;
-            boundsSnap = float4x4.Identity;
-        }
 
-        /// <summary>
-        /// Return true if cursor is over operation
-        /// </summary>
-        /// <param name="op"></param>
-        /// <returns></returns>
-        public static bool IsOver(OPERATION op)
-        {
-            return false;
-        }
+            // Scale is always local or matrix will be skewed when applying world scale or oriented matrix
+            Gizmos.ComputeContext(view, projection, matrix, ((uint)(operation & OPERATION.SCALE)) == 1U ? MODE.LOCAL : mode);
 
+            // set delta to identity
+            if (deltaMatrix != null)
+            {
+                deltaMatrix = float4x4.Identity;
+            }
 
-        private static void SetGizmoSizeClipSpace(float value)
-        {
+            // behind camera
 
+            var camSpacePosition = Gizmos.gContext.mMVP * float3.Zero;
+            if (!Gizmos.gContext.mIsOrthographic && camSpacePosition.z < 0.001f)
+            {
+                return false;
+            }
+
+            // --
+            var type = MOVETYPE.NONE;
+            bool manipulated = false;
+            if (Gizmos.gContext.mbEnable)
+            {
+                if (!Gizmos.gContext.mbUsingBounds)
+                {
+                    manipulated = Gizmos.HandleTranslation(ref matrix, ref deltaMatrix, operation, ref type, ref snap) ||
+                                  Gizmos.HandleScale(ref matrix, ref deltaMatrix, operation, ref type, ref snap) ||
+                                  Gizmos.HandleRotation(ref matrix, ref deltaMatrix, operation, ref type, ref snap);
+                }
+            }
+
+            if (localBounds != null && !Gizmos.gContext.mbUsing)
+            {
+                Gizmos.HandleAndDrawLocalBounds(ref localBounds, matrix, ref boundsSnap, operation);
+            }
+
+            Gizmos.gContext.mOperation = operation;
+            if (!Gizmos.gContext.mbUsingBounds)
+            {
+                Gizmos.DrawRotationGizmo(operation, type);
+                Gizmos.DrawTranslationGizmo(operation, type);
+                Gizmos.DrawScaleGizmo(operation, type);
+                Gizmos.DrawScaleUniveralGizmo(operation, type);
+            }
+            return manipulated;
         }
     }
+
 }

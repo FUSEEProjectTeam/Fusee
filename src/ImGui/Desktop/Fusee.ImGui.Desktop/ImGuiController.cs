@@ -311,12 +311,28 @@ namespace Fusee.DImGui.Desktop
             var rc = Simple.RenderContext;
             var pos = ImGui.GetWindowPos();
             Grid.DrawGrid(rc.View, rc.Projection, float4x4.Identity, 100f, size, pos);
-            var viewManipulateRight = ImGui.GetWindowPos().X + size.X - 128;
-            var viewManipulateTop = ImGui.GetWindowPos().Y;
 
-            ViewManipulateCube.DrawManipulateCube(rc.View, rc.Projection.M22,
-                new Vector2(viewManipulateRight, viewManipulateTop),
-                new Vector2(128, 128), 0x10101010);
+
+            // var viewManipulateRight = ImGui.GetWindowPos().X + size.X - 128;
+            // var viewManipulateTop = ImGui.GetWindowPos().Y;
+
+            //ViewManipulateCube.DrawManipulateCube(rc.View, rc.Projection.M22,
+            //    new Vector2(viewManipulateRight, viewManipulateTop),
+            //    new Vector2(128, 128), 0x10101010);
+
+            MODE mCurrentGizmoMode = MODE.LOCAL;
+            bool useSnap = false;
+            var snap = new float[] { 1, 1, 1, 1 };
+            var bounds = new float[] { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
+            var boundsSnap = new float[] { 0.1f, 0.1f, 0.1f, 0.1f };
+            var boundSizing = false;
+            var boundSizingSnap = false;
+
+            var resMat = float4x4.Identity;
+            var deltaMat = float4x4.Identity;
+
+            Gizmos.Manipulate.DrawManipulate(rc.View, rc.Projection, OPERATION.UNIVERSAL, mCurrentGizmoMode, ref resMat,
+                ref deltaMat, ref snap, ref bounds, ref boundsSnap);
 
             FuseeViewportMin = ImGui.GetWindowContentRegionMin();
             FuseeViewportMax = ImGui.GetWindowContentRegionMax();
