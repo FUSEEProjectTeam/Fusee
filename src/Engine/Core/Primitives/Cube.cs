@@ -16,7 +16,7 @@ namespace Fusee.Engine.Core.Primitives
         /// </summary>
         public WireframeCube()
         {
-            MeshType = (int)OpenGLPrimitiveType.Lines;
+            MeshType = PrimitiveType.Lines;
             Vertices = new float3[]
             {
                 new float3(+0.5f, +0.5f, +0.5f),
@@ -169,6 +169,8 @@ namespace Fusee.Engine.Core.Primitives
                 new float2(0, 1),
                 new float2(0, 0)
             };
+            BoundingBox = new AABBf(Vertices);
+
         }
         #endregion
     }

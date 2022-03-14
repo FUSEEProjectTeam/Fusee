@@ -4,7 +4,6 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Fusee.Engine.Core
 {
@@ -517,9 +516,9 @@ namespace Fusee.Engine.Core
         public void PickMesh(Mesh mesh)
         {
             if (!mesh.Active ||
-                (mesh.MeshType != (int)OpenGLPrimitiveType.Triangles &&
-                mesh.MeshType != (int)OpenGLPrimitiveType.TriangleFan &&
-                mesh.MeshType != (int)OpenGLPrimitiveType.TriangleStrip)) return;
+                (mesh.MeshType != PrimitiveType.Triangles &&
+                mesh.MeshType != PrimitiveType.TriangleFan &&
+                mesh.MeshType != PrimitiveType.TriangleStrip)) return;
 
             var mvp = Projection * View * State.Model;
             for (var i = 0; i < mesh.Triangles.Length; i += 3)

@@ -1,9 +1,4 @@
-﻿using Fusee.Math.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fusee.Examples.Integrations.Core
+﻿namespace Fusee.Examples.Integrations.Core
 {
     public abstract class FusEvent { }
 

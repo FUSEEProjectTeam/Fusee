@@ -240,7 +240,7 @@ namespace Fusee.Engine.Core
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
-                RenderFrustum.CalculateFrustumPlanes(_projection * View);
+                RenderFrustum.CalculateFrustumPlanes(_projection * _view);
             }
         }
 
@@ -804,13 +804,12 @@ namespace Fusee.Engine.Core
             Model = float4x4.Identity;
             Projection = DefaultState.Projection;
 
-            // mesh management
+            // mesh, texture and effect management
             _meshManager = new MeshManager(_rci);
-
-            // texture management
             _textureManager = new TextureManager(_rci);
-
             _effectManager = new EffectManager(this);
+
+            ModuleExtensionPoint.CreateGpuMesh = CreateGpuMesh;
         }
 
         /// <summary>
@@ -1288,11 +1287,61 @@ namespace Fusee.Engine.Core
                 _rci.RemoveShader(compiledEffect.DeferredFx?.GpuHandle);
         }
 
+        private void UpdateAllActiveFxParams(CompiledEffect cFx)
+        {
+            foreach (var fxParam in cFx.ActiveUniforms.Values)
+            {
+                SetShaderParamT(fxParam);
+                fxParam.HasValueChanged = false;
+            }
+        }
+
+        private void SetGlobalParamsInCurrentFx(CompiledEffect cFx)
+        {
+            foreach (var key in GlobalFXParams.Keys)
+            {
+                var globalFxParam = GlobalFXParams[key];
+
+                if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
+                {
+                    if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
+                        _currentEffect.SetFxParam(key, globalFxParam.Value);
+                }
+            }
+        }
+
+        private CompiledEffect GetCompiledFxForRenderMethod(bool renderForward)
+        {
+            var compiledEffect = _allCompiledEffects[_currentEffect];
+            CompiledEffect cFx;
+            if (renderForward)
+            {
+                if (compiledEffect.ForwardFx == null)
+                {
+                    CreateShaderProgram(_currentEffect, renderForward);
+                    compiledEffect = _allCompiledEffects[_currentEffect];
+                }
+
+                cFx = compiledEffect.ForwardFx;
+            }
+            else
+            {
+                if (compiledEffect.DeferredFx == null)
+                {
+                    CreateShaderProgram(_currentEffect, renderForward);
+                    compiledEffect = _allCompiledEffects[_currentEffect];
+                }
+                cFx = compiledEffect.DeferredFx;
+            }
+
+            return cFx;
+        }
+
         /// <summary>
         /// Activates the passed shader program as the current shader for rendering.
         /// </summary>
         /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
-        private void SetShaderProgram(IShaderHandle program)
+        private void SetCompiledFx(IShaderHandle program)
         {
             if (_currentShaderProgram != program)
             {
@@ -1669,44 +1718,19 @@ namespace Fusee.Engine.Core
             if (_currentEffect == null) throw new NullReferenceException("No Compute Shader bound.");
             if (_currentEffect.GetType() != typeof(ComputeShader)) throw new NullReferenceException("Bound Effect isn't a Compute Shader.");
 
-            var compiledEffect = _allCompiledEffects[_currentEffect];
-
             try
             {
-                CompiledEffect cFx;
-
-                if (compiledEffect.ForwardFx == null)
-                {
-                    CreateShaderProgram(_currentEffect, true);
-                    compiledEffect = _allCompiledEffects[_currentEffect];
-                }
-
-                cFx = compiledEffect.ForwardFx;
-
-                SetShaderProgram(cFx.GpuHandle);
-
-                foreach (var key in GlobalFXParams.Keys)
-                {
-                    var globalFxParam = GlobalFXParams[key];
-
-                    if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
-                    {
-                        if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
-                            _currentEffect.SetFxParam(key, globalFxParam.Value);
-                    }
-                }
-
-                foreach (var fxParam in cFx.ActiveUniforms.Values)
-                {
-                    SetShaderParamT(fxParam);
-                    fxParam.HasValueChanged = false;
-                }
+                var cFx = GetCompiledFxForRenderMethod(true);
+                SetCompiledFx(cFx.GpuHandle);
+                SetRenderStateSet(_currentEffect.RendererStates);
+                SetGlobalParamsInCurrentFx(cFx);
+                UpdateAllActiveFxParams(cFx);
 
                 _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
 
+                // After rendering always cleanup pending meshes, textures and shader effects
+                _meshManager.Cleanup();
                 _textureManager.Cleanup();
-
-                // After rendering all passes cleanup shader effect
                 _effectManager.Cleanup();
             }
             catch (Exception ex)
@@ -1718,13 +1742,13 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
-        /// <param name="m">The mesh that should be rendered.</param>
-        /// <param name="renderForward">Is a forward or deferred renderer used? Will fetch the proper shader for the render method.</param>
+        /// <param name="mesh">The mesh that should be rendered.</param>
+        /// <param name="doRenderForward">Is a forward or deferred renderer used? Will fetch the proper shader for the render method.</param>
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        public void Render(Mesh m, bool renderForward = true)
+        public void Render(Mesh mesh, bool doRenderForward = true)
         {
             if (_currentEffect == null) return;
 
@@ -1791,6 +1815,46 @@ namespace Fusee.Engine.Core
             float f = D / (C - 1.0f) * -1;
             float n = D / (C + 1.0f) * -1;
             return new float2(n, f);
+        }
+
+        /// <summary>
+        /// Creates a platform specific <see cref="IMeshImp"/>.
+        /// </summary>
+        /// <returns></returns>
+        public IMeshImp CreateMeshImp()
+        {
+            return _rci.CreateMeshImp();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="GpuMesh"/>, registers it in the <see cref="MeshManager"/> and uploads the data to the gpu.
+        /// </summary>
+        /// <param name="primitiveType"></param>
+        /// <param name="vertices">The vertex data of the mesh.</param>
+        /// <param name="triangles">The triangle indices of the mesh.</param>
+        /// <param name="normals">The normal vectors of the mesh.</param>
+        /// <param name="colors">The first color set of the mesh.</param>
+        /// <param name="colors1">The second color set of the mesh.</param>
+        /// <param name="colors2">The third color set of the mesh.</param>
+        /// <param name="uvs">The uv coordinates of the mesh.</param>
+        /// <param name="tangents">The tangent vectors of the mesh.</param>
+        /// <param name="bitangents">The bitangent vectors of the mesh.</param>
+        /// <param name="boneIndices">The bone indices of the mesh.</param>
+        /// <param name="boneWeights">The bone weights of the mesh.</param>
+        /// <returns></returns>
+        public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, ushort[] triangles = null,
+            float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null, float2[] uvs = null,
+            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)
+        {
+            var mesh = new GpuMesh
+            {
+                MeshType = primitiveType,
+                BoundingBox = new AABBf(vertices)
+            };
+            _meshManager.RegisterNewMesh(mesh, vertices, triangles, uvs,
+            normals, colors, colors1, colors2,
+            tangents, bitangents, boneIndices, boneWeights);
+            return mesh;
         }
 
         #endregion

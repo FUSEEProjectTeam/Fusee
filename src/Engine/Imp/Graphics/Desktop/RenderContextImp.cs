@@ -1795,11 +1795,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 switch (((MeshImp)mr).MeshType)
                 {
-                    case OpenGLPrimitiveType.Triangles:
+                    case Common.PrimitiveType.Triangles:
                     default:
-                        GL.DrawElements(PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.Points:
+                    case Common.PrimitiveType.Points:
                         // enable gl_PointSize to set the point size
                         if (!_isPtRenderingEnabled)
                         {
@@ -1808,43 +1808,43 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                             //GL.Enable(EnableCap.PointSprite);
                             //GL.Enable(EnableCap.VertexProgramPointSize);
                         }
-                        GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.Lines:
+                    case Common.PrimitiveType.Lines:
                         if (!_isLineSmoothEnabled)
                         {
                             GL.Enable(EnableCap.LineSmooth);
                             _isLineSmoothEnabled = true;
                         }
-                        GL.DrawElements(PrimitiveType.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.LineLoop:
+                    case Common.PrimitiveType.LineLoop:
                         if (!_isLineSmoothEnabled)
                         {
                             GL.Enable(EnableCap.LineSmooth);
                             _isLineSmoothEnabled = true;
                         }
-                        GL.DrawElements(PrimitiveType.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.LineStrip:
+                    case Common.PrimitiveType.LineStrip:
                         if (!_isLineSmoothEnabled)
                         {
                             GL.Enable(EnableCap.LineSmooth);
                             _isLineSmoothEnabled = true;
                         }
-                        GL.DrawElements(PrimitiveType.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.Patches:
-                        GL.DrawElements(PrimitiveType.Patches, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    case Common.PrimitiveType.Patches:
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Patches, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.QuadStrip:
-                        GL.DrawElements(PrimitiveType.QuadStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    case Common.PrimitiveType.QuadStrip:
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.QuadStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.TriangleFan:
-                        GL.DrawElements(PrimitiveType.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    case Common.PrimitiveType.TriangleFan:
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.TriangleStrip:
-                        GL.DrawElements(PrimitiveType.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    case Common.PrimitiveType.TriangleStrip:
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                 }
             }

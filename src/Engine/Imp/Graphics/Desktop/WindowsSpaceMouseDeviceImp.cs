@@ -1,7 +1,6 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver;
-using OpenTK;
 using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;

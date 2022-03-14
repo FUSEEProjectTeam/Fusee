@@ -11,7 +11,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Path = System.IO.Path;

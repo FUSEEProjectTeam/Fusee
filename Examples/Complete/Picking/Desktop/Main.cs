@@ -1,12 +1,10 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Fusee.Examples.Picking.Desktop
