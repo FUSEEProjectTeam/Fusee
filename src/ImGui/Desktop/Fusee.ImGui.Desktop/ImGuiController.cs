@@ -8,6 +8,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -256,6 +257,18 @@ namespace Fusee.DImGui.Desktop
             io.MouseWheelH = 0;
         }
 
+
+        private float[] snap = new float[] { 1, 1, 1, 1 };
+        private float[] bounds = new float[] { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
+        private float[] boundsSnap = new float[] { 0.1f, 0.1f, 0.1f, 0.1f };
+
+        private float4x4 resMat = float4x4.Identity;
+        private float4x4 deltaMat = float4x4.Identity;
+
+        private bool useSnap = false;
+        private bool boundSizing = false;
+        private bool boundSizingSnap = false;
+
         public void RenderImGui()
         {
             // Set Window flags for Dockspace
@@ -320,19 +333,32 @@ namespace Fusee.DImGui.Desktop
             //    new Vector2(viewManipulateRight, viewManipulateTop),
             //    new Vector2(128, 128), 0x10101010);
 
+
+
             MODE mCurrentGizmoMode = MODE.LOCAL;
-            bool useSnap = false;
-            var snap = new float[] { 1, 1, 1, 1 };
-            var bounds = new float[] { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
-            var boundsSnap = new float[] { 0.1f, 0.1f, 0.1f, 0.1f };
-            var boundSizing = false;
-            var boundSizingSnap = false;
 
-            var resMat = float4x4.Identity;
-            var deltaMat = float4x4.Identity;
 
-            Gizmos.Manipulate.DrawManipulate(rc.View, rc.Projection, OPERATION.UNIVERSAL, mCurrentGizmoMode, ref resMat,
-                ref deltaMat, ref snap, ref bounds, ref boundsSnap);
+            Gizmos.Gizmos.SetRect(pos.X, pos.Y, size.X, size.Y);
+
+
+
+            if (Simple._rocketScene != null)
+            {
+                var aabb = new AABBCalculator(Simple._rocketScene);
+
+                var min = aabb.GetBox().Value.min;
+                var max = aabb.GetBox().Value.max;
+
+
+                bounds = new float[] { min.x, min.y, min.z, max.x, max.y, max.z };
+            }
+
+            Manipulate.DrawManipulate(rc.View, rc.Projection, OPERATION.TRANSLATE, mCurrentGizmoMode, ref resMat,
+               ref deltaMat, ref snap, ref bounds, ref boundsSnap);
+
+
+            //if (MathF.Abs(resMat.Determinant) > float.Epsilon)
+            //    rc.Model = resMat;
 
             FuseeViewportMin = ImGui.GetWindowContentRegionMin();
             FuseeViewportMax = ImGui.GetWindowContentRegionMax();

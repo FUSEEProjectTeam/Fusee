@@ -679,7 +679,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float3 Lerp(float3 a, float3 b, float3 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;

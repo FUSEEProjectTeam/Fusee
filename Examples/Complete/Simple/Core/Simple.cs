@@ -24,7 +24,7 @@ namespace Fusee.Examples.Simple.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _rocketScene;
+        public static SceneContainer _rocketScene;
         private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
@@ -94,12 +94,12 @@ namespace Fusee.Examples.Simple.Core
                 _keys = true;
             }
 
-            if (Mouse.LeftButton)
-            {
-                _keys = false;
-                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
-                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
-            }
+            //if (Mouse.LeftButton)
+            //{
+            //    _keys = false;
+            //    _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+            //    _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
+            //}
             else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;

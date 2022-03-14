@@ -171,10 +171,10 @@ namespace Fusee.DImGui.Desktop.Gizmos
             return WorldToPos(worldPos, mat, Vector2.Zero, Vector2.Zero);
         }
 
-        internal static Vector2 WorldToPos(float4 worldPos, float4x4 mat)
-        {
-            return WorldToPos(worldPos, mat, Vector2.Zero, Vector2.Zero);
-        }
+        //internal static Vector2 WorldToPos(float4 worldPos, float4x4 mat)
+        //{
+        //    return WorldToPos(worldPos, mat, Vector2.Zero, Vector2.Zero);
+        //}
 
         /// <summary>
         ///
@@ -184,25 +184,25 @@ namespace Fusee.DImGui.Desktop.Gizmos
         /// <param name="position">float2.Zero for default value calculation</param>
         /// <param name="size">float2.Zero for default value calculation</param>
         /// <returns></returns>
-        internal static Vector2 WorldToPos(float4 worldPos, float4x4 mat, Vector2 position, Vector2 size)
-        {
-            if (position == Vector2.Zero)
-                position = new Vector2(Viewport.Pos.X, Viewport.Pos.Y);
-
-            if (size == Vector2.Zero)
-                size = new Vector2(Viewport.Size.X, Viewport.Size.Y);
-
-            var trans = mat * new float4(worldPos);
-
-            trans *= 0.5f / trans.w;
-            trans += new float4(0.5f, 0.5f, 0, 0);
-            trans.y = 1f - trans.y;
-            trans.x *= size.X;
-            trans.y *= size.Y;
-            trans.x += position.X;
-            trans.y += position.Y;
-            return new Vector2(trans.x, trans.y);
-        }
+        //internal static Vector2 WorldToPos(float4 worldPos, float4x4 mat, Vector2 position, Vector2 size)
+        //{
+        //    if (position == Vector2.Zero)
+        //        position = new Vector2(Viewport.Pos.X, Viewport.Pos.Y);
+        //
+        //    if (size == Vector2.Zero)
+        //        size = new Vector2(Viewport.Size.X, Viewport.Size.Y);
+        //
+        //    var trans = mat * worldPos;
+        //
+        //    trans *= 0.5f / trans.w;
+        //    trans += new float4(0.5f, 0.5f, 0, 0);
+        //    trans.y = 1f - trans.y;
+        //    trans.x *= size.X;
+        //    trans.y *= size.Y;
+        //    trans.x += position.X;
+        //    trans.y += position.Y;
+        //    return new Vector2(trans.x, trans.y);
+        //}
 
         /// <summary>
         ///
@@ -265,9 +265,9 @@ namespace Fusee.DImGui.Desktop.Gizmos
         public static Vector4 selectionColor = new Vector4(0xFF, 0x80, 0x10, 0x8A);
         public static Vector4 inactiveColor = new Vector4(0x99, 0x99, 0x99, 0x99);
         public static Vector4 translationLineColor = new Vector4(0xAA, 0xAA, 0xAA, 0xAA);
-        public static readonly string[] translationInfoMask = new string[] { "X : %5.3f", "Y : %5.3f", "Z : %5.3f", "Y : %5.3f Z : %5.3f", "X : %5.3f Z : %5.3f", "X : %5.3f Y : %5.3f", "X : %5.3f Y : %5.3f Z : %5.3f" };
-        public static readonly string[] scaleInfoMask = new string[] { "X : %5.2f", "Y : %5.2f", "Z : %5.2f", "XYZ : %5.2f" };
-        public static readonly string[] rotationInfoMask = new string[] { "X : %5.2f deg %5.2f rad", "Y : %5.2f deg %5.2f rad", "Z : %5.2f deg %5.2f rad", "Screen : %5.2f deg %5.2f rad" };
+        public static readonly string[] translationInfoMask = new string[] { "X : {0:N3}", "Y : {0:N3}", "Z : {0:N3}", "Y : {0:N3} Z : {1:000}", "X : {0:N3} Z : {1:000}", "X : {0:N3} Y : {1:000}", "X : {0:N3} Y : {1:000} Z : {2:000}" };
+        public static readonly string[] scaleInfoMask = new string[] { "X : {0:N2}", "Y : {0:N2}", "Z : {0:N2}", "XYZ : {0:N2}" };
+        public static readonly string[] rotationInfoMask = new string[] { "X : {0:N2} deg {1:00} rad", "Y :{0:N2} deg {1:00} rad", "Z : {0:N2} deg {1:00} rad", "Screen : {0:N2} deg {1:00} rad" };
         public static readonly int[] translationInfoIndex = new int[] { 0, 0, 0, 1, 0, 0, 2, 0, 0, 1, 2, 0, 0, 2, 0, 0, 1, 0, 0, 1, 2 };
         public static readonly float quadMin = 0.5f;
         public static readonly float quadMax = 0.8f;
@@ -295,7 +295,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
                 position = new Vector2(gContext.mX, gContext.mY);
 
             if (size.X == 0 && size.Y == 0)
-                position = new Vector2(gContext.mWidth, gContext.mHeight);
+                size = new Vector2(gContext.mWidth, gContext.mHeight);
 
             var io = ImGui.GetIO();
 
@@ -356,7 +356,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
             segB.y /= gContext.mDisplayRatio;
             var segAOrtho = new float4(-segA.y, segA.x, 0, 0);
             segAOrtho.Normalize();
-            float dt = float4.Dot(segAOrtho, segB);
+            float dt = float3.Dot(segAOrtho.xyz, segB.xyz);
             float surface = MathF.Sqrt(segA.x * segA.x + segA.y * segA.y) * MathF.Abs(dt);
             return surface;
         }
@@ -406,8 +406,8 @@ namespace Fusee.DImGui.Desktop.Gizmos
 
         public static float IntersectRayPlane(float4 rOrigin, float4 rVector, float4 plan)
         {
-            var numer = float4.Dot(plan, rOrigin) - plan.w;
-            var denom = float4.Dot(plan, rVector);
+            var numer = float3.Dot(plan.xyz, rOrigin.xyz) - plan.w;
+            var denom = float3.Dot(plan.xyz, rVector.xyz);
 
             if (MathF.Abs(denom) < float.Epsilon)  // normal is orthogonal to vector, cant intersect
             {
@@ -419,7 +419,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
 
         public static float DistanceToPlane(float4 point, float4 plan)
         {
-            return float4.Dot(plan, point) + plan.w;
+            return float3.Dot(plan.xyz, point.xyz) + plan.w;
         }
 
         public static bool IsInContextRect(Vector2 p)
@@ -436,6 +436,8 @@ namespace Fusee.DImGui.Desktop.Gizmos
 
         public static void SetRect(float x, float y, float width, float height)
         {
+            if (gContext == null) return;
+
             gContext.mX = x;
             gContext.mY = y;
             gContext.mWidth = width;
@@ -497,36 +499,37 @@ namespace Fusee.DImGui.Desktop.Gizmos
 
         public static float4 Right(this float4x4 mat)
         {
-            return mat.Column1;
+            return mat.Row1;
         }
 
         public static float4 Up(this float4x4 mat)
         {
-            return mat.Column2;
+            return mat.Row2;
         }
 
         public static float4 Dir(this float4x4 mat)
         {
-            return mat.Column3;
+            return mat.Row3;
         }
 
         public static float4 Position(this float4x4 mat)
         {
-            return mat.Column4;
+            return mat.Row4;
         }
 
         public static void OrthoNormalize(this ref float4x4 mat)
         {
             // right, up, dir, position;
 
-            mat.Column1 = mat.Column1.Normalize();
-            mat.Column2 = mat.Column2.Normalize();
-            mat.Column3 = mat.Column3.Normalize();
+            mat.Row1 = mat.Row1.Normalize();
+            mat.Row2 = mat.Row2.Normalize();
+            mat.Row3 = mat.Row3.Normalize();
         }
 
         public static void ComputeContext(float4x4 view, float4x4 projection, float4x4 matrix, MODE mode)
         {
-            gContext = new();
+            if(gContext == null)
+                gContext = new();
 
             gContext.mMode = mode;
             gContext.mViewMat = view;
@@ -542,10 +545,11 @@ namespace Fusee.DImGui.Desktop.Gizmos
             }
             else
             {
-                gContext.mModel.Column4 = matrix.Position();
+                gContext.mModel = float4x4.Identity;
+                gContext.mModel.Row4 = matrix.Position();
             }
             gContext.mModelSource = matrix;
-            gContext.mModelScaleOrigin = new float3(gContext.mModelSource.Right().Length, gContext.mModelSource.Up().Length, gContext.mModelSource.Dir().Length);
+            gContext.mModelScaleOrigin = new float3(gContext.mModelSource.Right().xyz.Length, gContext.mModelSource.Up().xyz.Length, gContext.mModelSource.Dir().xyz.Length);
 
             gContext.mModelInverse = gContext.mModel.Invert();
             gContext.mModelSourceInverse = gContext.mModelSource.Invert();
@@ -566,13 +570,13 @@ namespace Fusee.DImGui.Desktop.Gizmos
             gContext.mReversed = (nearPos.z / nearPos.w) > (farPos.z / farPos.w);
 
             // compute scale from the size of camera right vector projected on screen at the matrix position
-            var pointRight = viewInverse.Right();
-            pointRight = gContext.mViewProjection * pointRight;
-            gContext.mScreenFactor = gContext.mGizmoSizeClipSpace / (pointRight.x / pointRight.w - gContext.mMVP.Position().x / gContext.mMVP.Position().w);
+            //var pointRight = viewInverse.Right();
+            //pointRight = gContext.mViewProjection * pointRight;
+            //gContext.mScreenFactor = gContext.mGizmoSizeClipSpace / (pointRight.x / pointRight.w - gContext.mMVP.Position().x / gContext.mMVP.Position().w);
 
             var rightViewInverse = viewInverse.Right();
             rightViewInverse = gContext.mModelInverse * rightViewInverse;
-            float rightLength = GetSegmentLengthClipSpace(new float4(0f, 0f, 0, 1f), rightViewInverse);
+            float rightLength = GetSegmentLengthClipSpace(float4.Zero, rightViewInverse);
             gContext.mScreenFactor = gContext.mGizmoSizeClipSpace / rightLength;
 
             var centerSSpace = Gizmos.WorldToPos(new float3(0f, 0f, 0f), gContext.mMVP);
@@ -665,7 +669,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
                 dirPlaneY *= mulAxisY;
 
                 // for axis
-                float axisLengthInClipSpace = GetSegmentLengthClipSpace(new float4(0f, 0f, 0f, 1.0f), dirAxis * gContext.mScreenFactor, localCoordinates);
+                float axisLengthInClipSpace = GetSegmentLengthClipSpace(float4.UnitW, dirAxis * gContext.mScreenFactor, localCoordinates);
 
                 float paraSurf = GetParallelogram(float4.UnitW, dirPlaneX * gContext.mScreenFactor, dirPlaneY * gContext.mScreenFactor);
                 belowPlaneLimit = (paraSurf > 0.0025f);
@@ -726,9 +730,9 @@ namespace Fusee.DImGui.Desktop.Gizmos
 
             var perpendicularVector = float3.Cross(gContext.mRotationVectorSource.xyz, gContext.mTranslationPlan.xyz);
             perpendicularVector.Normalize();
-            float acosAngle = M.Clamp(float4.Dot(localPos, gContext.mRotationVectorSource), -1f, 1f);
+            float acosAngle = M.Clamp(float3.Dot(localPos.xyz, gContext.mRotationVectorSource.xyz), -1f, 1f);
             float angle = MathF.Acos(acosAngle);
-            angle *= (float4.Dot(localPos, new float4(perpendicularVector, 1f)) < 0f) ? 1f : -1f;
+            angle *= (float3.Dot(localPos.xyz, perpendicularVector) < 0f) ? 1f : -1f;
             return angle;
         }
 
@@ -771,7 +775,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
                 int circleMul = (hasRSC && !usingAxis) ? 1 : 2;
 
                 var circlePos = new List<Vector2>();
-                for(var i = 0; i < circleMul * halfCircleSegmentCount + 1; i++)
+                for (var i = 0; i < circleMul * halfCircleSegmentCount + 1; i++)
                 {
                     circlePos.Add(new Vector2(0, 0));
                 }
@@ -783,14 +787,14 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     float ng = angleStart + circleMul * M.Pi * (i / (float)halfCircleSegmentCount);
                     var axisPos = new float3(MathF.Cos(ng), MathF.Sin(ng), 0f);
                     var pos = new float3(axisPos[axis], axisPos[(axis + 1) % 3], axisPos[(axis + 2) % 3]) * gContext.mScreenFactor * rotationDisplayFactor;
-                    circlePos[i] = Gizmos.WorldToPos(pos, gContext.mMVP);
+                    circlePos[i] = Gizmos.WorldToPos(pos.xyz, gContext.mMVP);
                 }
                 if (!gContext.mbUsing || usingAxis)
                 {
                     drawList.AddPolyline(ref circlePos.ToArray()[0], circleMul * halfCircleSegmentCount + 1, Gizmos.Vector2Col(colors[3 - axis]), ImDrawFlags.Closed, 2);
                 }
 
-                float radiusAxis = MathF.Sqrt((Gizmos.WorldToPos(gContext.mModel.Position(), gContext.mViewProjection) - circlePos[0]).LengthSquared());
+                float radiusAxis = MathF.Sqrt((Gizmos.WorldToPos(gContext.mModel.Position().xyz, gContext.mViewProjection) - circlePos[0]).LengthSquared());
                 if (radiusAxis > gContext.mRadiusSquareCenter)
                 {
                     gContext.mRadiusSquareCenter = radiusAxis;
@@ -798,14 +802,14 @@ namespace Fusee.DImGui.Desktop.Gizmos
             }
             if (hasRSC && (!gContext.mbUsing || type == MOVETYPE.ROTATE_SCREEN))
             {
-                drawList.AddCircle(Gizmos.WorldToPos(gContext.mModel.Position(), gContext.mViewProjection), gContext.mRadiusSquareCenter, Gizmos.Vector2Col(colors[0]), 64, 3f);
+                drawList.AddCircle(Gizmos.WorldToPos(gContext.mModel.Position().xyz, gContext.mViewProjection), gContext.mRadiusSquareCenter, Gizmos.Vector2Col(colors[0]), 64, 3f);
             }
 
             if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID) && IsRotateType(type))
             {
                 var circlePos = new Vector2[halfCircleSegmentCount + 1];
 
-                circlePos[0] = Gizmos.WorldToPos(gContext.mModel.Position(), gContext.mViewProjection);
+                circlePos[0] = Gizmos.WorldToPos(gContext.mModel.Position().xyz, gContext.mViewProjection);
                 for (var i = 1; i < halfCircleSegmentCount; i++)
                 {
                     float ng = gContext.mRotationAngle * ((i - 1) / (float)(halfCircleSegmentCount - 1));
@@ -813,7 +817,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     var rotateVectorMatrix = float4x4.CreateFromAxisAngle(gContext.mTranslationPlan.xyz, ng);
                     var pos = rotateVectorMatrix * gContext.mRotationVectorSource;
                     pos *= gContext.mScreenFactor * rotationDisplayFactor;
-                    circlePos[i] = Gizmos.WorldToPos(pos + gContext.mModel.Position(), gContext.mViewProjection);
+                    circlePos[i] = Gizmos.WorldToPos(pos.xyz + gContext.mModel.Position().xyz, gContext.mViewProjection);
                 }
                 drawList.AddConvexPolyFilled(ref circlePos[0], halfCircleSegmentCount, Gizmos.Vector2Col(new Vector4(0xFF, 0x80, 0x10, 0x80)));
                 drawList.AddPolyline(ref circlePos[0], halfCircleSegmentCount, Gizmos.Vector2Col(new Vector4(0xFF, 0x80, 0x10, 0xFF)), ImDrawFlags.Closed, 2);
@@ -829,8 +833,8 @@ namespace Fusee.DImGui.Desktop.Gizmos
         {
             for (int j = 1; j < 10; j++)
             {
-                var baseSSpace2 = Gizmos.WorldToPos(axis * 0.05f * (j * 2) * gContext.mScreenFactor, gContext.mMVP);
-                var worldDirSSpace2 = Gizmos.WorldToPos(axis * 0.05f * (j * 2 + 1) * gContext.mScreenFactor, gContext.mMVP);
+                var baseSSpace2 = Gizmos.WorldToPos(axis.xyz * 0.05f * (j * 2) * gContext.mScreenFactor, gContext.mMVP);
+                var worldDirSSpace2 = Gizmos.WorldToPos(axis.xyz * 0.05f * (j * 2 + 1) * gContext.mScreenFactor, gContext.mMVP);
                 gContext.mDrawList.AddLine(baseSSpace2, worldDirSSpace2, Gizmos.Vector2Col(new Vector4(0, 0, 0, 0x80)), 6f);
             }
         }
@@ -849,7 +853,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
             ComputeColors(ref colors, type, OPERATION.SCALE);
 
             // draw
-            var scaleDisplay = new float4(1f, 1f, 1f, 1f);
+            var scaleDisplay = new float4(1f, 1f, 1f, 0f);
 
             if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID))
             {
@@ -877,9 +881,9 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     {
                         bool hasTranslateOnAxis = Contains(op, ((uint)OPERATION.TRANSLATE_X << i));
                         float markerScale = hasTranslateOnAxis ? 1.4f : 1.0f;
-                        var baseSSpace = Gizmos.WorldToPos(dirAxis * 0.1f * gContext.mScreenFactor, gContext.mMVP);
-                        var worldDirSSpaceNoScale = Gizmos.WorldToPos(dirAxis * markerScale * gContext.mScreenFactor, gContext.mMVP);
-                        var worldDirSSpace = Gizmos.WorldToPos((dirAxis * markerScale * scaleDisplay[i]) * gContext.mScreenFactor, gContext.mMVP);
+                        var baseSSpace = Gizmos.WorldToPos(dirAxis.xyz * 0.1f * gContext.mScreenFactor, gContext.mMVP);
+                        var worldDirSSpaceNoScale = Gizmos.WorldToPos(dirAxis.xyz * markerScale * gContext.mScreenFactor, gContext.mMVP);
+                        var worldDirSSpace = Gizmos.WorldToPos((dirAxis.xyz * markerScale * scaleDisplay[i]) * gContext.mScreenFactor, gContext.mMVP);
 
                         if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID))
                         {
@@ -907,7 +911,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
             if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID) && IsScaleType(type))
             {
                 //ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
-                var destinationPosOnScreen = Gizmos.WorldToPos(gContext.mModel.Position(), gContext.mViewProjection);
+                var destinationPosOnScreen = Gizmos.WorldToPos(gContext.mModel.Position().xyz, gContext.mViewProjection);
                 /*vec_t dif(destinationPosOnScreen.x - sourcePosOnScreen.x, destinationPosOnScreen.y - sourcePosOnScreen.y);
                 dif.Normalize();
                 dif *= 5f;
@@ -966,9 +970,9 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     {
                         bool hasTranslateOnAxis = Contains(op, ((uint)OPERATION.TRANSLATE_X << i));
                         float markerScale = hasTranslateOnAxis ? 1.4f : 1.0f;
-                        var baseSSpace = Gizmos.WorldToPos(dirAxis * 0.1f * gContext.mScreenFactor, gContext.mMVPLocal);
+                        var baseSSpace = Gizmos.WorldToPos(dirAxis.xyz * 0.1f * gContext.mScreenFactor, gContext.mMVPLocal);
                         //ImVec2 worldDirSSpaceNoScale = worldToPos(dirAxis * markerScale * gContext.mScreenFactor, gContext.mMVP);
-                        var worldDirSSpace = Gizmos.WorldToPos((dirAxis * markerScale * scaleDisplay[i]) * gContext.mScreenFactor, gContext.mMVPLocal);
+                        var worldDirSSpace = Gizmos.WorldToPos((dirAxis.xyz * markerScale * scaleDisplay[i]) * gContext.mScreenFactor, gContext.mMVPLocal);
 
                         /*if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID))
                         {
@@ -992,7 +996,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
             if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID) && IsScaleType(type))
             {
                 //ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
-                var destinationPosOnScreen = Gizmos.WorldToPos(gContext.mModel.Position(), gContext.mViewProjection);
+                var destinationPosOnScreen = Gizmos.WorldToPos(gContext.mModel.Position().xyz, gContext.mViewProjection);
                 /*vec_t dif(destinationPosOnScreen.x - sourcePosOnScreen.x, destinationPosOnScreen.y - sourcePosOnScreen.y);
                 dif.Normalize();
                 dif *= 5f;
@@ -1013,7 +1017,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
         {
             var res = float4.Zero;
             var normal = p_normal.Normalize();
-            res.w = float4.Dot(normal, p_point1);
+            res.w = float3.Dot(normal.xyz, p_point1.xyz);
             res.x = normal.x;
             res.y = normal.y;
             res.z = normal.z;
@@ -1033,7 +1037,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
             var colors = new Vector4[7];
             ComputeColors(ref colors, type, OPERATION.TRANSLATE);
 
-            var origin = Gizmos.WorldToPos(gContext.mModel.Position(), gContext.mViewProjection);
+            var origin = Gizmos.WorldToPos(gContext.mModel.Position().xyz, gContext.mViewProjection);
 
             // draw
             bool belowAxisLimit = false;
@@ -1051,12 +1055,12 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     // draw axis
                     if (belowAxisLimit && Intersects(op, ((uint)OPERATION.TRANSLATE_X << i)))
                     {
-                        var baseSSpace = Gizmos.WorldToPos(dirAxis * 0.1f * gContext.mScreenFactor, gContext.mMVP);
-                        var worldDirSSpace = Gizmos.WorldToPos(dirAxis * gContext.mScreenFactor, gContext.mMVP);
+                        var baseSSpace = Gizmos.WorldToPos(dirAxis.xyz * 0.1f * gContext.mScreenFactor, gContext.mMVP);
+                        var worldDirSSpace = Gizmos.WorldToPos(dirAxis.xyz * gContext.mScreenFactor, gContext.mMVP);
 
                         drawList.AddLine(baseSSpace, worldDirSSpace, Gizmos.Vector2Col(colors[i + 1]), 3f);
 
-                        // Arrow head begin
+                        // ArRow head begin
                         var dir = (origin - worldDirSSpace);
 
                         float d = MathF.Sqrt((dir.LengthSquared()));
@@ -1066,7 +1070,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
                         var ortogonalDir = new Vector2(dir.Y, -dir.X); // Perpendicular vector
                         var a = (worldDirSSpace + dir);
                         drawList.AddTriangleFilled(worldDirSSpace - dir, a + ortogonalDir, a - ortogonalDir, Gizmos.Vector2Col(colors[i + 1]));
-                        // Arrow head end
+                        // ArRow head end
 
                         if (gContext.mAxisFactor[i] < 0f)
                         {
@@ -1083,7 +1087,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
                         for (int j = 0; j < 4; ++j)
                         {
                             var cornerWorldPos = (dirPlaneX * quadUV[j * 2] + dirPlaneY * quadUV[j * 2 + 1]) * gContext.mScreenFactor;
-                            screenQuadPts[j] = Gizmos.WorldToPos(cornerWorldPos, gContext.mMVP);
+                            screenQuadPts[j] = Gizmos.WorldToPos(cornerWorldPos.xyz, gContext.mMVP);
                         }
                         drawList.AddPolyline(ref screenQuadPts[0], 4, Gizmos.Vector2Col(directionColor[i]), ImDrawFlags.Closed, 1.0f);
                         drawList.AddConvexPolyFilled(ref screenQuadPts[0], 4, Gizmos.Vector2Col(colors[i + 4]));
@@ -1095,8 +1099,8 @@ namespace Fusee.DImGui.Desktop.Gizmos
 
             if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID) && IsTranslateType(type))
             {
-                var sourcePosOnScreen = Gizmos.WorldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
-                var destinationPosOnScreen = Gizmos.WorldToPos(gContext.mModel.Position(), gContext.mViewProjection);
+                var sourcePosOnScreen = Gizmos.WorldToPos(gContext.mMatrixOrigin.xyz, gContext.mViewProjection);
+                var destinationPosOnScreen = Gizmos.WorldToPos(gContext.mModel.Position().xyz, gContext.mViewProjection);
                 var dif = new float4(destinationPosOnScreen.X - sourcePosOnScreen.X, destinationPosOnScreen.Y - sourcePosOnScreen.Y, 0, 0);
                 dif.Normalize();
                 dif *= 5f;
@@ -1117,7 +1121,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
             return (ImGui.IsMouseClicked(0) && !ImGui.IsAnyItemHovered() && !ImGui.IsAnyItemActive());
         }
 
-        public static void HandleAndDrawLocalBounds(ref float[] bounds, float4x4 matrix, ref float[] snapValues, OPERATION operation)
+        public static void HandleAndDrawLocalBounds(ref float[] bounds, ref float4x4 matrix, ref float[] snapValues, OPERATION operation)
         {
             var io = ImGui.GetIO();
             var drawList = gContext.mDrawList;
@@ -1138,7 +1142,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     var dirPlaneNormalWorld = (gContext.mModelSource * directionUnary[i]).Normalize();
 
 
-                    float dt = MathF.Abs(float4.Dot((gContext.mCameraEye - gContext.mModelSource.Position()).Normalize(), dirPlaneNormalWorld));
+                    float dt = MathF.Abs(float3.Dot((gContext.mCameraEye.xyz - gContext.mModelSource.Position().xyz).Normalize(), dirPlaneNormalWorld.xyz));
                     if (dt >= bestDot)
                     {
                         bestDot = dt;
@@ -1205,8 +1209,8 @@ namespace Fusee.DImGui.Desktop.Gizmos
                 var boundsMVP = gContext.mViewProjection * gContext.mModelSource;
                 for (int i = 0; i < 4; i++)
                 {
-                    var worldBound1 = Gizmos.WorldToPos(aabb[i], boundsMVP);
-                    var worldBound2 = Gizmos.WorldToPos(aabb[(i + 1) % 4], boundsMVP);
+                    var worldBound1 = Gizmos.WorldToPos(aabb[i].xyz, boundsMVP);
+                    var worldBound2 = Gizmos.WorldToPos(aabb[(i + 1) % 4].xyz, boundsMVP);
                     if (!IsInContextRect(worldBound1) || !IsInContextRect(worldBound2))
                     {
                         continue;
@@ -1225,7 +1229,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
                         drawList.AddLine(worldBoundSS1, worldBoundSS2, Gizmos.Vector2Col(new Vector4(0xAA, 0xAA, 0xAA, 0)) + anchorAlpha, 2f);
                     }
                     var midPoint = (aabb[i] + aabb[(i + 1) % 4]) * 0.5f;
-                    var midBound = Gizmos.WorldToPos(midPoint, boundsMVP);
+                    var midBound = Gizmos.WorldToPos(midPoint.xyz, boundsMVP);
                     var AnchorBigRadius = 8f;
                     var AnchorSmallRadius = 6f;
                     bool overBigAnchor = (worldBound1 - io.MousePos).LengthSquared() <= (AnchorBigRadius * AnchorBigRadius);
@@ -1337,40 +1341,40 @@ namespace Fusee.DImGui.Desktop.Gizmos
                         {
                             case 0:
                                 axisDir = new float4(MathF.Abs(
-                                    gContext.mBoundsMatrix.Column1.x),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column1.y),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column1.z),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column1.w));
+                                    gContext.mBoundsMatrix.Row1.x),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row1.y),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row1.z),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row1.w));
                                 break;
                             case 1:
                                 axisDir = new float4(MathF.Abs(
-                                    gContext.mBoundsMatrix.Column2.x),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column2.y),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column2.z),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column2.w));
+                                    gContext.mBoundsMatrix.Row2.x),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row2.y),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row2.z),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row2.w));
                                 break;
                             case 2:
                                 axisDir = new float4(MathF.Abs(
-                                    gContext.mBoundsMatrix.Column3.x),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column3.y),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column3.z),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column3.w));
+                                    gContext.mBoundsMatrix.Row3.x),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row3.y),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row3.z),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row3.w));
                                 break;
                             case 3:
                                 axisDir = new float4(MathF.Abs(
-                                    gContext.mBoundsMatrix.Column4.x),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column4.y),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column4.z),
-                                    MathF.Abs(gContext.mBoundsMatrix.Column4.w));
+                                    gContext.mBoundsMatrix.Row4.x),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row4.y),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row4.z),
+                                    MathF.Abs(gContext.mBoundsMatrix.Row4.w));
                                 break;
                         }
 
 
-                        float dtAxis = float4.Dot(axisDir, referenceVector);
+                        float dtAxis = float3.Dot(axisDir.xyz, referenceVector.xyz);
                         float boundSize = bounds[axisIndex1 + 3] - bounds[axisIndex1];
                         if (dtAxis > float.Epsilon)
                         {
-                            ratioAxis = float4.Dot(axisDir, deltaVector) / dtAxis;
+                            ratioAxis = float3.Dot(axisDir.xyz, deltaVector.xyz) / dtAxis;
                         }
 
                         if (snapValues != null)
@@ -1386,35 +1390,35 @@ namespace Fusee.DImGui.Desktop.Gizmos
                         switch (axisIndex1)
                         {
                             case 0:
-                                scale.Column1 *= ratioAxis;
+                                scale.Row1 *= ratioAxis;
                                 break;
                             case 1:
-                                scale.Column2 *= ratioAxis;
+                                scale.Row2 *= ratioAxis;
                                 break;
                             case 2:
-                                scale.Column3 *= ratioAxis;
+                                scale.Row3 *= ratioAxis;
                                 break;
                             case 3:
-                                scale.Column4 *= ratioAxis;
+                                scale.Row4 *= ratioAxis;
                                 break;
                         }
                     }
 
                     // transform matrix
                     var preScale = float4x4.Identity;
-                    preScale.Column4 = -gContext.mBoundsLocalPivot;
+                    preScale.Row4 = -gContext.mBoundsLocalPivot;
 
                     var postScale = float4x4.Identity;
-                    preScale.Column4 = gContext.mBoundsLocalPivot;
+                    preScale.Row4 = gContext.mBoundsLocalPivot;
                     var res = gContext.mBoundsMatrix * postScale * scale * preScale;
                     matrix = res;
 
                     // info text
-                    var destinationPosOnScreen = Gizmos.WorldToPos(gContext.mModel.Position(), gContext.mViewProjection);
-                    var tmps = string.Format("X: %.2f Y: %.2f Z:%.2f"
-                       , (bounds[3] - bounds[0]) * gContext.mBoundsMatrix.Column1.Length * scale.Column1.Length
-                       , (bounds[4] - bounds[1]) * gContext.mBoundsMatrix.Column2.Length * scale.Column2.Length
-                       , (bounds[5] - bounds[2]) * gContext.mBoundsMatrix.Column3.Length * scale.Column3.Length
+                    var destinationPosOnScreen = Gizmos.WorldToPos(gContext.mModel.Position().xyz, gContext.mViewProjection);
+                    var tmps = string.Format("X: {0:N2} Y: {0:N2} Z: {0:N2}"
+                       , (bounds[3] - bounds[0]) * gContext.mBoundsMatrix.Row1.Length * scale.Row1.Length
+                       , (bounds[4] - bounds[1]) * gContext.mBoundsMatrix.Row2.Length * scale.Row2.Length
+                       , (bounds[5] - bounds[2]) * gContext.mBoundsMatrix.Row3.Length * scale.Row3.Length
                     );
                     drawList.AddText(new Vector2(destinationPosOnScreen.X + 15, destinationPosOnScreen.Y + 15), Gizmos.Vector2Col(new Vector4(0, 0, 0, 255)), tmps);
                     drawList.AddText(new Vector2(destinationPosOnScreen.X + 14, destinationPosOnScreen.Y + 14), Gizmos.Vector2Col(new Vector4(255)), tmps);
@@ -1472,9 +1476,9 @@ namespace Fusee.DImGui.Desktop.Gizmos
 
                 var startOffset = Contains(op, ((uint)OPERATION.TRANSLATE_X << i)) ? 1.0f : 0.1f;
                 var endOffset = Contains(op, ((uint)OPERATION.TRANSLATE_X << i)) ? 1.4f : 1.0f;
-                var posOnPlanScreen = Gizmos.WorldToPos(posOnPlan, gContext.mViewProjection);
-                var axisStartOnScreen = Gizmos.WorldToPos(gContext.mModelLocal.Position() + dirAxis * gContext.mScreenFactor * startOffset, gContext.mViewProjection);
-                var axisEndOnScreen = Gizmos.WorldToPos(gContext.mModelLocal.Position() + dirAxis * gContext.mScreenFactor * endOffset, gContext.mViewProjection);
+                var posOnPlanScreen = Gizmos.WorldToPos(posOnPlan.xyz, gContext.mViewProjection);
+                var axisStartOnScreen = Gizmos.WorldToPos(gContext.mModelLocal.Position().xyz + dirAxis.xyz * gContext.mScreenFactor * startOffset, gContext.mViewProjection);
+                var axisEndOnScreen = Gizmos.WorldToPos(gContext.mModelLocal.Position().xyz + dirAxis.xyz * gContext.mScreenFactor * endOffset, gContext.mViewProjection);
 
                 var closestPointOnAxis = PointOnSegment(posOnPlanScreen, axisStartOnScreen, axisEndOnScreen);
 
@@ -1513,9 +1517,9 @@ namespace Fusee.DImGui.Desktop.Gizmos
                 {
                     bool hasTranslateOnAxis = Contains(op, ((uint)OPERATION.TRANSLATE_X << i));
                     float markerScale = hasTranslateOnAxis ? 1.4f : 1.0f;
-                    var baseSSpace = Gizmos.WorldToPos(dirAxis * 0.1f * gContext.mScreenFactor, gContext.mMVPLocal);
+                    var baseSSpace = Gizmos.WorldToPos(dirAxis.xyz * 0.1f * gContext.mScreenFactor, gContext.mMVPLocal);
                     //ImVec2 worldDirSSpaceNoScale = worldToPos(dirAxis * markerScale * gContext.mScreenFactor, gContext.mMVP);
-                    var worldDirSSpace = Gizmos.WorldToPos((dirAxis * markerScale) * gContext.mScreenFactor, gContext.mMVPLocal);
+                    var worldDirSSpace = Gizmos.WorldToPos((dirAxis.xyz * markerScale) * gContext.mScreenFactor, gContext.mMVPLocal);
 
                     float distance = MathF.Sqrt((worldDirSSpace - io.MousePos).LengthSquared());
                     if (distance < 12f)
@@ -1599,7 +1603,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
                 var localPos = intersectWorldPos - gContext.mModel.Position();
                 var idealPosOnCircle = localPos.Normalize();
                 idealPosOnCircle = gContext.mModelInverse * idealPosOnCircle;
-                var idealPosOnCircleScreen = Gizmos.WorldToPos(idealPosOnCircle * rotationDisplayFactor * gContext.mScreenFactor, gContext.mMVP);
+                var idealPosOnCircleScreen = Gizmos.WorldToPos(idealPosOnCircle.xyz * rotationDisplayFactor * gContext.mScreenFactor, gContext.mMVP);
 
                 //gContext.mDrawList->AddCircle(idealPosOnCircleScreen, 5.f, IM_COL32_WHITE);
                 var distanceOnScreen = idealPosOnCircleScreen - io.MousePos;
@@ -1650,8 +1654,8 @@ namespace Fusee.DImGui.Desktop.Gizmos
                 var len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, BuildPlan(gContext.mModel.Position(), dirAxis));
                 var posOnPlan = gContext.mRayOrigin + gContext.mRayVector * len;
 
-                var axisStartOnScreen = Gizmos.WorldToPos(gContext.mModel.Position() + dirAxis * gContext.mScreenFactor * 0.1f, gContext.mViewProjection) - new Vector2(gContext.mX, gContext.mY);
-                var axisEndOnScreen = Gizmos.WorldToPos(gContext.mModel.Position() + dirAxis * gContext.mScreenFactor, gContext.mViewProjection) - new Vector2(gContext.mX, gContext.mY);
+                var axisStartOnScreen = Gizmos.WorldToPos(gContext.mModel.Position().xyz + dirAxis.xyz * gContext.mScreenFactor * 0.1f, gContext.mViewProjection) - new Vector2(gContext.mX, gContext.mY);
+                var axisEndOnScreen = Gizmos.WorldToPos(gContext.mModel.Position().xyz + dirAxis.xyz * gContext.mScreenFactor, gContext.mViewProjection) - new Vector2(gContext.mX, gContext.mY);
 
                 var closestPointOnAxis = PointOnSegment(screenCoord, axisStartOnScreen, axisEndOnScreen);
                 if ((closestPointOnAxis - screenCoord).Length() < 12f && Intersects(op, ((uint)OPERATION.TRANSLATE_X << i))) // pixel size
@@ -1659,8 +1663,8 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     type = MOVETYPE.MOVE_X + i;
                 }
 
-                var dx = float4.Dot(dirPlaneX, ((posOnPlan - gContext.mModel.Position()) * (1f / gContext.mScreenFactor)));
-                var dy = float4.Dot(dirPlaneY, ((posOnPlan - gContext.mModel.Position()) * (1f / gContext.mScreenFactor)));
+                var dx = float3.Dot(dirPlaneX.xyz, ((posOnPlan.xyz - gContext.mModel.Position().xyz) * (1f / gContext.mScreenFactor)));
+                var dy = float3.Dot(dirPlaneY.xyz, ((posOnPlan.xyz - gContext.mModel.Position().xyz) * (1f / gContext.mScreenFactor)));
                 if (belowPlaneLimit && dx >= quadUV[0] && dx <= quadUV[4] && dy >= quadUV[1] && dy <= quadUV[3] && Contains(op, TRANSLATE_PLANS[i]))
                 {
                     type = MOVETYPE.MOVE_YZ + i;
@@ -1704,19 +1708,19 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     switch (axisIndex)
                     {
                         case 0:
-                            axisValue = gContext.mModel.Column1;
+                            axisValue = gContext.mModel.Row1;
                             break;
                         case 1:
-                            axisValue = gContext.mModel.Column2;
+                            axisValue = gContext.mModel.Row2;
                             break;
                         case 2:
-                            axisValue = gContext.mModel.Column3;
+                            axisValue = gContext.mModel.Row3;
                             break;
                         case 3:
-                            axisValue = gContext.mModel.Column4;
+                            axisValue = gContext.mModel.Row4;
                             break;
                     }
-                    float lengthOnAxis = float4.Dot(axisValue, delta);
+                    float lengthOnAxis = float3.Dot(axisValue.xyz, delta.xyz);
                     delta = axisValue * lengthOnAxis;
                 }
 
@@ -1749,7 +1753,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
 
                 // compute matrix & delta
                 var deltaMatrixTranslation = float4x4.Identity;
-                deltaMatrixTranslation.Column4 = delta;
+                deltaMatrixTranslation.Row4.xyz = delta.xyz;
 
                 if (deltaMatrix != null)
                 {
@@ -1783,11 +1787,11 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     var movePlanNormal = new float4[] { gContext.mModel.Right(), gContext.mModel.Up(), gContext.mModel.Dir(),
                gContext.mModel.Right(), gContext.mModel.Up(), gContext.mModel.Dir(),  -gContext.mCameraDir };
 
-                    var cameraToModelNormalized = (gContext.mModel.Position() - gContext.mCameraEye).Normalize();
+                    var cameraToModelNormalized = (gContext.mModel.Position().xyz - gContext.mCameraEye.xyz).Normalize();
                     for (var i = 0; i < 3; i++)
                     {
                         var orthoVector = float3.Cross(movePlanNormal[i].xyz, cameraToModelNormalized.xyz);
-                        movePlanNormal[i] = new float4(float3.Cross(movePlanNormal[i].xyz, orthoVector), 1);
+                        movePlanNormal[i] = new float4(float3.Cross(movePlanNormal[i].xyz, orthoVector), 0);
                         movePlanNormal[i].Normalize();
                     }
                     // pickup plan
@@ -1857,24 +1861,24 @@ namespace Fusee.DImGui.Desktop.Gizmos
                     switch (axisIndex)
                     {
                         case 0:
-                            axisValue = gContext.mModelLocal.Column1;
+                            axisValue = gContext.mModelLocal.Row1;
                             break;
                         case 1:
-                            axisValue = gContext.mModelLocal.Column2;
+                            axisValue = gContext.mModelLocal.Row2;
                             break;
                         case 2:
-                            axisValue = gContext.mModelLocal.Column3;
+                            axisValue = gContext.mModelLocal.Row3;
                             break;
                         case 3:
-                            axisValue = gContext.mModelLocal.Column4;
+                            axisValue = gContext.mModelLocal.Row4;
                             break;
                     }
 
-                    var lengthOnAxis = float4.Dot(axisValue, delta);
+                    var lengthOnAxis = float3.Dot(axisValue.xyz, delta.xyz);
                     delta = axisValue * lengthOnAxis;
 
                     var baseVector = gContext.mTranslationPlanOrigin - gContext.mModelLocal.Position();
-                    float ratio = float4.Dot(axisValue, baseVector + delta) / float4.Dot(axisValue, baseVector);
+                    float ratio = float3.Dot(axisValue.xyz, baseVector.xyz + delta.xyz) / float3.Dot(axisValue.xyz, baseVector.xyz);
 
                     gContext.mScale[axisIndex] = M.Max(ratio, 0.001f);
                 }
@@ -2012,10 +2016,10 @@ namespace Fusee.DImGui.Desktop.Gizmos
                 else
                 {
                     var res = gContext.mModelSource;
-                    res.Column4 = float4.Zero;
+                    res.Row4 = float4.Zero;
 
                     matrix = deltaRotation * res;
-                    matrix.Column4 = gContext.mModelSource.Position();
+                    matrix.Row4 = gContext.mModelSource.Position();
                 }
 
                 if (deltaMatrix != null)

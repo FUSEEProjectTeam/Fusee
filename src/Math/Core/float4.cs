@@ -315,8 +315,11 @@ namespace Fusee.Math.Core
 
         #endregion public Round()
 
+
+
+
         /// <summary>
-        /// Converts this float4 - which is interpreted as a color - from sRgb space to linear color space.       
+        /// Converts this float4 - which is interpreted as a color - from sRgb space to linear color space.
         /// </summary>
         /// <returns></returns>
         public float4 LinearColorFromSRgb()
@@ -492,6 +495,7 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static float4 Normalize(float4 vec)
         {
+            if (vec.Length == 0) return vec;
             float scale = 1.0f / vec.Length;
             vec.x *= scale;
             vec.y *= scale;
@@ -600,7 +604,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float4 Lerp(float4 a, float4 b, float4 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;

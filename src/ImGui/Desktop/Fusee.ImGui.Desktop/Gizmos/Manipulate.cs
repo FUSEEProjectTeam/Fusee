@@ -18,17 +18,10 @@ namespace Fusee.DImGui.Desktop.Gizmos
             ref float[] localBounds,
             ref float[] boundsSnap)
         {
-            matrix = float4x4.Identity;
             deltaMatrix = float4x4.Identity;
 
             // Scale is always local or matrix will be skewed when applying world scale or oriented matrix
             Gizmos.ComputeContext(view, projection, matrix, ((uint)(operation & OPERATION.SCALE)) == 1U ? MODE.LOCAL : mode);
-
-            // set delta to identity
-            if (deltaMatrix != null)
-            {
-                deltaMatrix = float4x4.Identity;
-            }
 
             // behind camera
 
@@ -45,15 +38,17 @@ namespace Fusee.DImGui.Desktop.Gizmos
             {
                 if (!Gizmos.gContext.mbUsingBounds)
                 {
-                    manipulated = Gizmos.HandleTranslation(ref matrix, ref deltaMatrix, operation, ref type, ref snap) ||
-                                  Gizmos.HandleScale(ref matrix, ref deltaMatrix, operation, ref type, ref snap) ||
-                                  Gizmos.HandleRotation(ref matrix, ref deltaMatrix, operation, ref type, ref snap);
+                    manipulated = Gizmos.HandleTranslation(ref matrix, ref deltaMatrix, operation, ref type, ref snap); // ||
+                    //              Gizmos.HandleScale(ref matrix, ref deltaMatrix, operation, ref type, ref snap) ||
+                    //              Gizmos.HandleRotation(ref matrix, ref deltaMatrix, operation, ref type, ref snap);
+
+                    Console.WriteLine(matrix);
                 }
             }
 
             if (localBounds != null && !Gizmos.gContext.mbUsing)
             {
-                Gizmos.HandleAndDrawLocalBounds(ref localBounds, matrix, ref boundsSnap, operation);
+                Gizmos.HandleAndDrawLocalBounds(ref localBounds, ref matrix, ref boundsSnap, operation);
             }
 
             Gizmos.gContext.mOperation = operation;
