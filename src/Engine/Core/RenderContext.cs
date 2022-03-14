@@ -1718,25 +1718,19 @@ namespace Fusee.Engine.Core
             if (_currentEffect == null) throw new NullReferenceException("No Compute Shader bound.");
             if (_currentEffect.GetType() != typeof(ComputeShader)) throw new NullReferenceException("Bound Effect isn't a Compute Shader.");
 
-            try
-            {
-                var cFx = GetCompiledFxForRenderMethod(true);
-                SetCompiledFx(cFx.GpuHandle);
-                SetRenderStateSet(_currentEffect.RendererStates);
-                SetGlobalParamsInCurrentFx(cFx);
-                UpdateAllActiveFxParams(cFx);
 
-                _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
+            var cFx = GetCompiledFxForRenderMethod(true);
+            SetCompiledFx(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+            SetGlobalParamsInCurrentFx(cFx);
+            UpdateAllActiveFxParams(cFx);
 
-                // After rendering always cleanup pending meshes, textures and shader effects
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
-                _effectManager.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass ", ex);
-            }
+            _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
+
+            // After rendering always cleanup pending meshes, textures and shader effects
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+            _effectManager.Cleanup();
         }
 
         /// <summary>
@@ -1750,62 +1744,45 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh mesh, bool doRenderForward = true)
         {
-            if (_currentEffect == null) return;
-
-            var compiledEffect = _allCompiledEffects[_currentEffect];
-
-            CompiledEffect cFx;
-            if (renderForward)
-            {
-                if (compiledEffect.ForwardFx == null)
-                {
-                    CreateShaderProgram(_currentEffect, renderForward);
-                    compiledEffect = _allCompiledEffects[_currentEffect];
-                }
-
-                cFx = compiledEffect.ForwardFx;
-            }
-            else
-            {
-                if (compiledEffect.DeferredFx == null)
-                {
-                    CreateShaderProgram(_currentEffect, renderForward);
-                    compiledEffect = _allCompiledEffects[_currentEffect];
-                }
-                cFx = compiledEffect.DeferredFx;
-            }
-
-            SetShaderProgram(cFx.GpuHandle);
+            var cFx = GetCompiledFxForRenderMethod(doRenderForward);
+            SetCompiledFx(cFx.GpuHandle);
             SetRenderStateSet(_currentEffect.RendererStates);
+            SetGlobalParamsInCurrentFx(cFx);
+            UpdateAllActiveFxParams(cFx);
 
-            foreach (var key in GlobalFXParams.Keys)
-            {
-                var globalFxParam = GlobalFXParams[key];
-
-                if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
-                {
-                    if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
-                        _currentEffect.SetFxParam(key, globalFxParam.Value);
-                }
-            }
-
-            foreach (var fxParam in cFx.ActiveUniforms.Values)
-            {
-                SetShaderParamT(fxParam);
-                fxParam.HasValueChanged = false;
-            }
-
-            // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
-            var meshImp = _meshManager.GetMeshImpFromMesh(m);
+            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
             _rci.Render(meshImp);
 
-            // After rendering always cleanup pending meshes
+            // After rendering always cleanup pending meshes, textures and shader effects
             _meshManager.Cleanup();
             _textureManager.Cleanup();
-
-            // After rendering all passes cleanup shader effect
             _effectManager.Cleanup();
+        }
 
+        /// <summary>
+        /// Renders the specified mesh.
+        /// </summary>
+        /// <param name="mesh">The mesh that should be rendered.</param>
+        /// <param name="doRenderForward">Is a forward or deferred renderer used? Will fetch the proper shader for the render method.</param>
+        /// <remarks>
+        /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
+        /// The geometry is transformed and rendered by the currently active shader program.
+        /// </remarks>
+        public void Render(GpuMesh mesh, bool doRenderForward = true)
+        {
+            var cFx = GetCompiledFxForRenderMethod(doRenderForward);
+            SetCompiledFx(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+            SetGlobalParamsInCurrentFx(cFx);
+            UpdateAllActiveFxParams(cFx);
+
+            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
+            _rci.Render(meshImp);
+
+            // After rendering always cleanup pending meshes, textures and shader effects
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+            _effectManager.Cleanup();
         }
 
         private float2 CalculateClippingPlanesFromProjection()

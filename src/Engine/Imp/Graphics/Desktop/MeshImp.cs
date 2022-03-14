@@ -213,7 +213,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
         /// </summary>
-        public OpenGLPrimitiveType MeshType { get; set; }
+        public PrimitiveType MeshType { get; set; }
 
         #endregion Public Fields & Members pairs
     }
