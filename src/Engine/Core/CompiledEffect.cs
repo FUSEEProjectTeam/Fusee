@@ -27,7 +27,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         internal Dictionary<int, IFxParam> ActiveUniforms = new();
 
-
         #region equals
 
         /// <summary>

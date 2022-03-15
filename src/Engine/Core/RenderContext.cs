@@ -1154,7 +1154,7 @@ namespace Fusee.Engine.Core
         {
             if (GlobalFXParams.TryGetValue(hash, out var param))
             {
-                if (param.Value.Equals(value)) return; // no new value
+                //if (param.Value.Equals(value)) return; // faster without equals
                 param.Value = value;
                 param.HasValueChanged = true;
             }
@@ -1243,10 +1243,11 @@ namespace Fusee.Engine.Core
             foreach (var key in GlobalFXParams.Keys)
             {
                 var globalFxParam = GlobalFXParams[key];
+                if (!globalFxParam.HasValueChanged) continue;
 
                 if (cFx.ActiveUniforms.TryGetValue(key, out var activeFxParam))
                 {
-                    if (globalFxParam.HasValueChanged || globalFxParam.Value != activeFxParam.Value)
+                    if (globalFxParam.Value != activeFxParam.Value)
                         activeFxParam.Value = globalFxParam.Value;
                 }
             }

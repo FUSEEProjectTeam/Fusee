@@ -70,7 +70,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// </summary>
         /// <param name="src">The source RenderTexture.</param>
         /// <param name="tex">The type of the texture.</param>
-        public void SetTexture(IWritableTexture src, RenderTargetTextureTypes tex)
+        public virtual void SetTexture(IWritableTexture src, RenderTargetTextureTypes tex)
         {
             RenderTextures[(int)tex] = src ?? throw new ArgumentException("Texture from source target is null!");
         }
@@ -78,7 +78,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// <summary>
         /// Generates a position texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetPositionTex()
+        public virtual void SetPositionTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
         }
@@ -86,7 +86,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// <summary>
         /// Generates a albedo and specular (alpha channel) texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>       
-        public void SetAlbedoTex()
+        public virtual void SetAlbedoTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
@@ -94,7 +94,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// <summary>
         /// Generates a normal texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetNormalTex()
+        public virtual void SetNormalTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Normal] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGB32));
         }
@@ -102,7 +102,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// <summary>
         /// Generates a depth texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
+        public virtual void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
             RenderTextures[(int)RenderTargetTextureTypes.Depth] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.Depth24), compareMode, compareFunc);
         }
@@ -110,7 +110,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// <summary>
         /// Generates a SSAO texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetSSAOTex()
+        public virtual void SetSSAOTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA16));
         }
@@ -118,7 +118,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// <summary>
         /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetSpecularTex()
+        public virtual void SetSpecularTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA16));
         }
@@ -126,7 +126,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// <summary>
         /// Generates a emissive texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetEmissiveTex()
+        public virtual void SetEmissiveTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
@@ -134,7 +134,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// <summary>
         /// Generates a subsurface texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetSubsurfaceTex()
+        public virtual void SetSubsurfaceTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Subsurface] = WritableTexture.CreateSubsurfaceTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }

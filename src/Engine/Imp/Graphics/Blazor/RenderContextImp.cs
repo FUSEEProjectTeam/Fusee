@@ -634,8 +634,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             for (var i = 0; i < val.Length; i++)
             {
-                res[i] = val[i].x;
-                res[i + 1] = val[i].y;
+                res[i * 2] = val[i].x;
+                res[i * 2 + 1] = val[i].y;
             }
 
             gl2.Uniform2fv(((UniformHandle)param).handle, res, 0, (uint)res.Length);
@@ -702,10 +702,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             for (var i = 0; i < val.Length; i++)
             {
-                res[i] = val[i].x;
-                res[i + 1] = val[i].y;
-                res[i + 2] = val[i].z;
-                res[i + 3] = val[i].w;
+                res[i * 4] = val[i].x;
+                res[i * 4 + 1] = val[i].y;
+                res[i * 4 + 2] = val[i].z;
+                res[i * 4 + 3] = val[i].w;
             }
 
             gl2.Uniform4fv(((UniformHandle)param).handle, res, 0, (uint)res.Length);
@@ -732,10 +732,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             for (var i = 0; i < tmpArray.Length; i++)
             {
-                res[i] = tmpArray[i].x;
-                res[i + 1] = tmpArray[i].y;
-                res[i + 2] = tmpArray[i].z;
-                res[i + 3] = tmpArray[i].w;
+                res[i * 4] = tmpArray[i].x;
+                res[i * 4 + 1] = tmpArray[i].y;
+                res[i * 4 + 2] = tmpArray[i].z;
+                res[i * 4 + 3] = tmpArray[i].w;
             }
 
             gl2.UniformMatrix4fv(((UniformHandle)param).handle, false, res.ToArray(), 0, (uint)res.Length);
@@ -2514,7 +2514,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <returns></returns>
         public IRenderTarget CreateGBufferTarget(TexRes res)
         {
-            RenderTarget gBufferRenderTarget = new(res);
+            RenderTargetBlazor gBufferRenderTarget = new(res);
             gBufferRenderTarget.SetPositionTex();
             gBufferRenderTarget.SetAlbedoTex();
             gBufferRenderTarget.SetNormalTex();
