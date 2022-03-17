@@ -1,6 +1,7 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Math.Core;
 using SixLabors.Fonts;
+using SixLabors.Fonts.Unicode;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
@@ -14,14 +15,8 @@ namespace Fusee.Base.Core
     /// <summary>
     /// Basic font implementation using Sixlabors.Fonts
     /// </summary>
-    public class FontCore : IFontImp
+    public abstract class FontImpBase
     {
-        /// <summary>
-        /// "delete" public ctor, prevent direct instancing of this class
-        /// </summary>
-        protected FontCore()
-        { }
-
         /// <summary>
         /// The font instance generated from a font collection with only one font
         /// </summary>
@@ -39,6 +34,10 @@ namespace Fusee.Base.Core
         /// </summary>
         public bool UseKerning { get; set; } = false;
 
+        /// <summary>
+        /// The current monitor's dots per inch.
+        /// </summary>
+        public int Dpi = 72;
 
         /// <summary>
         /// Gets and sets the currently used pixel height
@@ -71,14 +70,15 @@ namespace Fusee.Base.Core
                 return curve;
             }
 
-            var glyph = _font.GetGlyph(Convert.ToChar(c));
+            var glyph = _font.GetGlyphs(new CodePoint(c), ColorFontSupport.None).First();
+            var outline = glyph.GlyphMetrics.GetOutline();
 
-            var orgPointCoords = glyph.Instance.ControlPoints.ToArray();
-            var pointTags = glyph.Instance.OnCurves.Select(x => x ? (byte)1 : (byte)0).ToArray();
+            var orgPointCoords = outline.ControlPoints.ToArray();
+            var pointTags = outline.OnCurves.ToArray().Select(x => x ? (byte)1 : (byte)0).ToArray();
             if (orgPointCoords == null) return curve;
 
             // Freetype contours are defined by their end points.
-            var curvePartEndPoints = glyph.Instance.EndPoints.Select(x => (short)x).ToArray();
+            var curvePartEndPoints = outline.EndPoints.ToArray().Select(x => (short)x).ToArray();
 
             var partTags = new List<byte>();
             var partVerts = new List<float3>();
@@ -111,17 +111,18 @@ namespace Fusee.Base.Core
         /// <returns></returns>
         public GlyphInfo GetGlyphInfo(uint c)
         {
+            var glyph = _font.GetGlyphs(new CodePoint(c), ColorFontSupport.None).First();
+
+            var scaledPointSize = _font.Size * Dpi;
+            var scaleFactor = scaledPointSize / glyph.GlyphMetrics.ScaleFactor;
+
             GlyphInfo ret;
-
-            var options = new RendererOptions(_font);
-            FontRectangle size = TextMeasurer.Measure(Convert.ToChar(c).ToString(), options);
-
             ret.CharCode = c;
-            ret.AdvanceX = size.Width;
-            ret.AdvanceY = 0;
+            ret.AdvanceX = glyph.GlyphMetrics.AdvanceWidth * scaleFactor;
+            ret.AdvanceY = glyph.GlyphMetrics.AdvanceHeight * scaleFactor;
 
-            ret.Width = size.Width;
-            ret.Height = size.Height;
+            ret.Width = glyph.GlyphMetrics.Width * scaleFactor;
+            ret.Height = glyph.GlyphMetrics.Height * scaleFactor;
 
             return ret;
         }
@@ -135,8 +136,9 @@ namespace Fusee.Base.Core
         /// <returns></returns>
         public float GetKerning(uint leftC, uint rightC)
         {
-            var offset = _font.Instance.GetOffset(_font.GetGlyph(Convert.ToChar(leftC)).Instance, _font.GetGlyph(Convert.ToChar(rightC)).Instance);
-            return offset.X;
+            //var glyphLeft = _font.GetGlyphs(new CodePoint(leftC), ColorFontSupport.None).First();
+            //var glyphRight = _font.GetGlyphs(new CodePoint(rightC), ColorFontSupport.None).First();
+            return 0;
         }
 
         /// <summary>
@@ -146,8 +148,8 @@ namespace Fusee.Base.Core
         /// <returns></returns>
         public float GetUnscaledAdvance(uint c)
         {
-            var glyph = _font.Instance.GetGlyph(Convert.ToChar(c));
-            return glyph.AdvanceWidth;
+            var glyphs = _font.GetGlyphs(new CodePoint(c), ColorFontSupport.None);
+            return glyphs.First().GlyphMetrics.AdvanceWidth;
         }
 
         /// <summary>
@@ -158,72 +160,40 @@ namespace Fusee.Base.Core
         /// <returns></returns>
         public float GetUnscaledKerning(uint leftC, uint rightC)
         {
-            var offset = _font.Instance.GetOffset(_font.GetGlyph(Convert.ToChar(leftC)).Instance, _font.GetGlyph(Convert.ToChar(rightC)).Instance);
-            return offset.X;
+            var glyphLeft = _font.GetGlyphs(new CodePoint(leftC), ColorFontSupport.None).First();
+            var glyphRight = _font.GetGlyphs(new CodePoint(rightC), ColorFontSupport.None).First();
+            return 0;
         }
 
         /// <summary>
         /// Renders a glyph to an IImageData for further use
         /// </summary>
         /// <param name="c"></param>
-        /// <param name="bitmapLeft">
-        ///     The x-Bearing of the glyph on the bitmap (in pixels). The number of pixels from the left border of the image 
-        ///     to the leftmost pixel of the glyph within the rendered image.
-        /// </param>
-        /// <param name="bitmapTop">
-        ///     The y-Bearing of the glyph on the bitmap (in pixels). The number of pixels from the character's origin 
-        ///     (base line) of the image to the topmost pixel of the glyph within the rendered image.
-        /// </param>
         /// <returns></returns>
-        public IImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
+        public IImageData GetImageDataForGlyph(uint c, in GlyphInfo info)
         {
-            var options = new RendererOptions(_font);
-            FontRectangle size = TextMeasurer.Measure(Convert.ToChar(c).ToString(), options);
+            var width = (int)System.Math.Ceiling(info.AdvanceX);
+            var height = (int)System.Math.Ceiling(info.AdvanceY);
+            var arr = new Rgba32[width * height];
+            var res = new Span<Rgba32>(arr);
 
-            var drawingOptions = new DrawingOptions
-            {
-                TextOptions = new TextOptions()
-                {
-                    ApplyKerning = UseKerning,
-                    DpiX = options.DpiX,
-                    DpiY = options.DpiY,
-                    TabWidth = options.TabWidth,
-                    LineSpacing = options.LineSpacing,
-                    HorizontalAlignment = options.HorizontalAlignment,
-                    VerticalAlignment = options.VerticalAlignment,
-                    WrapTextWidth = options.WrappingWidth,
-                    RenderColorFonts = options.ColorFontSupport != ColorFontSupport.None
-                }
-            };
-
-            var width = (int)System.Math.Max(1, System.Math.Round(size.Width));
-            var height = (int)System.Math.Max(1, size.Height);
-            Span<Rgba32> res = null;
-            bitmapLeft = 0;
-            bitmapTop = 0;
             try
             {
-                using var img = CreateImage(drawingOptions, Convert.ToChar(c).ToString(),
-                    options.Font, width, height,
-                    options.Origin, Color.Black);
-
-                bitmapLeft = (int)size.Left;
-                bitmapTop = -(int)size.Top;
-
-                img.TryGetSinglePixelSpan(out res);
+                using var img = CreateImage(new DrawingOptions(), Convert.ToChar(c).ToString(),
+                    _font, width, height,
+                    new System.Numerics.Vector2(0, 0), Color.Black);
+                img.CopyPixelDataTo(res);
             }
             // invalid (unknown) chars 
-            catch (Exception)
+            catch (Exception e)
             {
                 Diagnostics.Warn($"Generating glyph for char {c}:{Convert.ToChar(c)} failed, skipping");
                 return new ImageData(0, 0);
             }
 
             var ret = new ImageData(res.ToArray().Select(x => x.A).ToArray(), width, height, new ImagePixelFormat(ColorFormat.Intensity));
-
             return ret;
         }
-
 
         private static Image<Rgba32> CreateImage(DrawingOptions options,
             string text,
@@ -241,12 +211,11 @@ namespace Fusee.Base.Core
         }
     }
 
-
     internal static class SplitToCurvePartHelper
     {
         #region Methods
 
-        public static void CurvePartVertice(CurvePart cp, int j, System.Numerics.Vector2[] orgPointCoords, List<float3> partVerts)
+        public static void CurvePartVertice(int j, System.Numerics.Vector2[] orgPointCoords, List<float3> partVerts)
         {
             var vert = new float3(orgPointCoords[j].X, orgPointCoords[j].Y, 0);
             partVerts.Add(vert);
@@ -266,7 +235,7 @@ namespace Fusee.Base.Core
             {
                 for (var j = 0; j <= i; j++)
                 {
-                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    CurvePartVertice(j, orgPointCoords, partVerts);
                     partTags.Add(pointTags[j]);
                 }
                 //The start point is the first point in the outline.Points array.
@@ -278,7 +247,7 @@ namespace Fusee.Base.Core
             {
                 for (var j = curvePartEndPoints[index - 1] + 1; j <= curvePartEndPoints[index]; j++)
                 {
-                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    CurvePartVertice(j, orgPointCoords, partVerts);
                     partTags.Add(pointTags[j]);
                 }
 

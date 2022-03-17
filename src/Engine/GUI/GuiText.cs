@@ -203,13 +203,12 @@ namespace Fusee.Engine.Gui
                     var glyphOnMap = _fontMap.GetGlyphOnMap(_text[j]);
                     var glyphInfo = _fontMap.Font.GetGlyphInfo(_text[j]);
 
-                    var x = advanceX + glyphOnMap.BitmapL;
-                    var y = advanceY - glyphOnMap.BitmapT;
+                    var x = advanceX;
+                    var y = advanceY;
                     var w = glyphOnMap.BitmapW;
                     var h = glyphOnMap.BitmapH;
 
                     advanceX += glyphInfo.AdvanceX;
-                    advanceY += glyphInfo.AdvanceY;
 
                     // skip glyphs that have no pixels
                     if ((w <= M.EpsilonFloat) || (h <= M.EpsilonFloat))
@@ -217,8 +216,8 @@ namespace Fusee.Engine.Gui
 
                     var bitmapW = glyphOnMap.BitmapW;
                     var bitmapH = glyphOnMap.BitmapH;
-                    var texOffsetX = glyphOnMap.TexOffX;
-                    var texOffsetY = glyphOnMap.TexOffY;
+                    var texOffsetX = glyphOnMap.PosXOnTexPercent;
+                    var texOffsetY = glyphOnMap.PosYOnTexPercent;
 
                     //account for line height
                     y += lineCnt * lineBreakOffset;

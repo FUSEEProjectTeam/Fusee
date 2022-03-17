@@ -135,15 +135,15 @@ namespace Fusee.Base.Core
                     ColorFormat.RGBA => src.PixelFormat.ColorFormat switch
                     {
                         ColorFormat.RGB => delegate (byte[] srcLineBytes, int destinationIndex)
-                                                         {
-                                                             for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst RGBA
-                                                             {
-                                                                 PixelData[destinationIndex + i + 0] = srcLineBytes[i + 0];
-                                                                 PixelData[destinationIndex + i + 1] = srcLineBytes[i + 1];
-                                                                 PixelData[destinationIndex + i + 2] = srcLineBytes[i + 2];
-                                                                 PixelData[destinationIndex + i + 3] = byte.MaxValue;
-                                                             }
-                                                         }
+                        {
+                            for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst RGBA
+                            {
+                                PixelData[destinationIndex + i + 0] = srcLineBytes[i + 0];
+                                PixelData[destinationIndex + i + 1] = srcLineBytes[i + 1];
+                                PixelData[destinationIndex + i + 2] = srcLineBytes[i + 2];
+                                PixelData[destinationIndex + i + 3] = byte.MaxValue;
+                            }
+                        }
 
                         ,
                         ColorFormat.Intensity => delegate (byte[] srcLineBytes, int destinationIndex)
@@ -163,15 +163,15 @@ namespace Fusee.Base.Core
                     ColorFormat.RGB => src.PixelFormat.ColorFormat switch
                     {
                         ColorFormat.RGBA => delegate (byte[] srcLineBytes, int destinationIndex)
-                                                         {
-                                                             for (int i = 0; i < srcLineBytes.Length; i += 4) // jump 4 units per loop because we want to copy src RGBA to dst RGB
-                                                             {
-                                                                 PixelData[destinationIndex + i + 0] = srcLineBytes[i + 0];
-                                                                 PixelData[destinationIndex + i + 1] = srcLineBytes[i + 1];
-                                                                 PixelData[destinationIndex + i + 2] = srcLineBytes[i + 2];
-                                                                 // skip source alpha
-                                                             }
-                                                         }
+                        {
+                            for (int i = 0; i < srcLineBytes.Length; i += 4) // jump 4 units per loop because we want to copy src RGBA to dst RGB
+                            {
+                                PixelData[destinationIndex + i + 0] = srcLineBytes[i + 0];
+                                PixelData[destinationIndex + i + 1] = srcLineBytes[i + 1];
+                                PixelData[destinationIndex + i + 2] = srcLineBytes[i + 2];
+                                // skip source alpha
+                            }
+                        }
 
                         ,
                         ColorFormat.Intensity => delegate (byte[] srcLineBytes, int destinationIndex)

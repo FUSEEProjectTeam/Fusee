@@ -35,14 +35,24 @@ namespace Fusee.Engine.Core
         public float BitmapT;
 
         /// <summary>
-        ///     The x-offset of this char on the font map texture.
+        /// The x-offset of this char on the font map texture in range [0, 1].
         /// </summary>
-        public float TexOffX;
+        public float PosXOnTexPercent;
 
         /// <summary>
-        ///     The y-offset of this char on the font map texture.
+        /// The y-offset of this char on the font map texture in range [0, 1].
         /// </summary>
-        public float TexOffY;
+        public float PosYOnTexPercent;
+
+        /// <summary>
+        /// The x-offset of this char on the font map texture in px.
+        /// </summary>
+        public float PosXOnTex;
+
+        /// <summary>
+        /// The y-offset of this char on the font map texture in px.
+        /// </summary>
+        public float PosYOnTex;
     };
 
     /// <summary>
@@ -59,7 +69,7 @@ namespace Fusee.Engine.Core
         /// <value>
         ///   <c>true</c> if up-to-date; otherwise, <c>false</c>.
         /// </value>
-        public bool Uptodate { get; private set; }
+        public bool UpToDate { get; private set; }
 
         private Font _font;
         private Texture _image;
@@ -88,7 +98,7 @@ namespace Fusee.Engine.Core
         private void Invalidate()
         {
             _glyphOnMapCache.Clear();
-            Uptodate = false;
+            UpToDate = false;
         }
 
         /// <summary>
@@ -104,7 +114,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                if (Uptodate)
+                if (UpToDate)
                     return _image;
 
                 _font.PixelHeight = _pixelHeight;
@@ -145,7 +155,8 @@ namespace Fusee.Engine.Core
                 // Copy each character in the alphabet to the font atlas
                 foreach (char c in _alphabet)
                 {
-                    IImageData glyphImg = _font.RenderGlyph(c, out int bitmapLeft, out int bitmapTop);
+                    var gi = _font.GetGlyphInfo(c);
+                    IImageData glyphImg = _font.GetImageDataForGlyph(c, in gi);
                     if (offX + glyphImg.Width + 1 >= width)
                     {
                         offY += rowH;
@@ -163,10 +174,10 @@ namespace Fusee.Engine.Core
                     {
                         BitmapW = glyphImg.Width,
                         BitmapH = glyphImg.Height,
-                        BitmapL = bitmapLeft,
-                        BitmapT = bitmapTop,
-                        TexOffX = offX / (float)width,
-                        TexOffY = offY / (float)width,
+                        PosXOnTexPercent = offX / (float)width,
+                        PosYOnTexPercent = offY / (float)width,
+                        PosXOnTex = offX,
+                        PosYOnTex = offY
                     };
 
                     _glyphOnMapCache[c] = glyphOnMap;
@@ -175,7 +186,7 @@ namespace Fusee.Engine.Core
                     offX += glyphImg.Width + 1;
                 }
 
-                Uptodate = true;
+                UpToDate = true;
                 return _image;
 
             }

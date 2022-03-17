@@ -13,7 +13,7 @@ namespace Fusee.Base.Core
         /// <summary>
         /// For implementation purposes only. Do not use this.
         /// </summary>
-        public IFontImp _fontImp;
+        public FontImpBase _fontImp;
 
         private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new();
 
@@ -103,18 +103,10 @@ namespace Fusee.Base.Core
         ///     Renders the given glyph.
         /// </summary>
         /// <param name="c">The character code (Unicode) of the character to render.</param>
-        /// <param name="bitmapLeft">
-        ///     The x-Bearing of the glyph on the bitmap (in pixels). The number of pixels from the left border of the image 
-        ///     to the leftmost pixel of the glyph within the rendered image.
-        /// </param>
-        /// <param name="bitmapTop">
-        ///     The y-Bearing of the glyph on the bitmap (in pixels). The number of pixels from the character's origin 
-        ///     (base line) of the image to the topmost pixel of the glyph within the rendered image.
-        /// </param>
         /// <returns>
         ///     An image data structure containing an image of the given character.
         /// </returns>
-        public IImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop) => _fontImp.RenderGlyph(c, out bitmapLeft, out bitmapTop);
+        public IImageData GetImageDataForGlyph(uint c, in GlyphInfo info) => _fontImp.GetImageDataForGlyph(c, in info);
 
         /// <summary>
         /// Gets the kerning offset between a pair of two consecutive characters in a text string.

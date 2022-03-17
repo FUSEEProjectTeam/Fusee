@@ -16,8 +16,8 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 
-		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
-		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
+		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta16" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
 
 	</ItemGroup>
