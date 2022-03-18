@@ -121,23 +121,26 @@ namespace Fusee.Engine.Core
 
                 const int maxWidth = 4096;
 
-                var averageAdvance = 0f;
+                var averageAdvanceX = 0f;
+                var averageAdvanceY = 0f;
                 var charCount = 0f;
 
                 //Calculate averageAdvance in Font? Ratio FontSize/ averageAdvance does not change with fontSize
                 foreach (char c in _alphabet)
                 {
                     GlyphInfo gi = _font.GetGlyphInfo(c);
-                    averageAdvance += gi.AdvanceX + 1;
+                    averageAdvanceX += gi.AdvanceX + 1;
+                    averageAdvanceY += gi.AdvanceY + 1;
                     charCount++;
                 }
 
-                averageAdvance /= charCount;
+                averageAdvanceX /= charCount;
+                averageAdvanceY /= charCount;
 
                 //_alphabet.ToCharArray().Length * averageAdvance * _pixelHeight is the area of ​​the rectangle with the width equal to the number of letters * averageAdvance and the height equals pixelHeight.
                 // Since this rectangle has the same area as the desired square (texture atlas), the square root of the rectangle is the width of that square.
-                var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length * averageAdvance * _pixelHeight);
-                var width = (int)System.Math.Pow(2, (int)System.Math.Ceiling(System.Math.Log(widthOld, 2)));
+                var width = (int)System.Math.Ceiling(System.Math.Sqrt(_alphabet.ToCharArray().Length * averageAdvanceX * averageAdvanceY));
+                width = width - (width % 4) + 4;
 
                 if (width > maxWidth)
                 {

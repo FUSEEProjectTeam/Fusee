@@ -2039,7 +2039,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                     break;
                 case RenderState.BlendFactor:
-                    GL.BlendColor(Color.FromArgb((int)value));
+                    GL.BlendColor(System.Drawing.Color.FromArgb((int)value));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(renderState));
