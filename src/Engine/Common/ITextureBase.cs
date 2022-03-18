@@ -116,7 +116,7 @@ namespace Fusee.Engine.Common
     /// Collection of members all texture types need to implement.
     /// All textures must be IDisposable.
     /// </summary>
-    public interface ITextureBase : IImageBase, IDisposable
+    public interface ITextureBase : IDisposable
     {
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.

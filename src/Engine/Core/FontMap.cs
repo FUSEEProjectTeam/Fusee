@@ -72,7 +72,7 @@ namespace Fusee.Engine.Core
         public bool UpToDate { get; private set; }
 
         private Font _font;
-        private Texture _image;
+        private ImageData _image;
         private uint _pixelHeight;
         private string _alphabet;
         private readonly Dictionary<uint, GlyphOnMap> _glyphOnMapCache;
@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The font image.
         /// </value>
-        public Texture Image
+        public ImageData Image
         {
             get
             {
@@ -146,7 +146,7 @@ namespace Fusee.Engine.Core
                 }
 
                 // Create the font atlas (the texture containing ALL glyphs)
-                _image = new Texture(new byte[width * width], width, width, new ImagePixelFormat(ColorFormat.Intensity), false);
+                _image = new ImageData(new byte[width * width], width, width, new ImagePixelFormat(ColorFormat.Intensity));
 
                 var offX = 0;
                 var offY = 0;

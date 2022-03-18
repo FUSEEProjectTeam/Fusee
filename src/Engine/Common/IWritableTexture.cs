@@ -1,4 +1,6 @@
-﻿namespace Fusee.Engine.Common
+﻿using Fusee.Base.Common;
+
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Cross platform abstraction for a WritableTexture.
@@ -7,6 +9,21 @@
     /// </summary>
     public interface IWritableTexture : ITextureBase
     {
+        /// <summary>
+        /// Width in pixels.
+        /// </summary>
+        int Width { get; }
+
+        /// <summary>
+        /// Height in pixels.
+        /// </summary>
+        int Height { get; }
+
+        /// <summary>
+        /// Offers additional Information about the color format of the texture.
+        ///</summary>
+        ImagePixelFormat PixelFormat { get; }
+
         /// <summary>
         /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
         /// </summary>

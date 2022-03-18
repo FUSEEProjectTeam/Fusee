@@ -190,13 +190,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
         }
 
-        private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
+        private TexturePixelInfo GetTexturePixelInfo(ImagePixelFormat pixelFormat)
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
             PixelType pxType;
 
-            switch (tex.PixelFormat.ColorFormat)
+            switch (pixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
@@ -288,7 +288,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             GL.TexImage3D(TextureTarget.Texture2DArray, 0, pxInfo.InternalFormat, img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
@@ -322,7 +322,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var magFilter = glMinMagFilter.Item2;
 
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             for (int i = 0; i < 6; i++)
                 GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
@@ -356,9 +356,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
@@ -377,26 +377,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
-        /// <param name="img">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
+        /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(IWritableTexture img)
+        public ITextureHandle CreateTexture(IWritableTexture tex)
         {
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
 
-            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
-            var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var glWrapMode = GetWrapMode(tex.WrapMode);
+            var pxInfo = GetTexturePixelInfo(tex.PixelFormat);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, tex.Width, tex.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
-            if (img.DoGenerateMipMaps)
+            if (tex.DoGenerateMipMaps)
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(tex.CompareMode));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(tex.CompareFunc));
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
@@ -419,11 +419,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            PixelFormat format = GetTexturePixelInfo(img).Format;
+            PixelFormat format = GetTexturePixelInfo(img.ImageData.PixelFormat).Format;
 
             // copy the bytes from img to GPU texture
-            int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
-            var scanlines = img.ScanLines(startX, startY, width, height);
+            int bytesTotal = width * height * img.ImageData.PixelFormat.BytesPerPixel;
+            var scanlines = img.ImageData.ScanLines(startX, startY, width, height);
             byte[] bytes = new byte[bytesTotal];
             int offset = 0;
             do

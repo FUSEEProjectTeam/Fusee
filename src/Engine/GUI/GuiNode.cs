@@ -496,7 +496,7 @@ namespace Fusee.Engine.Gui
                                     new FxParamDeclaration<Texture>
                                     {
                                         Name = UniformNameDeclarations.AlbedoTexture,
-                                        Value = new Texture(fontMap.Image)
+                                        Value = new Texture(fontMap.Image, false)
                                     },
                                     new FxParamDeclaration<float4>
                                     {

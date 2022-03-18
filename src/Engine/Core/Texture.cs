@@ -24,7 +24,7 @@ namespace Fusee.Engine.Core
         public Suid SessionUniqueIdentifier { get; private set; }
         #endregion
 
-        private readonly ImageData _imageData;
+        public IImageData ImageData { get; private set; }
 
         #region Properties
 
@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int Width
         {
-            get { return _imageData.Width; }
+            get { return ImageData.Width; }
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int Height
         {
-            get { return _imageData.Height; }
+            get { return ImageData.Height; }
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public byte[] PixelData
         {
-            get { return _imageData.PixelData; }
+            get { return ImageData.PixelData; }
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public ImagePixelFormat PixelFormat
         {
-            get { return _imageData.PixelFormat; }
+            get { return ImageData.PixelFormat; }
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Fusee.Engine.Core
         public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LinearMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
-            _imageData = new ImageData(pixelData, width, height, colorFormat);
+            ImageData = new ImageData(pixelData, width, height, colorFormat);
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
             WrapMode = wrapMode;
@@ -152,10 +152,10 @@ namespace Fusee.Engine.Core
         public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
-            _imageData = new ImageData(
+            ImageData = new ImageData(
                 new byte[imageData.Width * imageData.Height * imageData.PixelFormat.BytesPerPixel],
                 imageData.Width, imageData.Height, imageData.PixelFormat);
-            _imageData.Blt(0, 0, imageData);
+            ImageData.Blt(0, 0, imageData);
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
             WrapMode = wrapMode;
@@ -178,7 +178,7 @@ namespace Fusee.Engine.Core
         public void Blt(int xDst, int yDst, IImageData src, int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
         {
             // Blit into private _imageData
-            _imageData.Blt(xDst, yDst, src, xSrc, ySrc, width, height);
+            ImageData.Blt(xDst, yDst, src, xSrc, ySrc, width, height);
             if (width == 0)
                 width = src.Width;
             if (height == 0)
@@ -205,7 +205,7 @@ namespace Fusee.Engine.Core
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public IEnumerator<ScanLine> ScanLines(int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
         {
-            return _imageData.ScanLines(xSrc, ySrc, width, height);
+            return ImageData.ScanLines(xSrc, ySrc, width, height);
         }
 
         private bool _disposed;
