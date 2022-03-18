@@ -1,6 +1,8 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 
@@ -152,10 +154,8 @@ namespace Fusee.Engine.Core
         public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
-            ImageData = new ImageData(
-                new byte[imageData.Width * imageData.Height * imageData.PixelFormat.BytesPerPixel],
-                imageData.Width, imageData.Height, imageData.PixelFormat);
-            ImageData.Blt(0, 0, imageData);
+            ImageData = imageData;
+            
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
             WrapMode = wrapMode;

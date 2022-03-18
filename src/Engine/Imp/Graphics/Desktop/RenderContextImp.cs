@@ -7,7 +7,6 @@ using Fusee.Math.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
@@ -66,6 +65,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             //Needed for rendering more than one viewport.
             GL.Enable(EnableCap.ScissorTest);
+
+            //GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1); //OpenGL no longer expects texture dimensions of multiples of 4.
 
             GL.GetInteger(GetPName.BlendSrcAlpha, out int blendSrcAlpha);
             GL.GetInteger(GetPName.BlendDstAlpha, out int blendDstAlpha);
@@ -357,7 +358,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var glWrapMode = GetWrapMode(img.WrapMode);
 
             var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
-
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
             if (img.DoGenerateMipMaps)

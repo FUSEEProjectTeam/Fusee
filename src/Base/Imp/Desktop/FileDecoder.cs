@@ -37,24 +37,26 @@ namespace Fusee.Base.Imp.Desktop
                 file.CopyTo(ms);
                 ms.Position = 0;
                 //Load the image
-                var image = Image.Load(ms, out var imgFormat);
+                using var image = Image.Load(ms, out var imgFormat);
 
                 //ImageSharp loads from the top-left pixel, whereas OpenGL loads from the bottom-left, causing the texture to be flipped vertically.
                 //This will correct that, making the texture display properly.
                 image.Mutate(x => x.Flip(FlipMode.Vertical));
-
+                
+                var bitsPerPixel = image.PixelType.BitsPerPixel;
+                var bytesPerPixel = bitsPerPixel/8;
                 //Convert ImageSharp's format into a byte array, so we can use it with OpenGL.
-                var pixels = new byte[4 * image.Width * image.Height];
+                var pixels = new byte[bytesPerPixel * image.Width * image.Height];
 
-                var bpp = image.PixelType.BitsPerPixel;
-
-                switch (image.PixelType.BitsPerPixel)
+                ImageData img;
+                switch (bitsPerPixel)
                 {
                     case 16:
                         {
                             (image as Image<L16>).CopyPixelDataTo(pixels);
-                            return new ImageData(pixels, image.Width, image.Height,
+                            img = new ImageData(new byte[bytesPerPixel * image.Width * image.Height], image.Width, image.Height,
                                 new ImagePixelFormat(ColorFormat.Depth16));
+                            break;
                         }
                     case 24:
                         {
@@ -62,8 +64,10 @@ namespace Fusee.Base.Imp.Desktop
                             var bgr = rgb.CloneAs<Bgr24>();
 
                             bgr.CopyPixelDataTo(pixels);
-                            return new ImageData(pixels, image.Width, image.Height,
+
+                            img = new ImageData(new byte[bytesPerPixel * image.Width * image.Height], image.Width, image.Height,
                                 new ImagePixelFormat(ColorFormat.RGB));
+                            break;
                         }
                     case 32:
                         {
@@ -71,24 +75,30 @@ namespace Fusee.Base.Imp.Desktop
                             var bgra = rgba.CloneAs<Bgra32>();
 
                             bgra.CopyPixelDataTo(pixels);
-                            return new ImageData(pixels, image.Width, image.Height,
-                                new ImagePixelFormat(ColorFormat.RGBA));
+                            img = new ImageData(new byte[bytesPerPixel * image.Width * image.Height], image.Width, image.Height,
+                               new ImagePixelFormat(ColorFormat.RGBA));
+                            break;
                         }
                     case 48:
                         {
                             (image as Image<Rgb48>).CopyPixelDataTo(pixels);
-                            return new ImageData(pixels, image.Width, image.Height,
-                                new ImagePixelFormat(ColorFormat.fRGB32));
+                            img = new ImageData(new byte[bytesPerPixel * image.Width * image.Height], image.Width, image.Height,
+                               new ImagePixelFormat(ColorFormat.fRGB32));
+                            break;
                         }
                     case 64:
                         {
                             (image as Image<Rgba64>).CopyPixelDataTo(pixels);
-                            return new ImageData(pixels, image.Width, image.Height,
-                                new ImagePixelFormat(ColorFormat.fRGBA32));
+                            img = new ImageData(new byte[bytesPerPixel * image.Width * image.Height], image.Width, image.Height,
+                               new ImagePixelFormat(ColorFormat.fRGBA32));
+                            break;
                         }
                     default:
-                        throw new ArgumentException($"{bpp} Bits per pixel not supported!");
+                        throw new ArgumentException($"{bitsPerPixel} Bits per pixel not supported!");
                 }
+
+                Array.Copy(pixels, img.PixelData, pixels.Length);
+                return img;
             }
             catch (Exception ex)
             {
