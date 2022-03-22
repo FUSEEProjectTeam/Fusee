@@ -28,6 +28,9 @@ namespace Fusee.Engine.Core
         }
         #endregion
 
+        ///The maximal number of lights we can render when using the forward pipeline.
+        public const int NumberOfLightsForward = 8;
+
         /// <summary>
         /// Delegate of the method that knows how to create a GpuMesh - without passing the RenderContext down into the module.
         /// Set in the constructor the RenderContext.

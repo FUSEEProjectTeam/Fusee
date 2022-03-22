@@ -4,7 +4,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
@@ -163,7 +162,7 @@ namespace Fusee.Examples.RenderContextOnly.Core
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
-            var lightParamStrings = new LightParamStrings(0);
+            var lightParamStrings = new LightUniformDeclarations(0);
 
             // Set parameters in view/camera space.
             RC.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, lightParamStrings.PositionViewSpaceHash, float3.Zero);

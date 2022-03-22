@@ -451,12 +451,12 @@ namespace Fusee.Engine.Core.Effects
 
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.FragPos));
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.LightMatClipPlanes));
-                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec3, UniformNameDeclarations.LightPos));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec3, UniformNameDeclarations.LightShadowPos));
 
                 sb.AppendLine(GLSL.CreateMethod(GLSL.Type.Void, "main", Array.Empty<string>(), new List<string>
                 {
                     "// get distance between fragment and light source",
-                    $"float lightDistance = length({VaryingNameDeclarations.FragPos}.xyz - {UniformNameDeclarations.LightPos});",
+                    $"float lightDistance = length({VaryingNameDeclarations.FragPos}.xyz - {UniformNameDeclarations.LightShadowPos});",
                     "",
                     "// map to [0;1] range by dividing by far_plane",
                     $"lightDistance = lightDistance / {UniformNameDeclarations.LightMatClipPlanes}.y;",

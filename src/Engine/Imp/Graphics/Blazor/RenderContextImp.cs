@@ -1,7 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Imp.Blazor;
 using Fusee.Engine.Imp.SharedAll;
 using Fusee.Math.Core;

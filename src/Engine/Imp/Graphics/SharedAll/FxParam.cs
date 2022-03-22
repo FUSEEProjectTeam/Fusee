@@ -46,19 +46,9 @@ namespace Fusee.Engine.Imp.SharedAll
         /// </summary>
         public int Hash { get; private set; }
 
-        /// <summary>
-        /// The parameter value.
-        /// </summary>
-        public object Value
-        {
-            get { return _value; }
-            set
-            {
-                HasValueChanged = true;
-                _value = value;
-            }
-        }
-        private object _value;
+        public GetUniformValue UniformValueGetter { get; set; }
+
+        public bool IsGlobal { get; set; }
 
         /// <summary>
         /// If the value has changed the shader uniform must be changed too.

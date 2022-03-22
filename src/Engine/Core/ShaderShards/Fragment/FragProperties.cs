@@ -1,5 +1,6 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using System.Collections.Generic;
 
@@ -108,6 +109,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// Creates the "allLights" uniform array, as it is used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string FixedNumberLightArray = $"uniform Light allLights[{Lighting.NumberOfLightsForward}];\n";
+        public static string FixedNumberLightArray = $"uniform Light {UniformNameDeclarations.AllLightsArray}[{ModuleExtensionPoint.NumberOfLightsForward}];\n";
     }
 }

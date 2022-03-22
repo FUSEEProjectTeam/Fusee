@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.Core.ShaderShards
+namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
     /// Collection of uniform parameter names, as they should be used in the Shader Shards to make them compatible to each other.
-    /// A hash code is assigned to each parameter, which is used to identify it in the <see cref="RenderContext"/>.
+    /// A hash code is assigned to each parameter, which is used to identify it internally.
     /// </summary>
     public static class UniformNameDeclarations
     {
@@ -364,11 +364,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public const string LightPos = "LightPos";
+        public const string LightShadowPos = "LightPos";
         /// <summary>
-        /// Hash code for the <see cref="LightPos"/> parameter.
+        /// Hash code for the <see cref="LightShadowPos"/> parameter.
         /// </summary>
-        public static readonly int LightPosHash = LightPos.GetHashCode();
+        public static readonly int LightPosHash = LightShadowPos.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform LightMatClipPlanes.
@@ -472,6 +472,77 @@ namespace Fusee.Engine.Core.ShaderShards
         /// </summary>
         public static readonly int InstancedColorHash = InstancedColor.GetHashCode();
 
+        #endregion
+
+        #region Light
+        public const string AllLightsArray = "allLights";
+
+        public const string LightWorldPos = "position";
+        public const string LightIntensities = "intensities";
+        public const string LightMaxDist = "maxDistance";
+        public const string LightStrength = "strength";
+        public const string LightOuterConeAngle = "outerConeAngle";
+        public const string LightInnerConeAngle = "innerConeAngle";
+        public const string LightDirection = "direction";
+        public const string LightType = "lightType";
+        public const string LightIsActive = "isActive";
+        public const string LightIsCastingShadows = "isCastingShadows";
+        public const string LightBias = "bias";
+
+        public static string GetPosName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightWorldPos;
+        }
+
+        public static string GetIntensitiesName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightIntensities;
+        }
+
+        public static string GetMaxDistName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightMaxDist;
+        }
+
+        public static string GetStrengthName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightStrength;
+        }
+
+        public static string GetOuterConeAngleName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightOuterConeAngle;
+        }
+
+        public static string GetInnerConeAngleName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightInnerConeAngle;
+        }
+
+        public static string GetDirectionName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightDirection;
+        }
+
+        public static string GetTypeName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightType;
+        }
+
+        public static string GetIsActiveName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightIsActive;
+        }
+
+        public static string GetIsCastingShadowsName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightIsCastingShadows;
+        }
+
+        public static string GetBiasName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightBias;
+        }
         #endregion
 
         /// <summary>
@@ -662,7 +733,6 @@ namespace Fusee.Engine.Core.ShaderShards
         /// Hash code for the <see cref="NormalMapIntensity"/> parameter.
         /// </summary>
         public static readonly int NormalMapIntensityHash = NormalMapIntensity.GetHashCode();
-
 
         /// <summary>
         /// List of all possible render texture names.

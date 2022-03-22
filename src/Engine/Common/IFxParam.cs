@@ -34,14 +34,9 @@
         /// </summary>
         public int Hash { get; }
 
-        /// <summary>
-        /// The parameter value.
-        /// </summary>
-        public object Value
-        {
-            get;
-            set;
-        }
+        public GetUniformValue UniformValueGetter { get; set; }
+
+        public bool IsGlobal { get; set; }
 
         /// <summary>
         /// If the value has changed the shader uniform must be changed too.

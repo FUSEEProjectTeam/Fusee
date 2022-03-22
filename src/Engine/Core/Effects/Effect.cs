@@ -59,13 +59,11 @@ namespace Fusee.Engine.Core.Effects
         {
             if (ParamDecl.ContainsKey(hash))
             {
-                var dcl = ParamDecl[hash];
-
                 if (!ParamDecl[hash].SetValue(value)) return;
 
                 EffectManagerEventArgs.Changed = UniformChangedEnum.Update;
                 EffectManagerEventArgs.ChangedUniformHash = hash;
-                EffectManagerEventArgs.ChangedUniformValue = value;
+                //EffectManagerEventArgs.ChangedUniformValue = value;
 
                 EffectChanged?.Invoke(this, EffectManagerEventArgs);
             }

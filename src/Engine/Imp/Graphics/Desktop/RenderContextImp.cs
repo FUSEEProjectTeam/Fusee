@@ -1,7 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Imp.SharedAll;
 using Fusee.Math.Core;
 using OpenTK.Graphics.OpenGL;
@@ -841,7 +841,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             GL.Uniform4(((UniformHandle)param).handle, val.x, val.y, val.z, val.w);
         }
- 
+
         /// <summary>
         /// Sets a <see cref="float4x4" /> shader parameter.
         /// </summary>
@@ -857,7 +857,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             //var mF = (float*)&val;
-            
+
             // Row order notation
             // GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
 

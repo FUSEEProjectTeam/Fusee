@@ -91,19 +91,6 @@ namespace Fusee.Engine.Core.ShaderShards
     /// </summary>
     public static class SurfaceOut
     {
-        /// <summary>
-        /// The surface effects "out"-struct (<see cref="SurfaceEffectBase.SurfaceOutput"/>) always has this type in the shader code.
-        /// </summary>
-        public const string StructName = "SurfOut";
-
-        /// <summary>
-        /// The surface effects "out"-struct (<see cref="SurfaceEffectBase.SurfaceOutput"/>) always has this variable name in the shader code.
-        /// </summary>
-        public const string SurfOutVaryingName = "surfOut";
-
-        internal static readonly string ChangeSurfFrag = "ChangeSurfFrag";
-        internal static readonly string ChangeSurfVert = "ChangeSurfVert";
-
         #region Variables that can be changed in a Shader Shard
         internal static readonly Tuple<GLSL.Type, string> Pos = new(GLSL.Type.Vec3, "position");
         internal static readonly Tuple<GLSL.Type, string> Normal = new(GLSL.Type.Vec3, "normal");
@@ -124,11 +111,11 @@ namespace Fusee.Engine.Core.ShaderShards
 
         private static readonly Dictionary<ShadingModel, ShadingModelShards> _shadingModelCache = new();
 
-        private static readonly string DefaultUnlitOut = $"{StructName}(vec3(0), vec4(0), vec3(0))";
-        private static readonly string DefaultDiffuseOut = $"{StructName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0)";
-        private static readonly string DefaultDiffSpecOut = $"{StructName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0)";
-        private static readonly string DefaultGlossyOut = $"{StructName}(vec3(0), vec4(0),vec3(0), vec3(0), 0.0)";
-        private static readonly string DerfafultBRDFOut = $"{StructName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1), 0.0)";
+        private static readonly string DefaultUnlitOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0), vec3(0))";
+        private static readonly string DefaultDiffuseOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0)";
+        private static readonly string DefaultDiffSpecOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0)";
+        private static readonly string DefaultGlossyOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0),vec3(0), vec3(0), 0.0)";
+        private static readonly string DerfafultBRDFOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1), 0.0)";
 
         /// <summary>
         /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffectBase.SurfaceOutput"/> struct.
@@ -203,11 +190,11 @@ namespace Fusee.Engine.Core.ShaderShards
         {
             var bodyCompl = new List<string>()
             {
-                $"{StructName} OUT = {SurfOutVaryingName};"
+                $"{SurfaceEffectNameDeclarations.StructTypeName} OUT = {VaryingNameDeclarations.SurfOutVaryingName};"
             };
             bodyCompl.AddRange(methodBody);
             bodyCompl.Add("return OUT;");
-            return GLSL.CreateMethod(StructName, ChangeSurfFrag, new string[] { $"{inputType.Name} IN" }, bodyCompl);
+            return GLSL.CreateMethod(SurfaceEffectNameDeclarations.StructTypeName, SurfaceEffectNameDeclarations.ChangeSurfFrag, new string[] { $"{inputType.Name} IN" }, bodyCompl);
         }
 
         /// <summary>
@@ -220,18 +207,18 @@ namespace Fusee.Engine.Core.ShaderShards
         {
             var bodyCompl = new List<string>()
             {
-                $"{StructName} OUT = {_shadingModelCache[setup].DefaultInstance};"
+                $"{SurfaceEffectNameDeclarations.StructTypeName} OUT = {_shadingModelCache[setup].DefaultInstance};"
             };
             bodyCompl.AddRange(methodBody);
             bodyCompl.Add("return OUT;");
-            return GLSL.CreateMethod(StructName, ChangeSurfVert, Array.Empty<string>(), bodyCompl);
+            return GLSL.CreateMethod(SurfaceEffectNameDeclarations.StructTypeName, SurfaceEffectNameDeclarations.ChangeSurfVert, Array.Empty<string>(), bodyCompl);
         }
 
         private static string BuildStructDecl(ShadingModel setup)
         {
             var dcl = new List<string>
             {
-                $"struct {StructName}",
+                $"struct {SurfaceEffectNameDeclarations.StructTypeName}",
                 "{",
                 $"  {GLSL.DecodeType(Pos.Item1)} {Pos.Item2};",
                 $"  {GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};"

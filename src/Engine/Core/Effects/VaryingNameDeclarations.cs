@@ -1,5 +1,5 @@
 ﻿
-namespace Fusee.Engine.Core.ShaderShards
+namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
     /// Name declarations for varying variables (vert out, frag in). Ensures compatibility between shader shards.
@@ -7,6 +7,11 @@ namespace Fusee.Engine.Core.ShaderShards
     /// </summary>
     public static class VaryingNameDeclarations
     {
+        /// <summary>
+        /// The surface effects "out"-struct always has this variable name in the shader code.
+        /// </summary>
+        public const string SurfOutVaryingName = "surfOut";
+
         /// <summary>
         /// The variable name of the TBN (Tangent, Bitangent, Normal) matrix.
         /// </summary>

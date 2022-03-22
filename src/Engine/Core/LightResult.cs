@@ -65,6 +65,17 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Creates a new instance of type LightResult.
+        /// </summary>
+        public LightResult()
+        {
+            Light = new Light();
+            WorldSpacePos = float3.Zero;
+            Rotation = float4x4.Identity;
+            Id = Suid.GenerateSuid();
+        }
+
+        /// <summary>
         /// Override for the Equals method.
         /// </summary>
         /// <param name="obj">The object to compare with.</param>       

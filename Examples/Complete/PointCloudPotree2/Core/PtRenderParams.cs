@@ -1,7 +1,6 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using System;

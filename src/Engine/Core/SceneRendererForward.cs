@@ -3,7 +3,6 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using Fusee.Xirkit;
@@ -60,7 +59,6 @@ namespace Fusee.Engine.Core
 
                 if (_numberOfLights != _lightResults.Count)
                 {
-                    Lighting.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
                     HasNumberOfLightsChanged = true;
                     _numberOfLights = _lightResults.Count;
                 }
@@ -844,33 +842,21 @@ namespace Fusee.Engine.Core
 
         private void UpdateShaderParamsForAllLights()
         {
-            if (_lightResults.Count > Lighting.NumberOfLightsForward)
-                Diagnostics.Warn($"Number of lights in the scene exceeds the maximal allowed number. Lights above {Lighting.NumberOfLightsForward} will be ignored!");
+            if (_lightResults.Count > ModuleExtensionPoint.NumberOfLightsForward)
+                Diagnostics.Warn($"Number of lights in the scene exceeds the maximal allowed number. Lights above {ModuleExtensionPoint.NumberOfLightsForward} will be ignored!");
 
-            for (var i = 0; i < Lighting.NumberOfLightsForward; i++)
+            for (var i = 0; i < _rc.ForwardLights.Length; i++)
             {
                 if (i < _lightResults.Count)
-                {
-
-                    if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
-                        Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
-
                     UpdateShaderParamForLight(i, _lightResults[i].Item2);
-                }
                 else
-                {
-                    var paramName = $"allLights[{i}].isActive";
-                    _rc.SetGlobalEffectParam(paramName, paramName.GetHashCode(), 0);
-                }
+                    _rc.ForwardLights[i].Light.Active = false;
             }
         }
 
         private void UpdateShaderParamForLight(int position, LightResult lightRes)
         {
             var light = lightRes.Light;
-
-            var dirWorldSpace = float3.Normalize((lightRes.Rotation * float4.UnitZ).xyz);
-            var dirViewSpace = float3.Normalize((_rc.View * new float4(dirWorldSpace)).xyz);
             var strength = light.Strength;
 
             if (strength > 1.0 || strength < 0.0)
@@ -879,20 +865,17 @@ namespace Fusee.Engine.Core
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
-            var lightParamStrings = Lighting.LightPararamStringsAllLights[position];
-
             // Set parameters in modelview space since the lightning calculation is in modelview space
-            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, lightParamStrings.PositionViewSpaceHash, _rc.View * lightRes.WorldSpacePos);
-            _rc.SetGlobalEffectParam(lightParamStrings.Intensities, lightParamStrings.IntensitiesHash, light.Color);
-            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, lightParamStrings.MaxDistanceHash, light.MaxDistance);
-            _rc.SetGlobalEffectParam(lightParamStrings.Strength, lightParamStrings.StrengthHash, strength);
-            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle, lightParamStrings.OuterAngleHash, M.DegreesToRadians(light.OuterConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle, lightParamStrings.InnerAngleHash, M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.Direction, lightParamStrings.DirectionHash, dirViewSpace);
-            _rc.SetGlobalEffectParam(lightParamStrings.LightType, lightParamStrings.LightTypeHash, (int)light.Type);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsActive, lightParamStrings.IsActiveHash, light.Active ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, lightParamStrings.IsCastingShadowsHash, light.IsCastingShadows ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.Bias, lightParamStrings.BiasHash, light.Bias);
+            _rc.ForwardLights[position].WorldSpacePos = lightRes.WorldSpacePos;
+            _rc.ForwardLights[position].Light.Color = light.Color;
+            _rc.ForwardLights[position].Light.Strength = strength;
+            _rc.ForwardLights[position].Light.OuterConeAngle = light.OuterConeAngle;
+            _rc.ForwardLights[position].Light.InnerConeAngle = light.InnerConeAngle;
+            _rc.ForwardLights[position].Rotation = lightRes.Rotation;
+            _rc.ForwardLights[position].Light.Type = light.Type;
+            _rc.ForwardLights[position].Light.Active = light.Active;
+            _rc.ForwardLights[position].Light.IsCastingShadows = light.IsCastingShadows;
+            _rc.ForwardLights[position].Light.Bias = light.Bias;
         }
     }
 }

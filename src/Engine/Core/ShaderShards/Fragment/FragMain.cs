@@ -1,4 +1,5 @@
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
 using System;
 using System.Collections.Generic;
 
@@ -12,11 +13,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Lighting Main method for forward rendering.
         /// </summary>
-        public static string ForwardLighting(ShadingModel shadingModel, string inStructName, string outStructType)
+        public static string ForwardLighting(ShadingModel shadingModel, string inStructName)
         {
             var fragMainBody = new List<string>
             {
-                $"{outStructType} surfOut = {SurfaceOut.ChangeSurfFrag}({inStructName});"
+                $"{SurfaceEffectNameDeclarations.StructTypeName} surfOut = {SurfaceEffectNameDeclarations.ChangeSurfFrag}({inStructName});"
             };
 
             if (shadingModel != ShadingModel.Unlit)
@@ -27,7 +28,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     $"float ambientCo = 0.1;",
                     $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * surfOut.albedo.rgb;",
                     $"vec3 result = vec3(0.0);",
-                    $"for(int i = 0; i < {Lighting.NumberOfLightsForward}; i++)",
+                    $"for(int i = 0; i < {ModuleExtensionPoint.NumberOfLightsForward}; i++)",
                     "{",
                         "if(allLights[i].isActive == 0) continue;",
                         "result += ApplyLight(allLights[i], surfOut, ambientCo);",
@@ -48,11 +49,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// The main method for rendering into a G-Buffer object.
         /// </summary>
-        public static string RenderToGBuffer(ShadingModel shadingModel, string inStructName, string outStructType)
+        public static string RenderToGBuffer(ShadingModel shadingModel, string inStructName)
         {
             var fragMainBody = new List<string>
             {
-                $"{outStructType} surfOut = {SurfaceOut.ChangeSurfFrag}({inStructName});"
+                $"{SurfaceEffectNameDeclarations.StructTypeName} surfOut = {SurfaceEffectNameDeclarations.ChangeSurfFrag}({inStructName});"
             };
 
             var ssaoString = RenderTargetTextureTypes.Ssao.ToString();

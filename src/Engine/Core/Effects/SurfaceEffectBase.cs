@@ -66,14 +66,14 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public string SurfVaryingFrag = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+        public string SurfVaryingFrag = $"in {SurfaceEffectNameDeclarations.StructTypeName} {VaryingNameDeclarations.SurfOutVaryingName};\n";
 
         /// <summary>
         /// Vertex shader "out" declaration of the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public string SurfVaryingVert = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+        public string SurfVaryingVert = $"out {SurfaceEffectNameDeclarations.StructTypeName} {VaryingNameDeclarations.SurfOutVaryingName};\n";
 
         /// <summary>
         /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
@@ -184,8 +184,8 @@ namespace Fusee.Engine.Core.Effects
             Version = Header.Version300Es;
             Pi = Header.DefinePi;
             Precision = Header.EsPrecisionHighpFloat;
-            SurfVaryingFrag = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
-            SurfVaryingVert = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+            SurfVaryingFrag = $"in {SurfaceEffectNameDeclarations.StructTypeName} {VaryingNameDeclarations.SurfOutVaryingName};\n";
+            SurfVaryingVert = $"out {SurfaceEffectNameDeclarations.StructTypeName} {VaryingNameDeclarations.SurfOutVaryingName};\n";
             UvIn = GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
             UvOut = GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
             TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
@@ -584,74 +584,69 @@ namespace Fusee.Engine.Core.Effects
         {
             for (int i = 0; i < numberOfLights; i++)
             {
-                if (!ShaderShards.Fragment.Lighting.LightPararamStringsAllLights.ContainsKey(i))
-                {
-                    ShaderShards.Fragment.Lighting.LightPararamStringsAllLights.Add(i, new ShaderShards.Fragment.LightParamStrings(i));
-                }
-
                 yield return new FxParamDeclaration<float3>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].PositionViewSpace,
+                    Name = UniformNameDeclarations.GetPosName(i),
                     Value = new float3(0, 0, -1.0f)
                 };
 
                 yield return new FxParamDeclaration<float4>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Intensities,
+                    Name = UniformNameDeclarations.GetIntensitiesName(i),
                     Value = float4.Zero
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].MaxDistance,
+                    Name = UniformNameDeclarations.GetMaxDistName(i),
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Strength,
+                    Name = UniformNameDeclarations.GetStrengthName(i),
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].OuterAngle,
+                    Name = UniformNameDeclarations.GetOuterConeAngleName(i),
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].InnerAngle,
+                    Name = UniformNameDeclarations.GetInnerConeAngleName(i),
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float3>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Direction,
+                    Name = UniformNameDeclarations.GetDirectionName(i),
                     Value = float3.Zero
                 };
 
                 yield return new FxParamDeclaration<int>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].LightType,
+                    Name = UniformNameDeclarations.GetTypeName(i),
                     Value = 1
                 };
 
                 yield return new FxParamDeclaration<int>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].IsActive,
+                    Name = UniformNameDeclarations.GetIsActiveName(i),
                     Value = 1
                 };
 
                 yield return new FxParamDeclaration<int>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].IsCastingShadows,
+                    Name = UniformNameDeclarations.GetIsCastingShadowsName(i),
                     Value = 0
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Bias,
+                    Name = UniformNameDeclarations.GetBiasName(i),
                     Value = 0f
                 };
             }

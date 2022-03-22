@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Common
 {
+    public delegate object GetUniformValue();
+
     /// <summary>
     /// The render context interface contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you are worked with OpenGL or DirectX before you will find

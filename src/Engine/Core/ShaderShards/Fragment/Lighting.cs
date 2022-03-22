@@ -1,5 +1,6 @@
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     /// </summary>
     public static class Lighting
     {
-        ///The maximal number of lights we can render when using the forward pipeline.
-        public const int NumberOfLightsForward = 8;
-
         /// <summary>
         /// Struct, that describes a Light object in the shader code./>
         /// </summary>
@@ -23,24 +21,19 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         "struct Light",
         "{",
-        "   vec3 position;",
-        "   vec4 intensities;",
-        "   vec3 direction;",
-        "   float maxDistance;",
-        "   float strength;",
-        "   float outerConeAngle;",
-        "   float innerConeAngle;",
-        "   int lightType;",
-        "   int isActive;",
-        "   int isCastingShadows;",
-        "   float bias;",
+        $"   vec3 {UniformNameDeclarations.LightWorldPos};",
+        $"   vec4 {UniformNameDeclarations.LightIntensities};",
+        $"   vec3 {UniformNameDeclarations.LightDirection};",
+        $"   float {UniformNameDeclarations.LightMaxDist};",
+        $"   float {UniformNameDeclarations.LightStrength};",
+        $"   float {UniformNameDeclarations.LightOuterConeAngle};",
+        $"   float {UniformNameDeclarations.LightInnerConeAngle};",
+        $"   int {UniformNameDeclarations.LightType};",
+        $"   int {UniformNameDeclarations.LightIsActive};",
+        $"   int {UniformNameDeclarations.LightIsCastingShadows};",
+        $"   float {UniformNameDeclarations.LightBias};",
         "};\n",
         });
-
-        /// <summary>
-        /// Caches "allLight[i]." names (used as uniform parameters).
-        /// </summary>
-        public static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new();
 
         /// <summary>
         /// Contains all methods for color management (gamma and from and to sRGB).
@@ -628,7 +621,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             new[]
             {
                 "Light light",
-                $"{SurfaceOut.StructName} surfOut",
+                $"{SurfaceEffectNameDeclarations.StructTypeName} surfOut",
                 GLSL.CreateVar(GLSL.Type.Float, "ambientCo"),
             }, methodBody);
         }
@@ -1228,60 +1221,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                       
                 ");
             return frag.ToString();
-        }
-    }
-
-    public struct LightParamStrings
-    {
-        public string PositionViewSpace;
-        public string Intensities;
-        public string MaxDistance;
-        public string Strength;
-        public string OuterAngle;
-        public string InnerAngle;
-        public string Direction;
-        public string LightType;
-        public string IsActive;
-        public string IsCastingShadows;
-        public string Bias;
-
-        public int PositionViewSpaceHash;
-        public int IntensitiesHash;
-        public int MaxDistanceHash;
-        public int StrengthHash;
-        public int OuterAngleHash;
-        public int InnerAngleHash;
-        public int DirectionHash;
-        public int LightTypeHash;
-        public int IsActiveHash;
-        public int IsCastingShadowsHash;
-        public int BiasHash;
-
-        public LightParamStrings(int arrayPos)
-        {
-            PositionViewSpace = $"allLights[{arrayPos}].position";
-            Intensities = $"allLights[{arrayPos}].intensities";
-            MaxDistance = $"allLights[{arrayPos}].maxDistance";
-            Strength = $"allLights[{arrayPos}].strength";
-            OuterAngle = $"allLights[{arrayPos}].outerConeAngle";
-            InnerAngle = $"allLights[{arrayPos}].innerConeAngle";
-            Direction = $"allLights[{arrayPos}].direction";
-            LightType = $"allLights[{arrayPos}].lightType";
-            IsActive = $"allLights[{arrayPos}].isActive";
-            IsCastingShadows = $"allLights[{arrayPos}].isCastingShadows";
-            Bias = $"allLights[{arrayPos}].bias";
-
-            PositionViewSpaceHash = PositionViewSpace.GetHashCode();
-            IntensitiesHash = Intensities.GetHashCode();
-            MaxDistanceHash = MaxDistance.GetHashCode();
-            StrengthHash = Strength.GetHashCode();
-            OuterAngleHash = OuterAngle.GetHashCode();
-            InnerAngleHash = InnerAngle.GetHashCode();
-            DirectionHash = Direction.GetHashCode();
-            LightTypeHash = LightType.GetHashCode();
-            IsActiveHash = IsActive.GetHashCode();
-            IsCastingShadowsHash = IsCastingShadows.GetHashCode();
-            BiasHash = Bias.GetHashCode();
         }
     }
 }
