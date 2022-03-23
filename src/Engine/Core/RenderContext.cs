@@ -1488,7 +1488,7 @@ namespace Fusee.Engine.Core
             var currentVal = CurrentRenderState.GetRenderState(renderState);
             if (doLockState)
             {
-                LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)currentVal);
+                LockedStates[renderState] = new KeyValuePair<bool, uint>(true, currentVal);
             }
             if (currentVal != value)
             {

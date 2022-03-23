@@ -712,7 +712,6 @@ namespace Fusee.Engine.Core
                 _rc.Render(mesh, ((SurfaceEffectInstanced)_state.Effect).InstanceData, true);
             else
                 _rc.Render(mesh, true);
-            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
 
         /// <summary>
@@ -737,9 +736,7 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, true);
-            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
 
         /// <summary>
@@ -815,7 +812,6 @@ namespace Fusee.Engine.Core
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = _rc.DefaultEffect;
             _rc.CreateShaderProgram(_state.Effect);
-            _state.RenderUndoStates = new RenderStateSet();
             _state.RenderLayer = new RenderLayer();
         }
 
@@ -832,7 +828,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected override void PopState()
         {
-            _rc.SetRenderStateSet(_state.RenderUndoStates);
             _state.Pop();
             _rc.Model = _state.Model;
             _rc.SetEffect(_state.Effect, true);

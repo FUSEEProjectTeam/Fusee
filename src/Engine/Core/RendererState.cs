@@ -31,23 +31,9 @@ namespace Fusee.Engine.Core
         protected CollapsingStateStack<Effect> _effect = new();
 
         /// <summary>
-        /// State of the <see cref="RenderStateSet"/>.
-        /// </summary>
-        protected CollapsingStateStack<RenderStateSet> _renderStates = new();
-
-        /// <summary>
         /// State of the <see cref="RenderLayer"/>.
         /// </summary>
         protected CollapsingStateStack<RenderLayer> _renderLayer = new();
-
-        /// <summary>
-        /// Gets and sets the top of stack of the Render states state stack.
-        /// </summary>
-        public RenderStateSet RenderUndoStates
-        {
-            get => _renderStates.Tos;
-            set => _renderStates.Tos = value;
-        }
 
         /// <summary>
         /// Gets and sets the top of stack of the Model Matrix state stack.
@@ -103,7 +89,6 @@ namespace Fusee.Engine.Core
             RegisterState(_canvasXForm);
             RegisterState(_effect);
             RegisterState(_uiRect);
-            RegisterState(_renderStates);
             RegisterState(_renderLayer);
         }
     }
