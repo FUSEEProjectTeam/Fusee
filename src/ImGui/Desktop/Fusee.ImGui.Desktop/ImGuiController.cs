@@ -353,7 +353,9 @@ namespace Fusee.DImGui.Desktop
                 bounds = new float[] { min.x, min.y, min.z, max.x, max.y, max.z };
             }
 
-            Manipulate.DrawManipulate(rc.View, rc.Projection, OPERATION.TRANSLATE, mCurrentGizmoMode, ref resMat,
+            resMat = float4x4.Scale(4, 4, 4);
+
+            Manipulate.DrawManipulate(rc.View, rc.Projection, OPERATION.UNIVERSAL, mCurrentGizmoMode, ref resMat,
                ref deltaMat, ref snap, ref bounds, ref boundsSnap);
 
 

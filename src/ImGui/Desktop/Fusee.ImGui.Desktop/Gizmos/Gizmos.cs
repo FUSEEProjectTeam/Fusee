@@ -2,11 +2,8 @@
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fusee.DImGui.Desktop.Gizmos
 {
@@ -528,7 +525,7 @@ namespace Fusee.DImGui.Desktop.Gizmos
 
         public static void ComputeContext(float4x4 view, float4x4 projection, float4x4 matrix, MODE mode)
         {
-            if(gContext == null)
+            if (gContext == null)
                 gContext = new();
 
             gContext.mMode = mode;
