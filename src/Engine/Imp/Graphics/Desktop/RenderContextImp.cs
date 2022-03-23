@@ -1136,11 +1136,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                GL.GetFloat(GetPName.ColorClearValue, out OpenTK.Mathematics.Vector4 ret);
-                return new float4(ret.X, ret.Y, ret.Z, ret.W);
+                //GL.GetFloat(GetPName.ColorClearValue, out OpenTK.Mathematics.Vector4 ret);
+                return _clearColor;
             }
-            set => GL.ClearColor(value.x, value.y, value.z, value.w);
+            set
+            {
+                _clearColor = value;
+                GL.ClearColor(value.x, value.y, value.z, value.w);
+            }
         }
+        private float4 _clearColor;
 
         /// <summary>
         /// Gets and sets the clear depth value which is used to clear the depth buffer.
@@ -2218,9 +2223,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             else
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
-
+#if DEBUG
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+#endif
 
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
@@ -2255,10 +2261,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             else
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
-
+#if DEBUG
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-
+#endif
 
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
@@ -2298,10 +2304,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
                 GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
             }
-
+#if DEBUG
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-
+#endif
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
@@ -2348,12 +2354,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
                 }
             }
-
+#if DEBUG
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
-
+#endif
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
@@ -2457,10 +2463,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + attachment, TextureTarget.Texture2D, handle, 0);
             else
                 GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, handle, 0);
-
+#if DEBUG
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-
+#endif
             if (!isCurrentFbo)
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFbo);
         }
