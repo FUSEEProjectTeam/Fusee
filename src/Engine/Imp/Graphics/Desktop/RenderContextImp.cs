@@ -2194,7 +2194,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
 
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle);
+                //GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
@@ -2232,7 +2232,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
 
-                GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexHandle);
+                //GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexHandle);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
@@ -2271,7 +2271,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
 
-                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
+                //GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
@@ -2289,7 +2289,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
-                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
+                //GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
                 GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
             }
 #if DEBUG
