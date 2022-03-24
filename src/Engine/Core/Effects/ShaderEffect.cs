@@ -6,7 +6,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// A ShaderEffect contains a string for each, the vertex, fragment and geometry shader and a set of render states.
     /// Use this if you want to write the shader code on your own. 
-    /// The values of uniform variables you defined (<see cref="Effect.ParamDecl"/>) can be set using <see cref="Effect.SetFxParam{T}(string, T)"/>. 
+    /// The values of uniform variables you defined (<see cref="Effect.UniformParameters"/>) can be set using <see cref="Effect.SetFxParam{T}(string, T)"/>. 
     /// </summary>
     public class ShaderEffect : Effect, IDisposable
     {
@@ -33,7 +33,7 @@ namespace Fusee.Engine.Core.Effects
         /// <remarks> Make sure to insert all uniform variable in "effectParameters" that are declared in the shader code.</remarks>
         public ShaderEffect(IEnumerable<IFxParamDeclaration> effectParameters, RenderStateSet rendererStates, string vs, string ps, string gs = null)
         {
-            ParamDecl = new Dictionary<int, IFxParamDeclaration>();
+            UniformParameters = new Dictionary<int, IFxParamDeclaration>();
 
             RendererStates = rendererStates;
             VertexShaderSrc = vs;
@@ -43,7 +43,7 @@ namespace Fusee.Engine.Core.Effects
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
-                    ParamDecl.Add(param.Hash, param);
+                    UniformParameters.Add(param.Hash, param);
             }
 
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);

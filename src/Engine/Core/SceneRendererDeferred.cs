@@ -480,8 +480,6 @@ namespace Fusee.Engine.Core
             {
                 RenderAllPasses(new float4(0, 0, _rc.ViewportWidth, _rc.ViewportHeight), renderTex);
             }
-
-            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam, WritableTexture renderTex = null)

@@ -329,8 +329,6 @@ namespace Fusee.Engine.Core
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
-
-            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam)
@@ -858,19 +856,10 @@ namespace Fusee.Engine.Core
             {
                 strength = M.Clamp(light.Strength, 0.0f, 1.0f);
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
+                light.Strength = strength;
             }
 
-            // Set parameters in modelview space since the lightning calculation is in modelview space
-            _rc.ForwardLights[position].WorldSpacePos = lightRes.WorldSpacePos;
-            _rc.ForwardLights[position].Light.Color = light.Color;
-            _rc.ForwardLights[position].Light.Strength = strength;
-            _rc.ForwardLights[position].Light.OuterConeAngle = light.OuterConeAngle;
-            _rc.ForwardLights[position].Light.InnerConeAngle = light.InnerConeAngle;
-            _rc.ForwardLights[position].Rotation = lightRes.Rotation;
-            _rc.ForwardLights[position].Light.Type = light.Type;
-            _rc.ForwardLights[position].Light.Active = light.Active;
-            _rc.ForwardLights[position].Light.IsCastingShadows = light.IsCastingShadows;
-            _rc.ForwardLights[position].Light.Bias = light.Bias;
+            _rc.ForwardLights[position] = lightRes;
         }
     }
 }

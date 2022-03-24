@@ -83,7 +83,7 @@ namespace Fusee.Engine.Core.Effects
             //May be difficult because we'd need to remove or add them (and only them) depending on the render method
             VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, VertMain.VertexMain(SurfaceInput.ShadingModel, SurfaceInput.TextureSetup)));
             foreach (var dcl in CreateForwardLightingParamDecls(ModuleExtensionPoint.NumberOfLightsForward))
-                ParamDecl.Add(dcl.Hash, dcl);
+                UniformParameters.Add(dcl.Hash, dcl);
 
             HandleFieldsAndProps();
         }

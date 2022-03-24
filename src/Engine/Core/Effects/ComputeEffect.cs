@@ -20,13 +20,13 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="effectParameters">The uniform parameters as collections of <see cref="IFxParamDeclaration"/>.</param>
         public ComputeEffect(string shaderCode, IEnumerable<IFxParamDeclaration> effectParameters)
         {
-            ParamDecl = new Dictionary<int, IFxParamDeclaration>();
+            UniformParameters = new Dictionary<int, IFxParamDeclaration>();
             ComputeShaderSrc = shaderCode;
 
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
-                    ParamDecl.Add(param.Hash, param);
+                    UniformParameters.Add(param.Hash, param);
             }
 
             RendererStates = RenderStateSet.Default;

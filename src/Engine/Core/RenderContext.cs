@@ -812,7 +812,7 @@ namespace Fusee.Engine.Core
             GlobalUniformGetter.Add(UniformNameDeclarations.GetStrengthName(arrayPos).GetHashCode(), () => ForwardLights[arrayPos].Light.Strength);
             GlobalUniformGetter.Add(UniformNameDeclarations.GetOuterConeAngleName(arrayPos).GetHashCode(), () => M.DegreesToRadians(ForwardLights[arrayPos].Light.OuterConeAngle));
             GlobalUniformGetter.Add(UniformNameDeclarations.GetInnerConeAngleName(arrayPos).GetHashCode(), () => M.DegreesToRadians(ForwardLights[arrayPos].Light.InnerConeAngle));
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetDirectionName(arrayPos).GetHashCode(), () => (View * (ForwardLights[arrayPos].Rotation * float3.UnitZ)).Normalize());
+            GlobalUniformGetter.Add(UniformNameDeclarations.GetDirectionName(arrayPos).GetHashCode(), () => (View * ForwardLights[arrayPos].Rotation * float4.UnitZ).xyz.Normalize());
             GlobalUniformGetter.Add(UniformNameDeclarations.GetTypeName(arrayPos).GetHashCode(), () => (int)ForwardLights[arrayPos].Light.Type);
             GlobalUniformGetter.Add(UniformNameDeclarations.GetIsActiveName(arrayPos).GetHashCode(), () => ForwardLights[arrayPos].Light.Active ? 1 : 0);
             GlobalUniformGetter.Add(UniformNameDeclarations.GetIsCastingShadowsName(arrayPos).GetHashCode(), () => ForwardLights[arrayPos].Light.IsCastingShadows ? 1 : 0);
@@ -1065,7 +1065,7 @@ namespace Fusee.Engine.Core
 
             foreach (var shaderParam in activeUniforms)
             {
-                if (!ef.ParamDecl.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
+                if (!ef.UniformParameters.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
                 {
                     Diagnostics.Error(shaderParam.Value.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
                     continue;
@@ -1078,7 +1078,7 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    shaderParam.Value.UniformValueGetter = () => ef.ParamDecl[shaderParam.Key].GetValue();
+                    shaderParam.Value.UniformValueGetter = () => ef.UniformParameters[shaderParam.Key].GetValue();
                     shaderParam.Value.IsGlobal = false;
                 }
             }
@@ -1158,18 +1158,6 @@ namespace Fusee.Engine.Core
             compiledEffects.DeferredFx = compiledDeferred;
 
             _allCompiledEffects.Add(ef, compiledEffects);
-        }
-
-
-
-        internal void ClearGlobalEffectParamsDirtyFlag()
-        {
-            //foreach (var key in GlobalFXParams.Keys)
-            //{
-            //    var param = GlobalFXParams[key];
-            //    param.HasValueChanged = false;
-            //    GlobalFXParams[key] = param;
-            //}
         }
 
         /// <summary>
