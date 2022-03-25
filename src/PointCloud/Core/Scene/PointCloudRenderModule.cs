@@ -69,9 +69,7 @@ namespace Fusee.PointCloud.Core.Scene
 
             foreach (var mesh in pointCloud.PointCloudImp.MeshesToRender)
             {
-                var renderStatesBefore = _rc.CurrentRenderState.Copy();
                 _rc.Render(mesh, true);
-                _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
             }
         }
     }

@@ -1,10 +1,10 @@
 using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2;
 using System;
@@ -65,8 +65,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             VSync = false;
             _spaceMouse = GetDevice<SixDOFDevice>();
 
-            PtRenderingParams.Instance.DepthPassEf = PtRenderingParams.Instance.CreateDepthPassEffect();
-            PtRenderingParams.Instance.ColorPassEf = PtRenderingParams.Instance.CreateColorPassEffect();
+            PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
+            PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.ColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
             PtRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
             PtRenderingParams.Instance.ProjectedSizeModifierHandler = OnProjectedSizeModifierChanged;
 
@@ -152,7 +152,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            Diagnostics.Warn(FramesPerSecond);
             ReadyToLoadNewFile = false;
 
             if (_closingRequested)

@@ -1,10 +1,6 @@
-﻿using Fusee.Base.Core;
-using Fusee.Engine.Core;
-using Fusee.Engine.Core.Effects;
-using Fusee.Math.Core;
+﻿using Fusee.Engine.Core.Effects;
 using Fusee.PointCloud.Common;
 using System;
-using System.Collections.Generic;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {
@@ -120,48 +116,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         // not to mark type as beforefieldinit
         static PtRenderingParams()
         {
-        }
-
-        internal ShaderEffect CreateDepthPassEffect()
-        {
-            return new ShaderEffect(
-            new List<IFxParamDeclaration>
-            {
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
-
-                new FxParamDeclaration<int2> {Name = UniformNameDeclarations.ViewportPx, Value = new int2(1, 1)},
-
-                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = _size},
-                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)_shape},
-                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)_ptMode},
-            },
-            new RenderStateSet
-            {
-                AlphaBlendEnable = true,
-                ZEnable = true,
-            },
-               AssetStorage.Get<string>("PointCloud.vert"),
-               AssetStorage.Get<string>("PointDepth.frag"))
-            {
-                Active = false
-            };
-        }
-
-        internal SurfaceEffectPointCloud CreateColorPassEffect()
-        {
-            var fx = new SurfaceEffectPointCloud
-            {
-                PointSize = _size,
-                ColorMode = (int)_colorMode,
-                PointShape = (int)_shape,
-                DepthTex = null,
-                EDLStrength = _edlStrength,
-                EDLNeighbourPixels = _edlNoOfNeighbourPx
-            };
-            fx.SurfaceInput.Albedo = new float4(0.5f, 0.5f, 0.5f, 1.0f);
-            return fx;
         }
 
         public void Dispose()
