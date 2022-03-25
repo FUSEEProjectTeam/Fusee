@@ -442,19 +442,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             DoRender();
             DoResize(width, height);
 
-            var mem = new Span<Rgba32>(new Rgba32[width * height]);
-
-            var bmp = new Image<Rgba32>(Width, Height);
-
+            var mem = new byte[width * height * 4];
             GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
-            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, ref mem[0]);
+            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
 
-            bmp.CopyPixelDataTo(mem);
+            var img = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(mem, Width, Height);
 
-            bmp.Mutate(x => x.AutoOrient());
-            bmp.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+            img.Mutate(x => x.AutoOrient());
+            img.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
 
-            return bmp;
+            return img;
         }
 
         #endregion

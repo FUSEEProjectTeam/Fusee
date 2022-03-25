@@ -16,8 +16,6 @@ namespace Fusee.Engine.Core
     {
         #region Implementor Fields
 
-        public ModuleExtensionPoint PointCloudImplementor { get; set; }
-
         /// <summary>
         ///     Gets and sets the canvas implementor.
         /// </summary>
