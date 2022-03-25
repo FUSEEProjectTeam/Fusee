@@ -18,7 +18,7 @@
 		</ProjectReference>
 
 
-		<PackageReference Include="Microsoft.JSInterop" Version="6.0.2" />
+		<PackageReference Include="Microsoft.JSInterop" Version="6.0.3" />
 		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
 
