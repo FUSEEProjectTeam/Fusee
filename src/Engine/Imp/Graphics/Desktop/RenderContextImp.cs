@@ -190,6 +190,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 ColorFormat.fRGBA16 => SizedInternalFormat.Rgba16f,
                 ColorFormat.fRGBA32 => SizedInternalFormat.Rgba32f,
                 ColorFormat.iRGBA32 => SizedInternalFormat.Rgba32i,
+                ColorFormat.fRGB16 => (SizedInternalFormat)All.Rgb16f,
                 _ => throw new ArgumentOutOfRangeException("SizedInternalFormat not supported. Try to use a format with r,g,b and a components."),
             };
         }
@@ -353,28 +354,28 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
             _lastBoundTexId = id;
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
-            var minFilter = glMinMagFilter.Item1;
-            var magFilter = glMinMagFilter.Item2;
+            var minFilter = (int)glMinMagFilter.Item1;
+            var magFilter = (int)glMinMagFilter.Item2;
 
-            var glWrapMode = GetWrapMode(img.WrapMode);
+            var glWrapMode = (int)GetWrapMode(img.WrapMode);
 
             var pxInfo = GetTexturePixelInfo(img);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
-
+            GL.TextureStorage2D(id, 1, GetSizedInteralFormat(img.PixelFormat), img.Width, img.Height);
+            GL.TextureSubImage2D(id, 0, 0, 0, img.Width, img.Height, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            
             if (img.DoGenerateMipMaps)
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                GL.GenerateTextureMipmap(id);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
+            GL.TextureParameterI(id, TextureParameterName.TextureMinFilter, ref minFilter);
+            GL.TextureParameterI(id, TextureParameterName.TextureMagFilter, ref magFilter);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapS, ref glWrapMode);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapT, ref glWrapMode);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapR, ref glWrapMode);
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
