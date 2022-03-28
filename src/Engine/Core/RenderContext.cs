@@ -744,7 +744,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Global Uniform array of <see cref="LightResult"/>s. Updated by a SceneRenderer.
         /// </summary>
-        internal LightResult[] ForwardLights = new LightResult[ModuleExtensionPoint.NumberOfLightsForward];
+        public LightResult[] ForwardLights = new LightResult[ModuleExtensionPoint.NumberOfLightsForward];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
@@ -802,6 +802,7 @@ namespace Fusee.Engine.Core
             }
 
             ModuleExtensionPoint.CreateGpuMesh = CreateGpuMesh;
+            ModuleExtensionPoint.PlatformId = _rci.FuseePlatformId;
         }
 
         private void AddForwardLightGetter(int arrayPos)

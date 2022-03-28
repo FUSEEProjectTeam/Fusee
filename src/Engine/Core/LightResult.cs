@@ -7,14 +7,14 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// This struct saves a light and all its parameters, as found by a Visitor.
     /// </summary>
-    internal class LightResult
+    public class LightResult
     {
         /// <summary>
         /// The light component as present (1 to n times) in the scene graph.
         /// </summary>
-        public Light Light { get; private set; }
+        public Light Light;
 
-        public bool ReRenderShadowMap = true;
+        internal bool ReRenderShadowMap = true;
 
         /// <summary>
         /// It should be possible for one instance of type LightComponent to be used multiple times in the scene graph.
