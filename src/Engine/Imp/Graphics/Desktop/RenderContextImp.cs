@@ -324,27 +324,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableCubeMap img)
         {
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.TextureCubeMap, id);
+            GL.CreateTextures(TextureTarget.TextureCubeMap, 1, out int id);
             _lastBoundTexId = id;
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
-            var minFilter = glMinMagFilter.Item1;
-            var magFilter = glMinMagFilter.Item2;
+            var minFilter = (int)glMinMagFilter.Item1;
+            var magFilter = (int)glMinMagFilter.Item2;
 
-            var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var glWrapMode = (int)GetWrapMode(img.WrapMode);
 
-            for (int i = 0; i < 6; i++)
-                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
-
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)magFilter);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)minFilter);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)glWrapMode);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)glWrapMode);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)glWrapMode);
+            GL.TextureStorage2D(id, 1, GetSizedInteralFormat(img.PixelFormat), img.Width, img.Height);
+            
+            var compareMode = (int)GetTexComapreMode(img.CompareMode);
+            var compareFunc = (int)GetDepthCompareFunc(img.CompareFunc);
+            GL.TextureParameterI(id, TextureParameterName.TextureCompareMode, ref compareMode);
+            GL.TextureParameterI(id, TextureParameterName.TextureCompareFunc, ref compareFunc);
+            GL.TextureParameterI(id, TextureParameterName.TextureMagFilter, ref magFilter);
+            GL.TextureParameterI(id, TextureParameterName.TextureMinFilter, ref minFilter);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapS, ref glWrapMode);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapT, ref glWrapMode);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapR, ref glWrapMode);
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
