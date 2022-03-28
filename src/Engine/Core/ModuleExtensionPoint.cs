@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using System;
 
 namespace Fusee.Engine.Core
 {
@@ -41,6 +42,11 @@ namespace Fusee.Engine.Core
             set { Instance._createGpuMesh = value; }
         }
         private CreateGpuMesh _createGpuMesh;
+
+        /// <summary>
+        /// Bound to the platform specific RenderContext implementation. Set by the <see cref="RenderContext"/>.
+        /// </summary>
+        public static FuseePlatformId PlatformId { get; internal set; }
 
         #region Dispose
 
