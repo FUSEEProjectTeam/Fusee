@@ -55,7 +55,7 @@ namespace Fusee.Examples.Deferred.Core
             _sponzaScene = await AssetStorage.GetAsync<SceneContainer>("sponza.fus");
 
             //Add lights to the scene
-            _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = false, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
+            _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
             var redLight = new Light() { Type = LightType.Point, Color = new float4(1, 0.56f, 0.1f, 1), MaxDistance = 15, Active = true, IsCastingShadows = false, Bias = 0.015f };
             var blueLight = new Light() { Type = LightType.Spot, Color = new float4(0.6f, 0.8f, 1, 1), MaxDistance = 180, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.0000001f };
             var greenLight = new Light() { Type = LightType.Point, Color = new float4(0.8f, 1.0f, 0.6f, 1), Strength = 1f, MaxDistance = 50, Active = true, IsCastingShadows = true, Bias = 0.1f };
