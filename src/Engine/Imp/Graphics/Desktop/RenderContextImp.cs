@@ -36,8 +36,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private bool _isCullEnabled;
         private bool _isPtRenderingEnabled;
         private bool _isLineSmoothEnabled;
-
-        private int _lastBoundTexId;
         private int _lastBoundFbo;
 
 #if DEBUG
@@ -195,6 +193,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 ColorFormat.Depth24 => (SizedInternalFormat)All.DepthComponent24,
                 ColorFormat.Depth16 => (SizedInternalFormat)All.DepthComponent16,
                 ColorFormat.RGB => (SizedInternalFormat)All.Rgb8,
+                ColorFormat.Intensity => (SizedInternalFormat)All.R8,
                 _ => throw new ArgumentOutOfRangeException("SizedInternalFormat not supported. Try to use a format with r,g,b and a components."),
             };
         }
@@ -291,7 +290,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public ITextureHandle CreateTexture(IWritableArrayTexture img)
         {
             GL.CreateTextures(TextureTarget.Texture2DArray, 1, out int id);
-            _lastBoundTexId = id;
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
             var minFilter = (int)glMinMagFilter.Item1;
@@ -325,7 +323,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public ITextureHandle CreateTexture(IWritableCubeMap img)
         {
             GL.CreateTextures(TextureTarget.TextureCubeMap, 1, out int id);
-            _lastBoundTexId = id;
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
             var minFilter = (int)glMinMagFilter.Item1;
@@ -358,7 +355,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public ITextureHandle CreateTexture(ITexture img)
         {
             GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
-            _lastBoundTexId = id;
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
             var minFilter = (int)glMinMagFilter.Item1;
@@ -393,7 +389,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public ITextureHandle CreateTexture(IWritableTexture img)
         {
             GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
-            _lastBoundTexId = id;
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
             var minFilter = (int)glMinMagFilter.Item1;
@@ -448,20 +443,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 }
 
             } while (scanlines.MoveNext());
-
-            var toBindTexId = ((TextureHandle)tex).TexHandle;
-            if (_lastBoundTexId != toBindTexId)
-            {
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
-                _lastBoundTexId = ((TextureHandle)tex).TexHandle;
-            }
-
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height, format, PixelType.UnsignedByte, bytes);
-
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            
+            GL.TextureSubImage2D(((TextureHandle)tex).TexHandle, 0, startX, startY, width, height, format, PixelType.UnsignedByte, bytes);
         }
 
         /// <summary>
@@ -472,15 +455,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode)
         {
             var toBindTexId = ((TextureHandle)tex).TexHandle;
-            if (_lastBoundTexId != toBindTexId)
-            {
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
-                _lastBoundTexId = ((TextureHandle)tex).TexHandle;
-            }
 
-            var glMinMagFilter = GetMinMagFilter(filterMode);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)glMinMagFilter.Item1);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)glMinMagFilter.Item2);
+            var minMag = GetMinMagFilter(filterMode);
+            var glMinFilter = (int)minMag.Item1;
+            var glMagFilter = (int)minMag.Item2;
+            GL.TextureParameterI(toBindTexId, TextureParameterName.TextureMinFilter, ref glMinFilter);
+            GL.TextureParameterI(toBindTexId, TextureParameterName.TextureMagFilter, ref glMagFilter);
         }
 
         /// <summary>
@@ -491,16 +471,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetTextureWrapMode(ITextureHandle tex, Common.TextureWrapMode wrapMode)
         {
             var toBindTexId = ((TextureHandle)tex).TexHandle;
-            if (_lastBoundTexId != toBindTexId)
-            {
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
-                _lastBoundTexId = ((TextureHandle)tex).TexHandle;
-            }
-
-            var glWrapMode = GetWrapMode(wrapMode);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
+            
+            var glWrapMode = (int)GetWrapMode(wrapMode);
+            GL.TextureParameterI(toBindTexId, TextureParameterName.TextureWrapS, ref glWrapMode);
+            GL.TextureParameterI(toBindTexId, TextureParameterName.TextureWrapT, ref glWrapMode);
+            GL.TextureParameterI(toBindTexId, TextureParameterName.TextureWrapR, ref glWrapMode);
         }
 
         /// <summary>
@@ -944,38 +919,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
-        private void BindTextureByTarget(ITextureHandle texId, TextureType texTarget)
-        {
-            var toBindTexId = ((TextureHandle)texId).TexHandle;
-            if (_lastBoundTexId == toBindTexId)
-                return;
-
-            switch (texTarget)
-            {
-                case TextureType.Texture1D:
-                    GL.BindTexture(TextureTarget.Texture1D, ((TextureHandle)texId).TexHandle);
-                    break;
-                case TextureType.Texture2D:
-                    GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
-                    break;
-                case TextureType.Texture3D:
-                    GL.BindTexture(TextureTarget.Texture3D, ((TextureHandle)texId).TexHandle);
-                    break;
-                case TextureType.TextureCubeMap:
-                    GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
-                    break;
-                case TextureType.ArrayTexture:
-                    GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
-                    break;
-                case TextureType.Image2D:
-                default:
-                    throw new ArgumentException($"Unknown texture target: {texTarget}.");
-            }
-
-            _lastBoundTexId = toBindTexId;
-        }
-
-
         /// <summary>
         /// Sets a texture active and binds it.
         /// </summary>
@@ -992,8 +935,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
 
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            BindTextureByTarget(texId, texTarget);
+            GL.BindTextureUnit(texUnit, ((TextureHandle)texId).TexHandle);
         }
 
         private void SetActiveAndBindImage(IUniformHandle param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access, out int texUnit)
@@ -1029,8 +971,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
 
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            BindTextureByTarget(texId, texTarget);
+            GL.BindTextureUnit(texUnit, ((TextureHandle)texId).TexHandle);
         }
 
         /// <summary>
@@ -1055,9 +996,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             for (int i = 0; i < texIds.Length; i++)
             {
                 texUnitArray[i] = firstTexUnit + i;
-
-                GL.ActiveTexture(TextureUnit.Texture0 + firstTexUnit + i);
-                BindTextureByTarget(texIds[i], texTarget);
+                GL.BindTextureUnit(firstTexUnit + i, ((TextureHandle)texIds[i]).TexHandle);
             }
         }
 
@@ -1084,9 +1023,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             for (int i = 0; i < texIds.Length; i++)
             {
                 texUnitArray[i] = firstTexUnit + i;
-
-                GL.ActiveTexture(TextureUnit.Texture0 + firstTexUnit + i);
-                BindTextureByTarget(texIds[i], texTarget);
+                GL.BindTextureUnit(firstTexUnit + i, ((TextureHandle)texIds[i]).TexHandle);
             }
         }
 
@@ -1863,12 +1800,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texId">The texture identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
-            var toBindTexId = ((TextureHandle)texId).TexHandle;
-            if (_lastBoundTexId != toBindTexId)
-            {
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
-                _lastBoundTexId = toBindTexId;
-            }
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
             GL.CopyTexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba, quad.Left, quad.Top, quad.Width, quad.Height, 0);
         }
 
