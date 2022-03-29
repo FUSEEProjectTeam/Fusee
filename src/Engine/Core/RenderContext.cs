@@ -1064,6 +1064,19 @@ namespace Fusee.Engine.Core
                 throw new Exception("Error while compiling shader for pass.", ex);
             }
 
+            AssignUniformGetter(ef, activeUniforms);
+
+            var compiledEffect = new CompiledEffect
+            {
+                GpuHandle = shaderOnGpu,
+                ActiveUniforms = activeUniforms
+            };
+
+            return compiledEffect;
+        }
+
+        private void AssignUniformGetter(Effect ef, Dictionary<int, IFxParam> activeUniforms)
+        {
             foreach (var shaderParam in activeUniforms)
             {
                 if (!ef.UniformParameters.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
@@ -1083,14 +1096,6 @@ namespace Fusee.Engine.Core
                     shaderParam.Value.IsGlobal = false;
                 }
             }
-
-            var compiledEffect = new CompiledEffect
-            {
-                GpuHandle = shaderOnGpu,
-                ActiveUniforms = activeUniforms
-            };
-
-            return compiledEffect;
         }
 
         private void CreateShaderForShaderEffect(ShaderEffect ef)
@@ -1111,8 +1116,12 @@ namespace Fusee.Engine.Core
 
             var shaderOnGpu = _rci.CreateShaderProgramCompute(cs);
             var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
-
             var shaderStorageBuffers = _rci.GetShaderStorageBufferList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
+            foreach (var fxParam in shaderStorageBuffers)
+            {
+                activeUniforms.Add(fxParam.Key, fxParam.Value);
+            }
+            shaderStorageBuffers.Clear();
 
             if (activeUniforms.Count == 0)
             {
@@ -1120,6 +1129,8 @@ namespace Fusee.Engine.Core
                 Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { cs }); ;
                 throw new Exception("Error while compiling shader for pass.", ex);
             }
+
+            AssignUniformGetter(ef, activeUniforms);
 
             var compiledEffect = new CompiledEffect
             {

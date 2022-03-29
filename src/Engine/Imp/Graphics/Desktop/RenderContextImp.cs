@@ -706,8 +706,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             for (var i = 0; i < nParams; i++)
             {
-                var param = new FxParam();
-                param.HasValueChanged = true;
+                var param = new FxParam
+                {
+                    HasValueChanged = true
+                };
                 GL.GetProgramResourceName(sProg.Handle, ProgramInterface.ShaderStorageBlock, i, ssboMaxLen, out _, out string name);
                 param.Name = name;
 
@@ -2162,8 +2164,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 fBuffer = ((TextureHandle)texHandle).FrameBufferHandle;
             }
 #if DEBUG
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+            if (GL.CheckNamedFramebufferStatus(fBuffer, FramebufferTarget.Framebuffer) != FramebufferStatus.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckNamedFramebufferStatus(fBuffer, FramebufferTarget.Framebuffer)}");
 #endif
 
             if (_lastBoundFbo != fBuffer)
@@ -2202,8 +2204,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 fBuffer = ((TextureHandle)texHandle).FrameBufferHandle;
             }
 #if DEBUG
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+            if (GL.CheckNamedFramebufferStatus(fBuffer, FramebufferTarget.Framebuffer) != FramebufferStatus.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckNamedFramebufferStatus(fBuffer, FramebufferTarget.Framebuffer)}");
 #endif
             if (_lastBoundFbo != fBuffer)
             {
@@ -2244,8 +2246,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedFramebufferTextureLayer(fBuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexId, 0, layer);
             }
 #if DEBUG
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+            if (GL.CheckNamedFramebufferStatus(fBuffer, FramebufferTarget.Framebuffer) != FramebufferStatus.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckNamedFramebufferStatus(fBuffer, FramebufferTarget.Framebuffer)}");
 #endif
 
             if (_lastBoundFbo != fBuffer)
@@ -2302,9 +2304,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 }
             }
 #if DEBUG
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+            if (GL.CheckNamedFramebufferStatus(gBuffer, FramebufferTarget.Framebuffer) != FramebufferStatus.FramebufferComplete)
             {
-                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckNamedFramebufferStatus(gBuffer, FramebufferTarget.Framebuffer)}");
             }
 #endif
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
@@ -2400,8 +2402,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
                 GL.NamedFramebufferTexture(rtFbo, FramebufferAttachment.DepthAttachment, handle, 0);
 #if DEBUG
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+            if (GL.CheckNamedFramebufferStatus(rtFbo, FramebufferTarget.Framebuffer) != FramebufferStatus.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckNamedFramebufferStatus(rtFbo, FramebufferTarget.Framebuffer)}");
 #endif
         }
 
@@ -2519,7 +2521,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             //1. Generate Buffer and or set the data
             if (bufferHandle.Handle == -1)
             {
-                GL.GenBuffers(1, out bufferHandle.Handle);
+                GL.CreateBuffers(1, out bufferHandle.Handle);
             }
 
             if (data == null || data.Length == 0)
@@ -2528,9 +2530,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferHandle.Handle);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, dataBytes, data, BufferUsageHint.DynamicCopy);
+            GL.NamedBufferData(bufferHandle.Handle, dataBytes, data, BufferUsageHint.DynamicCopy);
 
-            GL.GetBufferParameter(BufferTarget.ShaderStorageBuffer, BufferParameterName.BufferSize, out int bufferBytes);
+            GL.GetNamedBufferParameter(bufferHandle.Handle, BufferParameterName.BufferSize, out int bufferBytes);
             if (bufferBytes != dataBytes)
                 throw new ApplicationException(string.Format("Problem uploading bone indices buffer to SSBO. Tried to upload {0} bytes, uploaded {1}.", bufferBytes, dataBytes));
 
