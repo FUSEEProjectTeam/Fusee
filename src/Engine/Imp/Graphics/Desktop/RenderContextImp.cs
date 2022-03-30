@@ -517,7 +517,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (texHandle.TexId != -1)
             {
                 GL.DeleteTexture(texHandle.TexId);
-                _textureCountPerShader--;
             }
         }
         #endregion
@@ -930,14 +929,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetActiveAndBindTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget)
         {
             int iParam = ((UniformHandle)param).handle;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out _))
             {
                 _textureCountPerShader++;
-                texUnit = _textureCountPerShader;
-                _shaderParam2TexUnit[iParam] = texUnit;
+                _shaderParam2TexUnit[iParam] = _textureCountPerShader;
+                GL.BindTextureUnit(_textureCountPerShader, ((TextureHandle)texId).TexId);
             }
-
-            GL.BindTextureUnit(texUnit, ((TextureHandle)texId).TexId);
         }
 
         private void SetActiveAndBindImage(IUniformHandle param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access, out int texUnit)
@@ -948,12 +945,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _textureCountPerShader++;
                 texUnit = _textureCountPerShader;
                 _shaderParam2TexUnit[iParam] = texUnit;
+
+                var sizedIntFormat = GetSizedInteralFormat(format);
+
+                GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+                BindImage(texTarget, texId, texUnit, access, sizedIntFormat);
             }
-
-            var sizedIntFormat = GetSizedInteralFormat(format);
-
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            BindImage(texTarget, texId, texUnit, access, sizedIntFormat);
         }
 
         /// <summary>
@@ -969,11 +966,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
             {
                 _textureCountPerShader++;
+                _shaderParam2TexUnit[iParam] = _textureCountPerShader;
                 texUnit = _textureCountPerShader;
-                _shaderParam2TexUnit[iParam] = texUnit;
+                GL.BindTextureUnit(_textureCountPerShader, ((TextureHandle)texId).TexId);
             }
-
-            GL.BindTextureUnit(texUnit, ((TextureHandle)texId).TexId);
         }
 
         /// <summary>
@@ -985,20 +981,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetActiveAndBindTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget)
         {
             int iParam = ((UniformHandle)param).handle;
-            int[] texUnitArray = new int[texIds.Length];
 
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out _))
             {
                 _textureCountPerShader++;
-                firstTexUnit = _textureCountPerShader;
                 _textureCountPerShader += texIds.Length;
-                _shaderParam2TexUnit[iParam] = firstTexUnit;
-            }
+                _shaderParam2TexUnit[iParam] = _textureCountPerShader;
 
-            for (int i = 0; i < texIds.Length; i++)
-            {
-                texUnitArray[i] = firstTexUnit + i;
-                GL.BindTextureUnit(firstTexUnit + i, ((TextureHandle)texIds[i]).TexId);
+                for (int i = 0; i < texIds.Length; i++)
+                {
+                    GL.BindTextureUnit(_textureCountPerShader + i, ((TextureHandle)texIds[i]).TexId);
+                }
             }
         }
 
@@ -1014,18 +1007,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int iParam = ((UniformHandle)param).handle;
             texUnitArray = new int[texIds.Length];
 
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out _))
             {
                 _textureCountPerShader++;
-                firstTexUnit = _textureCountPerShader;
                 _textureCountPerShader += texIds.Length;
-                _shaderParam2TexUnit[iParam] = firstTexUnit;
-            }
+                _shaderParam2TexUnit[iParam] = _textureCountPerShader;
 
-            for (int i = 0; i < texIds.Length; i++)
-            {
-                texUnitArray[i] = firstTexUnit + i;
-                GL.BindTextureUnit(firstTexUnit + i, ((TextureHandle)texIds[i]).TexId);
+                for (int i = 0; i < texIds.Length; i++)
+                {
+                    texUnitArray[i] = _textureCountPerShader + i;
+                    GL.BindTextureUnit(_textureCountPerShader + i, ((TextureHandle)texIds[i]).TexId);
+                }
             }
         }
 
