@@ -710,8 +710,7 @@ namespace Fusee.Engine.Core
             //var wc = CurrentNode.GetWeights();
             //if (wc != null)
             //    AddWeightToMesh(mesh, wc);
-
-            var renderStatesBefore = _rc.CurrentRenderState.Copy();
+            
             if (_renderInstanced)
                 _rc.Render(mesh, ((SurfaceEffectInstanced)_state.Effect).InstanceData, true);
             else
