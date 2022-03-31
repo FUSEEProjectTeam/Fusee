@@ -201,13 +201,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
-                    format = PixelFormat.Bgra;
+                    format = PixelFormat.Rgba;
                     pxType = PixelType.UnsignedByte;
 
                     break;
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
-                    format = PixelFormat.Bgr;
+                    format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
 
                     break;
@@ -2591,7 +2591,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public IImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
             ImageData image = ImageData.CreateImage(w, h, ColorUint.Black);
-            GL.ReadPixels(x, y, w, h, PixelFormat.Bgr /* yuk, yuk ??? */, PixelType.UnsignedByte, image.PixelData);
+            GL.ReadPixels(x, y, w, h, PixelFormat.Rgb, PixelType.UnsignedByte, image.PixelData);
             return image;
         }
 

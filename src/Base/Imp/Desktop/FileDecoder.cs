@@ -61,9 +61,8 @@ namespace Fusee.Base.Imp.Desktop
                     case 24:
                         {
                             var rgb = image as Image<Rgb24>;
-                            var bgr = rgb.CloneAs<Bgr24>();
 
-                            bgr.CopyPixelDataTo(pixels);
+                            rgb.CopyPixelDataTo(pixels);
 
                             img = new ImageData(new byte[bytesPerPixel * image.Width * image.Height], image.Width, image.Height,
                                 new ImagePixelFormat(ColorFormat.RGB));
@@ -72,9 +71,8 @@ namespace Fusee.Base.Imp.Desktop
                     case 32:
                         {
                             var rgba = image as Image<Rgba32>;
-                            var bgra = rgba.CloneAs<Bgra32>();
 
-                            bgra.CopyPixelDataTo(pixels);
+                            rgba.CopyPixelDataTo(pixels);
                             img = new ImageData(new byte[bytesPerPixel * image.Width * image.Height], image.Width, image.Height,
                                new ImagePixelFormat(ColorFormat.RGBA));
                             break;
