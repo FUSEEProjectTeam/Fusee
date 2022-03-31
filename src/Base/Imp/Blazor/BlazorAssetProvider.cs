@@ -63,12 +63,7 @@ namespace Fusee.Base.Imp.Blazor
                 ReturnedType = typeof(ImageData),
                 Decoder = (string id, object storage) =>
                 {
-                    var ext = Path.GetExtension(id).ToLower();
-                    return ext switch
-                    {
-                        ".jpg" or ".jpeg" or ".png" or ".bmp" or ".tga" => FileDecoder.LoadImage((Stream)storage),
-                        _ => null,
-                    };
+                    throw new NotSupportedException("Synchronous Decoder is not supported - use DecoderAsync instead!");
                 },
                 DecoderAsync = async (string id, object storage) =>
                 {
@@ -94,6 +89,10 @@ namespace Fusee.Base.Imp.Blazor
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(string),
+                Decoder = (string id, object storage) =>
+                {
+                    throw new NotSupportedException("Synchronous Decoder is not supported - use DecoderAsync instead!");
+                },
                 DecoderAsync = async (string _, object storage) =>
                 {
                     Stream storageStream = (Stream)storage;
