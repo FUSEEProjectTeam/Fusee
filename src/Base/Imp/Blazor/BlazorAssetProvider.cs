@@ -1,13 +1,9 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Microsoft.JSInterop;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -60,6 +56,39 @@ namespace Fusee.Base.Imp.Blazor
 
             if (_baseDir[^1] != '/')
                 _baseDir += '/';
+
+            // Image handler
+            RegisterTypeHandler(new AssetHandler
+            {
+                ReturnedType = typeof(ImageData),
+                Decoder = (string id, object storage) =>
+                {
+                    var ext = Path.GetExtension(id).ToLower();
+                    return ext switch
+                    {
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" or ".tga" => FileDecoder.LoadImage((Stream)storage),
+                        _ => null,
+                    };
+                },
+                DecoderAsync = async (string id, object storage) =>
+                {
+                    var ext = Path.GetExtension(id).ToLower();
+                    return ext switch
+                    {
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" or ".tga" => await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false),
+                        _ => null,
+                    };
+                },
+                Checker = (string id) =>
+                {
+                    var ext = Path.GetExtension(id).ToLower();
+                    return ext switch
+                    {
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" or ".tga" => true,
+                        _ => false,
+                    };
+                }
+            });
 
             // Text file -> String handler. Keep this one the last entry as it doesn't check the extension
             RegisterTypeHandler(new AssetHandler
@@ -164,80 +193,6 @@ namespace Fusee.Base.Imp.Blazor
             using HttpClient httpClient = new() { BaseAddress = new Uri(baseAddress) };
             HttpResponseMessage response = await httpClient.GetAsync(id).ConfigureAwait(false);
             return response.StatusCode == System.Net.HttpStatusCode.OK;
-        }
-
-        /// <summary>
-        /// Loads an image from a given stream
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        public static ImageData LoadImage(Stream file)
-        {
-            try
-            {
-                using Image image = Image.Load(file, out SixLabors.ImageSharp.Formats.IImageFormat imgFormat);
-
-                image.Mutate(x => x.AutoOrient());
-                image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
-
-
-                int bpp = image.PixelType.BitsPerPixel;
-
-                switch (image.PixelType.BitsPerPixel)
-                {
-                    case 16:
-                        {
-                            (image as Image<Rg32>).TryGetSinglePixelSpan(out Span<Rg32> res);
-                            Span<byte> resBytes = MemoryMarshal.AsBytes<Rg32>(res.ToArray());
-                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                new ImagePixelFormat(ColorFormat.Depth16));
-                        }
-                    case 24:
-                        {
-                            Image<Rgb24> rgb = image as Image<Rgb24>;
-                            Image<Bgr24> bgr = rgb.CloneAs<Bgr24>();
-
-                            bgr.TryGetSinglePixelSpan(out Span<Bgr24> res);
-                            Span<byte> resBytes = MemoryMarshal.AsBytes<Bgr24>(res.ToArray());
-                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                new ImagePixelFormat(ColorFormat.RGB));
-                        }
-                    case 32:
-                        {
-                            Image<Rgba32> rgba = image as Image<Rgba32>;
-                            Image<Bgra32> bgra = rgba.CloneAs<Bgra32>();
-
-                            bgra.TryGetSinglePixelSpan(out Span<Bgra32> res);
-                            Span<byte> resBytes = MemoryMarshal.AsBytes<Bgra32>(res.ToArray());
-                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                new ImagePixelFormat(ColorFormat.RGBA));
-                        }
-                    case 48:
-                        {
-                            Image<Rgba32> rgba = image as Image<Rgba32>;
-                            Image<Bgra32> bgra = rgba.CloneAs<Bgra32>();
-
-                            (image as Image<Rgb48>).TryGetSinglePixelSpan(out Span<Rgb48> res);
-                            Span<byte> resBytes = MemoryMarshal.AsBytes<Rgb48>(res.ToArray());
-                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                new ImagePixelFormat(ColorFormat.fRGB32));
-                        }
-                    case 64:
-                        {
-                            (image as Image<Rgba64>).TryGetSinglePixelSpan(out Span<Rgba64> res);
-                            Span<byte> resBytes = MemoryMarshal.AsBytes<Rgba64>(res.ToArray());
-                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                new ImagePixelFormat(ColorFormat.fRGBA32));
-                        }
-                    default:
-                        throw new ArgumentException($"{bpp} Bits per pixel not supported!");
-                }
-            }
-            catch (Exception ex)
-            {
-                Diagnostics.Error($"Error loading/converting image", ex);
-                return null;
-            }
         }
     }
 }

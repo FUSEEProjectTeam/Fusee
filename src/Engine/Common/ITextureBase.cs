@@ -1,5 +1,4 @@
-﻿using Fusee.Base.Common;
-using System;
+﻿using System;
 
 namespace Fusee.Engine.Common
 {

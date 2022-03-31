@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Fusee.Base.Imp.Desktop
+namespace Fusee.Base.Imp.Blazor
 {
     /// <summary>
     /// Provides methods for platform specific conversions of file content.

@@ -153,7 +153,7 @@ namespace Fusee.Engine.Core
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             ImageData = imageData;
-            
+
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
             WrapMode = wrapMode;

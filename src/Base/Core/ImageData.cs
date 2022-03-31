@@ -143,7 +143,8 @@ namespace Fusee.Base.Core
                                 PixelData[destinationIndex + i + 2] = srcLineBytes[i + 2];
                                 PixelData[destinationIndex + i + 3] = byte.MaxValue;
                             }
-                        },
+                        }
+                        ,
                         ColorFormat.Intensity => delegate (byte[] srcLineBytes, int destinationIndex)
                         {
                             for (int i = 0; i < srcLineBytes.Length; i++) // jump 1 unit per loop because we want to copy src Intensity to dst RGBA
@@ -153,7 +154,8 @@ namespace Fusee.Base.Core
                                 PixelData[destinationIndex + i + 2] = srcLineBytes[i];
                                 PixelData[destinationIndex + i + 3] = byte.MaxValue;
                             }
-                        },
+                        }
+                        ,
                         _ => throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGBA"),
                     },
                     ColorFormat.RGB => src.PixelFormat.ColorFormat switch
@@ -178,7 +180,8 @@ namespace Fusee.Base.Core
                                 PixelData[destinationIndex + i + 1] = srcLineBytes[i];
                                 PixelData[destinationIndex + i + 2] = srcLineBytes[i];
                             }
-                        },
+                        }
+                        ,
                         _ => throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGB"),
                     },
                     ColorFormat.Intensity => src.PixelFormat.ColorFormat switch
@@ -194,7 +197,8 @@ namespace Fusee.Base.Core
                                 int b = srcLineBytes[destinationIndex + i + 2];
                                 PixelData[destinationIndex + i] = (byte)((r + r + b + g + g + g) / 6);
                             }
-                        },
+                        }
+                        ,
                         ColorFormat.RGBA => delegate (byte[] srcLineBytes, int destinationIndex)
                         {
                             for (int i = 0; i < srcLineBytes.Length; i += 4) // jump 4 units per loop because we want to copy src RGBA to dst Intensity
@@ -206,7 +210,8 @@ namespace Fusee.Base.Core
                                 int b = srcLineBytes[destinationIndex + i + 2];
                                 PixelData[destinationIndex + i] = (byte)((r + r + b + g + g + g) / 6);
                             }
-                        },
+                        }
+                        ,
                         _ => throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGB"),
                     },
                     _ => throw new ArgumentOutOfRangeException(ToString(), "Unknown destination pixel format"),
