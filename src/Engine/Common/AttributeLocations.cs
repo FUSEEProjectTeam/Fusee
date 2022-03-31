@@ -11,50 +11,70 @@
         /// </summary>
         public static readonly int VertexAttribLocation = 0;
 
+        public static readonly int VertexAttribBindingIndex = VertexAttribLocation; 
+
         /// <summary>
         /// The color attribute location index.
         /// </summary>
         public static readonly int ColorAttribLocation = 1;
+
+        public static readonly int ColorAttribBindingIndex = ColorAttribLocation;
 
         /// <summary>
         /// The color attribute location index.
         /// </summary>
         public static readonly int Color1AttribLocation = 2;
 
+        public static readonly int Color1AttribBindingIndex = Color1AttribLocation;
+
         /// <summary>
         /// The color attribute location index.
         /// </summary>
         public static readonly int Color2AttribLocation = 3;
+
+        public static readonly int Color2AttribBindingIndex = Color2AttribLocation;
 
         /// <summary>
         /// The normal attribute location index.
         /// </summary>
         public static readonly int NormalAttribLocation = 4;
 
+        public static readonly int NormalAttribBindingIndex = NormalAttribLocation;
+
         /// <summary>
         /// The uv attribute location index.
         /// </summary>
         public static readonly int UvAttribLocation = 5;
+
+        public static readonly int UvAttribBindingIndex = UvAttribLocation;
 
         /// <summary>
         /// The tangent attribute location index.
         /// </summary>
         public static readonly int TangentAttribLocation = 6;
 
+        public static readonly int TangentAttribBindingIndex = TangentAttribLocation;
+
         /// <summary>
         /// The bitangent attribute location index.
         /// </summary>
         public static readonly int BitangentAttribLocation = 7;
+
+        public static readonly int BitangentAttribBindingIndex = BitangentAttribLocation;
 
         /// <summary>
         /// The bone weight attribute location index.
         /// </summary>
         public static readonly int BoneWeightAttribLocation = 8;
 
+        public static readonly int BoneWeightAttribBindingIndex = BoneWeightAttribLocation;
+
         /// <summary>
         /// The bone index attribute location index.
         /// </summary>
         public static readonly int BoneIndexAttribLocation = 9;
+
+        public static readonly int BoneIndexAttribAttribBindingIndex = BoneIndexAttribLocation;
 
         /// <summary>
         /// First attribute location for the instanced model matrix.

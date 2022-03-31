@@ -167,6 +167,9 @@ namespace Fusee.Engine.Core
             if (mesh.VerticesSet)
                 _renderContextImp.SetVertices(meshImp, mesh.Vertices);
 
+            if (mesh.TrianglesSet)
+                _renderContextImp.SetTriangles(meshImp, mesh.Triangles);
+
             if (mesh.UVsSet)
                 _renderContextImp.SetUVs(meshImp, mesh.UVs);
 
@@ -187,9 +190,6 @@ namespace Fusee.Engine.Core
 
             if (mesh.BoneWeightsSet)
                 _renderContextImp.SetBoneWeights(meshImp, mesh.BoneWeights);
-
-            if (mesh.TrianglesSet)
-                _renderContextImp.SetTriangles(meshImp, mesh.Triangles);
 
             if (mesh.TangentsSet)
                 _renderContextImp.SetTangents(meshImp, mesh.Tangents);
