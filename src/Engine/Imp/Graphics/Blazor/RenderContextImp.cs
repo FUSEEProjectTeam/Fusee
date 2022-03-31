@@ -130,13 +130,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             };
         }
 
-        private static TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
+        private static TexturePixelInfo GetTexturePixelInfo(ImagePixelFormat pxFormat)
         {
             uint internalFormat;
             uint format;
             uint pxType;
 
-            switch (tex.PixelFormat.ColorFormat)
+            switch (pxFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = RGBA;
@@ -189,7 +189,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     pxType = FLOAT;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {tex.PixelFormat.ColorFormat}");
+                    throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {pxFormat.ColorFormat}");
             }
 
             return new TexturePixelInfo()
@@ -201,7 +201,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             };
         }
 
-        private static Array GetEmptyArray(ITextureBase tex)
+        private static Array GetEmptyArray(IWritableTexture tex)
         {
             return tex.PixelFormat.ColorFormat switch
             {
@@ -233,7 +233,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int magFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             var data = GetEmptyArray(img);
 
@@ -274,11 +274,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var maxFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
-            if (img.DoGenerateMipMaps && img.PixelFormat.ColorFormat != ColorFormat.Intensity)
+            if (img.DoGenerateMipMaps && img.ImageData.PixelFormat.ColorFormat != ColorFormat.Intensity)
                 gl2.GenerateMipmap(TEXTURE_2D);
 
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, minFilter);
@@ -289,7 +289,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             uint err = gl2.GetError();
             if (err != 0)
-                throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {img.PixelFormat.ColorFormat}, BPP {img.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
+                throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {img.ImageData.PixelFormat.ColorFormat}, BPP {img.ImageData.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
 
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
@@ -311,7 +311,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var magFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             Array imgData = GetEmptyArray(img);
 
@@ -350,13 +350,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            TexturePixelInfo info = GetTexturePixelInfo(img);
+            TexturePixelInfo info = GetTexturePixelInfo(img.ImageData.PixelFormat);
             uint format = info.Format;
             uint pxType = info.PxType;
 
             // copy the bytes from img to GPU texture
-            int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
-            IEnumerator<ScanLine> scanlines = img.ScanLines(startX, startY, width, height);
+            int bytesTotal = width * height * img.ImageData.PixelFormat.BytesPerPixel;
+            IEnumerator<ScanLine> scanlines = img.ImageData.ScanLines(startX, startY, width, height);
             byte[] bytes = new byte[bytesTotal];
             int offset = 0;
             do
@@ -2374,7 +2374,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             var data = new uint[img.Width * img.Height * img.Layers];
 
