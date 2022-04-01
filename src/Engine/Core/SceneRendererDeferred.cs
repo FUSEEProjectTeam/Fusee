@@ -181,12 +181,7 @@ namespace Fusee.Engine.Core
                         return;
                 }
             }
-
-            //var wc = CurrentNode.GetWeights();
-            //if (wc != null)
-            //    AddWeightToMesh(mesh, wc);
-
-            var renderStatesBefore = _rc.CurrentRenderState.Copy();
+            
             if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
             {
                 if (mesh.MeshType == PrimitiveType.Points)

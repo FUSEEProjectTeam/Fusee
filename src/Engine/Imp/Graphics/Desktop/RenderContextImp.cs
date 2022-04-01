@@ -68,11 +68,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             //Needed for rendering more than one viewport.
             GL.Enable(EnableCap.ScissorTest);
-            //Needed for rendering points
-            GL.Enable(EnableCap.ProgramPointSize);
-            GL.Enable(EnableCap.VertexProgramPointSize);
-            //Needed for rendering smooth lines
-            GL.Enable(EnableCap.LineSmooth);
 
             GL.GetInteger(GetPName.BlendSrcAlpha, out int blendSrcAlpha);
             GL.GetInteger(GetPName.BlendDstAlpha, out int blendDstAlpha);
@@ -1530,7 +1525,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.ColorAttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
-                GL.VertexArrayAttribFormat(vao, AttributeLocations.ColorAttribLocation, 4, VertexAttribType.Float, false, 0);
+                GL.VertexArrayAttribFormat(vao, AttributeLocations.ColorAttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
                 GL.VertexArrayAttribBinding(vao, AttributeLocations.ColorAttribLocation, AttributeLocations.ColorAttribBindingIndex);
             }
             else
@@ -1572,10 +1567,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ApplicationException("Create the VAO first!");
                 }
                 GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
-                GL.VertexArrayVertexBuffer(vao, AttributeLocations.Color1AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
+                GL.VertexArrayVertexBuffer(vao, AttributeLocations.ColorAttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
-                GL.VertexArrayAttribFormat(vao, AttributeLocations.Color1AttribLocation, 4, VertexAttribType.Float, false, 0);
-                GL.VertexArrayAttribBinding(vao, AttributeLocations.Color1AttribLocation, AttributeLocations.Color1AttribBindingIndex);
+                GL.VertexArrayAttribFormat(vao, AttributeLocations.ColorAttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
+                GL.VertexArrayAttribBinding(vao, AttributeLocations.ColorAttribLocation, AttributeLocations.ColorAttribBindingIndex);
             }
             else
             {
@@ -1616,10 +1611,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ApplicationException("Create the VAO first!");
                 }
                 GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
-                GL.VertexArrayVertexBuffer(vao, AttributeLocations.Color2AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
+                GL.VertexArrayVertexBuffer(vao, AttributeLocations.ColorAttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
-                GL.VertexArrayAttribFormat(vao, AttributeLocations.Color2AttribLocation, 4, VertexAttribType.Float, false, 0);
-                GL.VertexArrayAttribBinding(vao, AttributeLocations.Color2AttribLocation, AttributeLocations.Color2AttribBindingIndex);
+                GL.VertexArrayAttribFormat(vao, AttributeLocations.ColorAttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
+                GL.VertexArrayAttribBinding(vao, AttributeLocations.ColorAttribLocation, AttributeLocations.ColorAttribBindingIndex);
             }
             else
             {
@@ -2000,13 +1995,35 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 case RenderState.FillMode:
                     {
-                        var pm = (FillMode)value switch
+                        PolygonMode pm;
+
+                        switch ((FillMode)value)
                         {
-                            FillMode.Point => PolygonMode.Point,
-                            FillMode.Wireframe => PolygonMode.Line,
-                            FillMode.Solid => PolygonMode.Fill,
-                            _ => throw new ArgumentOutOfRangeException(nameof(value)),
-                        };
+                            case FillMode.Point:
+                                pm = PolygonMode.Point;
+                                //Needed for rendering points
+                                if (!_isPtRenderingEnabled)
+                                {
+                                    GL.Enable(EnableCap.ProgramPointSize);
+                                    GL.Enable(EnableCap.VertexProgramPointSize);
+                                    _isPtRenderingEnabled = true;
+                                }
+                                break;
+                            case FillMode.Wireframe:
+                                pm = PolygonMode.Line;
+                                if (!_isLineSmoothEnabled)
+                                {
+                                    //Needed for rendering smooth lines
+                                    GL.Enable(EnableCap.LineSmooth);
+                                    _isLineSmoothEnabled = true;
+                                }
+                                break;
+                            case FillMode.Solid:
+                                pm = PolygonMode.Fill;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(value));
+                        }
                         GL.PolygonMode(MaterialFace.FrontAndBack, pm);
                         return;
                     }

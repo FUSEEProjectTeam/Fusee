@@ -74,7 +74,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.InternalUniform)]
-        public float2 FUSEE_ViewportPx;
+        public int2 FUSEE_ViewportPx;
 
         #endregion
 

@@ -2,7 +2,7 @@
 
 precision highp float;
 
-uniform vec2 FUSEE_ViewportPx;
+uniform ivec2 FUSEE_ViewportPx;
 uniform int PointSizeMode;
 uniform int PointSize;
 
@@ -29,7 +29,7 @@ void main(void)
 
 	float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]);
 	float slope = tan(fov / 2.0);
-	float projFactor = ((1.0 / slope)/ -vViewPos.z)* FUSEE_ViewportPx.y / 2.0;
+	float projFactor = ((1.0 / slope)/ -vViewPos.z)* float(FUSEE_ViewportPx.y) / 2.0;
 	vWorldSpacePointRad = float(PointSize) / projFactor;
 
 	float minPtSize = 1.0;
@@ -51,7 +51,7 @@ void main(void)
 			//In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away
 			
 			//Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!
-			ptSize = ((FUSEE_ViewportPx.y / 2.0) * (float(PointSize) / ( slope * vViewPos.z))) / pointSizeDivisor;
+			ptSize = ((float(FUSEE_ViewportPx.y) / 2.0) * (float(PointSize) / ( slope * vViewPos.z))) / pointSizeDivisor;
 			break;
 		}
 	}
