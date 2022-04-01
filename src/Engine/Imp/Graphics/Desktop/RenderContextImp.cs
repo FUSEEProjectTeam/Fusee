@@ -1226,10 +1226,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 vbo = ((MeshImp)mr).VertexBufferObject;
                 GL.NamedBufferSubData(vbo, IntPtr.Zero, vertsBytes, vertices);
             }
-
+#if DEBUG
             GL.GetNamedBufferParameter(vbo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1270,9 +1271,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(tBo, IntPtr.Zero, tangentBytes, tangents);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(tBo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != tangentBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1314,9 +1317,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(btBo, IntPtr.Zero, bitangentBytes, bitangents);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(btBo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != bitangentBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1358,9 +1363,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(nBo, IntPtr.Zero, normsBytes, normals);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(nBo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != normsBytes)
                 throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1402,9 +1409,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(biBo, IntPtr.Zero, indicesBytes, boneIndices);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(biBo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != indicesBytes)
                 throw new ApplicationException(string.Format("Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.", indicesBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1446,9 +1455,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(wBo, IntPtr.Zero, weightsBytes, boneWeights);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(wBo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != weightsBytes)
                 throw new ApplicationException(string.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1490,9 +1501,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(uvBo, IntPtr.Zero, uvsBytes, uvs);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(uvBo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != uvsBytes)
                 throw new ApplicationException(string.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1534,9 +1547,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(cBo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colorBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colorBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1578,9 +1593,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(cBo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colorBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colorBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1622,9 +1639,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(cBo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colorBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colorBytes, vboBytes));
+#endif
         }
 
         /// <summary>
@@ -1665,9 +1684,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferSubData(ibo, IntPtr.Zero, trisBytes, triangleIndices);
             }
 
+#if DEBUG
             GL.GetNamedBufferParameter(ibo, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
+#endif
         }
 
         /// <summary>
