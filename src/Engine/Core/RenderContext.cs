@@ -1246,58 +1246,61 @@ namespace Fusee.Engine.Core
         /// <param name="param">The shader parameter.</param>
         private void SetShaderParamT(in IFxParam param)
         {
+            var val = param.UniformValueGetter();
+            if (val == null) return;
+
             if (param.IsGlobal || param.HasValueChanged)
             {
-                if (param.UniformValueGetter() is bool boolVal)
+                if (val is bool boolVal)
                 {
                     _rci.SetShaderParam(param.Handle, boolVal ? 1 : 0);
                 }
-                else if (param.UniformValueGetter() is int intVal)
+                else if (val is int intVal)
                 {
                     _rci.SetShaderParam(param.Handle, in intVal);
                 }
-                else if (param.UniformValueGetter() is float floatVal)
+                else if (val is float floatVal)
                 {
                     _rci.SetShaderParam(param.Handle, in floatVal);
                 }
-                else if (param.UniformValueGetter() is double doubleVal)
+                else if (val is double doubleVal)
                 {
                     _rci.SetShaderParam(param.Handle, in doubleVal);
                 }
-                else if (param.UniformValueGetter() is float2 float2Val)
+                else if (val is float2 float2Val)
                 {
                     _rci.SetShaderParam(param.Handle, in float2Val);
                 }
-                else if (param.UniformValueGetter() is float3 float3Val)
+                else if (val is float3 float3Val)
                 {
                     _rci.SetShaderParam(param.Handle, in float3Val);
                 }
-                else if (param.UniformValueGetter() is float4 float4Val)
+                else if (val is float4 float4Val)
                 {
                     _rci.SetShaderParam(param.Handle, in float4Val);
                 }
-                else if (param.UniformValueGetter() is float4x4 float4x4Val)
+                else if (val is float4x4 float4x4Val)
                 {
                     _rci.SetShaderParam(param.Handle, float4x4Val);
                 }
-                else if (param.UniformValueGetter() is int2 int2Val)
+                else if (val is int2 int2Val)
                 {
                     _rci.SetShaderParam(param.Handle, in int2Val);
                 }
 
-                else if (param.UniformValueGetter() is IWritableArrayTexture writableArrayTex)
+                else if (val is IWritableArrayTexture writableArrayTex)
                 {
                     SetShaderParamTexture(param.Handle, (WritableArrayTexture)writableArrayTex);
                 }
-                else if (param.UniformValueGetter() is IWritableCubeMap writableCubeTex)
+                else if (val is IWritableCubeMap writableCubeTex)
                 {
                     SetShaderParamTexture(param.Handle, (WritableCubeMap)writableCubeTex);
                 }
-                else if (param.UniformValueGetter() is IWritableTexture[] writableTexArray)
+                else if (val is IWritableTexture[] writableTexArray)
                 {
                     SetShaderParamWritableTextureArray(param.Handle, (WritableTexture[])writableTexArray);
                 }
-                else if (param.UniformValueGetter() is IWritableTexture writableTex)
+                else if (val is IWritableTexture writableTex)
                 {
                     var wt = (WritableTexture)writableTex;
                     if (wt.AsImage)
@@ -1305,62 +1308,62 @@ namespace Fusee.Engine.Core
                     else
                         SetShaderParamTexture(param.Handle, wt);
                 }
-                else if (param.UniformValueGetter() is ITexture tex)
+                else if (val is ITexture tex)
                 {
                     SetShaderParamTexture(param.Handle, (Texture)tex);
                 }
-                else if (param.UniformValueGetter() is IStorageBuffer buffer)
+                else if (val is IStorageBuffer buffer)
                 {
                     ConnectBufferToShaderStorage(buffer, param.Name);
                 }
 
-                else if (param.UniformValueGetter() is float4x4[] float4x4ArrayVal)
+                else if (val is float4x4[] float4x4ArrayVal)
                 {
                     _rci.SetShaderParam(param.Handle, float4x4ArrayVal);
                 }
-                else if (param.UniformValueGetter() is float2[] float2ArrayVal)
+                else if (val is float2[] float2ArrayVal)
                 {
                     _rci.SetShaderParam(param.Handle, float2ArrayVal);
                 }
-                else if (param.UniformValueGetter() is float3[] float3ArrayVal)
+                else if (val is float3[] float3ArrayVal)
                 {
                     _rci.SetShaderParam(param.Handle, float3ArrayVal);
                 }
-                else if (param.UniformValueGetter() is float4[] float4ArrayVal)
+                else if (val is float4[] float4ArrayVal)
                 {
                     _rci.SetShaderParam(param.Handle, float4ArrayVal);
                 }
 
                 else
                 {
-                    throw new ArgumentException($"{param} has an unknown type {param.UniformValueGetter().GetType().Name}.");
+                    throw new ArgumentException($"{param} has an unknown type {val.GetType().Name}.");
                 }
             }
             else
             {
-                if (param.UniformValueGetter() is ITextureBase textureBase)
+                if (val is ITextureBase textureBase)
                 {
                     if (textureBase is IWritableArrayTexture)
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableArrayTexture)textureBase);
                         _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.ArrayTexture);
                     }
-                    else if (param.UniformValueGetter() is IWritableCubeMap writableCubeTex)
+                    else if (val is IWritableCubeMap writableCubeTex)
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableCubeMap)writableCubeTex);
                         _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.TextureCubeMap);
                     }
-                    else if (param.UniformValueGetter() is IWritableTexture writableTex)
+                    else if (val is IWritableTexture writableTex)
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableTexture)writableTex);
                         _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
                     }
-                    else if (param.UniformValueGetter() is ITexture tex)
+                    else if (val is ITexture tex)
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture)tex);
                         _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
                     }
-                    else if (param.UniformValueGetter() is IWritableTexture[] writableTexArray)
+                    else if (val is IWritableTexture[] writableTexArray)
                     {
                         foreach (var texture in (WritableTexture[])writableTexArray)
                         {
