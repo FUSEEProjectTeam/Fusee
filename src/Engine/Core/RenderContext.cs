@@ -1750,26 +1750,19 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh mesh, bool doRenderForward = true)
         {
-            try
-            {
-                var cFx = GetCompiledFxForRenderMethod(doRenderForward);
-                SetCompiledFx(cFx.GpuHandle);
-                SetRenderStateSet(_currentEffect.RendererStates);
-                SetGlobalParamsInCurrentFx(cFx);
-                UpdateAllActiveFxParams(cFx);
+            var cFx = GetCompiledFxForRenderMethod(doRenderForward);
+            SetCompiledFx(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+            SetGlobalParamsInCurrentFx(cFx);
+            UpdateAllActiveFxParams(cFx);
 
-                var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
-                _rci.Render(meshImp);
+            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
+            _rci.Render(meshImp);
 
-                // After rendering always cleanup pending meshes, textures and shader effects
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
-                _effectManager.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass ", ex);
-            }
+            // After rendering always cleanup pending meshes, textures and shader effects
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+            _effectManager.Cleanup();
         }
 
         /// <summary>
@@ -1783,26 +1776,19 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(GpuMesh mesh, bool doRenderForward = true)
         {
-            try
-            {
-                var cFx = GetCompiledFxForRenderMethod(doRenderForward);
-                SetCompiledFx(cFx.GpuHandle);
-                SetRenderStateSet(_currentEffect.RendererStates);
-                SetGlobalParamsInCurrentFx(cFx);
-                UpdateAllActiveFxParams(cFx);
+            var cFx = GetCompiledFxForRenderMethod(doRenderForward);
+            SetCompiledFx(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+            SetGlobalParamsInCurrentFx(cFx);
+            UpdateAllActiveFxParams(cFx);
 
-                var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
-                _rci.Render(meshImp);
+            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
+            _rci.Render(meshImp);
 
-                // After rendering always cleanup pending meshes, textures and shader effects
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
-                _effectManager.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass ", ex);
-            }
+            // After rendering always cleanup pending meshes, textures and shader effects
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+            _effectManager.Cleanup();
         }
 
         private float2 CalculateClippingPlanesFromProjection()

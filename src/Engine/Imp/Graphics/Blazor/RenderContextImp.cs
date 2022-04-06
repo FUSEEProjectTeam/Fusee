@@ -285,7 +285,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int glWrapMode = GetWrapMode(img.WrapMode);
             TexturePixelInfo pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            gl.PixelStorei(UNPACK_ALIGNMENT, pxInfo.RowAlignment);
+            gl2.PixelStorei(UNPACK_ALIGNMENT, pxInfo.RowAlignment);
             gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
             if (img.DoGenerateMipMaps && img.ImageData.PixelFormat.ColorFormat != ColorFormat.Intensity)
