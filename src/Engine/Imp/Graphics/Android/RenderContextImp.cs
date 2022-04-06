@@ -201,6 +201,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             PixelFormat format;
             PixelType pxType;
 
+            //The wrong row alignment will lead to malformed textures.
+            //See https://www.khronos.org/opengl/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
+            //and https://www.khronos.org/opengl/wiki/Pixel_Transfer#Pixel_layout
+            int rowAlignment = 4;
+
             switch (pixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
@@ -213,12 +218,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
+                    rowAlignment = 1;
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
                     pxType = PixelType.UnsignedByte;
+                    rowAlignment = 1;
                     break;
 
                 case ColorFormat.Depth24:
@@ -236,6 +243,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
+                    rowAlignment = 1;
                     break;
 
                 case ColorFormat.fRGB32:
@@ -293,7 +301,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType
+                PxType = pxType,
+                RowAlignment = rowAlignment
             };
         }
 
@@ -380,6 +389,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
             if (img.DoGenerateMipMaps)

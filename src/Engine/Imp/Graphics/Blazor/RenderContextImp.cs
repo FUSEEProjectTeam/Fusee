@@ -136,6 +136,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             uint format;
             uint pxType;
 
+            //The wrong row alignment will lead to malformed textures.
+            //See https://www.khronos.org/opengl/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
+            //and https://www.khronos.org/opengl/wiki/Pixel_Transfer#Pixel_layout
+            int rowAlignment = 4;
+
             switch (pxFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
@@ -147,11 +152,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     internalFormat = RGB;
                     format = RGB;
                     pxType = UNSIGNED_BYTE;
+                    rowAlignment = 1;
                     break;
                 case ColorFormat.Intensity:
                     internalFormat = R8;
                     format = RED;
                     pxType = UNSIGNED_BYTE;
+                    rowAlignment = 1;
                     break;
                 case ColorFormat.Depth24:
                     internalFormat = DEPTH_COMPONENT24;
@@ -167,6 +174,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     internalFormat = RGBA8UI;
                     format = RGBA;
                     pxType = UNSIGNED_INT;
+                    rowAlignment = 1;
                     break;
                 case ColorFormat.fRGB32:
                     throw new NotSupportedException("WebGL 2.0: fRGB32 not supported");
@@ -196,7 +204,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType
+                PxType = pxType,
+                RowAlignment = rowAlignment
 
             };
         }
@@ -276,6 +285,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int glWrapMode = GetWrapMode(img.WrapMode);
             TexturePixelInfo pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
+            gl.PixelStorei(UNPACK_ALIGNMENT, pxInfo.RowAlignment);
             gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
             if (img.DoGenerateMipMaps && img.ImageData.PixelFormat.ColorFormat != ColorFormat.Intensity)

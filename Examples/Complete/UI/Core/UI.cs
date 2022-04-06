@@ -384,8 +384,8 @@ namespace Fusee.Examples.UI.Core
 
             _fontMap = new FontMap(fontLato, 24);
 
-            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians_300x500.jpg"));
-            var bltScrImgData = AssetStorage.Get<ImageData>("censored_79_16.jpg");
+            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians_297x500.jpg"));
+            var bltScrImgData = AssetStorage.Get<ImageData>("censored_rgba.png");
             _bltDestinationTex.Blt(210, 225, bltScrImgData);
 
             _btnCanvas = new GuiButton
