@@ -1306,14 +1306,7 @@ namespace Fusee.Engine.Core
                     CreateShaderForShaderEffect(shFx);
                     break;
                 case SurfaceEffectBase surfFx:
-                    if (surfFx is SurfaceEffect || surfFx is SurfaceEffectPointCloud)
-                        CreateShaderForSurfaceEffect(surfFx);
-                    else if (surfFx is SurfaceEffectInstanced)
-                    {
-
-                    }
-                    else
-                        throw new ArgumentException($"{surfFx} is of unknown type {surfFx.GetType().Name}");
+                    CreateShaderForSurfaceEffect(surfFx);
                     break;
             }
 
@@ -1892,32 +1885,6 @@ namespace Fusee.Engine.Core
             UpdateAllActiveFxParams(cFx);
 
             _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
-
-            // After rendering always cleanup pending meshes, textures and shader effects
-            _meshManager.Cleanup();
-            _textureManager.Cleanup();
-            _effectManager.Cleanup();
-
-        }
-
-        /// <summary>
-        /// Renders the specified mesh.
-        /// </summary>
-        /// <param name="mesh">The mesh that should be rendered.</param>
-        /// <param name="doRenderForward">Is a forward or deferred renderer used? Will fetch the proper shader for the render method.</param>
-        /// <remarks>
-        /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
-        /// The geometry is transformed and rendered by the currently active shader program.
-        /// </remarks>
-        public void Render(Mesh mesh, InstanceData instanceData, bool doRenderForward = true)
-        {
-            var cFx = GetCompiledFxForRenderMethod(doRenderForward);
-            SetCompiledFx(cFx.GpuHandle);
-            SetRenderStateSet(_currentEffect.RendererStates);
-            UpdateAllActiveFxParams(cFx);
-
-            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
-            _rci.Render(meshImp);
 
             // After rendering always cleanup pending meshes, textures and shader effects
             _meshManager.Cleanup();

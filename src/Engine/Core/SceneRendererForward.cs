@@ -655,25 +655,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="effect">The <see cref="Effect"/></param>
         [VisitMethod]
-        public void RenderEffectInstanced(SurfaceEffectInstanced effect)
-        {
-            if (HasNumberOfLightsChanged)
-            {
-                //change #define MAX_LIGHTS... or rebuild shader effect?
-                HasNumberOfLightsChanged = false;
-            }
-            _state.Effect = effect;
-            _rc.SetEffect(_state.Effect, true);
-            _renderInstanced = true;
-        }
-        private bool _renderInstanced;
-
-
-        /// <summary>
-        /// If a ShaderEffect is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
-        /// </summary>
-        /// <param name="effect">The <see cref="Effect"/></param>
-        [VisitMethod]
         public void RenderEffect(Effect effect)
         {
             if (HasNumberOfLightsChanged)
@@ -683,7 +664,6 @@ namespace Fusee.Engine.Core
             }
             _state.Effect = effect;
             _rc.SetEffect(_state.Effect, true);
-            _renderInstanced = false;
         }
 
         /// <summary>
@@ -712,11 +692,8 @@ namespace Fusee.Engine.Core
             //var wc = CurrentNode.GetWeights();
             //if (wc != null)
             //    AddWeightToMesh(mesh, wc);
-            
-            if (_renderInstanced)
-                _rc.Render(mesh, ((SurfaceEffectInstanced)_state.Effect).InstanceData, true);
-            else
-                _rc.Render(mesh, true);
+           
+            _rc.Render(mesh, true);
         }
 
         /// <summary>
