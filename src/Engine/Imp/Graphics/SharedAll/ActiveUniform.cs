@@ -1,6 +1,13 @@
-﻿namespace Fusee.Engine.Common
+﻿using Fusee.Engine.Common;
+using System.Diagnostics;
+
+namespace Fusee.Engine.Imp.SharedAll
 {
-    public interface IFxParam
+    /// <summary>
+    /// Internally used shader parameters.
+    /// </summary>
+    [DebuggerDisplay("Name = {Name}")]
+    public struct ActiveUniform : IActiveUniform
     {
         /// <summary>
         /// The Handle to be used when setting or getting the parameter value from the shader.
@@ -16,9 +23,14 @@
         /// </summary>
         public string Name
         {
-            get;
-            set;
+            get { return _name; }
+            set
+            {
+                _name = value;
+                Hash = value.GetHashCode();
+            }
         }
+        private string _name;
 
         /// <summary>
         /// Contains the number of items stored under this parameter name. Only differs from 1 if the parameter is a uniform array.
@@ -32,7 +44,7 @@
         /// <summary>
         /// The hash code of this ShaderParamInfo.
         /// </summary>
-        public int Hash { get; }
+        public int Hash { get; private set; }
 
         public GetUniformValue UniformValueGetter { get; set; }
 

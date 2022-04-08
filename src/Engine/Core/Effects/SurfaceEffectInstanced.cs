@@ -39,45 +39,6 @@ namespace Fusee.Engine.Core.Effects
     {
         public InstanceData InstanceData;
 
-        #region Internal/Global Uniforms (set by the Engine)
-
-        /// <summary>
-        /// The shader shard containing the model matrix uniform which should NOT be settable via property because they get updated internally.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.InternalUniform)]
-        public float4x4 FUSEE_M;
-
-        /// <summary>
-        /// The shader shard containing the view matrix uniform which should NOT be settable via property because they get updated internally.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.InternalUniform)]
-        public float4x4 FUSEE_V;
-
-        /// <summary>
-        /// The shader shard containing the projection matrix uniform which should NOT be settable via property because they get updated internally.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.InternalUniform)]
-        public float4x4 FUSEE_P;
-
-        /// <summary>
-        /// Used to linearize the values form the depth map.
-        /// </summary>
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.InternalUniform)]
-        public float2 FUSEE_ClippingPlanes;
-
-        /// <summary>
-        /// The width and height of the render canvas in px.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.InternalUniform)]
-        public int2 FUSEE_ViewportPx;
-
-        #endregion
-
         /// <summary>
         /// Creates a new instance of type DefaultSurfaceEffect.
         /// </summary>
@@ -100,10 +61,6 @@ namespace Fusee.Engine.Core.Effects
                 SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, input.ShadingModel);
             else
                 SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(VertShards.SurfOutBody(input), input.ShadingModel);
-
-            FUSEE_M = float4x4.Identity;
-            FUSEE_V = float4x4.Identity;
-            FUSEE_P = float4x4.Identity;
             HandleFieldsAndProps();
         }
     }

@@ -702,16 +702,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Returns a List of type <see cref="ShaderParamInfo"/> for all ShaderStorageBlocks
         /// </summary>
         /// <param name="shaderProgram">The shader program to query.</param>
-        public IList<FxParam> GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        public IList<ActiveUniform> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
-            var paramList = new List<FxParam>();
+            var paramList = new List<ActiveUniform>();
             var sProg = (ShaderHandle)shaderProgram;
             GL.GetProgramInterface(sProg.Handle, All.ShaderStorageBlock, All.MaxNameLength, out int ssboMaxLen);
             GL.GetProgramInterface(sProg.Handle, All.ShaderStorageBlock, All.ActiveResources, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
-                var param = new FxParam();
+                var param = new ActiveUniform();
                 param.HasValueChanged = true;
                 var name = new StringBuilder();
                 GL.GetProgramResourceName(sProg.Handle, All.ShaderStorageBlock, i, ssboMaxLen, out _, name);
@@ -731,16 +731,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public IList<FxParam> GetActiveUniformsList(IShaderHandle shaderProgram)
+        public IList<ActiveUniform> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             var sProg = (ShaderHandle)shaderProgram;
-            var paramList = new List<FxParam>();
+            var paramList = new List<ActiveUniform>();
 
             GL.GetProgram(sProg.Handle, ProgramParameter.ActiveUniforms, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
-                var param = new FxParam();
+                var param = new ActiveUniform();
                 param.HasValueChanged = true;
                 StringBuilder sbName = new(512);
                 GL.GetActiveUniform(sProg.Handle, i, 511, out _, out var size, out ActiveUniformType uType, sbName);
@@ -2588,12 +2588,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
             return depth;
         }
 
-        IList<IFxParam> IRenderContextImp.GetActiveUniformsList(IShaderHandle shaderProgram)
+        IList<IActiveUniform> IRenderContextImp.GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             throw new NotImplementedException();
         }
 
-        IList<IFxParam> IRenderContextImp.GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        IList<IActiveUniform> IRenderContextImp.GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
             throw new NotImplementedException();
         }

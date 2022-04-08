@@ -437,47 +437,47 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        private void HandleUniform(ShaderCategory shaderCategory, string uniformName, Type type)
+        internal void HandleUniform(ShaderCategory shaderCategory, string uniformName, Type type, ShardCategory shardCategory = ShardCategory.Property)
         {
             var uniform = "uniform ";
             switch (shaderCategory)
             {
                 case ShaderCategory.Vertex:
-                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Fragment:
-                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Geometry:
-                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case (ShaderCategory.Vertex | ShaderCategory.Fragment):
-                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case (ShaderCategory.Fragment | ShaderCategory.Geometry):
-                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case (ShaderCategory.Vertex | ShaderCategory.Geometry):
-                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case (ShaderCategory.Vertex | ShaderCategory.Geometry | ShaderCategory.Fragment):
-                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
 

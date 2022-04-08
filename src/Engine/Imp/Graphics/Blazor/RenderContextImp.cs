@@ -561,10 +561,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public IList<IFxParam> GetActiveUniformsList(IShaderHandle shaderProgram)
+        public IList<IActiveUniform> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             ShaderHandle sProg = (ShaderHandle)shaderProgram;
-            List<IFxParam> paramList = new();
+            List<IActiveUniform> paramList = new();
 
             int nParams = gl2.GetProgramParameter(sProg.Handle, ACTIVE_UNIFORMS);
 
@@ -572,7 +572,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 WebGLActiveInfo activeInfo = gl2.GetActiveUniform(sProg.Handle, i);
 
-                var paramInfo = new FxParam()
+                var paramInfo = new ActiveUniform()
                 {
                     Name = activeInfo.Name,
                     Size = activeInfo.Size,
@@ -2533,7 +2533,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="shaderProgram"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public IList<IFxParam> GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        public IList<IActiveUniform> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
             // compute shader!
             throw new NotImplementedException();

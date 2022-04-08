@@ -693,19 +693,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns a List of type <see cref="FxParam"/> for all ShaderStorageBlocks
+        /// Returns a List of type <see cref="ActiveUniform"/> for all ShaderStorageBlocks
         /// </summary>
         /// <param name="shaderProgram">The shader program to query.</param>
-        public IList<IFxParam> GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        public IList<IActiveUniform> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
-            var paramList = new List<IFxParam>();
+            var paramList = new List<IActiveUniform>();
             var sProg = (ShaderHandle)shaderProgram;
             GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.MaxNameLength, out int ssboMaxLen);
             GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.ActiveResources, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
-                var param = new FxParam
+                var param = new ActiveUniform
                 {
                     HasValueChanged = true
                 };
@@ -726,16 +726,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public IList<IFxParam> GetActiveUniformsList(IShaderHandle shaderProgram)
+        public IList<IActiveUniform> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             var sProg = (ShaderHandle)shaderProgram;
-            var paramList = new List<IFxParam>();
+            var paramList = new List<IActiveUniform>();
 
             GL.GetProgram(sProg.Handle, GetProgramParameterName.ActiveUniforms, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
-                var paramInfo = new FxParam
+                var paramInfo = new ActiveUniform
                 {
                     Name = GL.GetActiveUniform(sProg.Handle, i, out var paramSize, out ActiveUniformType uType),
                     HasValueChanged = true

@@ -127,13 +127,13 @@ namespace Fusee.Engine.Common
         /// uniform parameters that are accessed by either the vertex shader, the pixel shader, or both shaders compiled into
         /// the given shader.
         /// </returns>
-        IList<IFxParam> GetActiveUniformsList(IShaderHandle shaderProgram);
+        IList<IActiveUniform> GetActiveUniformsList(IShaderHandle shaderProgram);
 
         /// <summary>
         /// Get a list of shader storage buffer variables accessed by the given shader.
         /// </summary>
         /// <param name="shaderProgram">The shader program to query for parameters.</param>
-        IList<IFxParam> GetShaderStorageBufferList(IShaderHandle shaderProgram);
+        IList<IActiveUniform> GetShaderStorageBufferList(IShaderHandle shaderProgram);
 
         /// <summary>
         /// Returns an identifier for the named (uniform) parameter used in the specified shader program.

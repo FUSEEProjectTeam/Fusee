@@ -9,6 +9,26 @@ using System.Linq;
 
 namespace Fusee.Engine.Core
 {
+    internal struct GlobalUniform
+    {
+        /// <summary>
+        /// Delegate that points to a method that can return the uniform value.
+        /// </summary>
+        public GetUniformValue Getter;
+
+        /// <summary>
+        /// The name of the uniform parameter.r
+        /// </summary>
+        public string Name;
+
+        /// <summary>
+        /// Uniform arrays that contain structs (eg. the "allLights" array) are a special case
+        /// because every field of the struct needs to have its own Getter but only there is only one uniform parameter declared in the shader code.
+        /// Therefore these getters cannot be used to generate the uniform declaration in glsl.
+        /// </summary>
+        public bool IsStructArray;
+    }
+
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
@@ -65,7 +85,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
         ///</summary>
-        internal Dictionary<int, GetUniformValue> GlobalUniformGetter;
+        internal Dictionary<int, GlobalUniform> GlobalUniforms;
 
         #region RenderState management properties
 
@@ -733,13 +753,7 @@ namespace Fusee.Engine.Core
         #endregion
 
         private int2 _viewportInPx = int2.One;
-
         private float2 _clippingPlanes = float2.One;
-
-        /// <summary>
-        /// Global Uniform array of bone matrices. Set by a SceneRenderer.
-        /// </summary>
-        internal float4x4[] Bones;
 
         /// <summary>
         /// Global Uniform array of <see cref="LightResult"/>s. Updated by a SceneRenderer.
@@ -767,32 +781,216 @@ namespace Fusee.Engine.Core
             _textureManager = new TextureManager(_rci);
             _effectManager = new EffectManager(this);
 
-            GlobalUniformGetter = new()
+            GlobalUniforms = new()
             {
-                { UniformNameDeclarations.ViewHash, () => View },
-                { UniformNameDeclarations.ModelHash, () => Model },
-                { UniformNameDeclarations.ProjectionHash, () => Projection },
-                { UniformNameDeclarations.ModelViewHash, () => ModelView },
-                { UniformNameDeclarations.ModelViewProjectionHash, () => ModelViewProjection },
-                { UniformNameDeclarations.IViewHash, () => InvView },
-                { UniformNameDeclarations.IModelHash, () => InvModel },
-                { UniformNameDeclarations.IModelViewHash, () => InvModelView },
-                { UniformNameDeclarations.IProjectionHash, () => InvProjection },
-                { UniformNameDeclarations.IModelViewProjectionHash, () => InvModelViewProjection },
-                { UniformNameDeclarations.TViewHash, () => TransView },
-                { UniformNameDeclarations.TModelHash, () => TransModel },
-                { UniformNameDeclarations.TModelViewHash, () => TransModelView },
-                { UniformNameDeclarations.TProjectionHash, () => TransProjection },
-                { UniformNameDeclarations.TModelViewProjectionHash, () => TransModelViewProjection },
-                { UniformNameDeclarations.ITViewHash, () => InvTransView },
-                { UniformNameDeclarations.ITModelHash, () => InvTransModel },
-                { UniformNameDeclarations.ITModelViewHash, () => InvTransModelView },
-                { UniformNameDeclarations.ITProjectionHash, () => InvTransProjection },
-                { UniformNameDeclarations.ITModelViewProjectionHash, () => InvTransModelViewProjection },
-                { UniformNameDeclarations.BonesHash, () => Bones },
-                { UniformNameDeclarations.FuseePlatformIdHash, () => (int)_rci.FuseePlatformId },
-                { UniformNameDeclarations.ClippingPlanesHash, () => _clippingPlanes },
-                { UniformNameDeclarations.ViewportPxHash, () => _viewportInPx },
+                {
+                    UniformNameDeclarations.ViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.View,
+                        Getter = () => View,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ModelHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.Model,
+                        Getter = () => Model,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.Projection,
+                        Getter = () => Projection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ModelViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ModelView,
+                        Getter = () => ModelView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ModelViewProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ModelViewProjection,
+                        Getter = () => ModelViewProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.IViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IView,
+                        Getter = () => InvView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.IModelHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IModel,
+                        Getter = () => InvModel,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.IModelViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IModelView,
+                        Getter = () => InvModelView,
+                        IsStructArray = false
+                    }
+                },
+                {
+
+                    UniformNameDeclarations.IProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IProjection,
+                        Getter = () => InvProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.IModelViewProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IModelViewProjection,
+                        Getter = () => InvModelViewProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TView,
+                        Getter = () => TransView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TModelHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TModel,
+                        Getter = () => TransModel,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TModelViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TModelView,
+                        Getter = () => TransModelView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TProjection,
+                        Getter = () => TransProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TModelViewProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TModelViewProjection,
+                        Getter = () => TransModelViewProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITView,
+                        Getter = () => InvTransView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITModelHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITModel,
+                        Getter = () => InvTransModel,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITModelViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITModelView,
+                        Getter = () => InvTransModelView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITProjection,
+                        Getter = () => InvTransProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITModelViewProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITModelViewProjection,
+                        Getter = () => InvTransModelViewProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.FuseePlatformIdHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.FuseePlatformId,
+                        Getter = () => (int)_rci.FuseePlatformId,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ClippingPlanesHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ClippingPlanes,
+                        Getter = () => _clippingPlanes,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ViewportPxHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ViewportPx,
+                        Getter = () => _viewportInPx,
+                        IsStructArray = false
+                    }
+                }
             };
 
             for (var i = 0; i < ModuleExtensionPoint.NumberOfLightsForward; i++)
@@ -807,17 +1005,88 @@ namespace Fusee.Engine.Core
 
         private void AddForwardLightGetter(int arrayPos)
         {
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetPosName(arrayPos).GetHashCode(), () => View * ForwardLights[arrayPos].WorldSpacePos);
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetIntensitiesName(arrayPos).GetHashCode(), () => ForwardLights[arrayPos].Light.Color);
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetMaxDistName(arrayPos).GetHashCode(), () => ForwardLights[arrayPos].Light.MaxDistance);
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetStrengthName(arrayPos).GetHashCode(), () => ForwardLights[arrayPos].Light.Strength);
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetOuterConeAngleName(arrayPos).GetHashCode(), () => M.DegreesToRadians(ForwardLights[arrayPos].Light.OuterConeAngle));
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetInnerConeAngleName(arrayPos).GetHashCode(), () => M.DegreesToRadians(ForwardLights[arrayPos].Light.InnerConeAngle));
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetDirectionName(arrayPos).GetHashCode(), () => (View * ForwardLights[arrayPos].Rotation * float4.UnitZ).xyz.Normalize());
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetTypeName(arrayPos).GetHashCode(), () => (int)ForwardLights[arrayPos].Light.Type);
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetIsActiveName(arrayPos).GetHashCode(), () => ForwardLights[arrayPos].Light.Active ? 1 : 0);
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetIsCastingShadowsName(arrayPos).GetHashCode(), () => ForwardLights[arrayPos].Light.IsCastingShadows ? 1 : 0);
-            GlobalUniformGetter.Add(UniformNameDeclarations.GetBiasName(arrayPos).GetHashCode(), () => ForwardLights[arrayPos].Light.Bias);
+            var lightPos = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetPosName(arrayPos),
+                Getter = () => View * ForwardLights[arrayPos].WorldSpacePos,
+                IsStructArray = true
+            };
+
+            var lightColor = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetIntensitiesName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.Color,
+                IsStructArray = true
+            };
+
+            var lightMaxDistance = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetMaxDistName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.MaxDistance,
+                IsStructArray = true
+            };
+
+            var lightStrength = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetStrengthName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.Strength,
+                IsStructArray = true
+            };
+
+            var lightOuterConeAngle = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetOuterConeAngleName(arrayPos),
+                Getter = () => M.DegreesToRadians(ForwardLights[arrayPos].Light.OuterConeAngle),
+                IsStructArray = true
+            };
+            var lightInnerConeAngle = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetInnerConeAngleName(arrayPos),
+                Getter = () => M.DegreesToRadians(ForwardLights[arrayPos].Light.InnerConeAngle),
+                IsStructArray = true
+            };
+            var lightDirection = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetDirectionName(arrayPos),
+                Getter = () => (View * ForwardLights[arrayPos].Rotation * float4.UnitZ).xyz.Normalize(),
+                IsStructArray = true
+            };
+            var lightType = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetTypeName(arrayPos),
+                Getter = () => (int)ForwardLights[arrayPos].Light.Type,
+                IsStructArray = true
+            };
+            var lightIsActive = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetIsActiveName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.Active ? 1 : 0,
+                IsStructArray = true
+            };
+            var lightIsCastingShadows = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetIsCastingShadowsName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.IsCastingShadows ? 1 : 0,
+                IsStructArray = true
+            };
+            var lightBias = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetBiasName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.Bias,
+                IsStructArray = true
+            };
+
+            GlobalUniforms.Add(lightPos.Name.GetHashCode(), lightPos);
+            GlobalUniforms.Add(lightColor.Name.GetHashCode(), lightColor);
+            GlobalUniforms.Add(lightMaxDistance.Name.GetHashCode(), lightMaxDistance);
+            GlobalUniforms.Add(lightStrength.Name.GetHashCode(), lightStrength);
+            GlobalUniforms.Add(lightOuterConeAngle.Name.GetHashCode(), lightOuterConeAngle);
+            GlobalUniforms.Add(lightInnerConeAngle.Name.GetHashCode(), lightInnerConeAngle);
+            GlobalUniforms.Add(lightDirection.Name.GetHashCode(), lightDirection);
+            GlobalUniforms.Add(lightType.Name.GetHashCode(), lightType);
+            GlobalUniforms.Add(lightIsActive.Name.GetHashCode(), lightIsActive);
+            GlobalUniforms.Add(lightIsCastingShadows.Name.GetHashCode(), lightIsCastingShadows);
+            GlobalUniforms.Add(lightBias.Name.GetHashCode(), lightBias);
         }
 
         /// <summary>
@@ -1075,23 +1344,23 @@ namespace Fusee.Engine.Core
             return compiledEffect;
         }
 
-        private void AssignUniformGetter(Effect ef, Dictionary<int, IFxParam> activeUniforms)
+        private void AssignUniformGetter(Effect ef, Dictionary<int, IActiveUniform> activeUniforms)
         {
             foreach (var shaderParam in activeUniforms)
             {
-                if (!ef.UniformParameters.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
+                if (GlobalUniforms.TryGetValue(shaderParam.Key, out var globalUniform))
                 {
-                    Diagnostics.Error(shaderParam.Value.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
-                    continue;
-                }
-
-                if (GlobalUniformGetter.TryGetValue(shaderParam.Key, out var globalUniformGetter))
-                {
-                    shaderParam.Value.UniformValueGetter = globalUniformGetter;
+                    shaderParam.Value.UniformValueGetter = globalUniform.Getter;
                     shaderParam.Value.IsGlobal = true;
                 }
                 else
                 {
+                    if (!ef.UniformParameters.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
+                    {
+                        Diagnostics.Error(shaderParam.Value.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
+                        continue;
+                    }
+
                     shaderParam.Value.UniformValueGetter = () => ef.UniformParameters[shaderParam.Key].GetValue();
                     shaderParam.Value.IsGlobal = false;
                 }
@@ -1143,6 +1412,16 @@ namespace Fusee.Engine.Core
 
         private void CreateShaderForSurfaceEffect(SurfaceEffectBase ef)
         {
+            //Add the shader code for the global uniforms
+            foreach (var key in GlobalUniforms.Keys)
+            {
+                ShaderCategory shaderCategory = ShaderCategory.Vertex | ShaderCategory.Fragment;
+                if (ef.GeometryShaderSrc.Count != 0)
+                    shaderCategory |= ShaderCategory.Geometry;
+                if (!GlobalUniforms[key].IsStructArray)
+                    ef.HandleUniform(shaderCategory, GlobalUniforms[key].Name, GlobalUniforms[key].Getter().GetType(), ShardCategory.InternalUniform);
+            }
+
             var renderDependentShardsForward = new List<KeyValuePair<ShardCategory, string>>(5);
             var renderDependentShardsDeferred = new List<KeyValuePair<ShardCategory, string>>(3);
 
@@ -1244,7 +1523,7 @@ namespace Fusee.Engine.Core
         /// Note that this will change the parameter value in the currently bound shader.
         /// </summary>
         /// <param name="param">The shader parameter.</param>
-        private void SetShaderParamT(in IFxParam param)
+        private void SetShaderParamT(in IActiveUniform param)
         {
             var val = param.UniformValueGetter();
             if (val == null) return;

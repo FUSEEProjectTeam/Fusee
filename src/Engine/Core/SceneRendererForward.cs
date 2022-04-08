@@ -396,16 +396,17 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderBone(Bone bone)
         {
-            var boneContainer = CurrentNode;
+            throw new NotImplementedException();
+            //var boneContainer = CurrentNode;
 
-            var trans = boneContainer.GetGlobalTranslation();
-            var rot = boneContainer.GetGlobalRotation();
-            _ = float4x4.CreateTranslation(trans) * rot; //TODO: ???
+            //var trans = boneContainer.GetGlobalTranslation();
+            //var rot = boneContainer.GetGlobalRotation();
+            //_ = float4x4.CreateTranslation(trans) * rot;
 
-            if (!_boneMap.TryGetValue(boneContainer, out _))
-                _boneMap.Add(boneContainer, _rc.Model);
-            else
-                _boneMap[boneContainer] = _rc.Model;
+            //if (!_boneMap.TryGetValue(boneContainer, out _))
+            //    _boneMap.Add(boneContainer, _rc.Model);
+            //else
+            //    _boneMap[boneContainer] = _rc.Model;
         }
 
         /// <summary>
@@ -415,13 +416,14 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderWeight(Weight weight)
         {
-            var boneArray = new float4x4[weight.Joints.Count];
-            for (var i = 0; i < weight.Joints.Count; i++)
-            {
-                var tmp = weight.BindingMatrices[i];
-                boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
-            }
-            _rc.Bones = boneArray;
+            throw new NotImplementedException();
+            //var boneArray = new float4x4[weight.Joints.Count];
+            //for (var i = 0; i < weight.Joints.Count; i++)
+            //{
+            //    var tmp = weight.BindingMatrices[i];
+            //    boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
+            //} 
+            //TODO: find a way to NOT push the bones into the RC because they are not "global"
         }
 
         private bool isCtcInitialized = false;

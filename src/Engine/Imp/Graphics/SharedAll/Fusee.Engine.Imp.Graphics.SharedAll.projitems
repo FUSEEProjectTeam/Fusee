@@ -9,7 +9,7 @@
     <Import_RootNamespace>Fusee.Engine.Imp.Graphics.SharedAll</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)FxParam.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ActiveUniform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RenderTarget.cs" />
   </ItemGroup>
 </Project>
