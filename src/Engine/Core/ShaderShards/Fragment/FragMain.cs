@@ -30,8 +30,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     $"vec3 result = vec3(0.0);",
                     $"for(int i = 0; i < {ModuleExtensionPoint.NumberOfLightsForward}; i++)",
                     "{",
-                        "if(allLights[i].isActive == 0) continue;",
-                        "result += ApplyLight(allLights[i], surfOut, ambientCo);",
+                        $"if({UniformNameDeclarations.AllLightsArray}[i].isActive == 0) continue;",
+                        $"result += ApplyLight({UniformNameDeclarations.AllLightsArray}[i], surfOut, ambientCo);",
                     "}",
                     //$"oFragmentColor = vec4(GammaCorrection(result.rgb, 1.0/2.0)+ ambient, surfOut.albedo.a);"
                     $"oFragmentColor = vec4(EncodeSRGB(result.rgb + ambient), surfOut.albedo.a);"

@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public static readonly int ArrayPostfixHash = ArrayPostfix.GetHashCode();
 
-        #region Fusee internal
+        #region Fusee Vertex Attributes
 
         /// <summary>
         /// The vertex attribute name.
@@ -109,6 +109,10 @@ namespace Fusee.Engine.Core.Effects
         /// Hash code for the <see cref="BoneIndex"/> parameter.
         /// </summary>
         public static readonly int BoneIndexHash = BoneIndex.GetHashCode();
+
+        #endregion
+
+        #region Global uniform matrices
 
         /// <summary>
         /// The model matrix. Transforms from model into world space.
@@ -458,6 +462,7 @@ namespace Fusee.Engine.Core.Effects
         /// The var name for the uniform ClippingPlanes variable.
         /// </summary>
         public const string InstancedModelMat = "FUSEE_InstancedModelMat";
+
         /// <summary>
         /// Hash code for the <see cref="InstancedModelMat"/> parameter.
         /// </summary>
@@ -475,7 +480,7 @@ namespace Fusee.Engine.Core.Effects
         #endregion
 
         #region Light
-        public const string AllLightsArray = "allLights";
+        public const string AllLightsArray = "FUSEE_allLights";
 
         public const string LightWorldPos = "position";
         public const string LightIntensities = "intensities";
@@ -549,6 +554,12 @@ namespace Fusee.Engine.Core.Effects
         /// The var name for the uniform ClippingPlanes variable.
         /// </summary>
         public const string ClippingPlanes = "FUSEE_ClippingPlanes";
+
+        /// <summary>
+        /// The var name for the uniform ScreenParams (width and height of the window).
+        /// </summary>
+        public const string ViewportPx = "FUSEE_ViewportPx";
+
         /// <summary>
         /// Hash code for the <see cref="ClippingPlanes"/> parameter.
         /// </summary>
@@ -558,6 +569,7 @@ namespace Fusee.Engine.Core.Effects
         /// The var name for the uniform PassNo variable.
         /// </summary>
         public const string RenderPassNo = "PassNo";
+
         /// <summary>
         /// Hash code for the <see cref="RenderPassNo"/> parameter.
         /// </summary>
@@ -571,11 +583,7 @@ namespace Fusee.Engine.Core.Effects
         /// Hash code for the <see cref="BackgroundColor"/> parameter.
         /// </summary>
         public static readonly int BackgroundColorHash = BackgroundColor.GetHashCode();
-
-        /// <summary>
-        /// The var name for the uniform ScreenParams (width and height of the window).
-        /// </summary>
-        public const string ViewportPx = "FUSEE_ViewportPx";
+                
         /// <summary>
         /// Hash code for the <see cref="ViewportPx"/> parameter.
         /// </summary>

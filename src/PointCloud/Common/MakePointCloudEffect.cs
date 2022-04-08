@@ -24,12 +24,6 @@ namespace Fusee.PointCloud.Common
             
             new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
-
-                new FxParamDeclaration<int2> {Name = UniformNameDeclarations.ViewportPx, Value = int2.One},
-
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = size},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)shape},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)pointSizeMode},

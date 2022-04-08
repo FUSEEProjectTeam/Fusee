@@ -35,8 +35,7 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             effectParameters: new IFxParamDeclaration[]
             {
-                new FxParamDeclaration<WritableTexture> { Name = RenderTargetTextureTypes.Albedo.ToString(), Value = srcTex},
-                new FxParamDeclaration<int2> { Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
+                new FxParamDeclaration<WritableTexture> { Name = RenderTargetTextureTypes.Albedo.ToString(), Value = srcTex}
             },
             rendererStates: new RenderStateSet
             {
@@ -75,11 +74,9 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
-
-                new FxParamDeclaration<int2> {Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
+                                
                 new FxParamDeclaration<float3[]> {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
-                new FxParamDeclaration<Texture> {Name = UniformNameDeclarations.NoiseTex, Value = ssaoNoiseTex},
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
+                new FxParamDeclaration<Texture> {Name = UniformNameDeclarations.NoiseTex, Value = ssaoNoiseTex}
             },
             new RenderStateSet
             {
@@ -220,8 +217,6 @@ namespace Fusee.Engine.Core
         {
             var effectParamDecls = new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity },
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity },
                 new FxParamDeclaration<float2> { Name = "LightMatClipPlanes", Value = float2.One },
                 new FxParamDeclaration<float3> { Name = "LightPos", Value = float3.One },
                 new FxParamDeclaration<float4x4[]> { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
@@ -250,8 +245,6 @@ namespace Fusee.Engine.Core
         {
             var effectParamDecls = new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity },
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity },
                 new FxParamDeclaration<float2> { Name = "LightMatClipPlanes", Value = float2.One },
                 new FxParamDeclaration<float3> { Name = "LightPos", Value = float3.One },
                 new FxParamDeclaration<float4x4[]> { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
@@ -280,7 +273,6 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new IFxParamDeclaration[]
             {
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
             },
             new RenderStateSet
@@ -306,13 +298,10 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Subsurface], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Subsurface]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Depth]},
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
+                
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
                 new FxParamDeclaration<float4> { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.SsaoOn, Value = 1},
-                new FxParamDeclaration<float2> { Name = UniformNameDeclarations.ClippingPlanes, Value = float2.Zero},
             };
         }
 

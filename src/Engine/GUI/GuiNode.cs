@@ -291,11 +291,7 @@ namespace Fusee.Engine.Gui
                             Name = "borders",
                             Value = borders
                         },
-                        new FxParamDeclaration<float4> {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
-                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
-                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
-                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.View, Value = float4x4.Identity},
-                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity}
+                        new FxParamDeclaration<float4> {Name = "borderThickness", Value = borderThickness * borderScaleFactor}
                     },
                     new RenderStateSet
                     {
@@ -371,9 +367,7 @@ namespace Fusee.Engine.Gui
                         },
                         new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
                         new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 1f},
-                        new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = diffuseTexTiles},
-                        new FxParamDeclaration<float4x4> {Name =UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
-                        new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
+                        new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = diffuseTexTiles}
                     },
                     new RenderStateSet
                     {
@@ -484,11 +478,7 @@ namespace Fusee.Engine.Gui
                                     Name = UniformNameDeclarations.Albedo, Value = color
                                 },
                                 new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 0.0f},
-                                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
-                                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
-                                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
-                                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = float2.One},
-                                new FxParamDeclaration<int> {Name = UniformNameDeclarations.FuseePlatformId, Value = 0}
+                                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = float2.One}
                             },
                             new RenderStateSet
                             {
