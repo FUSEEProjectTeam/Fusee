@@ -294,7 +294,6 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-
         /// <summary>
         /// Renders the scene.
         /// </summary>
@@ -692,7 +691,7 @@ namespace Fusee.Engine.Core
             //var wc = CurrentNode.GetWeights();
             //if (wc != null)
             //    AddWeightToMesh(mesh, wc);
-           
+
             _rc.Render(mesh, true);
         }
 
