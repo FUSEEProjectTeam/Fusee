@@ -16,6 +16,10 @@ namespace Fusee.Engine.Core
         private void Remove(IMeshImp meshImp)
         {
             if (meshImp == null) return;
+
+            if (meshImp.TrianglesSet)
+                _renderContextImp.RemoveTriangles(meshImp);
+
             if (meshImp.VerticesSet)
                 _renderContextImp.RemoveVertices(meshImp);
 
@@ -33,9 +37,6 @@ namespace Fusee.Engine.Core
 
             if (meshImp.UVsSet)
                 _renderContextImp.RemoveUVs(meshImp);
-
-            if (meshImp.TrianglesSet)
-                _renderContextImp.RemoveTriangles(meshImp);
 
             if (meshImp.BoneWeightsSet)
                 _renderContextImp.RemoveBoneWeights(meshImp);
@@ -74,13 +75,13 @@ namespace Fusee.Engine.Core
 
             switch (meshDataEventArgs.ChangedEnum)
             {
-                case MeshChangedEnum.Vertices:
-                    _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
-                    mesh.BoundingBox = new AABBf(mesh.Vertices);
-                    break;
                 case MeshChangedEnum.Triangles:
                     _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);
                     break;
+                case MeshChangedEnum.Vertices:
+                    _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
+                    mesh.BoundingBox = new AABBf(mesh.Vertices);
+                    break;                
                 case MeshChangedEnum.Colors:
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors);
                     break;
@@ -118,6 +119,9 @@ namespace Fusee.Engine.Core
             var meshImp = _renderContextImp.CreateMeshImp();
             _renderContextImp.SetVertexArrayObject(meshImp);
 
+            if (triangles != null)
+                _renderContextImp.SetTriangles(meshImp, triangles);
+
             if (vertices != null)
                 _renderContextImp.SetVertices(meshImp, vertices);
 
@@ -142,9 +146,6 @@ namespace Fusee.Engine.Core
             if (boneWeights != null)
                 _renderContextImp.SetBoneWeights(meshImp, boneWeights);
 
-            if (triangles != null)
-                _renderContextImp.SetTriangles(meshImp, triangles);
-
             if (tangents != null)
                 _renderContextImp.SetTangents(meshImp, tangents);
 
@@ -164,11 +165,11 @@ namespace Fusee.Engine.Core
 
             _renderContextImp.SetVertexArrayObject(meshImp);
 
-            if (mesh.VerticesSet)
-                _renderContextImp.SetVertices(meshImp, mesh.Vertices);
-
             if (mesh.TrianglesSet)
                 _renderContextImp.SetTriangles(meshImp, mesh.Triangles);
+
+            if (mesh.VerticesSet)
+                _renderContextImp.SetVertices(meshImp, mesh.Vertices);
 
             if (mesh.UVsSet)
                 _renderContextImp.SetUVs(meshImp, mesh.UVs);

@@ -1224,11 +1224,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 vbo = ((MeshImp)mr).VertexBufferObject;
-                GL.NamedBufferSubData(vbo, IntPtr.Zero, vertsBytes, vertices);
+                GL.GetNamedBufferParameter(vbo, BufferParameterName.BufferSize, out int size);
+                if(size < vertsBytes)
+                {
+                    GL.DeleteBuffer(vbo);
+                    GL.CreateBuffers(1, out vbo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(vbo, vertsBytes, vertices, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.VertexAttribBindingIndex, vbo, IntPtr.Zero, sizeOfVert);
+
+                }
+                else
+                    GL.NamedBufferSubData(vbo, IntPtr.Zero, vertsBytes, vertices);
             }
 #if DEBUG
             GL.GetNamedBufferParameter(vbo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != vertsBytes)
+            if (vboBytes < vertsBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
 #endif
         }
@@ -1268,12 +1280,25 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 tBo = ((MeshImp)mr).TangentBufferObject;
-                GL.NamedBufferSubData(tBo, IntPtr.Zero, tangentBytes, tangents);
+                
+                GL.GetNamedBufferParameter(tBo, BufferParameterName.BufferSize, out int size);
+                if (size < tangentBytes)
+                {
+                    GL.DeleteBuffer(tBo);
+                    GL.CreateBuffers(1, out tBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(tBo, tangentBytes, tangents, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.TangentAttribLocation, tBo, IntPtr.Zero, sizeOfTangent);
+
+                }
+                else
+                    GL.NamedBufferSubData(tBo, IntPtr.Zero, tangentBytes, tangents);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(tBo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != tangentBytes)
+            if (vboBytes < tangentBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
 #endif
         }
@@ -1314,12 +1339,25 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 btBo = ((MeshImp)mr).BitangentBufferObject;
-                GL.NamedBufferSubData(btBo, IntPtr.Zero, bitangentBytes, bitangents);
+
+                GL.GetNamedBufferParameter(btBo, BufferParameterName.BufferSize, out int size);
+                if (size < bitangentBytes)
+                {
+                    GL.DeleteBuffer(btBo);
+                    GL.CreateBuffers(1, out btBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(btBo, bitangentBytes, bitangents, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BitangentAttribLocation, btBo, IntPtr.Zero, sizeOfBiTangent);
+
+                }
+                else
+                    GL.NamedBufferSubData(btBo, IntPtr.Zero, bitangentBytes, bitangents);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(btBo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != bitangentBytes)
+            if (vboBytes < bitangentBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
 #endif
         }
@@ -1360,12 +1398,25 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 nBo = ((MeshImp)mr).NormalBufferObject;
-                GL.NamedBufferSubData(nBo, IntPtr.Zero, normsBytes, normals);
+
+                GL.GetNamedBufferParameter(nBo, BufferParameterName.BufferSize, out int size);
+                if (size < normsBytes)
+                {
+                    GL.DeleteBuffer(nBo);
+                    GL.CreateBuffers(1, out nBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(nBo, normsBytes, normals, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.NormalAttribLocation, nBo, IntPtr.Zero, sizeOfNorm);
+
+                }
+                else
+                    GL.NamedBufferSubData(nBo, IntPtr.Zero, normsBytes, normals);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(nBo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != normsBytes)
+            if (vboBytes < normsBytes)
                 throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
 #endif
         }
@@ -1406,12 +1457,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 biBo = ((MeshImp)mr).BoneIndexBufferObject;
-                GL.NamedBufferSubData(biBo, IntPtr.Zero, indicesBytes, boneIndices);
+                GL.GetNamedBufferParameter(biBo, BufferParameterName.BufferSize, out int size);
+                if (size < indicesBytes)
+                {
+                    GL.DeleteBuffer(biBo);
+                    GL.CreateBuffers(1, out biBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(biBo, indicesBytes, boneIndices, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BoneIndexAttribLocation, biBo, IntPtr.Zero, sizeOfboneIndex);
+
+                }
+                else
+                    GL.NamedBufferSubData(biBo, IntPtr.Zero, indicesBytes, boneIndices);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(biBo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != indicesBytes)
+            if (vboBytes < indicesBytes)
                 throw new ApplicationException(string.Format("Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.", indicesBytes, vboBytes));
 #endif
         }
@@ -1452,12 +1515,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 wBo = ((MeshImp)mr).BoneIndexBufferObject;
-                GL.NamedBufferSubData(wBo, IntPtr.Zero, weightsBytes, boneWeights);
+                GL.GetNamedBufferParameter(wBo, BufferParameterName.BufferSize, out int size);
+                if (size < weightsBytes)
+                {
+                    GL.DeleteBuffer(wBo);
+                    GL.CreateBuffers(1, out wBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(wBo, weightsBytes, boneWeights, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BoneIndexAttribLocation, wBo, IntPtr.Zero, sizeOfBoneWeight);
+
+                }
+                else
+                    GL.NamedBufferSubData(wBo, IntPtr.Zero, weightsBytes, boneWeights);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(wBo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != weightsBytes)
+            if (vboBytes < weightsBytes)
                 throw new ApplicationException(string.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
 #endif
         }
@@ -1498,12 +1573,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 uvBo = ((MeshImp)mr).UVBufferObject;
-                GL.NamedBufferSubData(uvBo, IntPtr.Zero, uvsBytes, uvs);
+                GL.GetNamedBufferParameter(uvBo, BufferParameterName.BufferSize, out int size);
+                if (size < uvsBytes)
+                {
+                    GL.DeleteBuffer(uvBo);
+                    GL.CreateBuffers(1, out uvBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(uvBo, uvsBytes, uvs, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.UvAttribLocation, uvBo, IntPtr.Zero, sizeOfUv);
+
+                }
+                else
+                    GL.NamedBufferSubData(uvBo, IntPtr.Zero, uvsBytes, uvs);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(uvBo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != uvsBytes)
+            if (vboBytes < uvsBytes)
                 throw new ApplicationException(string.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
 #endif
         }
@@ -1544,12 +1631,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 cBo = ((MeshImp)mr).ColorBufferObject;
-                GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
+                GL.GetNamedBufferParameter(cBo, BufferParameterName.BufferSize, out int size);
+                if (size < colorBytes)
+                {
+                    GL.DeleteBuffer(cBo);
+                    GL.CreateBuffers(1, out cBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.ColorAttribLocation, cBo, IntPtr.Zero, sizeOfColor);
+
+                }
+                else
+                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(cBo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != colorBytes)
+            if (vboBytes < colorBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colorBytes, vboBytes));
 #endif
         }
@@ -1584,18 +1683,30 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.ColorAttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
-                GL.VertexArrayAttribFormat(vao, AttributeLocations.ColorAttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
-                GL.VertexArrayAttribBinding(vao, AttributeLocations.ColorAttribLocation, AttributeLocations.ColorAttribBindingIndex);
+                GL.VertexArrayAttribFormat(vao, AttributeLocations.Color1AttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
+                GL.VertexArrayAttribBinding(vao, AttributeLocations.Color1AttribLocation, AttributeLocations.ColorAttribBindingIndex);
             }
             else
             {
-                cBo = ((MeshImp)mr).ColorBufferObject1;
-                GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
+                cBo = ((MeshImp)mr).ColorBufferObject;
+                GL.GetNamedBufferParameter(cBo, BufferParameterName.BufferSize, out int size);
+                if (size < colorBytes)
+                {
+                    GL.DeleteBuffer(cBo);
+                    GL.CreateBuffers(1, out cBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.Color1AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
+
+                }
+                else
+                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(cBo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != colorBytes)
+            if (vboBytes < colorBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colorBytes, vboBytes));
 #endif
         }
@@ -1628,20 +1739,32 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ApplicationException("Create the VAO first!");
                 }
                 GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
-                GL.VertexArrayVertexBuffer(vao, AttributeLocations.ColorAttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
+                GL.VertexArrayVertexBuffer(vao, AttributeLocations.Color2AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
-                GL.VertexArrayAttribFormat(vao, AttributeLocations.ColorAttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
-                GL.VertexArrayAttribBinding(vao, AttributeLocations.ColorAttribLocation, AttributeLocations.ColorAttribBindingIndex);
+                GL.VertexArrayAttribFormat(vao, AttributeLocations.Color2AttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
+                GL.VertexArrayAttribBinding(vao, AttributeLocations.Color2AttribLocation, AttributeLocations.ColorAttribBindingIndex);
             }
             else
             {
-                cBo = ((MeshImp)mr).ColorBufferObject2;
-                GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
+                cBo = ((MeshImp)mr).ColorBufferObject;
+                GL.GetNamedBufferParameter(cBo, BufferParameterName.BufferSize, out int size);
+                if (size < colorBytes)
+                {
+                    GL.DeleteBuffer(cBo);
+                    GL.CreateBuffers(1, out cBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.Color2AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
+
+                }
+                else
+                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(cBo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != colorBytes)
+            if (vboBytes < colorBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colorBytes, vboBytes));
 #endif
         }
@@ -1681,12 +1804,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 ibo = ((MeshImp)mr).ElementBufferObject;
-                GL.NamedBufferSubData(ibo, IntPtr.Zero, trisBytes, triangleIndices);
+                GL.GetNamedBufferParameter(ibo, BufferParameterName.BufferSize, out int size);
+                if (size < trisBytes)
+                {
+                    GL.DeleteBuffer(ibo);
+                    GL.CreateBuffers(1, out ibo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(ibo, trisBytes, triangleIndices, BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayElementBuffer(vao, ibo);
+
+                }
+                else
+                    GL.NamedBufferSubData(ibo, IntPtr.Zero, trisBytes, triangleIndices);
             }
 
 #if DEBUG
             GL.GetNamedBufferParameter(ibo, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != trisBytes)
+            if (vboBytes < trisBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
 #endif
         }
