@@ -8,8 +8,8 @@ namespace Fusee.Engine.Core
 {
     internal class PrePassVisitor : Visitor<SceneNode, SceneComponent>
     {
-        public List<Tuple<SceneNode, LightResult>> LightPrepassResuls;
-        public List<Tuple<SceneNode, CameraResult>> CameraPrepassResults;
+        public List<LightResult> LightPrepassResuls;
+        public List<CameraResult> CameraPrepassResults;
 
         /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
@@ -21,8 +21,8 @@ namespace Fusee.Engine.Core
         {
             _state = new RendererState();
             IgnoreInactiveComponents = true;
-            LightPrepassResuls = new List<Tuple<SceneNode, LightResult>>();
-            CameraPrepassResults = new List<Tuple<SceneNode, CameraResult>>();
+            LightPrepassResuls = new List<LightResult>();
+            CameraPrepassResults = new List<CameraResult>();
         }
 
         public void PrePassTraverse(SceneContainer sc)
@@ -80,13 +80,13 @@ namespace Fusee.Engine.Core
                     WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34)
                 };
 
-                LightPrepassResuls.Add(new Tuple<SceneNode, LightResult>(CurrentNode, lightResult));
+                LightPrepassResuls.Add(lightResult);
             }
             else
             {
                 var currentRes = LightPrepassResuls[_currentLight];
-                currentRes.Item2.Rotation = _state.Model.RotationComponent();
-                currentRes.Item2.WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34);
+                currentRes.Rotation = _state.Model.RotationComponent();
+                currentRes.WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34);
             }
             _currentLight++;
         }
@@ -118,8 +118,7 @@ namespace Fusee.Engine.Core
                 view.M33 /= scale.z;
             }
 
-            var cameraResult = new CameraResult(camComp, view.Invert());
-            CameraPrepassResults.Add(new Tuple<SceneNode, CameraResult>(CurrentNode, cameraResult));
+            CameraPrepassResults.Add(new CameraResult(camComp, view.Invert()));
         }
     }
 }

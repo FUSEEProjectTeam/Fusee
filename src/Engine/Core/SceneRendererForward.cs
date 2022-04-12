@@ -20,11 +20,6 @@ namespace Fusee.Engine.Core
     public class SceneRendererForward : Visitor<SceneNode, SceneComponent>
     {
         /// <summary>
-        ///Is set to true if a light was added or removed from the scene.
-        /// /// </summary>
-        protected bool HasNumberOfLightsChanged;
-
-        /// <summary>
         /// Enables or disables Frustum Culling.
         /// If we render with one or more cameras this value will be overwritten by <see cref="Camera.FrustumCullingOn"/>.
         /// </summary>
@@ -50,7 +45,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
-        internal List<Tuple<SceneNode, LightResult>> LightViseratorResults
+        internal List<LightResult> LightViseratorResults
         {
             get => _lightResults;
             private set
@@ -59,12 +54,11 @@ namespace Fusee.Engine.Core
 
                 if (_numberOfLights != _lightResults.Count)
                 {
-                    HasNumberOfLightsChanged = true;
                     _numberOfLights = _lightResults.Count;
                 }
             }
         }
-        private List<Tuple<SceneNode, LightResult>> _lightResults = new();
+        private List<LightResult> _lightResults = new();
 
         #region Traversal information
 
@@ -128,7 +122,7 @@ namespace Fusee.Engine.Core
                 };
             }
             // if there is no light in scene then add one (legacyMode)
-            _lightResults.Add(new Tuple<SceneNode, LightResult>(CurrentNode, new LightResult(_legacyLight)
+            _lightResults.Add(new LightResult(_legacyLight)
             {
                 Rotation = new float4x4
                 (
@@ -138,7 +132,7 @@ namespace Fusee.Engine.Core
                     float4.UnitW
                  ),
                 WorldSpacePos = _rc.InvView.Column4.xyz
-            }));
+            });
         }
 
         /// <summary>
@@ -309,12 +303,12 @@ namespace Fusee.Engine.Core
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
-                var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Item2.Camera.Layer);
+                var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Camera.Layer);
                 foreach (var cam in cams)
                 {
-                    if (cam.Item2.Camera.Active)
+                    if (cam.Camera.Active)
                     {
-                        DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
+                        DoFrumstumCulling = cam.Camera.FrustumCullingOn;
                         PerCamRender(cam);
                         //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
@@ -330,35 +324,35 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private void PerCamRender(Tuple<SceneNode, CameraResult> cam)
+        private void PerCamRender(CameraResult cam)
         {
-            var tex = cam.Item2.Camera.RenderTexture;
+            var tex = cam.Camera.RenderTexture;
 
-            RenderLayer = cam.Item2.Camera.RenderLayer;
+            RenderLayer = cam.Camera.RenderLayer;
 
             float4 viewport;
             if (tex != null)
             {
-                _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
-                _rc.Projection = cam.Item2.Camera.GetProjectionMat(tex.Width, tex.Height, out viewport);
+                _rc.SetRenderTarget(cam.Camera.RenderTexture);
+                _rc.Projection = cam.Camera.GetProjectionMat(tex.Width, tex.Height, out viewport);
             }
             else
             {
                 _rc.SetRenderTarget();
-                _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out viewport);
+                _rc.Projection = cam.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out viewport);
             }
 
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
-            _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
+            _rc.ClearColor = cam.Camera.BackgroundColor;
 
-            if (cam.Item2.Camera.ClearColor)
+            if (cam.Camera.ClearColor)
                 _rc.Clear(ClearFlags.Color);
 
-            if (cam.Item2.Camera.ClearDepth)
+            if (cam.Camera.ClearDepth)
                 _rc.Clear(ClearFlags.Depth);
 
-            _rc.View = cam.Item2.View;
+            _rc.View = cam.View;
 
             UpdateShaderParamsForAllLights();
 
@@ -656,11 +650,6 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderEffect(Effect effect)
         {
-            if (HasNumberOfLightsChanged)
-            {
-                //change #define MAX_LIGHTS... or rebuild shader effect?
-                HasNumberOfLightsChanged = false;
-            }
             _state.Effect = effect;
             _rc.SetEffect(_state.Effect, true);
         }
@@ -824,7 +813,7 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < _rc.ForwardLights.Length; i++)
             {
                 if (i < _lightResults.Count)
-                    UpdateShaderParamForLight(i, _lightResults[i].Item2);
+                    UpdateShaderParamForLight(i, _lightResults[i]);
                 else
                     _rc.ForwardLights[i].Light.Active = false;
             }

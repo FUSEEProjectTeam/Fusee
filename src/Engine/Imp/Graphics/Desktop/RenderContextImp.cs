@@ -1959,11 +1959,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.DispatchCompute(threadGroupsX, threadGroupsY, threadGroupsZ);
         }
 
-        public void Render(IMeshImp mesh, IInstanceData instanceData)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>

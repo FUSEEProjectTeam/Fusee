@@ -649,16 +649,6 @@ namespace Fusee.Engine.Common
         void Render(IMeshImp mr);
 
         /// <summary>
-        /// Renders the specified mesh.
-        /// </summary>
-        /// <param name="mr">The mesh that should be rendered.</param>        
-        /// <remarks>
-        /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
-        /// The geometry is transformed and rendered by the currently active shader program.
-        /// </remarks>
-        void Render(IMeshImp mr, IInstanceData instanceData);
-
-        /// <summary>
         /// Launch the bound Compute Shader Program.
         /// </summary>
         /// <param name="kernelIndex"></param>
