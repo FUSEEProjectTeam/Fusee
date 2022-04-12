@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Fusee.Math.Core;
+using System;
 using System.Runtime.InteropServices;
-using Fusee.Math.Core;
 
 namespace Fusee.Base.Common
 {
@@ -190,19 +190,14 @@ namespace Fusee.Base.Common
         {
             get
             {
-                switch (index)
+                return index switch
                 {
-                    case 0:
-                        return this.R;
-                    case 1:
-                        return this.G;
-                    case 2:
-                        return this.B;
-                    case 3:
-                        return this.A;
-                    default:
-                        throw new ArgumentOutOfRangeException("index", "Indices for ColorUint run from 0 to 3, inclusive.");
-                }
+                    0 => this.R,
+                    1 => this.G,
+                    2 => this.B,
+                    3 => this.A,
+                    _ => throw new ArgumentOutOfRangeException(nameof(index), "Indices for ColorUint run from 0 to 3, inclusive."),
+                };
             }
             set
             {
@@ -221,7 +216,7 @@ namespace Fusee.Base.Common
                         this.A = value;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException("index", "Indices for ColorUint run from 0 to 3, inclusive.");
+                        throw new ArgumentOutOfRangeException(nameof(index), "Indices for ColorUint run from 0 to 3, inclusive.");
                 }
             }
         }
@@ -331,9 +326,9 @@ namespace Fusee.Base.Common
         public ColorUint(float[] values)
         {
             if (values == null)
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             if (values.Length != 3 && values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be three or four input values for ColorUint.");
+                throw new ArgumentOutOfRangeException(nameof(values), "There must be three or four input values for ColorUint.");
             this.R = ColorUint.ToByte(values[0]);
             this.G = ColorUint.ToByte(values[1]);
             this.B = ColorUint.ToByte(values[2]);
@@ -350,9 +345,9 @@ namespace Fusee.Base.Common
         public ColorUint(byte[] values)
         {
             if (values == null)
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             if (values.Length != 3 && values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be three or four input values for ColorUint.");
+                throw new ArgumentOutOfRangeException(nameof(values), "There must be three or four input values for ColorUint.");
             this.R = values[0];
             this.G = values[1];
             this.B = values[2];
@@ -371,9 +366,9 @@ namespace Fusee.Base.Common
         public ColorUint(byte[] copyFrom, int index, bool noAlpha = true)
         {
             if (copyFrom == null)
-                throw new ArgumentNullException("copyFrom");
+                throw new ArgumentNullException(nameof(copyFrom));
             if (copyFrom.Length < index + (noAlpha ? 3 : 4))
-                throw new ArgumentOutOfRangeException("copyFrom", "Not enough pixel data to copy from given index.");
+                throw new ArgumentOutOfRangeException(nameof(copyFrom), "Not enough pixel data to copy from given index.");
             this.R = copyFrom[index + 0];
             this.G = copyFrom[index + 1];
             this.B = copyFrom[index + 2];
@@ -383,52 +378,53 @@ namespace Fusee.Base.Common
                 this.A = copyFrom[index + 3];
         }
 
-
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Engine.ColorUint"/> to <see cref="T:Fusee.Math.float3"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The color value. It is expected to be in SRgb color space - will be transformed to linear space in order to perform the lighting calculation correctly.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator float3(ColorUint value)
         {
-            return new float3((float)value.R / (float)byte.MaxValue, (float)value.G / (float)byte.MaxValue, (float)value.B / (float)byte.MaxValue);
+            return float3.LinearColorFromSRgb(Tofloat3(value));
         }
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Engine.ColorUint"/> to <see cref="T:Fusee.Math.float4"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The color value. It is expected to be in SRgb color space - will be transformed to linear space in order to perform the lighting calculation correctly.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator float4(ColorUint value)
         {
-            return new float4((float)value.R / (float)byte.MaxValue, (float)value.G / (float)byte.MaxValue, (float)value.B / (float)byte.MaxValue, (float)value.A / (float)byte.MaxValue);
+            return float4.LinearColorFromSRgb(Tofloat4(value));
         }
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Math.float3"/> to <see cref="T:Fusee.Engine.ColorUint"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The color value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator ColorUint(float3 value)
         {
+            value = value.SRgbFromLinearColor();
             return new ColorUint(value.x, value.y, value.z, 1f);
         }
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Math.float4"/> to <see cref="T:Fusee.Engine.ColorUint"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The color value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator ColorUint(float4 value)
         {
+            value = value.SRgbFromLinearColor();
             return new ColorUint(value.x, value.y, value.z, value.w);
         }
 
@@ -612,18 +608,6 @@ namespace Fusee.Base.Common
         }
 
         /// <summary>
-        /// Converts the color into a three component vector.
-        /// </summary>
-        /// <returns>
-        /// A three component vector containing the red, green, and blue components of the color.
-        /// </returns>
-        [Obsolete("Deprecated due to 'Impure Method Call Warning' and problems with JSIL. Use 'static float3 Tofloat3(ColorUint col)' instead!")]
-        public float3 Tofloat3()
-        {
-            return new float3((float)this.R / (float)byte.MaxValue, (float)this.G / (float)byte.MaxValue, (float)this.B / (float)byte.MaxValue);
-        }
-
-        /// <summary>
         /// Converts the Uint color into a three component vector.
         /// </summary>
         /// <param name="col">The color to convert.</param>
@@ -633,18 +617,6 @@ namespace Fusee.Base.Common
         public static float3 Tofloat3(ColorUint col)
         {
             return new float3((float)col.R / (float)byte.MaxValue, (float)col.G / (float)byte.MaxValue, (float)col.B / (float)byte.MaxValue);
-        }
-
-        /// <summary>
-        /// Converts the color into a four component vector.
-        /// </summary>
-        /// <returns>
-        /// A four component vector containing all four color components.
-        /// </returns>
-        [Obsolete("Deprecated due to 'Impure Method Call Warning' and problems with JSIL. Use 'static float3 Tofloat4(ColorUint col)' instead!")]
-        public float4 Tofloat4()
-        {
-            return new float4((float)this.R / (float)byte.MaxValue, (float)this.G / (float)byte.MaxValue, (float)this.B / (float)byte.MaxValue, (float)this.A / (float)byte.MaxValue);
         }
 
         /// <summary>
@@ -971,8 +943,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Clamp(ColorUint value, ColorUint min, ColorUint max)
         {
-            ColorUint result;
-            ColorUint.Clamp(ref value, ref min, ref max, out result);
+            ColorUint.Clamp(ref value, ref min, ref max, out ColorUint result);
             return result;
         }
 
@@ -1072,8 +1043,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Max(ColorUint left, ColorUint right)
         {
-            ColorUint result;
-            ColorUint.Max(ref left, ref right, out result);
+            ColorUint.Max(ref left, ref right, out ColorUint result);
             return result;
         }
 
@@ -1100,8 +1070,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Min(ColorUint left, ColorUint right)
         {
-            ColorUint result;
-            ColorUint.Min(ref left, ref right, out result);
+            ColorUint.Min(ref left, ref right, out ColorUint result);
             return result;
         }
 

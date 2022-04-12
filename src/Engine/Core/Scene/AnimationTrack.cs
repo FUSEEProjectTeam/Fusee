@@ -97,7 +97,7 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         Lerp,
         /// <summary>
-        /// Spherical interpolation. float3 are interpreted as Euler angles and interpolated in a shortest-path way using <see cref="Quaternion"/>s.
+        /// Spherical interpolation. float3 are interpreted as Euler angles and interpolated in a shortest-path way using <see cref="QuaternionF"/>s.
         /// </summary>
         Slerp,
     }
@@ -151,6 +151,6 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The list of key frames ordered by time.
         /// </summary>
-        public List<AnimationKeyBase> KeyFrames = new List<AnimationKeyBase>();
+        public List<AnimationKeyBase> KeyFrames = new();
     }
 }

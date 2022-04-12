@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 
 namespace Fusee.Base.Core
 {
@@ -10,7 +9,7 @@ namespace Fusee.Base.Core
     /// </summary>
     public class AsyncHttpAsset
     {
-        private static readonly Dictionary<Type, AsyncAssetDecoder> _assetHandlers = new Dictionary<Type, AsyncAssetDecoder>()
+        private static readonly Dictionary<Type, AsyncAssetDecoder> _assetHandlers = new()
         {
             // Default callback for byte[]
             {
@@ -71,12 +70,12 @@ namespace Fusee.Base.Core
         /// <summary>
         /// EventHandler for when downloading and processing is done.
         /// </summary>
-        public event EventHandler onDone;
+        public event EventHandler OnDone;
 
         /// <summary>
         /// EventHandler for when either downloading or processing fails.
         /// </summary>
-        public event EventHandler onFail;
+        public event EventHandler OnFail;
 
         /// <summary>
         /// 
@@ -92,8 +91,8 @@ namespace Fusee.Base.Core
             Id = id;
             Type = type;
 
-            onDone += AsyncHttpAsset_onDone;
-            onFail += AsyncHttpAsset_onFail;
+            OnDone += AsyncHttpAsset_onDone;
+            OnFail += AsyncHttpAsset_onFail;
 
             if (!_assetHandlers.ContainsKey(Type))
             {
@@ -117,8 +116,8 @@ namespace Fusee.Base.Core
         /// <param name="startLoad">If true, starts loading immediately, otherwise call StartGet() to start loading the asset.</param>
         public AsyncHttpAsset(string id, Type type, EventHandler onDone, EventHandler onFail, bool startLoad = true) : this(id, type, startLoad)
         {
-            this.onDone += onDone;
-            this.onFail += onFail;
+            this.OnDone += onDone;
+            this.OnFail += onFail;
         }
 
         private void AsyncHttpAsset_onDone(object sender, EventArgs e)
@@ -151,18 +150,16 @@ namespace Fusee.Base.Core
 
         private async void DoGetAsset()
         {
-            using (HttpClient client = new HttpClient())
+            using HttpClient client = new();
+            try
             {
-                try
-                {
-                    byte[] bytes = await client.GetByteArrayAsync(Id);
-                    //onDownloaded
-                    ProcessAsset(bytes);
-                }
-                catch
-                {
-                    FailCallback();
-                }
+                byte[] bytes = await client.GetByteArrayAsync(Id);
+                //onDownloaded
+                ProcessAsset(bytes);
+            }
+            catch
+            {
+                FailCallback();
             }
         }
 
@@ -180,13 +177,13 @@ namespace Fusee.Base.Core
         {
             Content = content;
             this.State = AsyncAssetState.Done;
-            onDone?.Invoke(this, EventArgs.Empty);
+            OnDone?.Invoke(this, EventArgs.Empty);
         }
 
         private void FailCallback()
         {
             this.State = AsyncAssetState.Failed;
-            onFail?.Invoke(this, EventArgs.Empty);
+            OnFail?.Invoke(this, EventArgs.Empty);
         }
     }
     /// <summary>

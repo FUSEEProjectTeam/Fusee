@@ -11,10 +11,21 @@ namespace Fusee.Engine.Common
         /// The texture has been disposed.
         /// </summary>
         Disposed = 0,
+
         /// <summary>
         /// The texture's region has changed
         /// </summary>
         RegionChanged = 1,
+
+        /// <summary>
+        /// The texture's <see cref="TextureWrapMode"/> has changed.
+        /// </summary>
+        WrapModeChanged = 2,
+
+        /// <summary>
+        /// The texture's <see cref="TextureFilterMode"/> has changed.
+        /// </summary>
+        FilterModeChanged = 3,
     }
 
     /// <summary>

@@ -1,0 +1,9 @@
+{
+    "profiles": {
+        "RobotArm_Inverse_Kinematics": {
+            "commandName": "Executable",
+            "executablePath": "fusee",
+            "commandLineArgs": "player $(TargetPath)"
+        }
+    }
+}

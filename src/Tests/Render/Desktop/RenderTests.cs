@@ -2,7 +2,7 @@ using System.Drawing;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Fusee.Test.Render.Desktop
+namespace Fusee.Tests.Render.Desktop
 {
     public class RenderTests
     {
@@ -42,21 +42,6 @@ namespace Fusee.Test.Render.Desktop
         //    Assert.InRange(percent, 0.99f, 1f);
         //    output.WriteLine(percent.ToString());
         //}
-
-        [Fact]
-        public void BumpMappingTest()
-        {
-            Program.Example = new Fusee.Examples.NormalMap.Core.NormalMap();
-            Program.Init("BumpMappingTest.png");
-
-            var referenceIm = new Bitmap(@"References\BumpMapping.png");
-            var testIm = new Bitmap("BumpMappingTest.png");
-
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.98f, 1f);
-            output.WriteLine(percent.ToString());
-        }
 
         [Fact]
         public void GeometryEditingTest()

@@ -165,7 +165,7 @@ namespace Fusee.Engine.Common
     /// <summary>
     /// Specifies if and how triangle culling should be performed. If no culling is specified, triangles are rendered, no matter how they are oriented.
     /// Clockwise and Counterclockwise culling refers to in which order a triangle's vertices appear on the screen. If either is specified, triangles
-    /// in the respective order are culled.
+    /// in the respective order are displayed.
     /// </summary>
     public enum Cull
     {
@@ -537,10 +537,10 @@ namespace Fusee.Engine.Common
         X = 1,
         Y = 2,
         B = 3,
-        Start = 4,
-        Back = 5,
-        LeftShoulder = 6,
-        RightShoulder = 7,
+        Start = 7,
+        Back = 6,
+        LeftShoulder = 4,
+        RightShoulder = 5,
         L3 = 8,
         R3 = 9,
         DPadUp = 10,
@@ -553,7 +553,6 @@ namespace Fusee.Engine.Common
         RightStickY = 3,
         LeftTrigger = 4,
         RightTrigger = 5
-
 #pragma warning restore 1591
     }
 
@@ -631,5 +630,18 @@ namespace Fusee.Engine.Common
         // (int) Touchpoint0 + i)
 #pragma warning restore 1591
         // Resharper restore InconsistentNaming
+    }
+
+    /// <summary>
+    /// Describes the platform of the current renderer. This can be used in shaders to do platform dependent things.
+    /// </summary>
+    public enum FuseePlatformId : int
+    {
+#pragma warning disable 1591
+        Undefined = 0,
+        Desktop = 1,
+        Android = 2,
+        Blazor = 3
+#pragma warning restore 1591
     }
 }

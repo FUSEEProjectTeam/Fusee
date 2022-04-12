@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <FuseeProjectRoot>$(MSBuildThisFileDirectory)\</FuseeProjectRoot>
+    <BaseOutputPath>$(FuseeProjectRoot)\bin\Debug\</BaseOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+</Project>

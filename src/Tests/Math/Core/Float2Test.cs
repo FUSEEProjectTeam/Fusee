@@ -1,10 +1,10 @@
-﻿using Xunit;
+﻿using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
-using Fusee.Math.Core;
 using System.Globalization;
+using Xunit;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     public class Float2Test
     {
@@ -318,11 +318,27 @@ namespace Fusee.Test.Math.Core
 
         #endregion
 
+        [Theory]
+        [MemberData(nameof(GetStep))]
+        public void Step(float2 edge, float2 val, float2 expected)
+        {
+            Assert.Equal(expected, float2.Step(edge, val));
+        }
+
         #region Lerp
 
         [Theory]
         [MemberData(nameof(GetLerp))]
         public void Lerp_TestLerp(float2 left, float2 right, float blend, float2 expected)
+        {
+            var actual = float2.Lerp(left, right, blend);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetLerp2))]
+        public void Lerp_TestLerp2(float2 left, float2 right, float2 blend, float2 expected)
         {
             var actual = float2.Lerp(left, right, blend);
 
@@ -346,10 +362,8 @@ namespace Fusee.Test.Math.Core
         [MemberData(nameof(GetBarycentric))]
         public void GetBarycentric_Edges(float2 a, float2 b, float2 c, float uExpected, float vExpected, float2 point)
         {
-            float uActual;
-            float vActual;
 
-            float2.GetBarycentric(a, b, c, point, out uActual, out vActual);
+            float2.GetBarycentric(a, b, c, point, out float uActual, out float vActual);
 
             Assert.Equal(uExpected, uActual);
             Assert.Equal(vExpected, vActual);
@@ -357,10 +371,9 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetBarycentric))]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters", Justification = "<Pending>")]
-        public void PointIntriangle(float2 a, float2 b, float2 c, float u, float v, float2 point)
+        public void PointIntriangle(float2 a, float2 b, float2 c, float _1, float _2, float2 point)
         {
-            Assert.True(float2.PointInTriangle(a, b, c, point, out u, out v));
+            Assert.True(float2.PointInTriangle(a, b, c, point, out _, out _));
         }
 
         [Fact]
@@ -541,9 +554,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Color_Set()
         {
-            var vec = new float2();
-
-            vec.rg = new float2(1, 2);
+            var vec = new float2
+            {
+                rg = new float2(1, 2)
+            };
 
             Assert.Equal(new float2(1, 2), vec);
 
@@ -659,6 +673,16 @@ namespace Fusee.Test.Math.Core
             yield return new object[] { zero, one, 1, one };
         }
 
+        public static IEnumerable<object[]> GetLerp2()
+        {
+            var one = new float2(1, 1);
+            var zero = new float2(0, 0);
+
+            yield return new object[] { zero, one, new float2(0.5f, 0.5f), new float2(0.5f, 0.5f) };
+            yield return new object[] { zero, one, float2.Zero, zero };
+            yield return new object[] { zero, one, float2.One, one };
+        }
+
         public static IEnumerable<object[]> GetBarycentric()
         {
             var zero = new float2(0, 0);
@@ -668,6 +692,14 @@ namespace Fusee.Test.Math.Core
             yield return new object[] { zero, x, y, 0, 0, y };
             yield return new object[] { zero, x, y, 1, 0, zero };
             yield return new object[] { zero, x, y, 0, 1, x };
+        }
+
+        public static IEnumerable<object[]> GetStep()
+        {
+            var x = new float2(2.222f, 2.222f);
+            var y = new float2(1.111f, 1.111f);
+            yield return new object[] { x, y, float2.Zero };
+            yield return new object[] { y, x, float2.One };
         }
 
         #endregion

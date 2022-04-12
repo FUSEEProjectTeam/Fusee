@@ -15,27 +15,27 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Top row of the matrix
         /// </summary>
-        public float3 Row0;
+        public float3 Row1;
 
         /// <summary>
         ///     2nd row of the matrix
         /// </summary>
-        public float3 Row1;
+        public float3 Row2;
 
         /// <summary>
         ///     3rd row of the matrix
         /// </summary>
-        public float3 Row2;
+        public float3 Row3;
 
         /// <summary>
         ///     The identity matrix
         /// </summary>
-        public static float3x3 Identity = new float3x3(float3.UnitX, float3.UnitY, float3.UnitZ);
+        public static readonly float3x3 Identity = new(float3.UnitX, float3.UnitY, float3.UnitZ);
 
         /// <summary>
         ///     The zero matrix
         /// </summary>
-        public static float3x3 Zero = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
+        public static readonly float3x3 Zero = new(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         #endregion Fields
 
@@ -44,36 +44,36 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Constructs a new instance.
         /// </summary>
-        /// <param name="row0">Top row of the matrix</param>
-        /// <param name="row1">Second row of the matrix</param>
-        /// <param name="row2">Third row of the matrix</param>
-        public float3x3(float3 row0, float3 row1, float3 row2)
+        /// <param name="row1">Top row of the matrix</param>
+        /// <param name="row2">Second row of the matrix</param>
+        /// <param name="row3">Third row of the matrix</param>
+        public float3x3(float3 row1, float3 row2, float3 row3)
         {
-            Row0 = row0;
             Row1 = row1;
             Row2 = row2;
+            Row3 = row3;
         }
 
         /// <summary>
         ///     Constructs a new instance.
         /// </summary>
-        /// <param name="m00">First item of the first row of the matrix.</param>
-        /// <param name="m01">Second item of the first row of the matrix.</param>
-        /// <param name="m02">Third item of the first row of the matrix.</param>
-        /// <param name="m10">First item of the second row of the matrix.</param>
-        /// <param name="m11">Second item of the second row of the matrix.</param>
-        /// <param name="m12">Third item of the second row of the matrix.</param>
-        /// <param name="m20">First item of the third row of the matrix.</param>
-        /// <param name="m21">Second item of the third row of the matrix.</param>
-        /// <param name="m22">Third item of the third row of the matrix.</param>
+        /// <param name="m11">First item of the first row of the matrix.</param>
+        /// <param name="m12">Second item of the first row of the matrix.</param>
+        /// <param name="m13">Third item of the first row of the matrix.</param>
+        /// <param name="m21">First item of the second row of the matrix.</param>
+        /// <param name="m22">Second item of the second row of the matrix.</param>
+        /// <param name="m23">Third item of the second row of the matrix.</param>
+        /// <param name="m31">First item of the third row of the matrix.</param>
+        /// <param name="m32">Second item of the third row of the matrix.</param>
+        /// <param name="m33">Third item of the third row of the matrix.</param>
         public float3x3(
-            float m00, float m01, float m02,
-            float m10, float m11, float m12,
-            float m20, float m21, float m22)
+            float m11, float m12, float m13,
+            float m21, float m22, float m23,
+            float m31, float m32, float m33)
         {
-            Row0 = new float3(m00, m01, m02);
-            Row1 = new float3(m10, m11, m12);
-            Row2 = new float3(m20, m21, m22);
+            Row1 = new float3(m11, m12, m13);
+            Row2 = new float3(m21, m22, m23);
+            Row3 = new float3(m31, m32, m33);
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace Fusee.Math.Core
         /// <param name="mat4">The incoming float4x4.</param>
         public float3x3(float4x4 mat4)
         {
-            Row0 = new float3(mat4.Row0.x, mat4.Row0.y, mat4.Row0.z);
             Row1 = new float3(mat4.Row1.x, mat4.Row1.y, mat4.Row1.z);
             Row2 = new float3(mat4.Row2.x, mat4.Row2.y, mat4.Row2.z);
+            Row3 = new float3(mat4.Row3.x, mat4.Row3.y, mat4.Row3.z);
         }
 
         #endregion Constructors
@@ -101,40 +101,40 @@ namespace Fusee.Math.Core
             get
             {
                 return
-                    Row0.x * Row1.y * Row2.z
-                    + Row0.y * Row1.z * Row2.x
-                    + Row0.z * Row1.x * Row2.y
-                    - Row0.z * Row1.y * Row2.x
-                    - Row0.y * Row1.x * Row2.z
-                    - Row0.x * Row1.z * Row2.y;
+                    Row1.x * Row2.y * Row3.z
+                    + Row1.y * Row2.z * Row3.x
+                    + Row1.z * Row2.x * Row3.y
+                    - Row1.z * Row2.y * Row3.x
+                    - Row1.y * Row2.x * Row3.z
+                    - Row1.x * Row2.z * Row3.y;
             }
         }
 
         /// <summary>
         ///     The first column of this matrix
         /// </summary>
-        public float3 Column0
+        public float3 Column1
         {
-            get { return new float3(Row0.x, Row1.x, Row2.x); }
-            set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; }
+            get { return new float3(Row1.x, Row2.x, Row3.x); }
+            set { Row1.x = value.x; Row2.x = value.y; Row3.x = value.z; }
         }
 
         /// <summary>
         ///     The second column of this matrix
         /// </summary>
-        public float3 Column1
+        public float3 Column2
         {
-            get { return new float3(Row0.y, Row1.y, Row2.y); }
-            set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; }
+            get { return new float3(Row1.y, Row2.y, Row3.y); }
+            set { Row1.y = value.x; Row2.y = value.y; Row3.y = value.z; }
         }
 
         /// <summary>
         ///     The third column of this matrix
         /// </summary>
-        public float3 Column2
+        public float3 Column3
         {
-            get { return new float3(Row0.z, Row1.z, Row2.z); }
-            set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; }
+            get { return new float3(Row1.z, Row2.z, Row3.z); }
+            set { Row1.z = value.x; Row2.z = value.y; Row3.z = value.z; }
         }
 
         /// <summary>
@@ -142,8 +142,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M11
         {
-            get { return Row0.x; }
-            set { Row0.x = value; }
+            get { return Row1.x; }
+            set { Row1.x = value; }
         }
 
         /// <summary>
@@ -151,8 +151,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M12
         {
-            get { return Row0.y; }
-            set { Row0.y = value; }
+            get { return Row1.y; }
+            set { Row1.y = value; }
         }
 
         /// <summary>
@@ -160,8 +160,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M13
         {
-            get { return Row0.z; }
-            set { Row0.z = value; }
+            get { return Row1.z; }
+            set { Row1.z = value; }
         }
 
         /// <summary>
@@ -169,8 +169,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M21
         {
-            get { return Row1.x; }
-            set { Row1.x = value; }
+            get { return Row2.x; }
+            set { Row2.x = value; }
         }
 
         /// <summary>
@@ -178,8 +178,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M22
         {
-            get { return Row1.y; }
-            set { Row1.y = value; }
+            get { return Row2.y; }
+            set { Row2.y = value; }
         }
 
         /// <summary>
@@ -187,8 +187,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M23
         {
-            get { return Row1.z; }
-            set { Row1.z = value; }
+            get { return Row2.z; }
+            set { Row2.z = value; }
         }
 
         /// <summary>
@@ -196,8 +196,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M31
         {
-            get { return Row2.x; }
-            set { Row2.x = value; }
+            get { return Row3.x; }
+            set { Row3.x = value; }
         }
 
         /// <summary>
@@ -205,8 +205,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M32
         {
-            get { return Row2.y; }
-            set { Row2.y = value; }
+            get { return Row3.y; }
+            set { Row3.y = value; }
         }
 
         /// <summary>
@@ -214,8 +214,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M33
         {
-            get { return Row2.z; }
-            set { Row2.z = value; }
+            get { return Row3.z; }
+            set { Row3.z = value; }
         }
 
         #endregion Properties
@@ -284,7 +284,7 @@ namespace Fusee.Math.Core
             if (right == Identity) return left;
             if (left == Zero || right == Zero) return Zero;
 
-            float3x3 result = new float3x3(
+            float3x3 result = new(
                 left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31,
                 left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32,
                 left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33,
@@ -309,7 +309,7 @@ namespace Fusee.Math.Core
         /// <returns>The transpose of the given matrix</returns>
         public static float3x3 Transpose(float3x3 mat)
         {
-            return new float3x3(mat.Column0, mat.Column1, mat.Column2);
+            return new float3x3(mat.Column1, mat.Column2, mat.Column3);
         }
 
         #endregion Transpose
@@ -360,7 +360,7 @@ namespace Fusee.Math.Core
         {
             float2 result;
 
-            float3 temp = new float3(vector.x, vector.y, 1);
+            float3 temp = new(vector.x, vector.y, 1);
             result = Transform(matrix, temp).xy;
 
             return result;
@@ -376,7 +376,7 @@ namespace Fusee.Math.Core
         {
             float2 result;
 
-            float3 temp = new float3(vector.x, vector.y, 1);
+            float3 temp = new(vector.x, vector.y, 1);
             result = Transform(temp, matrix).xy;
 
             return result;
@@ -519,7 +519,7 @@ namespace Fusee.Math.Core
             if (provider == null)
                 provider = CultureInfo.CurrentCulture;
 
-            return String.Format(provider, "{0}\n{1}\n{2}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider));
+            return String.Format(provider, "{0}\n{1}\n{2}", Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
         }
 
         #endregion public override string ToString()
@@ -532,7 +532,7 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-            return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode();
+            return Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode();
         }
 
         #endregion public override int GetHashCode()
@@ -544,7 +544,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object to compare tresult.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is float3x3))
                 return false;
@@ -578,7 +578,7 @@ namespace Fusee.Math.Core
         /// <returns>true if the current matrix represents an affine transformation; otherwise, false.</returns>
         public bool IsAffine
         {
-            get { return (Column2 == float3.UnitZ); }
+            get { return (Column3 == float3.UnitZ); }
         }
 
         /// <summary>Indicates whether the current matrix is equal to another matrix.</summary>
@@ -587,9 +587,9 @@ namespace Fusee.Math.Core
         public bool Equals(float3x3 other)
         {
             return
-                Row0 == other.Row0 &&
                 Row1 == other.Row1 &&
-                Row2 == other.Row2;
+                Row2 == other.Row2 &&
+                Row3 == other.Row3;
         }
 
         #endregion IEquatable<Matri3x3> Members

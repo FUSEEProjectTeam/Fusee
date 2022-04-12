@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+
+		<IsPackable>true</IsPackable>
+		<Description>Fusee Structures</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+	</ItemGroup>
+
+</Project>

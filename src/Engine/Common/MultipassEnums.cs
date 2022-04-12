@@ -33,13 +33,22 @@
         /// <summary>
         /// Specular texture.
         /// </summary>
-        Specular
+        Specular,
+
+        /// <summary>
+        /// Contains the emissive color.
+        /// </summary>
+        Emission,
+
+        /// <summary>
+        /// Contains the subsurface color and strength.
+        /// </summary>
+        Subsurface
     }
 
     /// <summary>
     /// Common texture resolutions for render textures. The value is given in px.
     /// </summary>
-    [System.Flags]
     public enum TexRes
     {
         /// <summary>

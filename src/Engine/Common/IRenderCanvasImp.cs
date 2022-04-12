@@ -8,6 +8,11 @@ namespace Fusee.Engine.Common
     public interface IRenderCanvasImp
     {
         /// <summary>
+        /// Cross-platform window handle for the window the engine renders to.
+        /// </summary>
+        IWindowHandle WindowHandle { get; }
+
+        /// <summary>
         /// Implementation Tasks: Gets and sets the width(pixel units) of the Canvas.
         /// </summary>
         /// <value>
@@ -38,6 +43,14 @@ namespace Fusee.Engine.Common
         /// The delta time.
         /// </value>
         float DeltaTime { get; }
+
+        /// <summary>
+        /// Implementation Tasks: Gets the delta time. The delta time is the time it took the last frame to update in milliseconds.
+        /// </summary>
+        /// <value>
+        /// The delta time.
+        /// </value>
+        float DeltaTimeUpdate { get; }
 
         /// <summary>
         /// Implementation Tasks: Gets and sets a value indicating whether vertical synchronization is enabled.
@@ -116,6 +129,10 @@ namespace Fusee.Engine.Common
         /// Occurs when [UnLoad] is called.
         /// </summary>
         event EventHandler<InitEventArgs> UnLoad;
+        /// <summary>
+        /// Occurs when [Update] is called.
+        /// </summary>
+        event EventHandler<RenderEventArgs> Update;
         /// <summary>
         /// Occurs when [Render] is called.
         /// </summary>

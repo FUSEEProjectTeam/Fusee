@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using ProtoBuf;
+using System.Collections.Generic;
 
 namespace Fusee.Serialization.V1
 {
@@ -118,7 +118,7 @@ namespace Fusee.Serialization.V1
         /// </summary>
         Lerp,
         /// <summary>
-        /// Spherical interpolation. float3 are interpreted as Euler angles and interpolated in a shortest-path way using <see cref="Quaternion"/>s.
+        /// Spherical interpolation. float3 are interpreted as Euler angles and interpolated in a shortest-path way using <see cref="QuaternionF"/>s.
         /// </summary>
         Slerp,
     }
@@ -178,6 +178,6 @@ namespace Fusee.Serialization.V1
         /// The list of key frames ordered by time.
         /// </summary>
         [ProtoMember(4)]
-        public List<FusAnimationKeyBase> KeyFrames = new List<FusAnimationKeyBase>();
+        public List<FusAnimationKeyBase> KeyFrames = new();
     }
 }

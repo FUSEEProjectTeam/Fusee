@@ -85,6 +85,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Gets the delta time.
+        /// The delta time is the time that was required to render the last frame in milliseconds.
+        /// This value can be used to determine the frames per second of the application.
+        /// </summary>
+        /// <value>
+        /// The delta time in milliseconds.
+        /// </value>
+        public float DeltaTimeUpdate
+        {
+            get
+            {
+                if (_gameView != null)
+                    return _gameView.DeltaTime;
+                return 0.01f;
+            }
+        }
+
+        /// <summary>
         /// Gets and sets a value indicating whether [vertical synchronize].
         /// This option is used to reduce "Glitches" during rendering.
         /// </summary>
@@ -159,6 +177,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </value>
         public View View => _gameView;
 
+        /// <summary>
+        /// Window handle for the window the engine renders to.
+        /// </summary>
+        public IWindowHandle WindowHandle { get; }
+
         internal RenderCanvasGameView _gameView;
 
         #endregion Fields
@@ -171,6 +194,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public RenderCanvasImp(Context context, IAttributeSet attrs, Action run)
         {
             _gameView = new RenderCanvasGameView(this, true, context, attrs, run);
+            WindowHandle = new WindowHandle() { WinId = _gameView.WindowId };
         }
 
         /// <summary>
@@ -242,6 +266,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (link.StartsWith("http://"))
             {
                 var intent = new Intent(Intent.ActionView);
+
+                //TODO: This is a workaround, pls fix: https://stackoverflow.com/questions/3918517/calling-startactivity-from-outside-of-an-activity-context
+                intent.SetFlags(ActivityFlags.NewTask);
+
                 intent.SetData(Uri.Parse(link));
                 _gameView.Context.StartActivity(intent);
             }
@@ -274,6 +302,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public event EventHandler<InitEventArgs> UnLoad;
 
         /// <summary>
+        /// Occurs when [update].
+        /// </summary>
+        public event EventHandler<RenderEventArgs> Update;
+
+        /// <summary>
         /// Occurs when [render].
         /// </summary>
         public event EventHandler<RenderEventArgs> Render;
@@ -292,8 +325,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         protected internal void DoInit()
         {
-            if (Init != null)
-                Init(this, new InitEventArgs());
+            Init?.Invoke(this, new InitEventArgs());
         }
 
         /// <summary>
@@ -301,8 +333,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         protected internal void DoUnLoad()
         {
-            if (UnLoad != null)
-                UnLoad(this, new InitEventArgs());
+            UnLoad?.Invoke(this, new InitEventArgs());
+        }
+
+        /// <summary>
+        /// Does the update of this instance.
+        /// </summary>
+        protected internal void DoUpdate()
+        {
+            Update?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -310,8 +349,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         protected internal void DoRender()
         {
-            if (Render != null)
-                Render(this, new RenderEventArgs());
+            Render?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -319,8 +357,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         protected internal void DoResize(int width, int height)
         {
-            if (Resize != null)
-                Resize(this, new ResizeEventArgs(width, height));
+            Resize?.Invoke(this, new ResizeEventArgs(width, height));
         }
 
         #endregion Internal Members
@@ -330,11 +367,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
     {
         #region Fields
 
-        private RenderCanvasImp _renderCanvasImp;
+        private readonly RenderCanvasImp _renderCanvasImp;
         private float _deltaTime;
-        private Action _run;
+        private readonly Action _run;
         internal Context AndroidContext;
-        private Stopwatch _stopwatch = new Stopwatch();
+        private readonly Stopwatch _stopwatch = new();
 
         #endregion Fields
 
@@ -373,30 +410,37 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         #region Overrides
 
+        private bool _wasLoaded = false;
+
         protected override void OnLoad(EventArgs e)
         {
-            // Check for necessary capabilities
-            string version = GL.GetString(All.Version);
-
-            int major = version[0];
-            // int minor = (int)version[2];
-
-            if (major < 2)
+            if (!_wasLoaded)
             {
-                throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
+                // Check for necessary capabilities
+                string version = GL.GetString(StringName.Version);
+
+                int major = version[0];
+                // int minor = (int)version[2];
+
+                if (major < 2)
+                {
+                    throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
+                }
+
+                GL.ClearColor(0, 0.3f, 0.1f, 1);
+
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.CullFace);
+
+                // Use VSync!
+                // Context.SwapInterval = 1;
+                _run?.Invoke();
+
+                _renderCanvasImp.DoInit();
+                _stopwatch.Start();
+
+                _wasLoaded = true;
             }
-
-            GL.ClearColor(0, 0.3f, 0.1f, 1);
-
-            GL.Enable(All.DepthTest);
-            GL.Enable(All.CullFace);
-
-            // Use VSync!
-            // Context.SwapInterval = 1;
-            _run?.Invoke();
-
-            _renderCanvasImp.DoInit();
-            _stopwatch.Start();
         }
 
         protected override void OnUnload(EventArgs e)
@@ -411,9 +455,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
+            if (_renderCanvasImp != null)
+                _renderCanvasImp.DoUpdate();
+        }
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            _deltaTime = (float)_stopwatch.ElapsedMilliseconds / 1000.0f;
+            _deltaTime = _stopwatch.ElapsedMilliseconds / 1000.0f;
             _stopwatch.Restart();
 
             if (_renderCanvasImp != null)

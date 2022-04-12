@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Fusee.Math.Core;
+using System.Diagnostics;
 using System.Reflection;
-using Fusee.Math.Core;
 
 namespace Fusee.Xirkit
 {
@@ -59,8 +59,8 @@ namespace Fusee.Xirkit
     public class ConvertingPropertyAccessor<TPin, TObj> : IMemberAccessor<TPin>
     {
         private readonly PropertyInfo _propertyInfo;
-        Converter<TPin, TObj> _p2o;
-        Converter<TObj, TPin> _o2p;
+        readonly Converter<TPin, TObj> _p2o;
+        readonly Converter<TObj, TPin> _o2p;
         /// <summary>
         /// Initializes a new instance of the <see cref="ConvertingPropertyAccessor{TPin, TObj}"/> class.
         /// </summary>

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
@@ -27,6 +27,11 @@ namespace Fusee.Engine.Core
         private readonly ImageData _imageData;
 
         #region Properties
+
+        /// <summary>
+        /// Reference to the original image. Should save  path/file name. 
+        /// </summary>
+        public string PathAndName;
 
         /// <summary>
         /// Width in pixels.
@@ -69,7 +74,7 @@ namespace Fusee.Engine.Core
         public bool IsEmpty => (Width <= 0 || Height <= 0);
 
         /// <summary>
-        /// Specifies if mipmaps are created for this texture.
+        /// Specifies if mipmaps are created on the gpu or not for this texture.
         /// </summary>
         public bool DoGenerateMipMaps
         {
@@ -82,30 +87,41 @@ namespace Fusee.Engine.Core
         /// </summary>
         public TextureWrapMode WrapMode
         {
-            get;
-            private set;
+            get
+            {
+                return _wrapMode;
+            }
+            set
+            {
+                _wrapMode = value;
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.WrapModeChanged));
+            }
         }
+        private TextureWrapMode _wrapMode;
 
         /// <summary>
-        /// Specifies the texture's filter mode, see <see cref="TextureWrapMode"/>.
+        /// Specifies the texture's filter mode, see <see cref="TextureFilterMode"/>.
         /// </summary>
         public TextureFilterMode FilterMode
         {
-            get;
-            private set;
+            get
+            {
+                return _filterMode;
+            }
+            set
+            {
+                _filterMode = value;
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.FilterModeChanged));
+            }
         }
+        private TextureFilterMode _filterMode;
 
         /// <summary>
         /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
         /// </summary>
         public RenderTargetTextureTypes TextureType { get; private set; }
 
-        #endregion
-
-        /// <summary>
-        /// Creates a new instance of type Texture.
-        /// </summary>
-        protected Texture() { }
+        #endregion        
 
         /// <summary>
         /// Constructor initializes a Texture from a pixelData byte buffer, width and height in pixels and <see cref="ImagePixelFormat"/>.
@@ -117,7 +133,7 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.Linear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
+        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LinearMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(pixelData, width, height, colorFormat);
@@ -133,7 +149,7 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.Linear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
+        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(
@@ -175,7 +191,7 @@ namespace Fusee.Engine.Core
                 return;
 
             // Fire Texture Changed Event -> Update TextureRegion on GPU
-            this.TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
+            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
         }
 
         /// <summary>
@@ -192,20 +208,40 @@ namespace Fusee.Engine.Core
             return _imageData.ScanLines(xSrc, ySrc, width, height);
         }
 
+        private bool _disposed;
+
         /// <summary>
-        /// Implementation of the <see cref="IDisposable"/> interface.
+        /// Fire dispose mesh event
         /// </summary>
-        public void Dispose()
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
         {
-            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+                }
+
+                _disposed = true;
+            }
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire TextureChanged event.
+        /// Fire dispose mesh event
+        /// </summary>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// Destructor calls <see cref="Dispose()"/> in order to fire TextureChanged event.
         /// </summary>
         ~Texture()
         {
-            Dispose();
+            Dispose(true);
         }
 
         /// <summary>

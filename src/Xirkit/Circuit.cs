@@ -29,8 +29,8 @@ namespace Fusee.Xirkit
     /// </summary>
     public class Circuit
     {
-        private List<Node> _nodeList;
-        private List<Node> _rootList;
+        private readonly List<Node> _nodeList;
+        private readonly List<Node> _rootList;
 
         /// <summary>
         /// Gets list of nodes within this Circuit

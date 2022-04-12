@@ -1,0 +1,8 @@
+<Project>
+  <Import Project="../../Directory.Build.props" />
+  <PropertyGroup>
+	<!-- xUnit1026 - Theory methods should use all of their parameters
+		 This doesnt work for our math tests where we send many connected datasets into methods that use different parts of the dataset. -->  
+    <NoWarn>$(NoWarn);xUnit1026</NoWarn>
+  </PropertyGroup>
+</Project>

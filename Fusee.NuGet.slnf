@@ -14,8 +14,15 @@
       "src\\Jometri\\Fusee.Jometri.csproj",
       "src\\Math\\Core\\Fusee.Math.Core.csproj",
       "src\\Serialization\\Fusee.Serialization.csproj",
+      "src\\Structures\\Fusee.Structures.csproj",
+      "src\\Tests\\Math\\Core\\Fusee.Tests.Math.Core.csproj",
+      "src\\Tests\\Scene\\Components\\Fusee.Tests.Scene.Components.csproj",
+      "src\\Tests\\Serialization\\V1\\Fusee.Tests.Serialization.V1.csproj",
+      "src\\Tests\\Xene\\Fusee.Tests.Xene.csproj",
+      "src\\Tests\\Xirkit\\Core\\Fusee.Tests.Xirkit.Core.csproj",
+      "src\\Tests\\Xirkit\\NestedAccess\\Fusee.Tests.Xirkit.NestedAccess.csproj",
       "src\\Tools\\BlenderScripts\\addons\\io_export_fus\\io_export_fus.pyproj",
-      "src\\Tools\\fuseeCmdLine\\Fusee.Tools.CmdLine.csproj",
+      "src\\Tools\\CmdLine\\Fusee.Tools.CmdLine.csproj",
       "src\\Xene\\Fusee.Xene.csproj",
       "src\\Xirkit\\Fusee.Xirkit.csproj"
     ]

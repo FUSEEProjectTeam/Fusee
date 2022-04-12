@@ -1,10 +1,10 @@
-﻿using Xunit;
+﻿using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
-using Fusee.Math.Core;
 using System.Globalization;
+using Xunit;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     public class Float4Test
     {
@@ -413,6 +413,15 @@ namespace Fusee.Test.Math.Core
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [MemberData(nameof(GetLerp4))]
+        public void Lerp_TestLerp4(float4 left, float4 right, float4 blend, float4 expected)
+        {
+            var actual = float4.Lerp(left, right, blend);
+
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
 
         #region Barycentric
@@ -458,9 +467,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Swizzle_Set()
         {
-            var actual = new float4(0, 0, 0, 0);
-
-            actual.xy = new float2(1, 2);
+            var actual = new float4(0, 0, 0, 0)
+            {
+                xy = new float2(1, 2)
+            };
             Assert.Equal(new float4(1, 2, 0, 0), actual);
 
             actual.xyz = new float3(3, 3, 3);
@@ -610,12 +620,13 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Color_Set()
         {
-            var actual = new float4();
-
-            actual.r = 1;
-            actual.g = 2;
-            actual.b = 3;
-            actual.a = 4;
+            var actual = new float4
+            {
+                r = 1,
+                g = 2,
+                b = 3,
+                a = 4
+            };
             Assert.Equal(new float4(1, 2, 3, 4), actual);
 
             actual.rg = new float2(2, 1);
@@ -626,6 +637,13 @@ namespace Fusee.Test.Math.Core
         }
 
         #endregion
+
+        [Theory]
+        [MemberData(nameof(GetStep))]
+        public void Step(float4 edge, float4 val, float4 expected)
+        {
+            Assert.Equal(expected, float4.Step(edge, val));
+        }
 
         #region IEnumerables
 
@@ -713,6 +731,16 @@ namespace Fusee.Test.Math.Core
             yield return new object[] { zero, one, 1, one };
         }
 
+        public static IEnumerable<object[]> GetLerp4()
+        {
+            var one = new float4(1, 1, 1, 1);
+            var zero = new float4(0, 0, 0, 0);
+
+            yield return new object[] { zero, one, new float4(0.5f, 0.5f, 0.5f, 0.5f), new float4(0.5f, 0.5f, 0.5f, 0.5f) };
+            yield return new object[] { zero, one, float4.Zero, zero };
+            yield return new object[] { zero, one, float4.One, one };
+        }
+
         public static IEnumerable<object[]> GetBarycentric()
         {
             var x = new float4(1, 0, 0, 0);
@@ -722,6 +750,14 @@ namespace Fusee.Test.Math.Core
             yield return new object[] { x, y, z, 0, 0, z };
             yield return new object[] { x, y, z, 1, 0, x };
             yield return new object[] { x, y, z, 0, 1, y };
+        }
+
+        public static IEnumerable<object[]> GetStep()
+        {
+            var x = new float4(2.222f, 2.222f, 2.222f, 2.222f);
+            var y = new float4(1.111f, 1.111f, 1.111f, 1.111f);
+            yield return new object[] { x, y, float4.Zero };
+            yield return new object[] { y, x, float4.One };
         }
 
         #endregion

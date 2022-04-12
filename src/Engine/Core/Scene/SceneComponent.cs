@@ -13,5 +13,10 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <seealso cref="SceneExtensions.FindComponents(SceneNode, System.Predicate{SceneComponent})"/>
         public string Name;
+
+        /// <summary>
+        /// If set to false, the SceneRenderer will ignore this component.
+        /// </summary>
+        public bool Active { get; set; } = true;
     }
 }

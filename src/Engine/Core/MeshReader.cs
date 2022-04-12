@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -55,7 +54,7 @@ namespace Fusee.Engine.Core
                 else if (line.StartsWith("vt"))
                 {
                     // Vertex texcoord.
-                    string tmp = line.Substring(3);
+                    string tmp = line[3..];
 
                     string[] values = FilteredSplit(tmp, null);
 
@@ -65,7 +64,7 @@ namespace Fusee.Engine.Core
                 else if (line.StartsWith("vn"))
                 {
                     // Normals
-                    string tmp = line.Substring(3);
+                    string tmp = line[3..];
 
                     string[] values = FilteredSplit(tmp, null);
 
@@ -76,7 +75,7 @@ namespace Fusee.Engine.Core
                 else if (line.StartsWith("v"))
                 {
                     // Positions.
-                    string tmp = line.Substring(2);
+                    string tmp = line[2..];
 
                     string[] values = FilteredSplit(tmp, null);
 
@@ -87,7 +86,7 @@ namespace Fusee.Engine.Core
                 else if (line.StartsWith("f"))
                 {
                     // Face
-                    string tmp = line.Substring(2);
+                    string tmp = line[2..];
                     string[] values = FilteredSplit(tmp, null);
 
                     if (!(3 <= values.Length && values.Length < nMaxInx))
@@ -189,10 +188,8 @@ namespace Fusee.Engine.Core
         /// <returns>The newly created Mesh object</returns>
         public static Geometry LoadGeometry(Stream stream)
         {
-            using (var obj = new StreamReader(stream))
-            {
-                return ReadWavefrontObj(obj);
-            }
+            using var obj = new StreamReader(stream);
+            return ReadWavefrontObj(obj);
         }
 
         /// <summary>
@@ -202,11 +199,9 @@ namespace Fusee.Engine.Core
         /// <returns>The newly created Mesh object</returns>
         public static Mesh LoadMesh(Stream stream)
         {
-            using (var obj = new StreamReader(stream))
-            {
-                Geometry geo = ReadWavefrontObj(obj);
-                return geo.ToMesh();
-            }
+            using var obj = new StreamReader(stream);
+            Geometry geo = ReadWavefrontObj(obj);
+            return geo.ToMesh();
         }
 
         /// <summary>
@@ -219,7 +214,7 @@ namespace Fusee.Engine.Core
         {
             // Sometime if we have a white space at the beginning of the string, split
             // will return an empty string. Let's remove that.
-            List<string> ret = new List<string>();
+            List<string> ret = new();
             foreach (string s in strIn.Split(separator))
             {
                 if (!string.IsNullOrEmpty(s))

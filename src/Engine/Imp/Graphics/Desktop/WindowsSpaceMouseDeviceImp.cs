@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Fusee.Base.Core;
+using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver;
+using OpenTK.Windowing.Desktop;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Fusee.Engine.Common;
-using OpenTK;
-using Fusee.Base.Core;
-using Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -14,9 +14,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class WindowsSpaceMouseDriverImp : IInputDriverImp
     {
-        GameWindow _gameWindow;
-
-        WindowsSpaceMouseInputDeviceImp _SMI;
+        readonly GameWindow _gameWindow;
+        readonly WindowsSpaceMouseInputDeviceImp _SMI;
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseDriverImp"/> class.
         /// </summary>
@@ -40,7 +39,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _gameWindow = ((RenderCanvasImp)renderCanvas)._gameWindow;
             if (_gameWindow == null)
                 throw new ArgumentNullException(nameof(_gameWindow));
-
 
             _SMI = new WindowsSpaceMouseInputDeviceImp(_gameWindow);
         }
@@ -104,32 +102,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
-                }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
+                }
 
                 disposedValue = true;
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~RenderCanvasInputDriverImp() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
 
-        // This code added to correctly implement the disposable pattern.
+        ~WindowsSpaceMouseDriverImp()
+        {
+            Dispose(false);
+        }
+
         /// <summary>
         /// Part of the dispose pattern.
         /// </summary>
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }
@@ -140,9 +132,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// to the constructor) to receive 
     /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.
     /// </summary>
-    public class WindowsSpaceMouseInputDeviceImp : IInputDeviceImp
+    public class WindowsSpaceMouseInputDeviceImp : IInputDeviceImp, IDisposable
     {
-        private HandleRef _handle;
+        private readonly HandleRef _handle;
         private readonly GameWindow _gameWindow;
         private readonly _3DconnexionDevice _current3DConnexionDevice;
 
@@ -166,16 +158,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         private readonly int GWLP_WNDPROC = -4;
 
-
-        private UInt16 LOWORD(UInt32 wParam) => unchecked((UInt16)wParam);
-        private UInt16 HIWORD(UInt32 wParam) => unchecked((UInt16)((wParam >> 16) & 0xFFFF));
-
-        private UInt16 GET_X_LPARAM(UInt32 lp) => LOWORD(lp);
-        private UInt16 GET_Y_LPARAM(UInt32 lp) => HIWORD(lp);
-
-        private int GET_POINTERID_WPARAM(UInt32 wParam) => LOWORD(wParam);
-
-
         [DllImport("user32.dll")]
         private static extern IntPtr DefWindowProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam);
 
@@ -189,19 +171,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         private IntPtr _oldWndProc = IntPtr.Zero;
 
-
-        private void DisconnectWindowsEvents()
-        {
-            if (_handle.Handle != IntPtr.Zero)
-            {
-                SetWindowLongPtr(_handle, GWLP_WNDPROC, _oldWndProc);
-            }
-        }
-
-
         private IntPtr SpaceMouseWindowsProc(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam)
         {
-            // TODO
             if (_current3DConnexionDevice != null && !_current3DConnexionDevice.IsDisposed)
                 _current3DConnexionDevice.ProcessWindowMessage((int)Msg, wParam, lParam);
 
@@ -226,16 +197,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 }
             }
         }
-
-        private float GetWindowWidth()
-        {
-            return _gameWindow.Width;
-        }
-
-        private float GetWindowHeight()
-        {
-            return _gameWindow.Height;
-        }
         #endregion
 
         /// <summary>
@@ -247,7 +208,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             _gameWindow = gameWindow;
 
-            _handle = new HandleRef(_gameWindow, _gameWindow.WindowInfo.Handle);
+            _handle = new HandleRef(_gameWindow, _gameWindow.Context.WindowPtr);
 
             try
             {
@@ -259,8 +220,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             catch (Exception ex)
             {
-                Diagnostics.Warn("Trouble initializing the SpaceMouse. Probably due to missing driver.\n" + ex);
-                _current3DConnexionDevice = null;
+                Diagnostics.Verbose("Trouble initializing the SpaceMouse. Probably due to missing driver.\n" + ex);
+                _current3DConnexionDevice.Dispose();
             }
 
             _TX = new AxisImpDescription
@@ -452,6 +413,42 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             throw new NotImplementedException();
         }
 #pragma warning restore 0067
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        /// <summary>
+        /// Part of the Dispose pattern.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                _oldWndProc = IntPtr.Zero;
+
+                if (_current3DConnexionDevice != null && !_current3DConnexionDevice.IsDisposed)
+                    _current3DConnexionDevice.Dispose();
+
+                disposedValue = true;
+            }
+        }
+
+
+        ~WindowsSpaceMouseInputDeviceImp()
+        {
+            Dispose(false);
+        }
+
+        /// <summary>
+        /// Part of the dispose pattern.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
 
     }
 }

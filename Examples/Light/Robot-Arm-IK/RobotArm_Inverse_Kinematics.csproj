@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <OutputPath>$(BaseOutputPath)\Examples\RobotArmIK\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
@@ -9,29 +9,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Base.Common.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Base.Core.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Math.Core.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Serialization.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Xene.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Engine.Common.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Engine.Core.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Engine.GUI.dll">
-      <Private>False</Private>
-    </Reference>    
+    <PackageReference Include="Fusee.Desktop" Version="0.10.2.0" />
   </ItemGroup>
 </Project>

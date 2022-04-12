@@ -21,4 +21,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
     {
         internal int Handle = -1;
     }
+
+    class StorageBufferHandle : IBufferHandle
+    {
+        internal int Handle = -1;
+    }
 }

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
@@ -12,6 +12,7 @@ namespace Fusee.Engine.Core.ShaderShards
             Mat3,
             Mat4,
             Vec2,
+            IVec2,
             Vec3,
             Vec4,
             Boolean,
@@ -19,6 +20,10 @@ namespace Fusee.Engine.Core.ShaderShards
             Int,
             Sampler2D,
             SamplerCube,
+            ArrayTexture,
+            Sampler2DShadow,
+            SamplerCubeShadow,
+            ArrayTextureShadow,
             Void
         }
 
@@ -29,12 +34,12 @@ namespace Fusee.Engine.Core.ShaderShards
 
         internal static string CreateOut(Type type, string varName)
         {
-            return $"out {DecodeType(type)} {varName};";
+            return $"out {DecodeType(type)} {varName};\n";
         }
 
         internal static string CreateIn(Type type, string varName)
         {
-            return $"in  {DecodeType(type)} {varName};";
+            return $"in {DecodeType(type)} {varName};\n";
         }
 
         internal static string CreateVar(Type type, string varName)
@@ -45,21 +50,18 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Creates a GLSL method
         /// </summary>
-        /// <param name="returnType"></param>
-        /// <param name="methodName"></param>
-        /// <param name="methodParams"></param>
-        /// <param name="method">method body goes here</param>
-        /// <returns></returns>
-        internal static string CreateMethod(Type returnType, string methodName, string[] methodParams, IList<string> method)
+        /// <param name="returnType">The (GLSL) return type of the method.</param>
+        /// <param name="methodName">The method name.</param>
+        /// <param name="methodParams">All method parameters. Use <see cref="CreateVar(Type, string)"/> to get the correct string.</param>
+        /// <param name="methodBody">The method body goes here.</param>
+        internal static string CreateMethod(Type returnType, string methodName, string[] methodParams, IList<string> methodBody)
         {
-            method = method.Select(x => "   " + x).ToList(); // One Tab indent
-
             var tmpList = new List<string>
             {
                 $"{DecodeType(returnType)} {methodName}({string.Join(", ", methodParams)})",
                 "{"
             };
-            tmpList.AddRange(method);
+            tmpList.AddRange(methodBody);
             tmpList.Add("}");
             tmpList.Add("\n");
             AddTabsToMethods(tmpList);
@@ -67,51 +69,147 @@ namespace Fusee.Engine.Core.ShaderShards
             return string.Join("\n", tmpList);
         }
 
-        internal static string DecodeType(Type type)
+        /// <summary>
+        /// Creates a GLSL method
+        /// </summary>
+        /// <param name="returnType">The return type of the method.</param>
+        /// <param name="methodName">The method name.</param>
+        /// <param name="methodParams">All method parameters. Use <see cref="CreateVar(Type, string)"/> to get the correct string.</param>
+        /// <param name="methodBody">The method body goes here.</param>
+        internal static string CreateMethod(string returnType, string methodName, string[] methodParams, IList<string> methodBody)
         {
-            switch (type)
+            var tmpList = new List<string>
             {
-                case Type.Mat3:
-                    return "mat3";
-                case Type.Mat4:
-                    return "mat4";
-                case Type.Vec2:
-                    return "vec2";
-                case Type.Vec3:
-                    return "vec3";
-                case Type.Vec4:
-                    return "vec4";
-                case Type.Boolean:
-                    return "bool";
-                case Type.Float:
-                    return "float";
-                case Type.Int:
-                    return "int";
-                case Type.Sampler2D:
-                    return "sampler2D";
-                case Type.SamplerCube:
-                    return "samplerCube";
-                case Type.Void:
-                    return "void";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+                $"{returnType} {methodName}({string.Join(", ", methodParams)})",
+                "{"
+            };
+
+            tmpList.AddRange(methodBody);
+            tmpList.Add("}");
+            tmpList.Add("\n");
+            AddTabsToMethods(tmpList);
+
+            return string.Join("\n", tmpList);
         }
 
-        private static void AddTabsToMethods(List<string> list)
+        /// <summary>
+        /// Creates a main method with the given method body.
+        /// </summary>
+        /// <param name="methodBody">The content of the method.</param>
+        /// <returns></returns>
+        public static string MainMethod(IList<string> methodBody)
         {
-            var indent = false;
+            return GLSL.CreateMethod(GLSL.Type.Void, "main",
+                new[] { "" }, methodBody);
+        }
+
+        /// <summary>
+        /// Translates this class or struct to GLSL. Will only convert fields and properties.
+        /// </summary>
+        /// <param name="type">The type to translate.</param>
+        /// <returns></returns>
+        public static string DecodeSystemStructOrClass(System.Type type)
+        {
+            var res = new List<string>
+            {
+                $"struct {type.Name}",
+                "{"
+            };
+
+            foreach (var field in type.GetFields())
+            {
+                if (!Attribute.IsDefined(field, typeof(Effects.NoUniformAttribute)))
+                    res.Add($"{DecodeType(field.FieldType)} {field.Name};");
+            }
+
+            foreach (var prop in type.GetProperties())
+            {
+                if (!Attribute.IsDefined(prop, typeof(Effects.NoUniformAttribute)))
+                    res.Add($"{DecodeType(prop.PropertyType)} {prop.Name};");
+            }
+
+            res.Add("};");
+            AddTabsToMethods(res);
+            res.Add("\n");
+            return string.Join("\n", res);
+        }
+
+        public static string DecodeType(System.Type type)
+        {
+            if (type.IsEnum)
+                return "int";
+            else if (type == typeof(float3x3))
+                return "mat3";
+            else if (type == typeof(float4x4))
+                return "mat4";
+            else if (type == typeof(float2))
+                return "vec2";
+            else if (type == typeof(float3))
+                return "vec3";
+            else if (type == typeof(float4))
+                return "vec4";
+            else if (type == typeof(bool))
+                return "bool";
+            else if (type == typeof(float))
+                return "float";
+            else if (type == typeof(int))
+                return "int";
+            else if (type == typeof(Texture) ||
+                type == typeof(WritableTexture))
+                return "sampler2D";
+            else if (type == typeof(WritableCubeMap))
+                return "samplerCube";
+            else if (type == typeof(WritableArrayTexture))
+                return "sampler2DArray";
+            if ((type.IsValueType && !type.IsPrimitive) || type.IsClass) // => user-defined struct or class
+                return type.Name;
+            else
+                throw new ArgumentException($"Cannot parse type {type.Name} ");
+        }
+
+        public static string DecodeType(Type type)
+        {
+            return type switch
+            {
+                Type.Mat3 => "mat3",
+                Type.Mat4 => "mat4",
+                Type.Vec2 => "vec2",
+                Type.IVec2 => "ivec2",
+                Type.Vec3 => "vec3",
+                Type.Vec4 => "vec4",
+                Type.Boolean => "bool",
+                Type.Float => "float",
+                Type.Int => "int",
+                Type.Sampler2D => "sampler2D",
+                Type.SamplerCube => "samplerCube",
+                Type.Void => "void",
+                Type.ArrayTexture => "highp sampler2DArray",
+                Type.Sampler2DShadow => "highp sampler2DShadow",
+                Type.SamplerCubeShadow => "highp samplerCubeShadow",
+                Type.ArrayTextureShadow => "highp sampler2DArrayShadow",
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
+            };
+        }
+
+        internal static void AddTabsToMethods(List<string> list)
+        {
+            var indentCnt = 0;
+
             for (var i = 0; i < list.Count; i++)
             {
                 var s = list[i];
-                if (list[i].Contains("}"))
-                    break;
 
-                if (indent)
-                    list[i] = "   " + s;
+                if (s == "}" || s == "};")
+                    indentCnt--;
 
-                if (list[i].Contains("{"))
-                    indent = true;
+                if (indentCnt > 0)
+                {
+                    for (int j = 0; j < indentCnt; j++)
+                        list[i] = "    " + list[i];
+                }
+
+                if (s == "{")
+                    indentCnt++;
             }
         }
     }

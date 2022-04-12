@@ -1,6 +1,6 @@
-﻿using System;
-using CommandLine;
+﻿using CommandLine;
 using Fusee.Tools.CmdLine.Verbs;
+using System;
 
 namespace Fusee.Tools.CmdLine
 {
@@ -9,11 +9,7 @@ namespace Fusee.Tools.CmdLine
         [STAThread]
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, Server, ProtoSchema>(args)
-                .WithParsed<Install>(install =>
-                {
-                    install.Run();
-                })
+            var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, ProtoSchema>(args)
                 .WithParsed<Pack>(pack =>
                 {
                     pack.Run();
@@ -30,17 +26,12 @@ namespace Fusee.Tools.CmdLine
                 {
                     publish.Run();
                 })
-                .WithParsed<Server>(server =>
+                .WithParsed<Install>(install =>
                 {
-                    server.Run();
+                    install.Run();
                 })
                 .WithNotParsed(errs =>
                 {
-                    /*foreach (var error in errs)
-                    {
-                        Console.Error.WriteLine(error);
-                    }
-                    */
                     Environment.Exit((int)ErrorCode.CommandLineSyntax);
                 });
         }

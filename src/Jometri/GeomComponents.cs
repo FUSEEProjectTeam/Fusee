@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
+using System.Collections.Generic;
 
 namespace Fusee.Jometri
 {
@@ -33,7 +33,7 @@ namespace Fusee.Jometri
         public Vertex(int handle, float3 pos)
         {
             Handle = handle;
-            IncidentHalfEdge = default(int);
+            IncidentHalfEdge = default;
             VertData = new VertexData { Pos = pos };
         }
 

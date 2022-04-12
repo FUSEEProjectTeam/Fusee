@@ -7,22 +7,24 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Provides the ability to create or interact directly with the point data.
     /// </summary>
-    public class Mesh : SceneComponent, IDisposable
+    public class Mesh : SceneComponent, IManagedMesh, IDisposable
     {
-#pragma warning disable CA1819 // Properties should not return arrays
-
         #region RenderContext Asset Management
 
-        // Event of mesh Data changes
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
         /// </summary>
-        public event EventHandler<MeshDataEventArgs> MeshChanged;
+        public event EventHandler<MeshChangedEventArgs> MeshChanged;
+
+        /// <summary>
+        /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
+        /// </summary>
+        public event EventHandler<MeshChangedEventArgs> DisposeData;
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
         /// </summary>
-        public readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
+        public Suid SessionUniqueIdentifier { get; } = Suid.GenerateSuid();
 
         #endregion
 
@@ -40,6 +42,8 @@ namespace Fusee.Engine.Core.Scene
 
         private ushort[] _triangles;
         private uint[] _colors;
+        private uint[] _colors1;
+        private uint[] _colors2;
 
         #endregion
 
@@ -55,8 +59,7 @@ namespace Fusee.Engine.Core.Scene
             set
             {
                 _vertices = value;
-
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Vertices));
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertices));
             }
         }
 
@@ -97,10 +100,10 @@ namespace Fusee.Engine.Core.Scene
             set
             {
                 _colors = value;
-
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors));
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors));
             }
         }
+
         /// <summary>
         /// Gets a value indicating whether a color is set.
         /// </summary>
@@ -108,6 +111,54 @@ namespace Fusee.Engine.Core.Scene
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
         public bool ColorsSet => _colors?.Length > 0;
+
+        /// <summary>
+        /// Gets and sets the color of a single vertex.
+        /// </summary>
+        /// <value>
+        /// The color.
+        /// </value>
+        public uint[] Colors1
+        {
+            get => _colors1;
+            set
+            {
+                _colors1 = value;
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors1));
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether a color is set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
+        /// </value>
+        public bool ColorsSet1 => _colors1?.Length > 0;
+
+        /// <summary>
+        /// Gets and sets the color of a single vertex.
+        /// </summary>
+        /// <value>
+        /// The color.
+        /// </value>
+        public uint[] Colors2
+        {
+            get => _colors2;
+            set
+            {
+                _colors2 = value;
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors2));
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether a color is set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
+        /// </value>
+        public bool ColorsSet2 => _colors2?.Length > 0;
 
 
         /// <summary>
@@ -122,8 +173,7 @@ namespace Fusee.Engine.Core.Scene
             set
             {
                 _normals = value;
-
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Normals));
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Normals));
             }
         }
         /// <summary>
@@ -146,8 +196,7 @@ namespace Fusee.Engine.Core.Scene
             set
             {
                 _uvs = value;
-
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Uvs));
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Uvs));
             }
         }
 
@@ -171,8 +220,7 @@ namespace Fusee.Engine.Core.Scene
             set
             {
                 _boneWeights = value;
-
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneWeights));
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneWeights));
             }
         }
         /// <summary>
@@ -195,8 +243,7 @@ namespace Fusee.Engine.Core.Scene
             set
             {
                 _boneIndices = value;
-
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneIndices));
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneIndices));
             }
         }
         /// <summary>
@@ -220,10 +267,8 @@ namespace Fusee.Engine.Core.Scene
             {
                 _triangles = value;
 
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Triangles));
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Triangles));
             }
-
-
         }
 
         /// <summary>
@@ -240,7 +285,7 @@ namespace Fusee.Engine.Core.Scene
         public AABBf BoundingBox;
 
         /// <summary>
-        /// The tangent of each triangle for bump mapping.
+        /// The tangent of each triangle for normal mapping.
         /// w-component is handedness
         /// </summary>
         public float4[] Tangents
@@ -250,12 +295,12 @@ namespace Fusee.Engine.Core.Scene
             {
                 _tangents = value;
 
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Tangents));
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Tangents));
             }
         }
 
         /// <summary>
-        /// The bi tangent of each triangle for bump mapping.
+        /// The bi tangent of each triangle for normal mapping.
         /// </summary>
         public float3[] BiTangents
         {
@@ -264,53 +309,60 @@ namespace Fusee.Engine.Core.Scene
             {
                 _biTangents = value;
 
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.BiTangents));
+                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BiTangents));
             }
         }
-
-        /// <summary>
-        /// Used by various visitors such as rendering and picking. If set to true the mesh contributes to the traversal result. 
-        /// </summary>
-        public bool Active = true;
 
         /// <summary>
         /// The type of mesh which is represented by this instance (e. g. triangle mesh, point, line, etc...)
         /// </summary>
-        public int MeshType;
-
+        public PrimitiveType MeshType { get; set; }
 
         #region IDisposable Support
 
-        private bool disposedValue; // To detect redundant calls
+        private bool disposed;
 
         /// <summary>
-        /// Fire dispose mesh event
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <param name="disposing"></param>
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!disposed)
             {
                 if (disposing)
                 {
-                    MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
+                    DisposeData?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Disposed));
                 }
 
-                disposedValue = true;
+                disposed = true;
             }
         }
 
         /// <summary>
-        /// Fire dispose mesh event
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
         /// </summary>
-        public void Dispose()
+        ~Mesh()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
+            Dispose(false);
         }
 
         #endregion
 
-#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

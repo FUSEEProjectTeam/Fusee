@@ -100,20 +100,20 @@ namespace Fusee.Jometri
 
             foreach (var face in allFaces)
             {
-                Vertex faceVertex = new Vertex(newGeometry.CreateVertHandleId(), allFaceVertices[face.Handle].VertData.Pos);
+                Vertex faceVertex = new(newGeometry.CreateVertHandleId(), allFaceVertices[face.Handle].VertData.Pos);
                 HalfEdge startEdge = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
                 HalfEdge nextEdge = startEdge;
 
                 //stores Halfedges without Twin
-                Dictionary<int, HalfEdge> halfEdges2 = new Dictionary<int, HalfEdge>();
-                Dictionary<int, HalfEdge> halfEdges1 = new Dictionary<int, HalfEdge>();
+                Dictionary<int, HalfEdge> halfEdges2 = new();
+                Dictionary<int, HalfEdge> halfEdges1 = new();
 
                 newGeometry.DictVertices.Add(faceVertex.Handle, faceVertex);
                 int i = 0;
                 do
                 {
-                    HalfEdge h1 = new HalfEdge(newGeometry.CreateHalfEdgeHandleId());
-                    HalfEdge h2 = new HalfEdge(newGeometry.CreateHalfEdgeHandleId());
+                    HalfEdge h1 = new(newGeometry.CreateHalfEdgeHandleId());
+                    HalfEdge h2 = new(newGeometry.CreateHalfEdgeHandleId());
                     HalfEdge h3 = newGeometry.GetHalfEdgeByHandle(nextEdge.PrevHalfEdge);
                     HalfEdge h4 = newGeometry.GetHalfEdgeByHandle(nextEdge.Handle);
 
@@ -162,7 +162,7 @@ namespace Fusee.Jometri
                     }
 
                     //Stores Vertices to get the face normal
-                    List<Vertex> faceVertices = new List<Vertex>
+                    List<Vertex> faceVertices = new()
                     {
                         newGeometry.GetVertexByHandle(h1.OriginVertex),
                         newGeometry.GetVertexByHandle(h2.OriginVertex),

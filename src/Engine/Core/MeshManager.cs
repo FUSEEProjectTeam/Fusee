@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
-    internal class MeshManager
+    internal class MeshManager : IDisposable
     {
         private readonly IRenderContextImp _renderContextImp;
-        private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new Stack<IMeshImp>();
-        private readonly Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new Dictionary<Suid, IMeshImp>();
+        private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new();
+        private readonly Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new();
 
         private void Remove(IMeshImp meshImp)
         {
+            if (meshImp == null) return;
             if (meshImp.VerticesSet)
                 _renderContextImp.RemoveVertices(meshImp);
 
@@ -23,6 +24,12 @@ namespace Fusee.Engine.Core
 
             if (meshImp.ColorsSet)
                 _renderContextImp.RemoveColors(meshImp);
+
+            if (meshImp.ColorsSet1)
+                _renderContextImp.RemoveColors1(meshImp);
+
+            if (meshImp.ColorsSet2)
+                _renderContextImp.RemoveColors2(meshImp);
 
             if (meshImp.UVsSet)
                 _renderContextImp.RemoveUVs(meshImp);
@@ -46,24 +53,27 @@ namespace Fusee.Engine.Core
             GC.Collect();
         }
 
-        private void MeshChanged(object sender, MeshDataEventArgs meshDataEventArgs)
+        private void DisposeMesh(object sender, MeshChangedEventArgs meshDataEventArgs)
         {
             if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out IMeshImp toBeUpdatedMeshImp))
                 throw new KeyNotFoundException("Mesh is not registered.");
 
-            var mesh = meshDataEventArgs.Mesh;
+            // Add the meshImp to the toBeDeleted Stack...#
+            _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp);
+
+            // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
+            _identifierToMeshImpDictionary.Remove(meshDataEventArgs.Mesh.SessionUniqueIdentifier);
+        }
+
+        private void MeshChanged(object sender, MeshChangedEventArgs meshDataEventArgs)
+        {
+            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out IMeshImp toBeUpdatedMeshImp))
+                throw new KeyNotFoundException("Mesh is not registered.");
+
+            var mesh = (Mesh)meshDataEventArgs.Mesh;
 
             switch (meshDataEventArgs.ChangedEnum)
             {
-                case MeshChangedEnum.Disposed:
-
-                    // Add the meshImp to the toBeDeleted Stack...#
-                    _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp);
-
-                    // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
-                    _identifierToMeshImpDictionary.Remove(mesh.SessionUniqueIdentifier);
-
-                    break;
                 case MeshChangedEnum.Vertices:
                     _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
                     mesh.BoundingBox = new AABBf(mesh.Vertices);
@@ -73,6 +83,12 @@ namespace Fusee.Engine.Core
                     break;
                 case MeshChangedEnum.Colors:
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors);
+                    break;
+                case MeshChangedEnum.Colors1:
+                    _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors1);
+                    break;
+                case MeshChangedEnum.Colors2:
+                    _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors2);
                     break;
                 case MeshChangedEnum.Normals:
                     _renderContextImp.SetNormals(toBeUpdatedMeshImp, mesh.Normals);
@@ -95,12 +111,59 @@ namespace Fusee.Engine.Core
             }
         }
 
+        public void RegisterNewMesh(GpuMesh mesh, float3[] vertices, ushort[] triangles = null, float2[] uvs = null,
+            float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null,
+            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)
+        {
+            var meshImp = _renderContextImp.CreateMeshImp();
+            _renderContextImp.SetVertexArrayObject(meshImp);
+
+            if (vertices != null)
+                _renderContextImp.SetVertices(meshImp, vertices);
+
+            if (uvs != null)
+                _renderContextImp.SetUVs(meshImp, uvs);
+
+            if (normals != null)
+                _renderContextImp.SetNormals(meshImp, normals);
+
+            if (colors != null)
+                _renderContextImp.SetColors(meshImp, colors);
+
+            if (colors1 != null)
+                _renderContextImp.SetColors1(meshImp, colors1);
+
+            if (colors2 != null)
+                _renderContextImp.SetColors2(meshImp, colors2);
+
+            if (boneIndices != null)
+                _renderContextImp.SetBoneIndices(meshImp, boneIndices);
+
+            if (boneWeights != null)
+                _renderContextImp.SetBoneWeights(meshImp, boneWeights);
+
+            if (triangles != null)
+                _renderContextImp.SetTriangles(meshImp, triangles);
+
+            if (tangents != null)
+                _renderContextImp.SetTangents(meshImp, tangents);
+
+            if (bitangents != null)
+                _renderContextImp.SetBiTangents(meshImp, bitangents);
+
+            mesh.DisposeData += DisposeMesh;
+            meshImp.MeshType = mesh.MeshType;
+
+            _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, meshImp);
+        }
+
+        // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
         private IMeshImp RegisterNewMesh(Mesh mesh)
         {
-            // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
             var meshImp = _renderContextImp.CreateMeshImp();
 
-            // Begin Setup GPU Buffers / allocate GPU memory
+            _renderContextImp.SetVertexArrayObject(meshImp);
+
             if (mesh.VerticesSet)
                 _renderContextImp.SetVertices(meshImp, mesh.Vertices);
 
@@ -112,6 +175,12 @@ namespace Fusee.Engine.Core
 
             if (mesh.ColorsSet)
                 _renderContextImp.SetColors(meshImp, mesh.Colors);
+
+            if (mesh.ColorsSet1)
+                _renderContextImp.SetColors1(meshImp, mesh.Colors1);
+
+            if (mesh.ColorsSet2)
+                _renderContextImp.SetColors2(meshImp, mesh.Colors2);
 
             if (mesh.BoneIndicesSet)
                 _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices);
@@ -128,12 +197,10 @@ namespace Fusee.Engine.Core
             if (mesh.BiTangentsSet)
                 _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents);
 
-            // End Setup GPU Buffers
-
-            // Setup handler to observe changes of the mesh data and dispose event (deallocation)
             mesh.MeshChanged += MeshChanged;
+            mesh.DisposeData += DisposeMesh;
 
-            meshImp.MeshType = (OpenGLPrimitiveType)mesh.MeshType;
+            meshImp.MeshType = mesh.MeshType;
 
             _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, meshImp);
 
@@ -141,7 +208,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Creates a new Instance of MeshManager. Th instance is handling the memory allocation and deallocation on the GPU by observing Mesh.cs objects.
+        /// Creates a new Instance of MeshManager. The instance is handling the memory allocation and deallocation on the GPU by observing Mesh.cs objects.
         /// </summary>
         /// <param name="renderContextImp">The RenderContextImp is used for GPU memory allocation and deallocation. See RegisterMesh.</param>
         public MeshManager(IRenderContextImp renderContextImp)
@@ -151,10 +218,18 @@ namespace Fusee.Engine.Core
 
         public IMeshImp GetMeshImpFromMesh(Mesh m)
         {
-            IMeshImp foundMeshImp;
-            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out foundMeshImp))
+            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out IMeshImp foundMeshImp))
             {
                 return RegisterNewMesh(m);
+            }
+            return foundMeshImp;
+        }
+
+        public IMeshImp GetMeshImpFromMesh(GpuMesh m)
+        {
+            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out IMeshImp foundMeshImp))
+            {
+                throw new ArgumentException("GpuMesh not found, make sure you created it first.");
             }
             return foundMeshImp;
         }
@@ -175,5 +250,35 @@ namespace Fusee.Engine.Core
             }
         }
 
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!disposed)
+            {
+                Cleanup();
+
+                for (int i = 0; i < _identifierToMeshImpDictionary.Count; i++)
+                {
+                    var meshItem = _identifierToMeshImpDictionary.ElementAt(i);
+                    Remove(meshItem.Value);
+                    _identifierToMeshImpDictionary.Remove(meshItem.Key);
+                }
+
+                // Note disposing has been done.
+                disposed = true;
+            }
+        }
+
+        ~MeshManager()
+        {
+            Dispose(disposing: false);
+        }
     }
 }

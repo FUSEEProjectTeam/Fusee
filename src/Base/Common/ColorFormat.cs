@@ -21,19 +21,29 @@
         Intensity,
 
         /// <summary>
-        /// RGBA integer.
+        /// RGB integer.
         /// </summary>
         uiRgb8,
 
         /// <summary>
-        /// RGBA float, 32bit.
+        /// RGB float, 32bit.
         /// </summary>
         fRGB32,
 
         /// <summary>
-        /// RGBA float, 16bit.
+        /// RGB float, 16bit.
         /// </summary>
         fRGB16,
+
+        /// <summary>
+        /// RGBA float, 16bit.
+        /// </summary>
+        fRGBA16,
+
+        /// <summary>
+        /// RGBA float, 32bit.
+        /// </summary>
+        fRGBA32,
 
         /// <summary>
         /// Used for creating depth maps.
@@ -44,5 +54,10 @@
         /// Used for creating depth maps.
         /// </summary>
         Depth24,
+
+        /// <summary>
+        /// RGBA int, 32bit.
+        /// </summary>
+        iRGBA32,
     }
 }

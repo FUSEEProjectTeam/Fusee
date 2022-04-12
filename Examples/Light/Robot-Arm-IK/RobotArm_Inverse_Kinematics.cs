@@ -1,17 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using static System.Math;
-using Fusee.Engine.GUI;
 
 namespace FuseeApp
 {
@@ -33,15 +34,15 @@ namespace FuseeApp
 
         private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
-        private TransformComponent _lowerAxleTransform;
-        private TransformComponent _middleAxleTransform;
-        private TransformComponent _upperAxleTransform;
-        private TransformComponent _footTransform;
-        private TransformComponent _pointer;
-        private TransformComponent _rightPincerTransform;
-        private TransformComponent _leftPincerTransform;
-        private TransformComponent _rightPincerTransformUp;
-        private TransformComponent _leftPincerTransformUp;
+        private Transform _lowerAxleTransform;
+        private Transform _middleAxleTransform;
+        private Transform _upperAxleTransform;
+        private Transform _footTransform;
+        private Transform _pointer;
+        private Transform _rightPincerTransform;
+        private Transform _leftPincerTransform;
+        private Transform _rightPincerTransformUp;
+        private Transform _leftPincerTransformUp;
         private float3 _virtualPos;
         private bool _open;
         private bool _move;

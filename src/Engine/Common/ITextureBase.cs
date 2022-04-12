@@ -26,7 +26,18 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Exactly 6 distinct sets of 2D images, all of the same size. They act as 6 faces of a cube.
         /// </summary>
-        TextureCubeMap
+        TextureCubeMap,
+
+        /// <summary>
+        /// A texture with a number of layers. Each layer can be written to and read from separately.
+        /// </summary>
+        ArrayTexture,
+
+        /// <summary>
+        /// Specify a two-dimensional texture image. Images require a texel coordinate in the shader - only the value at the specified location will be loaded.
+        /// Used in Compute Shaders.
+        /// </summary>
+        Image2D
     }
 
     /// <summary>

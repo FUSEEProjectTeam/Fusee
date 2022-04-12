@@ -59,7 +59,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default distance to the far clipping plane.
         /// </summary>
-        public readonly float ZFarDefault = 3000;
+        public readonly float ZFarDefault = 1000;
 
         /// <summary>
         /// The default distance field of view.

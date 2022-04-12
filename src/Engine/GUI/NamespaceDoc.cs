@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine.GUI
+﻿namespace Fusee.Engine.Gui
 {
     /// <summary>
     /// <para>
@@ -8,11 +8,11 @@
     /// Typical GUI components implemented by classes in this module are
     /// <list type="bullet">
     ///   <item>
-    ///     <term><see cref="GUIText"/></term>
+    ///     <term><see cref="GuiText"/></term>
     ///     <description>Static on-screen 3D text.</description>
     ///   </item>   
     ///   <item>
-    ///     <term><see cref="GUIButton"/></term>
+    ///     <term><see cref="GuiButton"/></term>
     ///     <description>On-Screen 2D button with hover and click events.</description>
     ///   </item>
     /// </list>

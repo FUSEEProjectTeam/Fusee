@@ -4,14 +4,71 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "build",
-            "command": "dotnet build",
+            "label": "build",
             "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
             "group": "build",
             "presentation": {
                 "reveal": "silent"
             },
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "clean"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "pack",
+            "detail": "Pack this Fusee app as a fuz file.",
+            "type": "shell",
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "command": "fusee",
+            "args": [
+                "pack",
+                "${workspaceRoot}/bin/Debug/Examples/RobotArmIK/RobotArm_Inverse_Kinematics.dll"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "publish",
+            "detail": "Build this Fusee app to a self contained application.",
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "command": "fusee",
+            "args": [
+                "publish",
+                "-i", "${workspaceRoot}/bin/Debug/Examples/RobotArmIK/RobotArm_Inverse_Kinematics.dll",
+                "-o", "${workspaceFolder}/pub"
+            ],
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
         }
     ]
 }

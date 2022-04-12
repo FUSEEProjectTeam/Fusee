@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fusee.Engine.Common
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Session unique Id.
     /// </summary>
     public struct Suid
     {
-        private static readonly object LockObject = new object();
+        private static readonly object LockObject = new();
         private static ulong _idCounter = 0;
         private readonly ulong _id;
 
@@ -34,7 +30,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// An Empty Suid. Can be used to compare whether a Suid is Empty / default.
         /// </summary>
-        public static readonly Suid Empty = new Suid(0);
+        public static readonly Suid Empty = new(0);
 
         /// <summary>
         /// Checks if two suids are equal

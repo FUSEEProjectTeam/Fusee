@@ -2,7 +2,7 @@
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.Primitives
 {
     /// <summary>
     /// Generates a polygonal circle.
@@ -25,8 +25,8 @@ namespace Fusee.Engine.Core
 
             var angleByStep = fillPercentage / 100f * (float)(System.Math.PI * 2f) / segments;
             var currentAngle = 0f;
-            var cos = (float)System.Math.Cos(currentAngle);
-            var sin = (float)System.Math.Sin(currentAngle);
+            float cos;
+            float sin;
             var radOuter = 0.5f;
             var radInner = radOuter - thickness;
 

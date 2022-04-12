@@ -14,14 +14,26 @@ namespace Fusee.Base.Core
 
         private static Stopwatch _daWatch;
         private static bool _useFile;
+        private static bool _useColor = true;
         private static string _fileName = "Fusee.Log.txt";
         private static SeverityLevel _minLogLevelFile = SeverityLevel.None;
         private static SeverityLevel _minLogLevelConsole;
         private static SeverityLevel _minLogLevelDebug;
 
+        /// <summary>
+        /// Set the logger to utilize colored console output
+        /// Can be disabled for platform which do not support colored console output, e. g. Blazor
+        /// </summary>
+        /// <param name="use"></param>
+        public static void UseConsoleColor(bool use)
+        {
+            _useColor = use;
+        }
+
         private static Formater _format = (caller, lineNumber, callerFile, lvl, msg, ex, args) =>
                     {
-                        ColorConsoleOutput(lvl);
+                        if (Console.Out != null && _useColor)
+                            ColorConsoleOutput(lvl);
 
                         string f;
 
@@ -92,6 +104,7 @@ namespace Fusee.Base.Core
         public enum SeverityLevel
         {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+            Verbose = -1,
             Debug = 0,
             Info,
             Warn,
@@ -102,27 +115,25 @@ namespace Fusee.Base.Core
 
         private static string SeverityLevelToString(SeverityLevel lvl)
         {
-            switch (lvl)
+            return lvl switch
             {
-                case SeverityLevel.Debug:
-                    return "Debug";
-                case SeverityLevel.Info:
-                    return "Info";
-                case SeverityLevel.Warn:
-                    return "Warning";
-                case SeverityLevel.Error:
-                    return "Error";
-                case SeverityLevel.None:
-                    return "None";
-            }
-
-            return "Error while parsing severity level";
+                SeverityLevel.Verbose => "Verbose",
+                SeverityLevel.Debug => "Debug",
+                SeverityLevel.Info => "Info",
+                SeverityLevel.Warn => "Warning",
+                SeverityLevel.Error => "Error",
+                SeverityLevel.None => "None",
+                _ => "Error while parsing severity level",
+            };
         }
 
         private static void ColorConsoleOutput(SeverityLevel lvl)
         {
             switch (lvl)
             {
+                case SeverityLevel.Verbose:
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    break;
                 case SeverityLevel.Debug:
                     Console.ForegroundColor = ConsoleColor.Green;
                     break;
@@ -208,12 +219,15 @@ namespace Fusee.Base.Core
                 File.AppendAllText(_fileName, _format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg, ex, args));
 
             if (_minLogLevelConsole <= logLevel && Console.Out != null)
+            {
                 Console.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg));
+                Console.ResetColor();
+            }
 
             if (_minLogLevelDebug <= logLevel || Console.Out == null) // when there is no console present (android, wasm, etc. log anything to debug output
                 System.Diagnostics.Debug.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg, ex, args));
 
-            Console.ResetColor();
+
         }
 
         /// <summary>
@@ -229,6 +243,22 @@ namespace Fusee.Base.Core
         public static void Log(object o, SeverityLevel logLevel = SeverityLevel.Debug, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, logLevel, null, null, callerName, sourceLineNumber, sourceFilePath);
+        }
+
+        /// <summary>
+        ///     Log a debug event.
+        ///     Per default visible within the Visual Studio debug console and the console window in debug builds.
+        /// </summary>
+        /// <param name="o">The object to write</param>
+        /// <param name="ex">A possible exception, optional</param>
+        /// <param name="args">Possible arguments, optional</param>
+        /// <param name="callerName">The calling method</param>
+        /// <param name="sourceLineNumber">The line number, optional.</param>
+        /// <param name="sourceFilePath">The file path, optional.</param>
+        [Conditional("DEBUG")]
+        public static void Verbose(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
+        {
+            Writer(o, SeverityLevel.Verbose, ex, args, callerName, sourceLineNumber, sourceFilePath);
         }
 
         /// <summary>

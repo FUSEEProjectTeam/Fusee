@@ -7,13 +7,25 @@
         {
             "name": "Debug in FUSEE Player",
             "type": "coreclr",
-            "request": "launch",
+            "request": "launch", 
             "preLaunchTask": "build",
-            "program": "${env:FuseeRoot}bin/Debug/Player/Desktop/Fusee.Engine.Player.Desktop.exe",
-            "args": ["${workspaceRoot}/bin/Debug/Examples/RobotArmIK/RobotArm_Inverse_Kinematics.dll"],
-            "cwd": "${env:FuseeRoot}bin/Debug/Player/Desktop",
-            "console": "internalConsole",
-            "stopAtEntry": false
+            "program": "fusee.exe",
+            "args": ["player", "${workspaceRoot}/bin/Debug/Examples/RobotArmIK/RobotArm_Inverse_Kinematics.dll"],
+            "stopAtEntry": false,
+            "console": "externalTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Debug in FUSEE Player (with external code)",
+            "type": "coreclr",
+            "request": "launch", 
+            "preLaunchTask": "build",
+            "program": "fusee.exe",
+            "args": ["player", "${workspaceRoot}/bin/Debug/Examples/RobotArmIK/RobotArm_Inverse_Kinematics.dll"],
+            "stopAtEntry": false,
+            "console": "externalTerminal",
+            "justMyCode": false,
+            "enableStepFiltering": false
         }
     ]
 }

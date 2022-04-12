@@ -89,25 +89,13 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Calculates a transformation matrix from this transform component.
-        /// </summary>
-        /// <param name="transformThis">This transform component.</param>
-        /// <returns>The transform component's translation, rotation and scale combined in a single matrix.</returns>
-        public static float4x4 Matrix(this Transform transformThis)
-        {
-            return float4x4.CreateTranslation(transformThis.Translation) * float4x4.CreateRotationY(transformThis.Rotation.y) *
-                   float4x4.CreateRotationX(transformThis.Rotation.x) * float4x4.CreateRotationZ(transformThis.Rotation.z) *
-                   float4x4.CreateScale(transformThis.Scale);
-        }
-
-        /// <summary>
         /// Returns the global transformation matrix as the product of all transformations along the scene graph branch this SceneNode is a part of. 
         /// </summary>
         public static float4x4 GetGlobalTransformation(this SceneNode snThis)
         {
             var res = GetLocalTransformation(snThis.GetComponent<Transform>());
             if (snThis.Parent == null)
-                return snThis.GetComponent<Transform>().Matrix();
+                return snThis.GetComponent<Transform>().Matrix;
 
             snThis.AccumulateGlobalTransform(ref res);
             return res;
@@ -167,7 +155,15 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public static float4x4 GetLocalTransformation(this Transform tansThis)
         {
-            return tansThis == null ? float4x4.Identity : tansThis.Matrix();
+            return tansThis == null ? float4x4.Identity : tansThis.ScaleMatrix * tansThis.RotationMatrix * tansThis.TranslationMatrix;
+        }
+
+        /// <summary>
+        /// Get the local transformation matrix from this TransformationComponent. 
+        /// </summary>
+        public static float4x4 GetLocalTranslation(this Transform tansThis)
+        {
+            return tansThis == null ? float4x4.Identity : tansThis.TranslationMatrix;
         }
 
         /// <summary>
@@ -397,7 +393,7 @@ namespace Fusee.Engine.Core.Scene
         {
             if (scc == null || snThisThis == null)
                 return;
-            (snThisThis.Components ?? (snThisThis.Components = new List<SceneComponent>())).Add(scc);
+            (snThisThis.Components ??= new List<SceneComponent>()).Add(scc);
         }
 
         /// <summary>
@@ -450,7 +446,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="translationMtx">Translation amount as represented in float4x4.</param>
         public static void Translate(this Transform tc, float4x4 translationMtx)
         {
-            tc.Translation += translationMtx.Translation();
+            tc.TranslationMatrix *= translationMtx;
         }
 
         /// <summary>
@@ -458,10 +454,9 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="xyz">Rotation amount as float3.</param>
-        /// <param name="space">Rotation in reference to model or world space.</param>
-        public static void Rotate(this Transform tc, float3 xyz, Space space = Space.Model)
+        public static void Rotate(this Transform tc, float3 xyz)
         {
-            Rotate(tc, float4x4.CreateRotationYXZ(xyz), space);
+            Rotate(tc, float4x4.CreateRotationZXY(xyz));
         }
 
         /// <summary>
@@ -469,14 +464,16 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="quaternion">Rotation amount in Quaternion.</param>
-        /// <param name="space">Rotation in reference to model or world space.</param>
-        public static void Rotate(this Transform tc, Quaternion quaternion, Space space = Space.Model)
+        public static void Rotate(this Transform tc, QuaternionF quaternion)
         {
-            Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
+            tc.RotationQuaternion *= quaternion;
         }
 
         /// <summary>
-        /// Roates around a given center and angle
+        /// Rotates around a center with the given angles.
+        /// CAREFUL: this method will only produce correct results if
+        /// a) the SceneNode of this transform is in the first level of the scene graph, directly beneath the SceneContainer
+        /// b) this Transform's global rotation and translation equals its local ones (non of the SceneNodes that are in the levels above are translated or rotated).
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="center"></param>
@@ -484,15 +481,13 @@ namespace Fusee.Engine.Core.Scene
         public static void RotateAround(this Transform tc, float3 center, float3 angles)
         {
             var pos = tc.Translation;
-            var addRotationMtx = float4x4.CreateRotationYXZ(angles); // get the desired rotation
+            var addRotationMtx = float4x4.CreateRotationZXY(angles); // get the desired rotation
             var dir = pos - center; // find current direction relative to center
             dir = addRotationMtx * dir; // rotate the direction
             tc.Translation = center + dir; // define new position
 
             // rotate object to keep looking at the center:
-            var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
-            var euler = float4x4.RotMatToEuler(currentRotationMtx);
-            tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+            tc.RotationMatrix *= addRotationMtx;
         }
 
         /// <summary>
@@ -500,22 +495,21 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="rotationMtx">Rotation amount as represented in float4x4.</param>
-        /// <param name="space">Rotation in reference to model or world space.</param>
-        public static void Rotate(this Transform tc, float4x4 rotationMtx, Space space = Space.Model)
+        public static void Rotate(this Transform tc, float4x4 rotationMtx)
         {
-            var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
             var addRotationMtx = rotationMtx.RotationComponent();
+            tc.RotationMatrix *= addRotationMtx;
+        }
 
-            if (space == Space.Model)
-            {
-                tc.Rotation = float4x4.RotMatToEuler(currentRotationMtx * addRotationMtx);
-            }
-            else
-            {
-                var euler = float4x4.RotMatToEuler(currentRotationMtx);
-
-                tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
-            }
+        /// <summary>
+        /// Rotates this node around the (static) global axis.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="rotation">Rotation amount as represented in Quaternion.</param>
+        /// <param name="parentGlobalRot">Global (accumulated) rotation of the parent node.</param>
+        public static void RotateGlobal(this Transform tc, QuaternionF rotation, QuaternionF parentGlobalRot)
+        {
+            tc.RotationQuaternion *= parentGlobalRot * rotation * QuaternionF.Invert(parentGlobalRot);
         }
 
         /// <summary>
@@ -534,14 +528,13 @@ namespace Fusee.Engine.Core.Scene
             if ((angleVert >= M.TwoPi && angleVert > 0f) || angleVert <= -M.TwoPi)
                 angleVert %= M.TwoPi;
 
-            var camForward = float4x4.CreateRotationYX(new float2(angleVert, angleHorz)) * float3.UnitZ;
-            var camRight = float4x4.CreateRotationYX(new float2(angleVert, angleHorz)) * float3.UnitX;
+            var camForward = float4x4.CreateRotationXY(new float2(angleVert, angleHorz)) * float3.UnitZ;
+            var camRight = float4x4.CreateRotationXY(new float2(angleVert, angleHorz)) * float3.UnitX;
 
             tc.Translation += camForward * inputWSAxis * speed;
             tc.Translation += camRight * inputADAxis * speed;
 
-            tc.Rotation.y = angleHorz;
-            tc.Rotation.x = angleVert;
+            tc.Rotation = new float3(angleVert, angleHorz, 0);
         }
 
         /// <summary>
@@ -572,9 +565,9 @@ namespace Fusee.Engine.Core.Scene
             /// </summary>
             World,
             /// <summary>
-            /// Model space
+            /// Local / Model space
             /// </summary>
-            Model
+            Local
         }
     }
 }

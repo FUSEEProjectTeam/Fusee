@@ -13,7 +13,6 @@ using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
 using System.IO;
 using Font = Fusee.Base.Core.Font;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.AdvancedUI.Android
 {
@@ -21,7 +20,7 @@ namespace Fusee.Examples.AdvancedUI.Android
 #if __ANDROID_11__
         HardwareAccelerated = false,
 #endif
-        ConfigurationChanges = ConfigChanges.KeyboardHidden, LaunchMode = LaunchMode.SingleTask)]
+        ConfigurationChanges = ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.SingleTask)]
     public class MainActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -65,7 +64,7 @@ namespace Fusee.Examples.AdvancedUI.Android
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                             }
                             return null;
                         },
@@ -79,7 +78,11 @@ namespace Fusee.Examples.AdvancedUI.Android
                 var app = new Core.AdvancedUI();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate
+                {
+                    app.InitApp();
+                    app.Run();
+                });
                 app.CanvasImplementor = rci;
                 app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 

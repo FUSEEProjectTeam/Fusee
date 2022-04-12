@@ -142,8 +142,4 @@ namespace Fusee.Base.Common
         /// <returns></returns>
         float GetUnscaledKerning(uint leftC, uint rightC);
     }
-
-
-
-
 }

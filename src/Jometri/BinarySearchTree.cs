@@ -279,10 +279,11 @@ namespace Fusee.Jometri
 
             var middIndex = (startIndex + endIndex) / 2;
 
-            var root = new Node<TK, TV>(inorder[middIndex].Key, inorder[middIndex].Value);
-
-            root.LeftNode = BalanceTree(inorder, startIndex, middIndex - 1);
-            root.RightNode = BalanceTree(inorder, middIndex + 1, endIndex);
+            var root = new Node<TK, TV>(inorder[middIndex].Key, inorder[middIndex].Value)
+            {
+                LeftNode = BalanceTree(inorder, startIndex, middIndex - 1),
+                RightNode = BalanceTree(inorder, middIndex + 1, endIndex)
+            };
 
             return root;
         }

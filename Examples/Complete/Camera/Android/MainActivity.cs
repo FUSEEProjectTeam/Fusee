@@ -1,28 +1,26 @@
-using System.IO;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Fusee.Base.Core;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
+using System.IO;
 using Font = Fusee.Base.Core.Font;
-using Path = Fusee.Base.Common.Path;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Examples.Camera.Android
 {
     [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
-		HardwareAccelerated=false,
+        HardwareAccelerated = false,
 #endif
-        ConfigurationChanges = ConfigChanges.KeyboardHidden, LaunchMode = LaunchMode.SingleTask)]
+        ConfigurationChanges = ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.SingleTask)]
     public class MainActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -66,7 +64,7 @@ namespace Fusee.Examples.Camera.Android
                         {
                             if (Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase))
                             {
-                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                             }
                             return null;
                         },
@@ -80,7 +78,11 @@ namespace Fusee.Examples.Camera.Android
                 var app = new Core.CameraExample();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate
+                {
+                    app.InitApp();
+                    app.Run();
+                });
                 app.CanvasImplementor = rci;
                 app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 

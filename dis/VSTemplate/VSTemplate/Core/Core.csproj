@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Fusee.App.$ext_safeprojectname$.Core</AssemblyName>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>..\bin\Core</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fusee.Core" Version="0.11.2" />
+  </ItemGroup>
+
+</Project>

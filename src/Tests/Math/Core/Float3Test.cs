@@ -1,10 +1,10 @@
-using System;
-using Xunit;
-using System.Collections.Generic;
 using Fusee.Math.Core;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using Xunit;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     public class Float3Test
     {
@@ -401,6 +401,15 @@ namespace Fusee.Test.Math.Core
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [MemberData(nameof(GetLerp3))]
+        public void Lerp_TestLerp3(float3 left, float3 right, float3 blend, float3 expected)
+        {
+            var actual = float3.Lerp(left, right, blend);
+
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
 
         #region Barycentric
@@ -418,13 +427,25 @@ namespace Fusee.Test.Math.Core
         [MemberData(nameof(GetBarycentric))]
         public void GetBarycentric_Edges(float3 a, float3 b, float3 c, float uExpected, float vExpected, float3 point)
         {
-            float uActual;
-            float vActual;
 
-            float3.GetBarycentric(a, b, c, point, out uActual, out vActual);
+            float3.GetBarycentric(a, b, c, point, out float uActual, out float vActual);
 
             Assert.Equal(uExpected, uActual);
             Assert.Equal(vExpected, vActual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetBarycentric))]
+        public void PointInTriangle_CornersInTriangle(float3 a, float3 b, float3 c, float _1, float _2, float3 point)
+        {
+            Assert.True(float3.PointInTriangle(a, b, c, point, out var _, out var _));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetPointInTriangle_Outside))]
+        public void PointInTriangle_IsNotIntriangle(float3 a, float3 b, float3 c, float3 point)
+        {
+            Assert.False(float3.PointInTriangle(a, b, c, point, out var _, out var _));
         }
 
         #endregion
@@ -457,7 +478,7 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetQuaternion))]
-        public void Rotate_Quaternion(Quaternion quat, float3 vec, float3 expected)
+        public void Rotate_Quaternion(QuaternionF quat, float3 vec, float3 expected)
         {
             var actual = float3.Rotate(quat, vec);
 
@@ -465,6 +486,13 @@ namespace Fusee.Test.Math.Core
         }
 
         #endregion
+
+        [Theory]
+        [MemberData(nameof(GetStep))]
+        public void Step(float3 edge, float3 val, float3 expected)
+        {
+            Assert.Equal(expected, float3.Step(edge, val));
+        }
 
         #endregion
 
@@ -486,9 +514,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Swizzle_Float2_Set()
         {
-            var actual = new float3();
-
-            actual.xy = new float2(1, 2);
+            var actual = new float3
+            {
+                xy = new float2(1, 2)
+            };
             Assert.Equal(new float3(1, 2, 0), actual);
 
             actual.xz = new float2(3, 1);
@@ -523,9 +552,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Swizzle_Float3_Set()
         {
-            var actual = new float3();
-
-            actual.xyz = new float3(1, 2, 3);
+            var actual = new float3
+            {
+                xyz = new float3(1, 2, 3)
+            };
             Assert.Equal(new float3(1, 2, 3), actual);
 
             actual.xzy = new float3(1, 2, 3);
@@ -702,9 +732,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Color_Set()
         {
-            var actual = new float3();
-
-            actual.r = 1;
+            var actual = new float3
+            {
+                r = 1
+            };
             Assert.Equal(new float3(1, 0, 0), actual);
 
             actual.g = 2;
@@ -825,6 +856,16 @@ namespace Fusee.Test.Math.Core
             yield return new object[] { zero, one, 1, one };
         }
 
+        public static IEnumerable<object[]> GetLerp3()
+        {
+            var one = new float3(1, 1, 1);
+            var zero = new float3(0, 0, 0);
+
+            yield return new object[] { zero, one, new float3(0.5f, 0.5f, 0.5f), new float3(0.5f, 0.5f, 0.5f) };
+            yield return new object[] { zero, one, float3.Zero, zero };
+            yield return new object[] { zero, one, float3.One, one };
+        }
+
         public static IEnumerable<object[]> GetBarycentric()
         {
             var x = new float3(1, 0, 0);
@@ -834,6 +875,17 @@ namespace Fusee.Test.Math.Core
             yield return new object[] { x, y, z, 0, 0, z };
             yield return new object[] { x, y, z, 1, 0, x };
             yield return new object[] { x, y, z, 0, 1, y };
+        }
+
+        public static IEnumerable<object[]> GetPointInTriangle_Outside()
+        {
+            var x = new float3(1, 0, 0);
+            var y = new float3(0, 1, 0);
+            var z = new float3(0, 0, 1);
+
+            yield return new object[] { x, y, z, new float3(1, 1, 0) };
+            yield return new object[] { x, y, z, new float3(0, 1, 1) };
+            yield return new object[] { x, y, z, new float3(1, 0, 1) };
         }
 
         public static IEnumerable<object[]> GetEuler()
@@ -853,13 +905,21 @@ namespace Fusee.Test.Math.Core
             var y = new float3(0, 1, 0);
             var z = new float3(0, 0, 1);
 
-            var xRot = new Quaternion((float)System.Math.Sqrt(0.5), 0, 0, (float)System.Math.Sqrt(0.5));
-            var yRot = new Quaternion(0, (float)System.Math.Sqrt(0.5), 0, (float)System.Math.Sqrt(0.5));
-            var zRot = new Quaternion(0, 0, (float)System.Math.Sqrt(0.5), (float)System.Math.Sqrt(0.5));
+            var xRot = new QuaternionF((float)System.Math.Sqrt(0.5), 0, 0, (float)System.Math.Sqrt(0.5));
+            var yRot = new QuaternionF(0, (float)System.Math.Sqrt(0.5), 0, (float)System.Math.Sqrt(0.5));
+            var zRot = new QuaternionF(0, 0, (float)System.Math.Sqrt(0.5), (float)System.Math.Sqrt(0.5));
 
             yield return new object[] { xRot, y, z };
             yield return new object[] { yRot, z, x };
             yield return new object[] { zRot, x, y };
+        }
+
+        public static IEnumerable<object[]> GetStep()
+        {
+            var x = new float3(2.222f, 2.222f, 2.222f);
+            var y = new float3(1.111f, 1.111f, 1.111f);
+            yield return new object[] { x, y, float3.Zero };
+            yield return new object[] { y, x, float3.One };
         }
 
         #endregion
