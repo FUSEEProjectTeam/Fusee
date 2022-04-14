@@ -625,6 +625,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
+            GL.BindAttribLocation(program, AttributeLocations.InstancedColor, UniformNameDeclarations.InstancedColor);
+            GL.BindAttribLocation(program, AttributeLocations.InstancedModelMat1, UniformNameDeclarations.InstancedModelMat);
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
 
@@ -1186,6 +1188,103 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.CreateVertexArrays(1, out int vao);
                 ((MeshImp)mr).VertexArrayObject = vao;
             }
+        }
+
+        public void SetInstanceTransform(IMeshImp mr, IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
+        {
+            var vao = ((MeshImp)mr).VertexArrayObject;
+            if (vao == 0)
+            {
+                throw new ApplicationException("Create the VAO first!");
+            }
+
+            #region Transform
+            int instanceTransformBo;
+            if (((InstanceDataImp)instanceImp).InstanceTransform == 0)
+            {
+                GL.CreateBuffers(1, out instanceTransformBo);
+                ((InstanceDataImp)instanceImp).InstanceTransform = instanceTransformBo;
+            }
+            else
+                instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransform;
+
+            var sizeOfFloat4 = sizeof(float) * 4;
+            var sizeOfMat = sizeOfFloat4 * 4;
+            var amount = instancePositions.Length;
+            int matBytes = amount * sizeOfMat;
+            
+            var posBufferData = new float4[amount * 4];
+
+            var modelMats = new float4x4[amount];
+
+            for (int i = 0; i < amount; i++)
+            {
+                modelMats[i] = float4x4.CreateTranslation(instancePositions[i]) * float4x4.CreateRotationZXY(instanceRotations[i]) * float4x4.CreateScale(instanceScales[i]);
+            }
+
+            for (var i = 0; i < modelMats.Length; i++)
+            {
+                posBufferData[i * 4] = modelMats[i].Column1;
+                posBufferData[i * 4 + 1] = modelMats[i].Column2;
+                posBufferData[i * 4 + 2] = modelMats[i].Column3;
+                posBufferData[i * 4 + 3] = modelMats[i].Column4;
+            }
+
+            GL.NamedBufferStorage(instanceTransformBo, matBytes, modelMats, BufferStorageFlags.DynamicStorageBit);
+            GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.InstancedColorBindingIndex, instanceTransformBo, IntPtr.Zero, sizeOfMat);
+            GL.GetNamedBufferParameter(instanceTransformBo, BufferParameterName.BufferSize, out int instancedPosBytes);
+            if (instancedPosBytes != matBytes)
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedPosBytes, matBytes));
+
+            // set attribute pointers for matrix (4 times vec4)
+            GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedModelMat1, 4, VertexAttribType.Float, false, 0);
+            GL.VertexArrayAttribBinding(vao, AttributeLocations.InstancedModelMat1, AttributeLocations.InstancedModelMat1BindingIndex);
+            GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedModelMat2, 4, VertexAttribType.Float, false, 1 * sizeOfFloat4);
+            GL.VertexArrayAttribBinding(vao, AttributeLocations.InstancedModelMat2, AttributeLocations.InstancedModelMat2BindingIndex);
+            GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedModelMat3, 4, VertexAttribType.Float, false, 2 * sizeOfFloat4);
+            GL.VertexArrayAttribBinding(vao, AttributeLocations.InstancedModelMat3, AttributeLocations.InstancedModelMat3BindingIndex);
+            GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedModelMat4, 4, VertexAttribType.Float, false, 3 * sizeOfFloat4);
+            GL.VertexArrayAttribBinding(vao, AttributeLocations.InstancedModelMat4, AttributeLocations.InstancedModelMat4BindingIndex);
+
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat1, 1);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat2, 1);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat3, 1);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat4, 1);
+            #endregion
+        }
+
+        public void SetInstanceColor(IMeshImp mr, IInstanceDataImp instanceImp, float4[] instanceColors)
+        {
+            var vao = ((MeshImp)mr).VertexArrayObject;
+            if (vao == 0)
+            {
+                throw new ApplicationException("Create the VAO first!");
+            }
+
+            #region Color
+            //TODO: can we use AttributeLocations.Color?
+            int sizeOfCol = sizeof(float) * 4;
+            int iColorBytes = instanceColors.Length * sizeOfCol;
+            int instanceColorBo;
+            if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == 0)
+            {
+                GL.CreateBuffers(1, out instanceColorBo);
+                ((InstanceDataImp)instanceImp).InstanceColorBufferObject = instanceColorBo;
+            }
+            else
+                instanceColorBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
+
+            GL.NamedBufferStorage(instanceColorBo, iColorBytes, instanceColors, BufferStorageFlags.DynamicStorageBit);
+            GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.InstancedColorBindingIndex, instanceColorBo, IntPtr.Zero, sizeOfCol);
+
+            GL.GetNamedBufferParameter(instanceColorBo, BufferParameterName.BufferSize, out int instancedColorBytes);
+            if (instancedColorBytes != iColorBytes)
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", iColorBytes, instancedColorBytes));
+
+            GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedColor, 4, VertexAttribType.Float, false, 0);
+            GL.VertexArrayAttribBinding(vao, AttributeLocations.InstancedColor, AttributeLocations.InstancedColorBindingIndex);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedColor, 1);
+            #endregion
         }
 
         /// <summary>
@@ -1837,6 +1936,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             ((MeshImp)mr).InvalidateVertices();
         }
 
+        public void RemoveInstance(IInstanceDataImp instanceImp)
+        {
+            GL.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceTransform);
+            GL.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceColorBufferObject);
+            ((InstanceDataImp)instanceImp).InstanceTransform = 0;
+            ((InstanceDataImp)instanceImp).InstanceColorBufferObject = 0;
+        }
+
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
@@ -1963,7 +2070,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        public void Render(IMeshImp mr)
+        public void Render(IMeshImp mr, IInstanceDataImp instanceData = null)
         {
             var vao = ((MeshImp)mr).VertexArrayObject;
             GL.BindVertexArray(vao);
@@ -2003,7 +2110,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 Common.PrimitiveType.Quads => OpenTK.Graphics.OpenGL.PrimitiveType.Quads,
                 _ => OpenTK.Graphics.OpenGL.PrimitiveType.Triangles,
             };
-            GL.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+
+            if (instanceData != null)
+            {
+                //TODO: Check need for EnableVertexAttribArray for instance buffers
+                GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceData.Amount);
+            }
+            else
+                GL.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
 
             if (((MeshImp)mr).VertexBufferObject != 0)
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.VertexAttribLocation);
@@ -2047,6 +2161,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public IMeshImp CreateMeshImp()
         {
             return new MeshImp();
+        }
+
+        public IInstanceDataImp CreateInstanceDataImp()
+        {
+            return new InstanceDataImp();
         }
 
         internal static BlendEquationMode BlendOperationToOgl(BlendOperation bo)

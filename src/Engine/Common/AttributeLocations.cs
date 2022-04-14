@@ -82,11 +82,15 @@
         /// </summary>
         public static readonly int InstancedModelMat1 = 11;
 
+        public static readonly int InstancedModelMat1BindingIndex = InstancedModelMat1;
+
         /// <summary>
         /// Second attribute location for the instanced model matrix.
         /// Vertex Attributes can be of type vec4 at maximum.
         /// </summary>
         public static readonly int InstancedModelMat2 = 12;
+
+        public static readonly int InstancedModelMat2BindingIndex = InstancedModelMat2;
 
         /// <summary>
         /// Third attribute location for the instanced model matrix.
@@ -94,15 +98,21 @@
         /// </summary>
         public static readonly int InstancedModelMat3 = 13;
 
+        public static readonly int InstancedModelMat3BindingIndex = InstancedModelMat3;
+
         /// <summary>
         /// Fourth attribute location for the instanced model matrix.
         /// Vertex Attributes can be of type vec4 at maximum.
         /// </summary>
         public static readonly int InstancedModelMat4 = 14;
 
+        public static readonly int InstancedModelMat4BindingIndex = InstancedModelMat4;
+
         /// <summary>
         /// Attribute location for the instanced color.
         /// </summary>
         public static readonly int InstancedColor = 15;
+
+        public static readonly int InstancedColorBindingIndex = InstancedColor;
     }
 }

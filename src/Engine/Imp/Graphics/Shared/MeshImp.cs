@@ -1,7 +1,6 @@
 ﻿using Fusee.Engine.Common;
 
 #if PLATFORM_DESKTOP
-
 namespace Fusee.Engine.Imp.Graphics.Desktop
 #elif PLATFORM_ANDROID
 
@@ -29,7 +28,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public int NormalBufferObject { get; set; }
         public int ColorBufferObject { get; set; }
         public int ColorBufferObject1 { get; set; }
-        public int ColorBufferObject2 { get; set; }
+        public int ColorBufferObject2 { get; set; }        
         public int UVBufferObject { get; set; }
         public int BoneIndexBufferObject { get; set; }
         public int BoneWeightBufferObject { get; set; }

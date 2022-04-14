@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Effects;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -34,6 +35,13 @@ namespace Fusee.Engine.Core
         /// State of the <see cref="RenderLayer"/>.
         /// </summary>
         protected CollapsingStateStack<RenderLayer> _renderLayer = new();
+
+        /// <summary>
+        /// State of the <see cref="RenderLayer"/>.
+        /// </summary>
+        protected CollapsingStateStack<RenderFlags> _renderModification = new();
+
+        protected CollapsingStateStack<InstanceData> _instanceData = new();
 
         /// <summary>
         /// Gets and sets the top of stack of the Model Matrix state stack.
@@ -81,6 +89,15 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Modifies the gpu buffer creation and Render method.
+        /// </summary>
+        public RenderFlags RenderModification
+        {
+            set => _renderModification.Tos = value;
+            get => _renderModification.Tos;
+        }
+
+        /// <summary>
         /// Creates a new instance of type RenderState.
         /// </summary>
         public RendererState()
@@ -90,6 +107,7 @@ namespace Fusee.Engine.Core
             RegisterState(_effect);
             RegisterState(_uiRect);
             RegisterState(_renderLayer);
+            RegisterState(_renderModification);
         }
     }
 }

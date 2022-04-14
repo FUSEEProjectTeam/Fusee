@@ -1,15 +1,32 @@
 ﻿using Fusee.Math.Core;
+using Fusee.Engine.Common;
 using System;
 
 namespace Fusee.Engine.Core.Scene
 {
-    internal class InstanceData : SceneComponent
+    public class InstanceData : SceneComponent, IManagedInstanceData
     {
+        /// <summary>
+        /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
+        /// </summary>
+        public event EventHandler<InstanceDataChangedEventArgs> DataChanged;
+
+        /// <summary>
+        /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
+        /// </summary>
+        public event EventHandler<InstanceDataChangedEventArgs> DisposeData;
+
         public float3[] Translations { get; }
+
+        public float3[] Rotations { get; }
+
+        public float3[] Scales { get; }
 
         public float4[] Colors { get; }
 
         public int Amount { get; }
+
+        public Suid SessionUniqueId { get; internal set; }
 
         public InstanceData(int amount, float3[] translations, float4[] colors = null)
         {

@@ -30,6 +30,14 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public static readonly int VertexHash = Vertex.GetHashCode();
         /// <summary>
+        /// The vertex attribute name.
+        /// </summary>
+        public const string InstanceModelMat = "fuInstanceModelMat";
+        /// <summary>
+        /// Hash code for the <see cref="Vertex"/> parameter.
+        /// </summary>
+        public static readonly int InstanceModelMatHash = InstanceModelMat.GetHashCode();
+        /// <summary>
         /// The color attribute name.
         /// </summary>
         public const string VertexColor = "fuColor";
@@ -37,6 +45,14 @@ namespace Fusee.Engine.Core.Effects
         /// Hash code for the <see cref="VertexColor"/> parameter.
         /// </summary>
         public static readonly int VertexColorHash = VertexColor.GetHashCode();
+        /// <summary>
+        /// The color attribute name.
+        /// </summary>
+        public const string InstanceColor = "fuInstanceColor";
+        /// <summary>
+        /// Hash code for the <see cref="VertexColor"/> parameter.
+        /// </summary>
+        public static readonly int InstanceColorHash = InstancedColor.GetHashCode();
 
         /// <summary>
         /// The color attribute name.

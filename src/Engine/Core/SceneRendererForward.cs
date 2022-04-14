@@ -42,6 +42,8 @@ namespace Fusee.Engine.Core
         }
         private RenderLayers _renderLayer;
 
+        protected InstanceData CurrentInstanceData;
+
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
@@ -389,17 +391,17 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderBone(Bone bone)
         {
-            throw new NotImplementedException();
-            //var boneContainer = CurrentNode;
+            _state.RenderModification |= RenderFlags.Bones;
+            var boneContainer = CurrentNode;
 
-            //var trans = boneContainer.GetGlobalTranslation();
-            //var rot = boneContainer.GetGlobalRotation();
-            //_ = float4x4.CreateTranslation(trans) * rot;
+            var trans = boneContainer.GetGlobalTranslation();
+            var rot = boneContainer.GetGlobalRotation();
+            _ = float4x4.CreateTranslation(trans) * rot;
 
-            //if (!_boneMap.TryGetValue(boneContainer, out _))
-            //    _boneMap.Add(boneContainer, _rc.Model);
-            //else
-            //    _boneMap[boneContainer] = _rc.Model;
+            if (!_boneMap.TryGetValue(boneContainer, out _))
+                _boneMap.Add(boneContainer, _rc.Model);
+            else
+                _boneMap[boneContainer] = _rc.Model;
         }
 
         /// <summary>
@@ -409,14 +411,24 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderWeight(Weight weight)
         {
-            throw new NotImplementedException();
-            //var boneArray = new float4x4[weight.Joints.Count];
-            //for (var i = 0; i < weight.Joints.Count; i++)
-            //{
-            //    var tmp = weight.BindingMatrices[i];
-            //    boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
-            //} 
+            var boneArray = new float4x4[weight.Joints.Count];
+            for (var i = 0; i < weight.Joints.Count; i++)
+            {
+                var tmp = weight.BindingMatrices[i];
+                boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
+            }
             //TODO: find a way to NOT push the bones into the RC because they are not "global"
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="instanceData"></param>
+        [VisitMethod]
+        public void RenderInstances(InstanceData instanceData)
+        {
+            _state.RenderModification |= RenderFlags.Instanced;
+            CurrentInstanceData = instanceData;
         }
 
         private bool isCtcInitialized = false;
@@ -651,7 +663,7 @@ namespace Fusee.Engine.Core
         public void RenderEffect(Effect effect)
         {
             _state.Effect = effect;
-            _rc.SetEffect(_state.Effect, true);
+            _rc.SetEffect(_state.Effect, _state.RenderModification, true);
         }
 
         /// <summary>
@@ -677,11 +689,13 @@ namespace Fusee.Engine.Core
                 }
             }
 
+            _state.RenderModification |= RenderFlags.None;
+
             //var wc = CurrentNode.GetWeights();
             //if (wc != null)
             //    AddWeightToMesh(mesh, wc);
 
-            _rc.Render(mesh, true);
+            _rc.Render(mesh, CurrentInstanceData, true);
         }
 
         /// <summary>
@@ -800,7 +814,7 @@ namespace Fusee.Engine.Core
         {
             _state.Pop();
             _rc.Model = _state.Model;
-            _rc.SetEffect(_state.Effect, true);
+            _rc.SetEffect(_state.Effect, _state.RenderModification, true);
         }
 
         #endregion

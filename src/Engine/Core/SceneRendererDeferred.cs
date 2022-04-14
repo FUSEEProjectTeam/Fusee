@@ -145,7 +145,7 @@ namespace Fusee.Engine.Core
         {
             if (_currentPass != RenderPasses.Shadow)
             {
-                _rc.SetEffect(effect, false);
+                _rc.SetEffect(effect, _state.RenderModification, false);
                 _state.Effect = effect;
             }
         }
@@ -186,7 +186,7 @@ namespace Fusee.Engine.Core
                 else
                     _rc.SetEffect(_shadowCubeMapEffect);
             }
-            _rc.Render(mesh, _currentPass == RenderPasses.Shadow);
+            _rc.Render(mesh, CurrentInstanceData, _currentPass == RenderPasses.Shadow);
         }
 
         /// <summary>
@@ -958,7 +958,7 @@ namespace Fusee.Engine.Core
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = _rc.DefaultEffect;
-            _rc.CreateShaderProgram(_state.Effect, false);
+            _rc.CreateShaderProgram(_state.Effect, _state.RenderModification, false);
             _state.RenderLayer = new RenderLayer();
         }
 

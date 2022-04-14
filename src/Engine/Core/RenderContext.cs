@@ -1257,7 +1257,7 @@ namespace Fusee.Engine.Core
         /// <remarks>A Effect must be attached to a context before you can render geometry with it. The main
         /// task performed in this method is compiling the provided shader source code and uploading the shaders to
         /// the gpu.</remarks>
-        public void SetEffect(Effect ef, bool renderForward = true)
+        public void SetEffect(Effect ef, RenderFlags renderMod = RenderFlags.None, bool renderForward = true)
         {
             if (_rci == null)
                 throw new NullReferenceException("No render context Implementation found!");
@@ -1268,18 +1268,18 @@ namespace Fusee.Engine.Core
             // Is this shader effect already built?
             if (_effectManager.GetEffect(ef) == null)
             {
-                CreateShaderProgram(ef, renderForward);
+                CreateShaderProgram(ef, renderMod, renderForward);
             }
             _currentEffect = ef;
             return;
         }
 
         /// <summary>
-        /// Creates a shader program on the gpu. Needs to be called before <see cref="SetEffect(Effect, bool)"/>.
+        /// Creates a shader program on the gpu. Needs to be called before <see cref="SetEffect(Effect, RenderFlags, bool)"/>.
         /// </summary>
         /// <param name="renderForward">Is a forward or deferred renderer used? Will create the proper shader for the render method.</param>
         /// <param name="ef">The effect.</param>
-        internal void CreateShaderProgram(Effect ef, bool renderForward = true)
+        internal void CreateShaderProgram(Effect ef, RenderFlags renderMod = RenderFlags.None, bool renderForward = true)
         {
             if (ef == null)
                 throw new NullReferenceException("No Effect found!");
@@ -1306,7 +1306,7 @@ namespace Fusee.Engine.Core
                     CreateShaderForShaderEffect(shFx);
                     break;
                 case SurfaceEffectBase surfFx:
-                    CreateShaderForSurfaceEffect(surfFx);
+                    CreateShaderForSurfaceEffect(surfFx, renderMod);
                     break;
             }
 
@@ -1403,7 +1403,7 @@ namespace Fusee.Engine.Core
             _allCompiledEffects.Add(ef, cFx);
         }
 
-        private void CreateShaderForSurfaceEffect(SurfaceEffectBase ef)
+        private void CreateShaderForSurfaceEffect(SurfaceEffectBase ef, RenderFlags renderMod = RenderFlags.None)
         {
             //Add the shader code for the global uniforms
             foreach (var key in GlobalUniforms.Keys)
@@ -1901,15 +1901,21 @@ namespace Fusee.Engine.Core
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        public void Render(Mesh mesh, bool doRenderForward = true)
+        public void Render(Mesh mesh, InstanceData instanceData = null, bool doRenderForward = true)
         {
             var cFx = GetCompiledFxForRenderMethod(doRenderForward);
             SetCompiledFx(cFx.GpuHandle);
             SetRenderStateSet(_currentEffect.RendererStates);
             UpdateAllActiveFxParams(cFx);
 
-            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
-            _rci.Render(meshImp);
+            var meshImp = _meshManager.GetImpFromMesh(mesh);
+            if (instanceData != null)
+            {
+                var instanceDataImp = _meshManager.GetImpFromInstanceData(mesh, instanceData);
+                _rci.Render(meshImp, instanceDataImp);
+            }
+            else
+                _rci.Render(meshImp, null);
 
             // After rendering always cleanup pending meshes, textures and shader effects
             _meshManager.Cleanup();
@@ -1933,7 +1939,7 @@ namespace Fusee.Engine.Core
             SetRenderStateSet(_currentEffect.RendererStates);
             UpdateAllActiveFxParams(cFx);
 
-            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
+            var meshImp = _meshManager.GetImpFromMesh(mesh);
             _rci.Render(meshImp);
 
             // After rendering always cleanup pending meshes, textures and shader effects

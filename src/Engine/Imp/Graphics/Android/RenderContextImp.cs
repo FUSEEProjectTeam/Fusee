@@ -624,6 +624,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
+            GL.BindAttribLocation(program, AttributeLocations.InstancedColor, UniformNameDeclarations.InstancedColor);
+            GL.BindAttribLocation(program, AttributeLocations.InstancedModelMat1, UniformNameDeclarations.InstancedModelMat);
 
             GL.LinkProgram(program);
             return new ShaderHandle { Handle = program };
@@ -1210,8 +1212,103 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void SetVertexArrayObject(IMeshImp mr)
         {
-            //throw new NotImplementedException("Depth clamping isn't implemented yet!");
+            if (((MeshImp)mr).VertexArrayObject == 0)
+            {
+                GL.GenVertexArrays(1, out int vao);
+                ((MeshImp)mr).VertexArrayObject = vao;
+            }
         }
+
+        public void SetInstanceTransform(IMeshImp mr, IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
+        {
+            var vao = ((MeshImp)mr).VertexArrayObject;
+            if (vao == 0)
+            {
+                throw new ApplicationException("Create the VAO first!");
+            }
+
+            
+            if (((InstanceDataImp)instanceImp).InstanceTransform == 0)
+            {
+                GL.GenBuffers(1, out int instanceTransformBo);
+                ((InstanceDataImp)instanceImp).InstanceTransform = instanceTransformBo;
+            }
+
+            var sizeOfFloat4 = sizeof(float) * 4;
+            var sizeOfMat = sizeOfFloat4 * 4;
+            var amount = instancePositions.Length;
+            int matBytes = amount * sizeOfMat;
+
+            var posBufferData = new float4[amount * 4];
+
+            var modelMats = new float4x4[amount];
+
+            for (int i = 0; i < amount; i++)
+            {
+                modelMats[i] = float4x4.CreateTranslation(instancePositions[i]) * float4x4.CreateRotationZXY(instanceRotations[i]) * float4x4.CreateScale(instanceScales[i]);
+            }
+
+            for (var i = 0; i < modelMats.Length; i++)
+            {
+                posBufferData[i * 4] = modelMats[i].Column1;
+                posBufferData[i * 4 + 1] = modelMats[i].Column2;
+                posBufferData[i * 4 + 2] = modelMats[i].Column3;
+                posBufferData[i * 4 + 3] = modelMats[i].Column4;
+            }
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceImp).InstanceTransform);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)matBytes, modelMats, BufferUsage.DynamicDraw);
+           
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int instancedPosBytes);
+            if (instancedPosBytes != matBytes)
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedPosBytes, matBytes));
+
+            GL.BindVertexArray(((MeshImp)mr).VertexArrayObject);
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat1);
+            GL.VertexAttribPointer(AttributeLocations.InstancedModelMat1, 4, VertexAttribPointerType.Float, false, sizeOfMat, 0);
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat2);
+            GL.VertexAttribPointer(AttributeLocations.InstancedModelMat2, 4, VertexAttribPointerType.Float, false, sizeOfMat, 1 * sizeOfFloat4);
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat3);
+            GL.VertexAttribPointer(AttributeLocations.InstancedModelMat3, 4, VertexAttribPointerType.Float, false, sizeOfMat, 2 * sizeOfFloat4);
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat4);
+            GL.VertexAttribPointer(AttributeLocations.InstancedModelMat4, 4, VertexAttribPointerType.Float, false, sizeOfMat, 3 * sizeOfFloat4);
+
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat1, 1);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat2, 1);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat3, 1);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat4, 1);
+        }
+
+        public void SetInstanceColor(IMeshImp mr, IInstanceDataImp instanceImp, float4[] instanceColors)
+        {
+            var vao = ((MeshImp)mr).VertexArrayObject;
+            if (vao == 0)
+            {
+                throw new ApplicationException("Create the VAO first!");
+            }
+            
+            //TODO: can we use AttributeLocations.Color?
+            int sizeOfCol = sizeof(float) * 4;
+            int iColorBytes = instanceColors.Length * sizeOfCol;
+            int instanceColorBo;
+            if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == 0)
+            {
+                GL.GenBuffers(1, out instanceColorBo);
+                ((InstanceDataImp)instanceImp).InstanceColorBufferObject = instanceColorBo;
+            }
+
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)iColorBytes, instanceColors, BufferUsage.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int instancedColorBytes);
+            if (instancedColorBytes != iColorBytes)
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedColorBytes, iColorBytes));
+
+            GL.BindVertexArray(((MeshImp)mr).VertexArrayObject);
+            // set attribute pointers for matrix (4 times vec4)
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedColor);
+            GL.VertexAttribPointer(AttributeLocations.InstancedColor, 4, VertexAttribPointerType.Float, false, sizeOfCol, 0);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedColor, 1);           
+        }
+
 
         /// <summary>
         /// Binds the vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -1557,6 +1654,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
             ((MeshImp)mr).InvalidateVertices();
         }
 
+        public void RemoveInstance(IInstanceDataImp instanceImp)
+        {
+            var posBo = ((InstanceDataImp)instanceImp).InstanceTransform;
+            var colBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
+
+            GL.DeleteBuffers(1, ref posBo);
+            GL.DeleteBuffers(1, ref colBo);
+            ((InstanceDataImp)instanceImp).InstanceTransform = 0;
+            ((InstanceDataImp)instanceImp).InstanceColorBufferObject = 0;
+        }
+
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
@@ -1691,7 +1799,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        public void Render(IMeshImp mr)
+        public void Render(IMeshImp mr, IInstanceDataImp instanceData = null)
         {
             if (((MeshImp)mr).VertexBufferObject != 0)
             {
@@ -1755,8 +1863,28 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (((MeshImp)mr).ElementBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
-                GL.DrawElements(BeginMode.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort,
-                    IntPtr.Zero);
+
+                var oglPrimitiveType = ((MeshImp)mr).MeshType switch
+                {
+                    Common.PrimitiveType.Points => OpenTK.Graphics.ES31.PrimitiveType.Points,
+                    Common.PrimitiveType.Lines => OpenTK.Graphics.ES31.PrimitiveType.Lines,
+                    Common.PrimitiveType.LineLoop => OpenTK.Graphics.ES31.PrimitiveType.LineLoop,
+                    Common.PrimitiveType.LineStrip => OpenTK.Graphics.ES31.PrimitiveType.LineStrip,
+                    Common.PrimitiveType.Patches => throw new NotSupportedException("Patches aren't supported."),
+                    Common.PrimitiveType.QuadStrip => throw new NotSupportedException("QuadStrips aren't supported."),
+                    Common.PrimitiveType.TriangleFan => OpenTK.Graphics.ES31.PrimitiveType.TriangleFan,
+                    Common.PrimitiveType.TriangleStrip => OpenTK.Graphics.ES31.PrimitiveType.TriangleStrip,
+                    Common.PrimitiveType.Quads => throw new NotSupportedException("Quads aren't supported."),
+                    _ => OpenTK.Graphics.ES31.PrimitiveType.Triangles,
+                };
+
+                if (instanceData != null)
+                {
+                    //TODO: Check need for EnableVertexAttribArray for instance buffers
+                    GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceData.Amount);
+                }
+                else
+                    GL.DrawElements((BeginMode)oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                 //GL.DrawArrays(GL.Enums.All.POINTS, 0, shape.Vertices.Length);
 
                 switch (((MeshImp)mr).MeshType)
@@ -1841,6 +1969,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public IMeshImp CreateMeshImp()
         {
             return new MeshImp();
+        }
+
+        public IInstanceDataImp CreateInstanceDataImp()
+        {
+            return new InstanceDataImp();
         }
 
         internal static BlendEquationMode BlendOperationToOgl(BlendOperation bo)
@@ -2597,11 +2730,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             throw new NotImplementedException();
         }
-        #endregion Picking related Members
-
-        public void Render(IMeshImp mr, IInstanceData instanceData)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion Picking related Members        
     }
 }

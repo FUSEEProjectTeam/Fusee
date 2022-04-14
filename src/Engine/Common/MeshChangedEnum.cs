@@ -1,5 +1,11 @@
 ﻿namespace Fusee.Engine.Common
 {
+    public enum InstanceDataChangedEnum
+    {
+        Transform,
+        Colors
+    }
+
     /// <summary>
     /// Propagates Mesh properties changed status to the MeshManager 
     /// </summary>

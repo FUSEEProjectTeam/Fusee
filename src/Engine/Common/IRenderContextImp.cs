@@ -450,6 +450,9 @@ namespace Fusee.Engine.Common
         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
         void SetVertices(IMeshImp mesh, float3[] vertices);
 
+        public void SetInstanceTransform(IMeshImp mr, IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales);
+        public void SetInstanceColor(IMeshImp mr, IInstanceDataImp instanceImp, float4[] instanceColors);
+
         /// <summary>
         /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
@@ -545,6 +548,8 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
         void RemoveVertices(IMeshImp mesh);
+
+        void RemoveInstance(IInstanceDataImp instanceData);
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
@@ -646,7 +651,7 @@ namespace Fusee.Engine.Common
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        void Render(IMeshImp mr);
+        void Render(IMeshImp mr, IInstanceDataImp instanceData = null);
 
         /// <summary>
         /// Launch the bound Compute Shader Program.
@@ -683,6 +688,8 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <returns>The <see cref="IMeshImp" /> instance.</returns>
         IMeshImp CreateMeshImp();
+
+        IInstanceDataImp CreateInstanceDataImp();
 
         /// <summary>
         /// Sets the specified render state to the given setting.
