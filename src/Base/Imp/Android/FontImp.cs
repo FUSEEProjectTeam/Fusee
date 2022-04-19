@@ -9,7 +9,7 @@ namespace Fusee.Base.Imp.Android
     /// <summary>
     /// Font implementation using SixLabors.Fonts
     /// </summary>
-    public class FontImp : FontCore
+    public class FontImp : FontImpBase
     {
         /// <summary>
         /// Font ctor implementation for Android
@@ -23,7 +23,7 @@ namespace Fusee.Base.Imp.Android
             stream.CopyTo(memoryStream);
             stream.Flush();
             memoryStream.Position = 0;
-            _collection.Install(memoryStream);
+            _collection.Add(memoryStream);
             _font = _collection.Families.AsEnumerable().First().CreateFont(PixelHeight);
         }
     }

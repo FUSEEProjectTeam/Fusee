@@ -8,6 +8,10 @@
 		<IsPackable>true</IsPackable>
 		<Description>Fusee Base Imp Desktop</Description>
 	</PropertyGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="SixLabors.ImageSharp" Version="2.1.0" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">

@@ -3,15 +3,13 @@
 namespace Fusee.Engine.Common
 {
     /// <summary>
-    /// Cross platform abstraction for Textures.
-    /// Implements <see cref="IImageData"/> and <see cref="ITextureBase"/>and offers access to internal <seealso cref="PixelData"/> for GPU upload.
+    /// Cross platform abstraction for textures, that are used on the gpu.
     /// </summary>
-    public interface ITexture : IImageData, ITextureBase
+    public interface ITexture : ITextureBase
     {
         /// <summary>
-        /// The byte buffer that makes up the <see cref="ITexture"/> instance.
+        /// The <see cref="IImageData"/> that makes up the <see cref="ITexture"/> instance.
         /// </summary>
-        byte[] PixelData { get; }
-
+        IImageData ImageData { get; }
     }
 }

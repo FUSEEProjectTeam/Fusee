@@ -173,9 +173,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
             };
         }
 
-        private TextureComponentCount GetTexTureComponentCount(ITextureBase tex)
+        private TextureComponentCount GetTexTureComponentCount(ImagePixelFormat format)
         {
-            return tex.PixelFormat.ColorFormat switch
+            return format.ColorFormat switch
             {
                 ColorFormat.RGBA => TextureComponentCount.Rgba,
                 ColorFormat.RGB => TextureComponentCount.Rgb,
@@ -195,13 +195,18 @@ namespace Fusee.Engine.Imp.Graphics.Android
         After some research it seems the OpenTK 30es branch suffers due to the development of OpenTK 40es....
         Furthermore it doesn't seem possible to attach a depth texture to a framebuffer (DEPTH_ATTACHMENT), therefore we need to render depth into a COLOR_ATTACHMENT and create a Depth render buffer.
         This is bound to create a overhead.*/
-        private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
+        private TexturePixelInfo GetTexturePixelInfo(ImagePixelFormat pixelFormat)
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
             PixelType pxType;
 
-            switch (tex.PixelFormat.ColorFormat)
+            //The wrong row alignment will lead to malformed textures.
+            //See https://www.khronos.org/opengl/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
+            //and https://www.khronos.org/opengl/wiki/Pixel_Transfer#Pixel_layout
+            int rowAlignment = 4;
+
+            switch (pixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
@@ -213,12 +218,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
+                    rowAlignment = 1;
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
                     pxType = PixelType.UnsignedByte;
+                    rowAlignment = 1;
                     break;
 
                 case ColorFormat.Depth24:
@@ -236,6 +243,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
+                    rowAlignment = 1;
                     break;
 
                 case ColorFormat.fRGB32:
@@ -293,7 +301,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType
+                PxType = pxType,
+                RowAlignment = rowAlignment
             };
         }
 
@@ -311,9 +320,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
-            GL.TexImage3D(TextureTarget3D.Texture2DArray, 0, GetTexTureComponentCount(img), img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+            GL.TexImage3D(TextureTarget3D.Texture2DArray, 0, GetTexTureComponentCount(img.PixelFormat), img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2DArray);
@@ -346,7 +355,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             for (int i = 0; i < 6; i++)
                 GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
@@ -378,9 +387,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2D);
@@ -414,7 +424,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
@@ -449,11 +459,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            PixelFormat format = GetTexturePixelInfo(img).Format;
+            PixelFormat format = GetTexturePixelInfo(img.ImageData.PixelFormat).Format;
 
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
-                format, PixelType.UnsignedByte, img.PixelData);
+                format, PixelType.UnsignedByte, img.ImageData.PixelData);
         }
 
         /// <summary>

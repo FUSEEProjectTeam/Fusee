@@ -7,11 +7,7 @@ using Fusee.Engine.Imp.Graphics.Blazor;
 using Fusee.Serialization;
 using Microsoft.JSInterop;
 using ProtoBuf;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Path = System.IO.Path;
 using Stream = System.IO.Stream;
@@ -83,105 +79,6 @@ namespace Fusee.Examples.Camera.Blazor
                         return Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase);
                     }
                 });
-
-            // Image handler
-            fap.RegisterTypeHandler(new AssetHandler
-            {
-                ReturnedType = typeof(Base.Core.ImageData),
-                Decoder = (_, __) => throw new NotImplementedException("Non-async decoder isn't supported in Blazor builds"),
-                DecoderAsync = async (string id, object storage) =>
-                {
-                    var ext = Path.GetExtension(id).ToLower();
-
-                    try
-                    {
-                        //using var ms = new MemoryStream();
-                        //((Stream)storage).CopyTo(ms);
-                        using var image = await Image.LoadAsync((Stream)storage);
-
-                        image.Mutate(x => x.AutoOrient());
-                        image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
-                        var ret = ReadPixels(image);
-
-                        return ret;
-
-                        // inner method to prevent Span<T> inside async method error
-                        static ImageData ReadPixels(Image image)
-                        {
-                            var bpp = image.PixelType.BitsPerPixel;
-
-                            switch (image.PixelType.BitsPerPixel)
-                            {
-                                case 16:
-                                    {
-                                        (image as Image<Rg32>).TryGetSinglePixelSpan(out var res);
-                                        var resBytes = MemoryMarshal.AsBytes<Rg32>(res.ToArray());
-                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                            new ImagePixelFormat(ColorFormat.Depth16));
-                                    }
-                                case 24:
-                                    {
-                                        var rgb = image as Image<Rgb24>;
-
-                                        rgb.TryGetSinglePixelSpan(out var res);
-                                        var resBytes = MemoryMarshal.AsBytes<Rgb24>(res.ToArray());
-                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                            new ImagePixelFormat(ColorFormat.RGB));
-                                    }
-                                case 32:
-                                    {
-                                        var rgba = image as Image<Rgba32>;
-
-                                        rgba.TryGetSinglePixelSpan(out var res);
-                                        var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
-                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                            new ImagePixelFormat(ColorFormat.RGBA));
-                                    }
-                                case 48:
-                                    {
-                                        var rgba = image as Image<Rgba32>;
-
-                                        rgba.TryGetSinglePixelSpan(out var res);
-                                        var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
-                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                            new ImagePixelFormat(ColorFormat.fRGB32));
-                                    }
-                                case 64:
-                                    {
-                                        (image as Image<Rgba64>).TryGetSinglePixelSpan(out var res);
-                                        var resBytes = MemoryMarshal.AsBytes<Rgba64>(res.ToArray());
-                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
-                                            new ImagePixelFormat(ColorFormat.fRGBA32));
-                                    }
-                                default:
-                                    {
-                                        Console.WriteLine($"Error converting! {bpp}");
-
-                                        throw new ArgumentException($"{bpp} Bits per pixel not supported!");
-
-                                    }
-                            }
-                        };
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error loading/converting image {id} {ex}");
-                        Diagnostics.Error($"Error loading/converting image {id}", ex);
-
-                        // return empty 1x1 image
-                        return new ImageData(new byte[] { 0, 0, 0, 1, 0, 0, 0, 1 }, 1, 1,
-                                    new ImagePixelFormat(ColorFormat.RGBA));
-
-                    }
-
-                },
-                Checker = (string id) =>
-                {
-                    var ext = Path.GetExtension(id).ToLower();
-                    return true;
-                }
-            });
-
             AssetStorage.RegisterProvider(fap);
 
             #endregion

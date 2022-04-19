@@ -35,14 +35,24 @@ namespace Fusee.Engine.Core
         public float BitmapT;
 
         /// <summary>
-        ///     The x-offset of this char on the font map texture.
+        /// The x-offset of this char on the font map texture in range [0, 1].
         /// </summary>
-        public float TexOffX;
+        public float PosXOnTexPercent;
 
         /// <summary>
-        ///     The y-offset of this char on the font map texture.
+        /// The y-offset of this char on the font map texture in range [0, 1].
         /// </summary>
-        public float TexOffY;
+        public float PosYOnTexPercent;
+
+        /// <summary>
+        /// The x-offset of this char on the font map texture in px.
+        /// </summary>
+        public float PosXOnTex;
+
+        /// <summary>
+        /// The y-offset of this char on the font map texture in px.
+        /// </summary>
+        public float PosYOnTex;
     };
 
     /// <summary>
@@ -59,10 +69,10 @@ namespace Fusee.Engine.Core
         /// <value>
         ///   <c>true</c> if up-to-date; otherwise, <c>false</c>.
         /// </value>
-        public bool Uptodate { get; private set; }
+        public bool UpToDate { get; private set; }
 
         private Font _font;
-        private Texture _image;
+        private ImageData _image;
         private uint _pixelHeight;
         private string _alphabet;
         private readonly Dictionary<uint, GlyphOnMap> _glyphOnMapCache;
@@ -88,7 +98,7 @@ namespace Fusee.Engine.Core
         private void Invalidate()
         {
             _glyphOnMapCache.Clear();
-            Uptodate = false;
+            UpToDate = false;
         }
 
         /// <summary>
@@ -100,34 +110,37 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The font image.
         /// </value>
-        public Texture Image
+        public ImageData Image
         {
             get
             {
-                if (Uptodate)
+                if (UpToDate)
                     return _image;
 
                 _font.PixelHeight = _pixelHeight;
 
                 const int maxWidth = 4096;
 
-                var averageAdvance = 0f;
+                var averageAdvanceX = 0f;
+                var averageAdvanceY = 0f;
                 var charCount = 0f;
 
                 //Calculate averageAdvance in Font? Ratio FontSize/ averageAdvance does not change with fontSize
                 foreach (char c in _alphabet)
                 {
                     GlyphInfo gi = _font.GetGlyphInfo(c);
-                    averageAdvance += gi.AdvanceX + 1;
+                    averageAdvanceX += gi.AdvanceX + 1;
+                    averageAdvanceY += gi.AdvanceY + 1;
                     charCount++;
                 }
 
-                averageAdvance /= charCount;
+                averageAdvanceX /= charCount;
+                averageAdvanceY /= charCount;
 
                 //_alphabet.ToCharArray().Length * averageAdvance * _pixelHeight is the area of ​​the rectangle with the width equal to the number of letters * averageAdvance and the height equals pixelHeight.
                 // Since this rectangle has the same area as the desired square (texture atlas), the square root of the rectangle is the width of that square.
-                var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length * averageAdvance * _pixelHeight);
-                var width = (int)System.Math.Pow(2, (int)System.Math.Ceiling(System.Math.Log(widthOld, 2)));
+                var width = (int)System.Math.Ceiling(System.Math.Sqrt(_alphabet.ToCharArray().Length * averageAdvanceX * averageAdvanceY));
+                width = width - (width % 4) + 4;
 
                 if (width > maxWidth)
                 {
@@ -136,7 +149,7 @@ namespace Fusee.Engine.Core
                 }
 
                 // Create the font atlas (the texture containing ALL glyphs)
-                _image = new Texture(new byte[width * width], width, width, new ImagePixelFormat(ColorFormat.Intensity), false);
+                _image = new ImageData(new byte[width * width], width, width, new ImagePixelFormat(ColorFormat.Intensity));
 
                 var offX = 0;
                 var offY = 0;
@@ -145,7 +158,8 @@ namespace Fusee.Engine.Core
                 // Copy each character in the alphabet to the font atlas
                 foreach (char c in _alphabet)
                 {
-                    IImageData glyphImg = _font.RenderGlyph(c, out int bitmapLeft, out int bitmapTop);
+                    var gi = _font.GetGlyphInfo(c);
+                    IImageData glyphImg = _font.GetImageDataForGlyph(c, in gi);
                     if (offX + glyphImg.Width + 1 >= width)
                     {
                         offY += rowH;
@@ -163,10 +177,10 @@ namespace Fusee.Engine.Core
                     {
                         BitmapW = glyphImg.Width,
                         BitmapH = glyphImg.Height,
-                        BitmapL = bitmapLeft,
-                        BitmapT = bitmapTop,
-                        TexOffX = offX / (float)width,
-                        TexOffY = offY / (float)width,
+                        PosXOnTexPercent = offX / (float)width,
+                        PosYOnTexPercent = offY / (float)width,
+                        PosXOnTex = offX,
+                        PosYOnTex = offY
                     };
 
                     _glyphOnMapCache[c] = glyphOnMap;
@@ -175,7 +189,7 @@ namespace Fusee.Engine.Core
                     offX += glyphImg.Width + 1;
                 }
 
-                Uptodate = true;
+                UpToDate = true;
                 return _image;
 
             }
