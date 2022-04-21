@@ -14,7 +14,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         ///All nodes that are visible in this frame.
         /// </summary>
-        public List<string> VisibleNodes { get; private set; }
+        public List<OctantId> VisibleNodes { get; private set; }
 
         /// <summary>
         /// Current Field of View - set by the SceneRenderer if a PointCloud Component is visited.
@@ -138,10 +138,10 @@ namespace Fusee.PointCloud.Core
                 var kvp = _visibleNodesOrderedByProjectionSize.Last();
                 var octant = kvp.Value;
 
-                _triggerPointLoading(octant.Guid);
+                _triggerPointLoading(octant.OctId);
 
                 NumberOfVisiblePoints += octant.NumberOfPointsInNode;
-                VisibleNodes.Add(octant.Guid);
+                VisibleNodes.Add(octant.OctId);
                 _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
                 DetermineVisibilityForChildren(kvp.Value);
             }

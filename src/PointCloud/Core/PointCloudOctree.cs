@@ -23,7 +23,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public PointCloudOctree(double3 center, double size, int maxLvl)
         {
-            Root = new PointCloudOctant(center, size, "r");
+            Root = new PointCloudOctant(center, size, new OctantId(OctantOrientation.LeftFrontDown));
             Depth = maxLvl;
         }
     }

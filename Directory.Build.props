@@ -27,7 +27,7 @@
 		<ApplicationIcon>$(FuseeEngineRoot)\art\Deliverables\FuseeLogo.ico</ApplicationIcon>
 
 		<IsPackable>false</IsPackable>
-		<LangVersion>9</LangVersion>
+		<LangVersion>10</LangVersion>
 		<AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
 		<TieredCompilation>false</TieredCompilation>
 
