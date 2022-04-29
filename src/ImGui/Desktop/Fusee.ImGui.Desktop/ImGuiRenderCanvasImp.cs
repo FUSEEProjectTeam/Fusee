@@ -158,7 +158,7 @@ namespace Fusee.DImGui.Desktop
 
             #region FuseeRender
 
-            if (_controller.FuseeViewportSize.X != 0)
+            if (_controller.FuseeViewportSize.X > 0)
             {
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
