@@ -253,7 +253,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int4 to unit length.
         /// </summary>
-        public float4 Normalize()
+        public int4 Normalize()
         {
             return Normalize(this);
         }
@@ -265,7 +265,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int4 to unit length in 1-norm.
         /// </summary>
-        public float4 Normalize1()
+        public int4 Normalize1()
         {
             return Normalize1(this);
         }
@@ -277,7 +277,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int4 to approximately unit length.
         /// </summary>
-        public float4 NormalizeFast()
+        public int4 NormalizeFast()
         {
             return NormalizeFast(this);
         }
@@ -298,7 +298,7 @@ namespace Fusee.Math.Core
         #endregion public int[] ToArray()
 
         /// <summary>
-        /// Converts this int4 - which is interpreted as a color - from sRgb space to linear color space.       
+        /// Converts this int4 - which is interpreted as a color - from sRgb space to linear color space.
         /// </summary>
         /// <returns></returns>
         public int4 LinearColorFromSRgb()
@@ -472,16 +472,18 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static float4 Normalize(int4 vec)
+        public static int4 Normalize(int4 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
+
             float scale = 1.0f / vec.Length;
 
-            return new float4()
+            return new int4()
             {
-                x = vec.x * scale,
-                y = vec.y * scale,
-                z = vec.z * scale,
-                w = vec.w * scale
+                x = (int)(vec.x * scale),
+                y = (int)(vec.y * scale),
+                z = (int)(vec.z * scale),
+                w = (int)(vec.w * scale)
             };
         }
 
@@ -494,16 +496,18 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static float4 Normalize1(int4 vec)
+        public static int4 Normalize1(int4 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
+
             float scale = 1.0f / vec.Length1;
 
-            return new float4()
+            return new int4()
             {
-                x = vec.x * scale,
-                y = vec.y * scale,
-                z = vec.z * scale,
-                w = vec.w * scale
+                x = (int)(vec.x * scale),
+                y = (int)(vec.y * scale),
+                z = (int)(vec.z * scale),
+                w = (int)(vec.w * scale)
             };
         }
 
@@ -516,15 +520,16 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static float4 NormalizeFast(int4 vec)
+        public static int4 NormalizeFast(int4 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
-            return new float4()
+            return new int4()
             {
-                x = vec.x * scale,
-                y = vec.y * scale,
-                z = vec.z * scale,
-                w = vec.w * scale
+                x = (int)(vec.x * scale),
+                y = (int)(vec.y * scale),
+                z = (int)(vec.z * scale),
+                w = (int)(vec.w * scale)
             };
         }
 
@@ -592,7 +597,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float4 Lerp(int4 a, int4 b, float4 blend)
         {
             return new float4()

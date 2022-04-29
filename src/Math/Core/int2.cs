@@ -157,7 +157,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int2 to unit length.
         /// </summary>
-        public float2 Normalize()
+        public int2 Normalize()
         {
             return Normalize(this);
         }
@@ -169,7 +169,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int2 to approximately unit length.
         /// </summary>
-        public float2 NormalizeFast()
+        public int2 NormalizeFast()
         {
             return NormalizeFast(this);
         }
@@ -416,14 +416,15 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static float2 Normalize(int2 vec)
+        public static int2 Normalize(int2 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = 1.0f / vec.Length;
 
-            return new float2()
+            return new int2()
             {
-                x = vec.x * scale,
-                y = vec.y * scale
+                x = (int)(vec.x * scale),
+                y = (int)(vec.y * scale)
             };
         }
         #endregion Normalize
@@ -435,13 +436,14 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static float2 NormalizeFast(int2 vec)
+        public static int2 NormalizeFast(int2 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
-            return new float2()
+            return new int2()
             {
-                x = vec.x * scale,
-                y = vec.y * scale
+                x = (int)(vec.x * scale),
+                y = (int)(vec.y * scale)
             };
         }
 
@@ -493,7 +495,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float2 Lerp(int2 a, int2 b, float blend)
         {
             return new float2()
@@ -509,7 +511,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float2 Lerp(int2 a, int2 b, float2 blend)
         {
             return new float2()

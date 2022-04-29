@@ -316,7 +316,7 @@ namespace Fusee.Math.Core
         #endregion public Round()
 
         /// <summary>
-        /// Converts this double4 - which is interpreted as a color - from sRgb space to linear color space.       
+        /// Converts this double4 - which is interpreted as a color - from sRgb space to linear color space.
         /// </summary>
         /// <returns></returns>
         public double4 LinearColorFromSRgb()
@@ -492,6 +492,7 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static double4 Normalize(double4 vec)
         {
+            if (vec.Length <= M.EpsilonDouble) return Zero;
             double scale = 1.0 / vec.Length;
             vec.x *= scale;
             vec.y *= scale;
@@ -511,6 +512,7 @@ namespace Fusee.Math.Core
         /// <returns>The scaled vector.</returns>
         public static double4 Normalize1(double4 vec)
         {
+            if (vec.Length <= M.EpsilonDouble) return Zero;
             double scale = 1.0 / vec.Length1;
             vec.x *= scale;
             vec.y *= scale;
@@ -530,6 +532,7 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static double4 NormalizeFast(double4 vec)
         {
+            if (vec.Length <= M.EpsilonDouble) return Zero;
             double scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
             vec.x *= scale;
             vec.y *= scale;
@@ -600,7 +603,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static double4 Lerp(double4 a, double4 b, double4 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;
