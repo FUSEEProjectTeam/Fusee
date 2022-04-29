@@ -202,7 +202,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int3 to unit length.
         /// </summary>
-        public int3 Normalize()
+        public float3 Normalize()
         {
             return Normalize(this);
         }
@@ -214,7 +214,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int3 to approximately unit length.
         /// </summary>
-        public int3 NormalizeFast()
+        public float3 NormalizeFast()
         {
             return NormalizeFast(this);
         }
@@ -515,17 +515,17 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static int3 Normalize(int3 vec)
+        public static float3 Normalize(int3 vec)
         {
-            if (vec.Length <= M.EpsilonFloat) return Zero;
+            if (vec.Length <= M.EpsilonFloat) return float3.Zero;
 
             float scale = 1.0f / vec.Length;
 
-            return new int3()
+            return new float3()
             {
-                x = (int)(vec.x * scale),
-                y = (int)(vec.y * scale),
-                z = (int)(vec.z * scale)
+                x = vec.x * scale,
+                y = vec.y * scale,
+                z = vec.z * scale
             };
         }
         #endregion Normalize
@@ -537,15 +537,16 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static int3 NormalizeFast(int3 vec)
+        public static float3 NormalizeFast(int3 vec)
         {
-            if (vec.Length <= M.EpsilonFloat) return Zero;
+            if (vec.Length <= M.EpsilonFloat) return float3.Zero;
+
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-            return new int3()
+            return new float3()
             {
-                x = (int)(vec.x * scale),
-                y = (int)(vec.y * scale),
-                z = (int)(vec.z * scale)
+                x = vec.x * scale,
+                y = vec.y * scale,
+                z = vec.z * scale,
             };
         }
 

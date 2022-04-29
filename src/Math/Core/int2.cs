@@ -157,7 +157,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int2 to unit length.
         /// </summary>
-        public int2 Normalize()
+        public float2 Normalize()
         {
             return Normalize(this);
         }
@@ -169,7 +169,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int2 to approximately unit length.
         /// </summary>
-        public int2 NormalizeFast()
+        public float2 NormalizeFast()
         {
             return NormalizeFast(this);
         }
@@ -416,15 +416,16 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static int2 Normalize(int2 vec)
+        public static float2 Normalize(int2 vec)
         {
-            if (vec.Length <= M.EpsilonFloat) return Zero;
+            if (vec.Length <= M.EpsilonFloat) return float2.Zero;
+
             float scale = 1.0f / vec.Length;
 
-            return new int2()
+            return new float2()
             {
-                x = (int)(vec.x * scale),
-                y = (int)(vec.y * scale)
+                x = vec.x * scale,
+                y = vec.y * scale
             };
         }
         #endregion Normalize
@@ -436,14 +437,15 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static int2 NormalizeFast(int2 vec)
+        public static float2 NormalizeFast(int2 vec)
         {
-            if (vec.Length <= M.EpsilonFloat) return Zero;
+            if (vec.Length <= M.EpsilonFloat) return float2.Zero;
+
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
-            return new int2()
+            return new float2()
             {
-                x = (int)(vec.x * scale),
-                y = (int)(vec.y * scale)
+                x = vec.x * scale,
+                y = vec.y * scale
             };
         }
 

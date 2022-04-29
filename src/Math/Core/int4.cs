@@ -253,7 +253,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int4 to unit length.
         /// </summary>
-        public int4 Normalize()
+        public float4 Normalize()
         {
             return Normalize(this);
         }
@@ -265,7 +265,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int4 to unit length in 1-norm.
         /// </summary>
-        public int4 Normalize1()
+        public float4 Normalize1()
         {
             return Normalize1(this);
         }
@@ -277,7 +277,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Scales the int4 to approximately unit length.
         /// </summary>
-        public int4 NormalizeFast()
+        public float4 NormalizeFast()
         {
             return NormalizeFast(this);
         }
@@ -472,18 +472,18 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static int4 Normalize(int4 vec)
+        public static float4 Normalize(int4 vec)
         {
-            if (vec.Length <= M.EpsilonFloat) return Zero;
+            if (vec.Length <= M.EpsilonFloat) return float4.Zero;
 
             float scale = 1.0f / vec.Length;
 
-            return new int4()
+            return new float4()
             {
-                x = (int)(vec.x * scale),
-                y = (int)(vec.y * scale),
-                z = (int)(vec.z * scale),
-                w = (int)(vec.w * scale)
+                x = vec.x * scale,
+                y = vec.y * scale,
+                z = vec.z * scale,
+                w = vec.w * scale
             };
         }
 
@@ -496,18 +496,18 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static int4 Normalize1(int4 vec)
+        public static float4 Normalize1(int4 vec)
         {
-            if (vec.Length <= M.EpsilonFloat) return Zero;
+            if (vec.Length <= M.EpsilonFloat) return float4.Zero;
 
             float scale = 1.0f / vec.Length1;
 
-            return new int4()
+            return new float4()
             {
-                x = (int)(vec.x * scale),
-                y = (int)(vec.y * scale),
-                z = (int)(vec.z * scale),
-                w = (int)(vec.w * scale)
+                x = vec.x * scale,
+                y = vec.y * scale,
+                z = vec.z * scale,
+                w = vec.w * scale
             };
         }
 
@@ -520,16 +520,17 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="vec">The input vector</param>
         /// <returns>The normalized vector</returns>
-        public static int4 NormalizeFast(int4 vec)
+        public static float4 NormalizeFast(int4 vec)
         {
-            if (vec.Length <= M.EpsilonFloat) return Zero;
+            if (vec.Length <= M.EpsilonFloat) return float4.Zero;
+
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
-            return new int4()
+            return new float4()
             {
-                x = (int)(vec.x * scale),
-                y = (int)(vec.y * scale),
-                z = (int)(vec.z * scale),
-                w = (int)(vec.w * scale)
+                x = vec.x * scale,
+                y = vec.y * scale,
+                z = vec.z * scale,
+                w = vec.w * scale
             };
         }
 
