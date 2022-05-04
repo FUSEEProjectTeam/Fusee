@@ -759,6 +759,7 @@ namespace Fusee.Tests.Math.Core
                 new float3(1, 1, 1),
                 new float3((float)System.Math.Sqrt(1d / 3d), (float)System.Math.Sqrt(1d / 3d), (float)System.Math.Sqrt(1d / 3d))
             };
+            yield return new object[] { float3.Zero, float3.Zero };
         }
 
         public static IEnumerable<object[]> GetAddition()
