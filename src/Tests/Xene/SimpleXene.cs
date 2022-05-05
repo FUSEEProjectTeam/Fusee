@@ -286,6 +286,8 @@ namespace Fusee.Tests.Xene
     internal class TestComponent : IComponent
     {
         public int Num;
+
+        public bool Active { get; set; } = true;
     }
 
     internal class SpecialTestComponent : TestComponent

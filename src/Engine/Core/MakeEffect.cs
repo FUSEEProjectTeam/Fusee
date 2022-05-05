@@ -1,5 +1,4 @@
 using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
@@ -568,8 +567,6 @@ namespace Fusee.Engine.Core
             var frag = new StringBuilder();
             frag.Append(Header.Version300Es);
             frag.Append(Header.DefinePi);
-            frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append("#extension GL_ARB_gpu_shader5 : enable\n");
             frag.Append(Header.EsPrecisionHighpFloat);
 
             frag.Append(FragProperties.DeferredTextureUniforms());

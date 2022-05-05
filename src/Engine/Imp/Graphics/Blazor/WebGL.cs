@@ -734,9 +734,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             //return InvokeForArray<string>("getSupportedExtensions");
         }
 
-        public object GetExtension(string name)
+        /// <summary>
+        /// No return type here, Blazor is unable to convert the extension object to string
+        /// </summary>
+        /// <param name="name"></param>
+        public void GetExtension(string name)
         {
-            return InvokeForBasicType<string>("getExtension", name);
+            Invoke("getExtension", name);
         }
 
         public void ActiveTexture(uint texture)
@@ -823,7 +827,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         public void Clear(uint mask)
         {
-            //((IJSInProcessRuntime)Runtime).InvokeVoid("clear", gl, mask);
             Invoke("clear", mask);
         }
 
@@ -2138,7 +2141,20 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
             else if (type == UNSIGNED_INT)
             {
-                ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2DInt", parameter, source);
+                ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2DUInt", parameter, source);
+            }
+            else if (type == UNSIGNED_SHORT)
+            {
+                ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2DDepth16", parameter, source);
+
+            }
+            else if (type == HALF_FLOAT)
+            {
+                ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2DHalfFlot", parameter, source);
+            }
+            else
+            {
+                Console.WriteLine($"ERROR: Unknown internalFormat {internalformat}");
             }
         }
 
@@ -2153,15 +2169,25 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, pboOffset);
         }
 
-        public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, object source)
+        public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, Array source)
+        {
+            int[] parameter = new int[] { (int)target, level, internalformat, width, height, depth, border, (int)format, (int)type };
+            if (type == UNSIGNED_INT)
+            {
+                ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage3DUInt", parameter, source);
+            }
+            else
+            {
+                Console.WriteLine("~~~~ Warning: Unsupported texImage3D called :/");
+                Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, source);
+            }
+        }
+
+        public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, Memory<byte> source)
         {
             Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, source);
         }
 
-        public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, Memory<byte> srcData)
-        {
-            Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, srcData.ToArray());
-        }
 
         public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, Memory<byte> srcData, uint srcOffset)
         {
@@ -2276,6 +2302,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public void Uniform2fv(WebGLUniformLocation location, object data, uint srcOffset, uint srcLength)
         {
             Invoke("uniform2fv", location, data, srcOffset, srcLength);
+        }
+
+        public void CustomUniform3fv(WebGLUniformLocation location, Array data)
+        {
+            BlazorExtensions.Runtime.InvokeVoidAsync("customUniform3fv", location, data);
         }
 
         public void Uniform3fv(WebGLUniformLocation location, object data, uint srcOffset, uint srcLength)

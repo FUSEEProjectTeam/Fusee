@@ -29,8 +29,6 @@ namespace Fusee.Engine.Imp.Blazor
         internal WebGLBuffer TangentBufferObject;
         internal WebGLBuffer BitangentBufferObject;
         internal int NElements;
-
-
         #endregion
 
         #region Public Fields & Members pairs
@@ -190,7 +188,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// <summary>
         /// Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
         /// </summary>
-        public OpenGLPrimitiveType MeshType { get; set; }
+        public PrimitiveType MeshType { get; set; }
 
         /// <summary>
         /// Returns a vertex array object set

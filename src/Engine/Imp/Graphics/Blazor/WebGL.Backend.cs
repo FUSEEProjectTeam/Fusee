@@ -87,16 +87,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             this.runtime = runtime;
 
-            //if (!CheckWindowPropertyExists(windowPropertyName))
-            //{
-            //    throw new PlatformNotSupportedException(
-            //        $"The context '{contextType}' is not supported in this browser");
-            //}
-
-            gl = ((IJSInProcessObjectReference)canvas).Invoke<IJSObjectReference>("getContext", contextType, contextAttributes);
+            gl = ((IJSInProcessRuntime)BlazorExtensions.Runtime).Invoke<IJSObjectReference>("generateCtx", contextAttributes);
         }
-
-        //public bool IsSupported => CheckWindowPropertyExists(WindowPropertyName);
 
         public static bool IsVerbosityEnabled { get; set; } = false;
 
@@ -305,6 +297,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             GLTexImage2D(target, level, internalformat, width, height, border, format, type, source);
 
         }
+
+
 
         //public void TexImage2D(
         //  uint target,

@@ -15,5 +15,4 @@ namespace Fusee.Engine.Core
             View = view;
         }
     }
-
 }

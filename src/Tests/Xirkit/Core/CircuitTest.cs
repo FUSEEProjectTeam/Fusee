@@ -1,5 +1,4 @@
 using Fusee.Xirkit;
-using System;
 using Xunit;
 using static Fusee.Tests.Xirkit.HelperClasses;
 

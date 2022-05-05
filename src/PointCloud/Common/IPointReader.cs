@@ -1,4 +1,6 @@
-﻿namespace Fusee.PointCloud.Common
+﻿using Fusee.PointCloud.Common.Accessors;
+
+namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Implement this into any Point Cloud Reader.
@@ -6,24 +8,32 @@
     public interface IPointReader
     {
         /// <summary>
-        /// This is the point description: Which type am I, which variables do I hold?
-        /// E.g. PointXYZI with normals
+        /// A PointAccessor allows access to the point information (position, color, ect.) without casting it to a specific <see cref="PointType"/>.
         /// </summary>
-        IPointFormat Format { get; }
+        public IPointAccessor PointAccessor { get; }
 
         /// <summary>
-        /// Meta information about the point cloud, usually saved in a header
+        /// Returns a renderable point cloud component.
         /// </summary>
-        IPointCloudMetaInfo MetaInfo { get; }
+        /// <param name="fileFolderPath">Path to the file.</param>
+        public IPointCloud GetPointCloudComponent(string fileFolderPath);
 
         /// <summary>
-        ///     While we have a point read the next with given point accessor
-        ///     The "raw" read within this method should happen with one delegate
+        /// Returns the point type.
         /// </summary>
-        /// <typeparam name="TPoint">The point type we want to write to</typeparam>
-        /// <param name="point">The point we want to write to</param>
-        /// <param name="pa">The accessor how to write to the point</param>
-        /// <returns></returns>
-        bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa);
+        public PointType GetPointType();
+
+        /// <summary>
+        /// Reads the Potree file and returns an octree.
+        /// </summary>
+        public IPointCloudOctree GetOctree();
+
+        /// <summary>
+        /// Returns the points for one octant as generic array.
+        /// </summary>
+        /// <typeparam name="TPoint">The generic point type.</typeparam>
+        /// <param name="id">The unique id of the octant.</param>
+        public TPoint[] LoadNodeData<TPoint>(string id) where TPoint : new();
+
     }
 }

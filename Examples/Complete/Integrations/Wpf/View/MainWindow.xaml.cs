@@ -7,7 +7,6 @@ using Fusee.Examples.Integrations.Wpf.Model;
 using Fusee.Examples.Integrations.Wpf.ViewModel;
 using Fusee.Serialization;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -99,8 +98,7 @@ namespace Fusee.Examples.Integrations.Wpf.View
                 fuseeApp.FusToWpfEvents += FusToWpfEvents;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-                fuseeApp.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
+                fuseeApp.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
                 fuseeApp.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(fuseeApp.CanvasImplementor);
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(fuseeApp.CanvasImplementor));
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(fuseeApp.CanvasImplementor));

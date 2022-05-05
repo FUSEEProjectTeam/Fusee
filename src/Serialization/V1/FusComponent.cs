@@ -1,6 +1,5 @@
 ﻿using Fusee.Xene;
 using ProtoBuf;
-using System;
 
 namespace Fusee.Serialization.V1
 {
@@ -17,7 +16,6 @@ namespace Fusee.Serialization.V1
     [ProtoInclude(105, typeof(FusAnimation))]
     [ProtoInclude(106, typeof(FusBone))]
     [ProtoInclude(107, typeof(FusCamera))]
-
     public class FusComponent : IComponent
     {
         /// <summary>
@@ -25,6 +23,12 @@ namespace Fusee.Serialization.V1
         /// </summary>
         [ProtoMember(1)]
         public string Name;
+
+        /// <summary>
+        /// Determines if this Component contributes to the render result.
+        /// </summary>
+        [ProtoMember(2)]
+        public bool Active { get; set; } = true;
     }
 
 }

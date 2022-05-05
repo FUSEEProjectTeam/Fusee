@@ -107,7 +107,7 @@ namespace Fusee.Math.Core
         /// The length.
         /// </value>
         /// <see cref="LengthSquared" />
-        public float Length => (float)System.Math.Sqrt(LengthSquared);
+        public float Length => MathF.Sqrt(LengthSquared);
 
         #endregion public float Length
 
@@ -425,6 +425,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 Normalize(float2 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = 1.0f / vec.Length;
             vec.x *= scale;
             vec.y *= scale;
@@ -444,6 +445,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 NormalizeFast(float2 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
             vec.x *= scale;
             vec.y *= scale;
@@ -514,7 +516,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float2 Lerp(float2 a, float2 b, float2 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;
@@ -611,6 +613,22 @@ namespace Fusee.Math.Core
         }
 
         #endregion Barycentric
+
+        #region Rectangle
+
+        /// <summary>
+        /// Checks if the given point lies within the given rectangle using screen coordinates (meaning top is smaller than bottom).
+        /// </summary>
+        /// <param name="topLeft">The top left point of the rectangle.</param>
+        /// <param name="bottomRight">The bottom right point of the triangle.</param>
+        /// <param name="point">The point to check.</param>
+        /// <returns>True if the point lies withing the rectangle. False if the point lies outside the rectangle.</returns>
+        public static bool PointInRectangle(float2 topLeft, float2 bottomRight, float2 point)
+        {
+            return (topLeft.x <= point.x && point.x <= bottomRight.x) && (topLeft.y <= point.y && point.y <= bottomRight.y);
+        }
+
+        #endregion Rectangle
 
         #endregion Static
 
@@ -900,8 +918,8 @@ namespace Fusee.Math.Core
         public bool Equals(float2 other)
         {
             return
-                x == other.x &&
-                y == other.y;
+                MathF.Abs(x - other.x) < M.EpsilonFloat &&
+                MathF.Abs(y - other.y) < M.EpsilonFloat;
         }
 
         #endregion IEquatable<float2> Members

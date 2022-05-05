@@ -432,8 +432,25 @@ namespace Fusee.Engine.Core.ShaderShards
         /// </summary>
         public static int PointSizeHash = PointSize.GetHashCode();
 
-        #endregion
+        /// <summary>
+        /// The var name for the uniform PointShape.
+        /// </summary>
+        public const string PointShape = "PointShape";
+        /// <summary>
+        /// Hash code for the <see cref="PointShape"/> parameter.
+        /// </summary>
+        public static int PointShapeHash = PointShape.GetHashCode();
 
+        /// <summary>
+        /// The var name for the uniform PointSizeMode.
+        /// </summary>
+        public const string PointSizeMode = "PointSizeMode";
+        /// <summary>
+        /// Hash code for the <see cref="PointSizeMode"/> parameter.
+        /// </summary>
+        public static int PointSizeModeHash = PointSizeMode.GetHashCode();
+
+        #endregion
 
 
         /// <summary>

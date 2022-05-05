@@ -22,11 +22,9 @@ namespace Fusee.Examples.Camera.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private Transform _guiCamTransform;
 
         private Transform _mainCamTransform;
         private readonly Engine.Core.Scene.Camera _mainCam = new(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
-        private readonly Engine.Core.Scene.Camera _guiCam = new(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private readonly Engine.Core.Scene.Camera _sndCam = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         private Transform _sndCamTransform;
@@ -45,17 +43,6 @@ namespace Fusee.Examples.Camera.Core
         private async Task Load()
         {
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
-            SceneNode guiCam = new()
-            {
-                Name = "GUICam",
-                Components = new List<SceneComponent>()
-                {
-                    _guiCamTransform,
-                    _guiCam
-                }
-            };
-
-            _gui.Children.Insert(0, guiCam);
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -152,11 +139,7 @@ namespace Fusee.Examples.Camera.Core
             _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
             _sndCam.Layer = 10;
 
-            _guiCam.ClearColor = false;
-            _guiCam.ClearDepth = false;
-            _guiCam.FrustumCullingOn = false;
-
-            _mainCamTransform = _guiCamTransform = new Transform()
+            _mainCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 1, -30),

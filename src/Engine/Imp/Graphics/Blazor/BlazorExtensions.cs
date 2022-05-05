@@ -46,7 +46,6 @@ namespace Fusee.Base.Imp.Blazor
         /// <returns></returns>
         public static T GetObjectProperty<T>(this IJSInProcessObjectReference reference, string property)
         {
-
             return ((IJSInProcessRuntime)Runtime).Invoke<T>("getObjectProperty", reference, property);
         }
 

@@ -102,6 +102,16 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(new double4(1, 2, 3, 4), actual);
         }
 
+        [Fact]
+        public void Constructor_FromFloat4()
+        {
+            var vec = new float4(1, 2, 3, 4);
+
+            var actual = new double4(vec);
+
+            Assert.Equal(new double4(1, 2, 3, 4), actual);
+        }
+
         #endregion
 
         #region Instance
@@ -114,6 +124,16 @@ namespace Fusee.Tests.Math.Core
             var actual = vec.Length;
 
             Assert.Equal(2, actual);
+        }
+
+        [Fact]
+        public void Length1_Is4()
+        {
+            var vec = new double4(1, 1, 1, 1);
+
+            var actual = vec.Length1;
+
+            Assert.Equal(4, actual);
         }
 
         [Fact]
@@ -145,6 +165,16 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
+        public void Normalize1_Instance()
+        {
+            var vec = new double4(1, 1, 1, 1);
+
+            var actual = vec.Normalize1();
+
+            Assert.Equal(new double4(0.25, 0.25, 0.25, 0.25), actual);
+        }
+
+        [Fact]
         public void ToArray_IsArray()
         {
             var vec = new double4(1, 2, 3, 4);
@@ -152,6 +182,16 @@ namespace Fusee.Tests.Math.Core
             var actual = vec.ToArray();
 
             Assert.Equal(new double[] { 1, 2, 3, 4 }, actual);
+        }
+
+        [Fact]
+        public void Round_Instance()
+        {
+            var vec = new double4(1.23456789, 1.23456789, 1.23456789, 1.23456789);
+
+            var actual = vec.Round();
+
+            Assert.Equal(new double4(1.234568, 1.234568, 1.234568, 1.234568), actual);
         }
 
         #endregion
@@ -203,7 +243,7 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(ThisException))]
         public void Invalid_SetWithIdx_Exception(int idx, string expected)
         {
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var d4 = new double4(0, 0, 0, 0); d4[idx] = 10; });
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var f4 = new double4(0, 0, 0, 0); f4[idx] = 10; });
 
             Assert.Equal(expected, actual.ParamName);
         }
@@ -335,6 +375,16 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void Normalize1_Static()
+        {
+            var vec = new double4(1, 1, 1, 1);
+
+            var actual = vec.Normalize1();
+
+            Assert.Equal(new double4(0.25, 0.25, 0.25, 0.25), actual);
+        }
+
         #endregion
 
         #region Dot
@@ -363,6 +413,15 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [MemberData(nameof(GetLerp4))]
+        public void Lerp_TestLerp4(double4 left, double4 right, double4 blend, double4 expected)
+        {
+            var actual = double4.Lerp(left, right, blend);
+
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
 
         #region Barycentric
@@ -374,6 +433,20 @@ namespace Fusee.Tests.Math.Core
             var actual = double4.BaryCentric(a, b, c, u, v);
 
             Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Round
+
+        [Fact]
+        public void Round_Static()
+        {
+            var vec = new double4(1.23456789, 1.23456789, 1.23456789, 1.23456789);
+
+            var actual = vec.Round();
+
+            Assert.Equal(new double4(1.234568, 1.234568, 1.234568, 1.234568), actual);
         }
 
         #endregion
@@ -511,9 +584,9 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
-        public void Cast_FromDouble4()
+        public void Cast_FromFloat4()
         {
-            var vec = new double4(1, 1, 1, 1);
+            var vec = new float4(1, 1, 1, 1);
 
             var actual = (double4)vec;
 
@@ -540,6 +613,7 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(2, actual.g);
             Assert.Equal(3, actual.b);
             Assert.Equal(4, actual.a);
+            Assert.Equal(new double2(1, 2), actual.rg);
             Assert.Equal(new double3(1, 2, 3), actual.rgb);
         }
 
@@ -555,11 +629,21 @@ namespace Fusee.Tests.Math.Core
             };
             Assert.Equal(new double4(1, 2, 3, 4), actual);
 
+            actual.rg = new double2(2, 1);
+            Assert.Equal(new double4(2, 1, 3, 4), actual);
+
             actual.rgb = new double3(3, 2, 1);
             Assert.Equal(new double4(3, 2, 1, 4), actual);
         }
 
         #endregion
+
+        [Theory]
+        [MemberData(nameof(GetStep))]
+        public void Step(double4 edge, double4 val, double4 expected)
+        {
+            Assert.Equal(expected, double4.Step(edge, val));
+        }
 
         #region IEnumerables
 
@@ -569,7 +653,7 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { new double4(0, 4, 0, 0), new double4(0, 1, 0, 0) };
             yield return new object[] { new double4(0, 0, 4, 0), new double4(0, 0, 1, 0) };
             yield return new object[] { new double4(0, 0, 0, 4), new double4(0, 0, 0, 1) };
-            yield return new object[] { new double4(1, 1, 1, 1), new double4(0.5f, 0.5f, 0.5f, 0.5f) };
+            yield return new object[] { new double4(1, 1, 1, 1), new double4(0.5, 0.5, 0.5, 0.5) };
         }
 
         public static IEnumerable<object[]> GetAddition()
@@ -634,7 +718,7 @@ namespace Fusee.Tests.Math.Core
 
             yield return new object[] { new double4(2, 2, 2, 2), zero, one, one };
             yield return new object[] { new double4(-1, -1, -1, -1), zero, one, zero };
-            yield return new object[] { new double4(0.5f, 0.5f, 0.5f, 0.5f), zero, one, new double4(0.5f, 0.5f, 0.5f, 0.5f) };
+            yield return new object[] { new double4(0.5, 0.5, 0.5, 0.5), zero, one, new double4(0.5, 0.5, 0.5, 0.5) };
         }
 
         public static IEnumerable<object[]> GetLerp()
@@ -642,9 +726,19 @@ namespace Fusee.Tests.Math.Core
             var one = new double4(1, 1, 1, 1);
             var zero = new double4(0, 0, 0, 0);
 
-            yield return new object[] { zero, one, 0.5f, new double4(0.5f, 0.5f, 0.5f, 0.5f) };
+            yield return new object[] { zero, one, 0.5, new double4(0.5, 0.5, 0.5, 0.5) };
             yield return new object[] { zero, one, 0, zero };
             yield return new object[] { zero, one, 1, one };
+        }
+
+        public static IEnumerable<object[]> GetLerp4()
+        {
+            var one = new double4(1, 1, 1, 1);
+            var zero = new double4(0, 0, 0, 0);
+
+            yield return new object[] { zero, one, new double4(0.5, 0.5, 0.5, 0.5), new double4(0.5, 0.5, 0.5, 0.5) };
+            yield return new object[] { zero, one, double4.Zero, zero };
+            yield return new object[] { zero, one, double4.One, one };
         }
 
         public static IEnumerable<object[]> GetBarycentric()
@@ -656,6 +750,14 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { x, y, z, 0, 0, z };
             yield return new object[] { x, y, z, 1, 0, x };
             yield return new object[] { x, y, z, 0, 1, y };
+        }
+
+        public static IEnumerable<object[]> GetStep()
+        {
+            var x = new double4(2.222, 2.222, 2.222, 2.222);
+            var y = new double4(1.111, 1.111, 1.111, 1.111);
+            yield return new object[] { x, y, double4.Zero };
+            yield return new object[] { y, x, double4.One };
         }
 
         #endregion
@@ -672,60 +774,60 @@ namespace Fusee.Tests.Math.Core
         public void ToString_InvariantCulture()
         {
             string s = "(1.5, 1.5, 1.5, 1.5)";
-            double4 d = double4.One * 1.5f;
+            double4 f = double4.One * 1.5;
 
-            Assert.Equal(s, d.ToString(CultureInfo.InvariantCulture));
+            Assert.Equal(s, f.ToString(CultureInfo.InvariantCulture));
         }
 
         [Fact]
         public void ToString_CultureDE()
         {
             string s = "(1,5; 1,5; 1,5; 1,5)";
-            double4 d = double4.One * 1.5d;
+            double4 f = double4.One * 1.5;
 
-            Assert.Equal(s, d.ToString(new CultureInfo("de-DE")));
+            Assert.Equal(s, f.ToString(new CultureInfo("de-DE")));
         }
 
         [Fact]
         public void Parse_InvariantCulture()
         {
             string s = "(1.5, 1.5, 1.5, 1.5)";
-            double4 d = double4.One * 1.5d;
+            double4 f = double4.One * 1.5;
 
-            Assert.Equal(d, double4.Parse(s, CultureInfo.InvariantCulture));
+            Assert.Equal(f, double4.Parse(s, CultureInfo.InvariantCulture));
         }
 
         [Fact]
         public void Parse_CultureDE()
         {
             string s = "(1,5; 1,5; 1,5; 1,5)";
-            double4 d = double4.One * 1.5d;
+            double4 f = double4.One * 1.5;
 
-            Assert.Equal(d, double4.Parse(s, new CultureInfo("de-DE")));
+            Assert.Equal(f, double4.Parse(s, new CultureInfo("de-DE")));
         }
 
         [Fact]
         public void Parse_ToString_NoCulture()
         {
-            double4 d = double4.One * 1.5d;
+            double4 f = double4.One * 1.5;
 
-            Assert.Equal(d, double4.Parse(d.ToString()));
+            Assert.Equal(f, double4.Parse(f.ToString()));
         }
 
         [Fact]
         public void Parse_ToString_InvariantCulture()
         {
-            double4 d = double4.One * 1.5d;
+            double4 f = double4.One * 1.5;
 
-            Assert.Equal(d, double4.Parse(d.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
+            Assert.Equal(f, double4.Parse(f.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
         }
 
         [Fact]
         public void Parse_ToString_CultureDE()
         {
-            double4 d = double4.One * 1.5d;
+            double4 f = double4.One * 1.5;
 
-            Assert.Equal(d, double4.Parse(d.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
+            Assert.Equal(f, double4.Parse(f.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
         }
 
         [Fact]

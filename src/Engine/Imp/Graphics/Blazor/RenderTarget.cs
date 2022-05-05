@@ -80,15 +80,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void SetPositionTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
-        }
-
-        /// <summary>
-        /// Generates a albedo and specular (alpha channel) texture and sets it at the correct position in the RenderTextures Array.
-        /// </summary>       
-        public void SetAlbedoSpecularTex()
-        {
-            RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
+            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
         }
 
         /// <summary>
@@ -96,7 +88,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void SetNormalTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Normal] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
+            RenderTextures[(int)RenderTargetTextureTypes.Normal] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
         }
 
         /// <summary>
@@ -104,7 +96,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Depth] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.Depth16), compareMode, compareFunc);
+            RenderTextures[(int)RenderTargetTextureTypes.Depth] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.Depth24), compareMode, compareFunc);
         }
 
         /// <summary>
@@ -112,7 +104,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void SetSSAOTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
         }
 
         /// <summary>
@@ -120,7 +112,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void SetSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
+            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
         }
 
         /// <summary>
@@ -160,12 +152,12 @@ namespace Fusee.Engine.Imp.Blazor
 
         public void SetAlbedoTex()
         {
-            throw new NotImplementedException();
+            RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
 
         public void SetSubsurfaceTex()
         {
-            throw new NotImplementedException();
+            RenderTextures[(int)RenderTargetTextureTypes.Subsurface] = WritableTexture.CreateSubsurfaceTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
 
         /// <summary>

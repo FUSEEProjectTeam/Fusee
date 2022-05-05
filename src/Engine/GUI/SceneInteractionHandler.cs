@@ -25,6 +25,7 @@ namespace Fusee.Engine.Gui
         /// <param name="scene">The scene the interaction handler belongs to.</param>
         public SceneInteractionHandler(SceneContainer scene)
         {
+            IgnoreInactiveComponents = true;
             _scenePicker = new ScenePicker(scene);
         }
 

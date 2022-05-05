@@ -40,7 +40,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Caches "allLight[i]." names (used as uniform parameters).
         /// </summary>
-        internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new();
+        public static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new();
 
         /// <summary>
         /// Contains all methods for color management (gamma and from and to sRGB).
@@ -149,7 +149,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                "vec2 pxToUv = 1.0/screenParams;",
+                "vec2 pxToUv = 1.0/vec2(screenParams);",
 
                 "vec2 offsetsToNeighbours[8] = vec2[8]",
                 "(",
@@ -190,7 +190,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Float, "pixelSize"),
                     GLSL.CreateVar(GLSL.Type.Float, "linearDepth"),
                     GLSL.CreateVar(GLSL.Type.Vec2, "thisUv"),
-                    GLSL.CreateVar(GLSL.Type.Vec2, "screenParams"),
+                    GLSL.CreateVar(GLSL.Type.IVec2, "screenParams"),
                     GLSL.CreateVar(GLSL.Type.Sampler2D, "depthTex"),
                     GLSL.CreateVar(GLSL.Type.Vec2, "clippingPlanes"),
                 }, methodBody);
@@ -217,7 +217,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Int, "pixelSize"),
                     GLSL.CreateVar(GLSL.Type.Float, "linearDepth"),
                     GLSL.CreateVar(GLSL.Type.Vec2, "thisUv"),
-                    GLSL.CreateVar(GLSL.Type.Vec2, "screenParams"),
+                    GLSL.CreateVar(GLSL.Type.IVec2, "screenParams"),
                     GLSL.CreateVar(GLSL.Type.Sampler2D, "depthTex"),
                     GLSL.CreateVar(GLSL.Type.Vec2, "clippingPlanes")
                 }, methodBody);
@@ -616,7 +616,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         methodBody.Add($"vec2 uv = vec2(gl_FragCoord.x / {UniformNameDeclarations.ViewportPx}.x, gl_FragCoord.y / {UniformNameDeclarations.ViewportPx}.y);");
                         methodBody.Add($"float linearDepth = LinearizeDepth(texture(DepthTex, uv).x, {UniformNameDeclarations.ClippingPlanes});");
                         methodBody.Add("if (linearDepth > 0.1)");
-                        methodBody.Add($"    surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv, {UniformNameDeclarations.ViewportPx}, DepthTex, {UniformNameDeclarations.ClippingPlanes});");
+                        methodBody.Add($"    surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv, ivec2({UniformNameDeclarations.ViewportPx}), DepthTex, {UniformNameDeclarations.ClippingPlanes});");
                         methodBody.Add("return surfOut.albedo.rgb;");
                         break;
                     }
@@ -640,8 +640,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                $"vec3 normal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;"
-            };
+                $"vec3 normal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;",
+        };
 
             //Do not do calculations for the background - is there a smarter way (stencil buffer)?
             //---------------------------------------
@@ -656,7 +656,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.Add("}");
 
             methodBody.Add($"vec4 posTexVal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position]}, {VaryingNameDeclarations.TextureCoordinates});");
-            methodBody.Add($"vec4 fragPos = vec4(posTexVal.xyz, 1.0);");
+            methodBody.Add($"vec3 posTexValFloat = posTexVal.xyz;");
+            methodBody.Add($"vec4 fragPos = vec4(posTexValFloat.xyz, 1.0);");
             methodBody.Add($"vec4 albedo = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
             methodBody.Add($"vec4 emissionAndThickness = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
             methodBody.Add($"vec3 emission = emissionAndThickness.rgb;");
@@ -836,8 +837,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "}",
             "else if(decodedShadingModel == uint(6))",
             "{",
-                // EDL                
-                $"vec2 texSize = textureSize({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]},0);",
+                // EDL
+                $"ivec2 texSize = textureSize({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]},0);",
                 "//vec2 uv = vec2(gl_FragCoord.x, gl_FragCoord.y);",
                 $"float linearDepth = LinearizeDepth(texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]}, {VaryingNameDeclarations.TextureCoordinates}).x, {UniformNameDeclarations.ClippingPlanes});",
 
@@ -963,7 +964,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
                     "{",
-                        "shadow -= texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, projCoords.z), thisBias).r;",
+                        "shadow -= texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, projCoords.z), thisBias);",
                     "}",
                 "}",
                 "shadow /= pcfKernelSize;",
@@ -1009,7 +1010,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
                     "{",
-                        "float pcfDepth = texture(shadowMap, vec4(vec3(projCoords.xy + vec2(x, y) * texelSize, layer), projCoords.z)).r;",
+                        "float pcfDepth = texture(shadowMap, vec4(vec3(projCoords.xy + vec2(x, y) * texelSize, layer), projCoords.z));",
                         "shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;",
                     "}",
                 "}",
@@ -1230,7 +1231,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
     }
 
-    internal struct LightParamStrings
+    public struct LightParamStrings
     {
         public string PositionViewSpace;
         public string Intensities;

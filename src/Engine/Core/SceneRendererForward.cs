@@ -3,7 +3,6 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -35,7 +34,19 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The RenderLayer this renderer should render.
         /// </summary>
-        public RenderLayers RenderLayer { get; set; }
+        public RenderLayers RenderLayer
+        {
+            get => _renderLayer;
+            set
+            {
+                _renderLayer = value;
+                foreach (var module in VisitorModules)
+                {
+                    ((IRendererModule)module).RenderLayer = _renderLayer;
+                }
+            }
+        }
+        private RenderLayers _renderLayer;
 
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
@@ -97,7 +108,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Initialization Construction Startup      
+        #region Initialization Construction Startup
 
 
         private Light _legacyLight;
@@ -142,6 +153,7 @@ namespace Fusee.Engine.Core
         {
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
+            IgnoreInactiveComponents = true;
             _state = new RendererState();
             InitAnimations(_sc);
         }
@@ -210,7 +222,7 @@ namespace Fusee.Engine.Core
                                         LerpType.Slerp => Lerp.Float3QuaternionSlerp,
                                         _ => throw new InvalidOperationException(
              "Unknown lerp type: animTrackContainer.LerpType: " +
-             (int)animTrackContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+             (int)animTrackContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameOf(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
                                                // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
                                     };
                                     var channel = new Channel<float3>(lerpFunc);
@@ -265,10 +277,23 @@ namespace Fusee.Engine.Core
             if (rc != _rc)
             {
                 _rc = rc;
-
+                foreach (var module in VisitorModules)
+                {
+                    ((IRendererModule)module).SetContext(_rc);
+                }
                 InitState();
             }
         }
+
+        private void SetStateAndRenderLayerInModules()
+        {
+            foreach (var module in VisitorModules)
+            {
+                ((IRendererModule)module).RenderLayer = _renderLayer;
+                ((IRendererModule)module).SetState(_state);
+            }
+        }
+
         #endregion
 
 
@@ -279,8 +304,9 @@ namespace Fusee.Engine.Core
         public void Render(RenderContext rc)
         {
             SetContext(rc);
+            SetStateAndRenderLayerInModules();
 
-            PrePassVisitor.PrePassTraverse(_sc, _rc);
+            PrePassVisitor.PrePassTraverse(_sc);
 
             AccumulateLight();
 
@@ -415,14 +441,14 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                _state.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+                var currentScale = _state.Model.Scale();
+                _state.CanvasXForm *= float4x4.CreateScale(new float3(1 / currentScale.x, 1 / currentScale.y, 1 / currentScale.z)) * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
                 _state.Model *= _state.CanvasXForm;
 
                 _parentRect = newRect;
                 _state.UiRect = newRect;
             }
-
-            if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
+            else if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 var frustumCorners = new float4[4];
 
@@ -465,7 +491,7 @@ namespace Fusee.Engine.Core
                     isCtcInitialized = true;
 
                 }
-                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
+                _state.CanvasXForm *= _rc.InvModel * _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
                 _state.Model *= _state.CanvasXForm;
 
                 _parentRect = newRect;
@@ -611,7 +637,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// If a Transform is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
         /// It additionally updates the view matrix of the RenderContext.
-        /// </summary> 
+        /// </summary>
         /// <param name="transform">The Transform.</param>
         [VisitMethod]
         public void RenderTransform(Transform transform)
@@ -619,17 +645,6 @@ namespace Fusee.Engine.Core
             _state.Model *= transform.Matrix;
             _rc.Model = _state.Model;
         }
-
-        /// <summary>
-        /// If a PtOctant is visited the level of this octant is set in the shader.
-        /// </summary>
-        /// <param name="ptOctant"></param>
-        [VisitMethod]
-        public void RenderOctant(OctantD ptOctant)
-        {
-            _state.Effect.SetFxParam("OctantLevel", ptOctant.Level);
-        }
-
 
         /// <summary>
         /// If a ShaderEffect is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
@@ -648,8 +663,8 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a Mesh is visited and it has a <see cref="Weight"/> the BoneIndices and  BoneWeights get set, 
-        /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
+        /// If a Mesh is visited and it has a <see cref="Weight"/> the BoneIndices and  BoneWeights get set,
+        /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.
         /// </summary>
         /// <param name="mesh">The Mesh.</param>
         [VisitMethod]
@@ -670,9 +685,36 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            var wc = CurrentNode.GetWeights();
-            if (wc != null)
-                AddWeightToMesh(mesh, wc);
+            //var wc = CurrentNode.GetWeights();
+            //if (wc != null)
+            //    AddWeightToMesh(mesh, wc);
+
+            var renderStatesBefore = _rc.CurrentRenderState.Copy();
+            _rc.Render(mesh, true);
+            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
+        }
+
+        /// <summary>
+        /// If a Mesh is visited the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
+        /// </summary>
+        /// <param name="mesh">The Mesh.</param>
+        [VisitMethod]
+        public void RenderMesh(GpuMesh mesh)
+        {
+            if (!mesh.Active) return;
+            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
+                return;
+
+            if (DoFrumstumCulling)
+            {
+                //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
+                if (mesh.BoundingBox.Size != float3.Zero)
+                {
+                    var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+                    if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.RenderFrustum))
+                        return;
+                }
+            }
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, true);
@@ -737,7 +779,6 @@ namespace Fusee.Engine.Core
             mesh.BoneIndices = boneIndices;
             mesh.BoneWeights = boneWeights;
         }
-
         #endregion
 
         #region HierarchyLevel

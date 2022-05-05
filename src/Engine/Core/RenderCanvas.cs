@@ -58,7 +58,7 @@ namespace Fusee.Engine.Core
         /// <value>
         ///     Use the render context (<see cref="RenderContext" />) to fill the render canvas with 3d contents.
         /// </value>
-        protected RenderContext RC { get; private set; }
+        public RenderContext RC { get; private set; }
 
         #endregion
 

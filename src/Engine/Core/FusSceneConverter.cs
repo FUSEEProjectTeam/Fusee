@@ -285,7 +285,6 @@ namespace Fusee.Engine.Core
             // TODO: Test animation and refactor animation method from scene renderer to this converter
         }
 
-
         ///<summary>
         /// Converts the XForm component.
         ///</summary>
@@ -299,7 +298,8 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(new XForm
             {
-                Name = xf.Name
+                Name = xf.Name,
+                Active = xf.Active
             });
         }
 
@@ -319,6 +319,7 @@ namespace Fusee.Engine.Core
                 Height = xft.Height,
                 Width = xft.Width,
                 Name = xft.Name,
+                Active = xft.Active,
                 HorizontalAlignment =
                 xft.HorizontalAlignment == FusHorizontalTextAlignment.Center
                 ? HorizontalTextAlignment.Center
@@ -349,6 +350,7 @@ namespace Fusee.Engine.Core
                 : Scene.CanvasRenderMode.World)
             {
                 Name = ct.Name,
+                Active = ct.Active,
                 Scale = ct.Scale,
                 ScreenSpaceSize = ct.ScreenSpaceSize,
                 Size = ct.Size
@@ -369,11 +371,11 @@ namespace Fusee.Engine.Core
             _currentNode.AddComponent(new RectTransform
             {
                 Name = rt.Name,
+                Active = rt.Active,
                 Anchors = rt.Anchors,
                 Offsets = rt.Offsets
             });
         }
-
 
         ///<summary>
         ///Converts the transform component.
@@ -390,6 +392,7 @@ namespace Fusee.Engine.Core
             {
                 Translation = t.Translation,
                 Name = t.Name,
+                Active = t.Active,
                 Rotation = t.Rotation,
                 Scale = t.Scale
             });
@@ -518,6 +521,7 @@ namespace Fusee.Engine.Core
                 cc.ClippingPlanes.x, cc.ClippingPlanes.y, cc.Fov)
             {
                 Active = cc.Active,
+                Scale = cc.Scale,
                 BackgroundColor = cc.BackgroundColor,
                 ClearColor = cc.ClearColor,
                 ClearDepth = cc.ClearDepth,
@@ -549,7 +553,7 @@ namespace Fusee.Engine.Core
             // convert mesh
             mesh = new Mesh
             {
-                MeshType = m.MeshType,
+                MeshType = (PrimitiveType)m.MeshType,
                 Active = true,
                 BiTangents = m.BiTangents,
                 BoneIndices = m.BoneIndices,
@@ -615,7 +619,8 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(new Bone
             {
-                Name = bone.Name
+                Name = bone.Name,
+                Active = bone.Active
             });
 
             // Collect all bones, later, when a WeightComponent is found, we can set all Joints
@@ -652,7 +657,8 @@ namespace Fusee.Engine.Core
                 }).ToList(),
                 BindingMatrices = w.BindingMatrices,
                 Joints = new List<SceneNode>(),
-                Name = w.Name
+                Name = w.Name,
+                Active = w.Active
             };
 
             // check if we have bones
@@ -671,62 +677,6 @@ namespace Fusee.Engine.Core
             }
 
             _currentNode.Components.Add(weight);
-        }
-
-        /// <summary>
-        /// Converts the octant.
-        /// </summary>
-        /// <param name="cc"></param>
-        [VisitMethod]
-        public void ConvOctant(FusOctantD cc)
-        {
-            if (_currentNode.Components == null)
-            {
-                _currentNode.Components = new List<SceneComponent>();
-            }
-
-            _currentNode.AddComponent(
-            new OctantD(cc.Center, cc.Size)
-            {
-                IsLeaf = cc.IsLeaf,
-                Level = cc.Level,
-                PosInParent = cc.PosInParent,
-
-                Guid = cc.Guid,
-                Name = cc.Name,
-                NumberOfPointsInNode = cc.NumberOfPointsInNode,
-                PosInHierarchyTex = cc.PosInHierarchyTex,
-                VisibleChildIndices = cc.VisibleChildIndices,
-                WasLoaded = cc.WasLoaded
-            });
-        }
-
-        /// <summary>
-        /// Converts the octant.
-        /// </summary>
-        /// <param name="cc"></param>
-        [VisitMethod]
-        public void ConvOctant(FusOctantF cc)
-        {
-            if (_currentNode.Components == null)
-            {
-                _currentNode.Components = new List<SceneComponent>();
-            }
-
-            _currentNode.AddComponent(
-            new OctantF(cc.Center, cc.Size)
-            {
-                IsLeaf = cc.IsLeaf,
-                Level = cc.Level,
-                PosInParent = cc.PosInParent,
-
-                Guid = cc.Guid,
-                Name = cc.Name,
-                NumberOfPointsInNode = cc.NumberOfPointsInNode,
-                PosInHierarchyTex = cc.PosInHierarchyTex,
-                VisibleChildIndices = cc.VisibleChildIndices,
-                WasLoaded = cc.WasLoaded
-            });
         }
 
         #endregion
@@ -764,9 +714,9 @@ namespace Fusee.Engine.Core
             return await GetEffectForMat(m, ShadingModel.Glossy, 0f, 0f, m.Roughness);
         }
 
-        private Task<Effect> LookupMaterial(FusMaterialBRDF m)
+        private async Task<Effect> LookupMaterial(FusMaterialBRDF m)
         {
-            if (_matMap.TryGetValue(m, out var sfx)) return Task.FromResult(sfx);
+            if (_matMap.TryGetValue(m, out var sfx)) return await Task.FromResult(sfx);
 
             var textureSetup = TextureSetup.NoTextures;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
@@ -782,7 +732,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                    albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                     {
                         PathAndName = m.Albedo.Texture
                     };
@@ -794,7 +744,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
                     {
                         PathAndName = m.NormalMap.Texture
                     };
@@ -806,7 +756,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                    albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                     {
                         PathAndName = m.Albedo.Texture
                     };
@@ -814,7 +764,7 @@ namespace Fusee.Engine.Core
                 }
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
                     {
                         PathAndName = m.NormalMap.Texture
                     };
@@ -828,10 +778,10 @@ namespace Fusee.Engine.Core
             }
 
             _matMap.Add(m, sfx);
-            return Task.FromResult(sfx);
+            return await Task.FromResult(sfx);
         }
 
-        private Task<Effect> GetEffectForMat(FusMaterialBase m, ShadingModel lightingSetup, float shininess, float specularStrength, float roughness)
+        private async Task<Effect> GetEffectForMat(FusMaterialBase m, ShadingModel lightingSetup, float shininess, float specularStrength, float roughness)
         {
             Effect sfx;
             var texSetup = TextureSetup.NoTextures;
@@ -848,7 +798,7 @@ namespace Fusee.Engine.Core
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
-                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                         {
                             PathAndName = m.Albedo.Texture
                         };
@@ -860,7 +810,7 @@ namespace Fusee.Engine.Core
                 {
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
-                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
                         {
                             PathAndName = m.NormalMap.Texture
                         };
@@ -872,7 +822,7 @@ namespace Fusee.Engine.Core
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
-                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                         {
                             PathAndName = m.Albedo.Texture
                         };
@@ -880,7 +830,7 @@ namespace Fusee.Engine.Core
                     }
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
-                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
                         {
                             PathAndName = m.NormalMap.Texture
                         };
@@ -902,7 +852,7 @@ namespace Fusee.Engine.Core
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
-                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                         {
                             PathAndName = m.Albedo.Texture
                         };
@@ -914,7 +864,7 @@ namespace Fusee.Engine.Core
                 {
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
-                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
                         {
                             PathAndName = m.NormalMap.Texture
                         };
@@ -926,7 +876,7 @@ namespace Fusee.Engine.Core
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
-                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                         {
                             PathAndName = m.Albedo.Texture
                         };
@@ -934,7 +884,7 @@ namespace Fusee.Engine.Core
                     }
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
-                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
                         {
                             PathAndName = m.NormalMap.Texture
                         };
@@ -956,7 +906,7 @@ namespace Fusee.Engine.Core
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
-                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                         {
                             PathAndName = m.Albedo.Texture
                         };
@@ -968,7 +918,7 @@ namespace Fusee.Engine.Core
                 {
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
-                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
                         {
                             PathAndName = m.NormalMap.Texture
                         };
@@ -980,7 +930,7 @@ namespace Fusee.Engine.Core
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
-                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                         {
                             PathAndName = m.Albedo.Texture
                         };
@@ -988,7 +938,7 @@ namespace Fusee.Engine.Core
                     }
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
-                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
                         {
                             PathAndName = m.NormalMap.Texture
                         };
@@ -1006,8 +956,10 @@ namespace Fusee.Engine.Core
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
 
+            sfx.Name = m.Name;
+            sfx.Active = m.Active;
             _matMap.Add(m, sfx);
-            return Task.FromResult(sfx);
+            return await Task.FromResult(sfx);
         }
         #endregion
     }
@@ -1087,7 +1039,8 @@ namespace Fusee.Engine.Core
         {
             _currentNode.AddComponent(new FusXForm
             {
-                Name = xf.Name
+                Name = xf.Name,
+                Active = xf.Active
             });
         }
 
@@ -1102,6 +1055,7 @@ namespace Fusee.Engine.Core
                 Height = xft.Height,
                 Width = xft.Width,
                 Name = xft.Name,
+                Active = xft.Active,
 
                 HorizontalAlignment =
                 xft.HorizontalAlignment == HorizontalTextAlignment.Center
@@ -1129,6 +1083,7 @@ namespace Fusee.Engine.Core
                 : Serialization.V1.CanvasRenderMode.World)
             {
                 Name = ct.Name,
+                Active = ct.Active,
                 Scale = ct.Scale,
                 ScreenSpaceSize = ct.ScreenSpaceSize,
                 Size = ct.Size
@@ -1144,6 +1099,7 @@ namespace Fusee.Engine.Core
             _currentNode.AddComponent(new FusRectTransform
             {
                 Name = rt.Name,
+                Active = rt.Active,
                 Anchors = rt.Anchors,
                 Offsets = rt.Offsets
             });
@@ -1159,6 +1115,7 @@ namespace Fusee.Engine.Core
             {
                 Translation = t.Translation,
                 Name = t.Name,
+                Active = t.Active,
                 Rotation = t.Rotation,
                 Scale = t.Scale
             });
@@ -1281,33 +1238,12 @@ namespace Fusee.Engine.Core
                         Strength = surfaceInput.SpecularStrength
                     };
                 }
-
+                mat.Active = effect.Active;
+                mat.Name = effect.Name;
                 _currentNode.AddComponent(mat);
             }
             else
                 throw new InvalidOperationException("Invalid ShadingModel!");
-        }
-
-        /// <summary>
-        /// Converts the shader.
-        /// </summary>
-        /// <param name="cc">The camera to convert.</param>
-        [VisitMethod]
-        public void ConvCamComp(Camera cc)
-        {
-            _currentNode.AddComponent(new FusCamera
-            {
-                Active = cc.Active,
-                BackgroundColor = cc.BackgroundColor,
-                ClearColor = cc.ClearColor,
-                ClearDepth = cc.ClearDepth,
-                Layer = cc.Layer,
-                Name = cc.Name,
-                ClippingPlanes = cc.ClippingPlanes,
-                Fov = cc.Fov,
-                Viewport = cc.Viewport,
-                ProjectionMethod = cc.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
-            });
         }
 
         /// <summary>
@@ -1320,7 +1256,7 @@ namespace Fusee.Engine.Core
             // convert mesh
             var mesh = new FusMesh
             {
-                MeshType = m.MeshType,
+                MeshType = (int)m.MeshType,
                 BiTangents = m.BiTangents,
                 BoneIndices = m.BoneIndices,
                 BoundingBox = m.BoundingBox,
@@ -1369,6 +1305,7 @@ namespace Fusee.Engine.Core
             _currentNode.AddComponent(new FusCamera
             {
                 Active = cam.Active,
+                Scale = cam.Scale,
                 BackgroundColor = cam.BackgroundColor,
                 ClearColor = cam.ClearColor,
                 ClearDepth = cam.ClearDepth,
@@ -1381,52 +1318,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Converts the octant.
-        /// </summary>
-        /// <param name="oct"></param>
-        [VisitMethod]
-        public void ConvOctant(OctantD oct)
-        {
-            _currentNode.AddComponent(new FusOctantD
-            {
-                Center = new double3(oct.Center.x, oct.Center.y, oct.Center.z),
-                Guid = oct.Guid,
-                IsLeaf = oct.IsLeaf,
-                Level = oct.Level,
-                Name = oct.Name,
-                NumberOfPointsInNode = oct.NumberOfPointsInNode,
-                PosInHierarchyTex = oct.PosInHierarchyTex,
-                PosInParent = oct.PosInParent,
-                Size = oct.Size,
-                VisibleChildIndices = oct.VisibleChildIndices,
-                WasLoaded = oct.WasLoaded
-            });
-        }
-
-        /// <summary>
-        /// Converts the octant.
-        /// </summary>
-        /// <param name="oct"></param>
-        [VisitMethod]
-        public void ConvOctant(OctantF oct)
-        {
-            _currentNode.AddComponent(new FusOctantF
-            {
-                Center = new float3(oct.Center.x, oct.Center.y, oct.Center.z),
-                Guid = oct.Guid,
-                IsLeaf = oct.IsLeaf,
-                Level = oct.Level,
-                Name = oct.Name,
-                NumberOfPointsInNode = oct.NumberOfPointsInNode,
-                PosInHierarchyTex = oct.PosInHierarchyTex,
-                PosInParent = oct.PosInParent,
-                Size = oct.Size,
-                VisibleChildIndices = oct.VisibleChildIndices,
-                WasLoaded = oct.WasLoaded
-            });
-        }
-
-        /// <summary>
         /// Adds the bone component.
         /// </summary>
         /// <param name="bone"></param>
@@ -1435,7 +1326,8 @@ namespace Fusee.Engine.Core
         {
             var currentBone = new FusBone
             {
-                Name = bone.Name
+                Name = bone.Name,
+                Active = bone.Active
             };
             _currentNode.AddComponent(currentBone);
 
@@ -1468,7 +1360,8 @@ namespace Fusee.Engine.Core
                 }).ToList(),
                 BindingMatrices = w.BindingMatrices,
                 Joints = new List<FusComponent>(),
-                Name = w.Name
+                Name = w.Name,
+                Active = w.Active
             };
 
             // check if we have bones

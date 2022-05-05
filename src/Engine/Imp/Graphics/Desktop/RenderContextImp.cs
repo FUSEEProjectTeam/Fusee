@@ -7,9 +7,7 @@ using Fusee.Math.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -191,51 +189,59 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
         }
 
-        private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
+        private TexturePixelInfo GetTexturePixelInfo(ImagePixelFormat pixelFormat)
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
             PixelType pxType;
 
-            switch (tex.PixelFormat.ColorFormat)
+            //The wrong row alignment will lead to malformed textures.
+            //See https://www.khronos.org/opengl/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
+            //and https://www.khronos.org/opengl/wiki/Pixel_Transfer#Pixel_layout
+            int rowAlignment = 4;
+
+            switch (pixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
-                    format = PixelFormat.Bgra;
+                    format = PixelFormat.Rgba;
                     pxType = PixelType.UnsignedByte;
-
                     break;
+
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
-                    format = PixelFormat.Bgr;
+                    format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
-
+                    rowAlignment = 1;
                     break;
+
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.R8;
                     format = PixelFormat.Red;
                     pxType = PixelType.UnsignedByte;
-
+                    rowAlignment = 1;
                     break;
+
                 case ColorFormat.Depth24:
                     internalFormat = PixelInternalFormat.DepthComponent24;
                     format = PixelFormat.DepthComponent;
                     pxType = PixelType.Float;
-
                     break;
+
                 case ColorFormat.Depth16:
                     internalFormat = PixelInternalFormat.DepthComponent16;
                     format = PixelFormat.DepthComponent;
                     pxType = PixelType.Float;
-
                     break;
+
                 case ColorFormat.uiRgb8:
                     internalFormat = PixelInternalFormat.Rgba8ui;
                     format = PixelFormat.RgbaInteger;
                     pxType = PixelType.UnsignedByte;
-
+                    rowAlignment = 1;
                     break;
+
                 case ColorFormat.fRGB32:
                     internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormat.Rgb;
@@ -247,11 +253,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     format = PixelFormat.Rgb;
                     pxType = PixelType.Float;
                     break;
+
                 case ColorFormat.fRGBA16:
                     internalFormat = PixelInternalFormat.Rgba16f;
                     format = PixelFormat.Rgba;
                     pxType = PixelType.Float;
                     break;
+
                 case ColorFormat.fRGBA32:
                     internalFormat = PixelInternalFormat.Rgba32f;
                     format = PixelFormat.Rgba;
@@ -272,7 +280,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType
+                PxType = pxType,
+                RowAlignment = rowAlignment
             };
         }
 
@@ -290,7 +299,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             GL.TexImage3D(TextureTarget.Texture2DArray, 0, pxInfo.InternalFormat, img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
@@ -324,7 +333,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var magFilter = glMinMagFilter.Item2;
 
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             for (int i = 0; i < 6; i++)
                 GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
@@ -358,9 +367,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
@@ -379,26 +389,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
-        /// <param name="img">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
+        /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(IWritableTexture img)
+        public ITextureHandle CreateTexture(IWritableTexture tex)
         {
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
 
-            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
-            var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var glWrapMode = GetWrapMode(tex.WrapMode);
+            var pxInfo = GetTexturePixelInfo(tex.PixelFormat);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, tex.Width, tex.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
-            if (img.DoGenerateMipMaps)
+            if (tex.DoGenerateMipMaps)
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(tex.CompareMode));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(tex.CompareFunc));
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
@@ -421,11 +431,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            PixelFormat format = GetTexturePixelInfo(img).Format;
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
+            PixelFormat format = pxInfo.Format;
 
             // copy the bytes from img to GPU texture
-            int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
-            var scanlines = img.ScanLines(startX, startY, width, height);
+            int bytesTotal = width * height * img.ImageData.PixelFormat.BytesPerPixel;
+            var scanlines = img.ImageData.ScanLines(startX, startY, width, height);
             byte[] bytes = new byte[bytesTotal];
             int offset = 0;
             do
@@ -439,6 +450,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             } while (scanlines.MoveNext());
 
+            GL.PixelStore(PixelStoreParameter.PackAlignment, pxInfo.RowAlignment);
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height, format, PixelType.UnsignedByte, bytes);
 
@@ -743,6 +755,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     ActiveUniformType.Bool => typeof(bool),
                     ActiveUniformType.Float => typeof(float),
                     ActiveUniformType.Double => typeof(double),
+                    ActiveUniformType.IntVec2 => typeof(float2),
                     ActiveUniformType.FloatVec2 => typeof(float2),
                     ActiveUniformType.FloatVec3 => typeof(float3),
                     ActiveUniformType.FloatVec4 => typeof(float4),
@@ -1248,7 +1261,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int vertsBytes = vertices.Length * 3 * sizeof(float);
             if (((MeshImp)mr).VertexBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).VertexBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).VertexBufferObject = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsageHint.StaticDraw);
@@ -1273,7 +1289,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int tangentBytes = tangents.Length * 4 * sizeof(float);
             if (((MeshImp)mr).TangentBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).TangentBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).TangentBufferObject = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(tangentBytes), tangents, BufferUsageHint.StaticDraw);
@@ -1298,7 +1317,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int bitangentBytes = bitangents.Length * 3 * sizeof(float);
             if (((MeshImp)mr).BitangentBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).BitangentBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).BitangentBufferObject = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(bitangentBytes), bitangents, BufferUsageHint.StaticDraw);
@@ -1323,7 +1345,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int normsBytes = normals.Length * 3 * sizeof(float);
             if (((MeshImp)mr).NormalBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).NormalBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).NormalBufferObject = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsageHint.StaticDraw);
@@ -1348,7 +1373,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int indicesBytes = boneIndices.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneIndexBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).BoneIndexBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).BoneIndexBufferObject = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsageHint.StaticDraw);
@@ -1373,7 +1401,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int weightsBytes = boneWeights.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneWeightBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).BoneWeightBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).BoneWeightBufferObject = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsageHint.StaticDraw);
@@ -1398,7 +1429,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int uvsBytes = uvs.Length * 2 * sizeof(float);
             if (((MeshImp)mr).UVBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).UVBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).UVBufferObject = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsageHint.StaticDraw);
@@ -1423,7 +1457,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ColorBufferObject = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
@@ -1448,7 +1485,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject1 == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject1);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ColorBufferObject1 = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
@@ -1473,7 +1513,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject2 == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject2);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ColorBufferObject2 = bufferObj;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
@@ -1499,7 +1542,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int trisBytes = triangleIndices.Length * sizeof(short);
 
             if (((MeshImp)mr).ElementBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).ElementBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ElementBufferObject = bufferObj;
+            }
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices, BufferUsageHint.StaticDraw);
@@ -1545,7 +1591,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors1(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject1);
+            int bufferObj = ((MeshImp)mr).ColorBufferObject1;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateColors1();
         }
 
@@ -1555,7 +1602,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors2(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject2);
+            int bufferObj = ((MeshImp)mr).ColorBufferObject2;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateColors2();
         }
 
@@ -1713,11 +1761,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 switch (((MeshImp)mr).MeshType)
                 {
-                    case OpenGLPrimitiveType.Triangles:
+                    case Common.PrimitiveType.Triangles:
                     default:
-                        GL.DrawElements(PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.Points:
+                    case Common.PrimitiveType.Points:
                         // enable gl_PointSize to set the point size
                         if (!_isPtRenderingEnabled)
                         {
@@ -1726,43 +1774,43 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                             //GL.Enable(EnableCap.PointSprite);
                             GL.Enable(EnableCap.VertexProgramPointSize);
                         }
-                        GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.Lines:
+                    case Common.PrimitiveType.Lines:
                         if (!_isLineSmoothEnabled)
                         {
                             GL.Enable(EnableCap.LineSmooth);
                             _isLineSmoothEnabled = true;
                         }
-                        GL.DrawElements(PrimitiveType.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.LineLoop:
+                    case Common.PrimitiveType.LineLoop:
                         if (!_isLineSmoothEnabled)
                         {
                             GL.Enable(EnableCap.LineSmooth);
                             _isLineSmoothEnabled = true;
                         }
-                        GL.DrawElements(PrimitiveType.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.LineStrip:
+                    case Common.PrimitiveType.LineStrip:
                         if (!_isLineSmoothEnabled)
                         {
                             GL.Enable(EnableCap.LineSmooth);
                             _isLineSmoothEnabled = true;
                         }
-                        GL.DrawElements(PrimitiveType.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.Patches:
-                        GL.DrawElements(PrimitiveType.Patches, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    case Common.PrimitiveType.Patches:
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Patches, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.QuadStrip:
-                        GL.DrawElements(PrimitiveType.QuadStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    case Common.PrimitiveType.QuadStrip:
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.QuadStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.TriangleFan:
-                        GL.DrawElements(PrimitiveType.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    case Common.PrimitiveType.TriangleFan:
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.TriangleStrip:
-                        GL.DrawElements(PrimitiveType.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    case Common.PrimitiveType.TriangleStrip:
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                 }
             }
@@ -2005,7 +2053,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                     break;
                 case RenderState.BlendFactor:
-                    GL.BlendColor(Color.FromArgb((int)value));
+                    GL.BlendColor(System.Drawing.Color.FromArgb((int)value));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(renderState));
@@ -2473,7 +2521,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
         {
-            GL.Begin(PrimitiveType.Lines);
+            GL.Begin(OpenTK.Graphics.OpenGL.PrimitiveType.Lines);
             GL.Color4(color.x, color.y, color.z, color.w);
             GL.Vertex3(start.x, start.y, start.z);
             GL.Color4(color.x, color.y, color.z, color.w);
@@ -2557,7 +2605,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public IImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
             ImageData image = ImageData.CreateImage(w, h, ColorUint.Black);
-            GL.ReadPixels(x, y, w, h, PixelFormat.Bgr /* yuk, yuk ??? */, PixelType.UnsignedByte, image.PixelData);
+            GL.ReadPixels(x, y, w, h, PixelFormat.Rgb, PixelType.UnsignedByte, image.PixelData);
             return image;
         }
 

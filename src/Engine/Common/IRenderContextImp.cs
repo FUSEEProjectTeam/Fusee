@@ -771,7 +771,7 @@ namespace Fusee.Engine.Common
     /// <summary>
     /// This is the primitive type used by the RenderContext internally to distinguish between the different OpenGL primitives
     /// </summary>
-    public enum OpenGLPrimitiveType
+    public enum PrimitiveType
     {
         /// <summary>
         /// Relates to OpenGl GL_TRIANGLES.

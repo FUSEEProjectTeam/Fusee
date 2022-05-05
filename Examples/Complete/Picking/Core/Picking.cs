@@ -22,6 +22,7 @@ namespace Fusee.Examples.Picking.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _scene;
+        private Transform _camPivotTransform;
         private SceneRendererForward _sceneRenderer;
         private ScenePicker _scenePicker;
 
@@ -64,18 +65,11 @@ namespace Fusee.Examples.Picking.Core
         // Init is called on startup.
         public override void Init()
         {
-            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            RC.Viewport(0, 0, Width, Height);
-
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
             {
@@ -87,24 +81,24 @@ namespace Fusee.Examples.Picking.Core
                 _pick = true;
                 _pickPos = Input.Mouse.Position;
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
+                _angleVelVert = RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
             }
             else if (Input.Touch != null && Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _pick = true;
                 _pickPos = Input.Touch.GetPosition(TouchPoints.Touchpoint_0);
                 var touchVel = Input.Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
             }
             else
             {
                 _pick = false;
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
-                    _angleVelVert = -RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
+                    _angleVelHorz = RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
+                    _angleVelVert = RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
                 }
                 else
                 {
@@ -117,18 +111,11 @@ namespace Fusee.Examples.Picking.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
+            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(new float3(_angleVert, _angleHorz, 0));
 
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            _sceneRenderer.Render(RC);
 
-            //Set the matrices before the "pick" and rendering of the scene
-            RC.View = mtxCam * mtxRot;
-            RC.Projection = perspective;
-
-            // Check
+            //Picking
             if (_pick)
             {
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
@@ -156,11 +143,7 @@ namespace Fusee.Examples.Picking.Core
                 _pick = false;
             }
 
-            _sceneRenderer.Render(RC);
-
-            //Set the matrices for rendering the UI
-            RC.View = RC.DefaultState.View;
-            RC.Projection = orthographic;
+            _guiRenderer.Render(RC);
 
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
@@ -170,14 +153,14 @@ namespace Fusee.Examples.Picking.Core
             {
                 _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            _guiRenderer.Render(RC);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
+            // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
         private SceneContainer CreateScene()
         {
+            _camPivotTransform = new Transform();
             return new SceneContainer
             {
                 Header = new SceneHeader
@@ -188,6 +171,31 @@ namespace Fusee.Examples.Picking.Core
                 },
                 Children = new List<SceneNode>
                 {
+                    new SceneNode()
+                    {
+                        Components =
+                        {
+                            _camPivotTransform,
+                        },
+                        Children =
+                        {
+                            new SceneNode()
+                            {
+                                Name = "MainCam",
+                                Components = new List<SceneComponent>
+                                {
+                                    new Transform()
+                                    {
+                                        Translation = new float3(0, 150, -600)
+                                    },
+                                    new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
+                                    {
+                                        BackgroundColor = float4.One
+                                    }
+                                }
+                            }
+                        }
+                    },
                     new SceneNode
                     {
                         Name = "Base",
@@ -262,7 +270,6 @@ namespace Fusee.Examples.Picking.Core
                 }
             };
         }
-
 
         public static Mesh CreateCuboid(float3 size)
         {

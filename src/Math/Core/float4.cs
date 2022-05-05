@@ -226,7 +226,7 @@ namespace Fusee.Math.Core
         /// Gets the length (magnitude) of the vector.
         /// </summary>
         /// <see cref="LengthSquared"/>
-        public float Length => (float)System.Math.Sqrt(LengthSquared);
+        public float Length => MathF.Sqrt(LengthSquared);
 
         #endregion public float Length
 
@@ -236,7 +236,7 @@ namespace Fusee.Math.Core
         /// Gets the length in 1-norm.
         /// </summary>
         /// <see cref="LengthSquared"/>
-        public float Length1 => (float)System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w);
+        public float Length1 => (float)MathF.Abs(x) + MathF.Abs(y) + MathF.Abs(z) + MathF.Abs(w);
 
         #endregion public float Length1
 
@@ -316,7 +316,7 @@ namespace Fusee.Math.Core
         #endregion public Round()
 
         /// <summary>
-        /// Converts this float4 - which is interpreted as a color - from sRgb space to linear color space.       
+        /// Converts this float4 - which is interpreted as a color - from sRgb space to linear color space.
         /// </summary>
         /// <returns></returns>
         public float4 LinearColorFromSRgb()
@@ -492,6 +492,7 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static float4 Normalize(float4 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = 1.0f / vec.Length;
             vec.x *= scale;
             vec.y *= scale;
@@ -511,6 +512,7 @@ namespace Fusee.Math.Core
         /// <returns>The scaled vector.</returns>
         public static float4 Normalize1(float4 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = 1.0f / vec.Length1;
             vec.x *= scale;
             vec.y *= scale;
@@ -530,6 +532,7 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static float4 NormalizeFast(float4 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
             vec.x *= scale;
             vec.y *= scale;
@@ -600,7 +603,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float4 Lerp(float4 a, float4 b, float4 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;
@@ -639,10 +642,10 @@ namespace Fusee.Math.Core
         /// <returns>The rounded vector.</returns>
         public static float4 Round(float4 vec)
         {
-            return new float4((float)System.Math.Round(vec.x, 6),
-                              (float)System.Math.Round(vec.y, 6),
-                              (float)System.Math.Round(vec.z, 6),
-                              (float)System.Math.Round(vec.w, 6));
+            return new float4((float)MathF.Round(vec.x, 6),
+                              (float)MathF.Round(vec.y, 6),
+                              (float)MathF.Round(vec.z, 6),
+                              (float)MathF.Round(vec.w, 6));
         }
 
         #endregion Round
@@ -1036,10 +1039,10 @@ namespace Fusee.Math.Core
         public bool Equals(float4 other)
         {
             return
-                System.Math.Abs(x - other.x) < M.EpsilonFloat &&
-                System.Math.Abs(y - other.y) < M.EpsilonFloat &&
-                System.Math.Abs(z - other.z) < M.EpsilonFloat &&
-                System.Math.Abs(w - other.w) < M.EpsilonFloat;
+                MathF.Abs(x - other.x) < M.EpsilonFloat &&
+                MathF.Abs(y - other.y) < M.EpsilonFloat &&
+                MathF.Abs(z - other.z) < M.EpsilonFloat &&
+                MathF.Abs(w - other.w) < M.EpsilonFloat;
         }
 
         #endregion IEquatable<float4> Members

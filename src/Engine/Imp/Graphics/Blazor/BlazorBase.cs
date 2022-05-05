@@ -49,10 +49,8 @@ namespace Fusee.Base.Imp.Blazor
         /// </summary>
         /// <param name="canvas"></param>
         /// <param name="runtime"></param>
-        /// <param name="clearColor"></param>
-        public virtual void Init(IJSObjectReference canvas, IJSRuntime runtime, float4 clearColor)
+        public virtual void Init(IJSObjectReference canvas, IJSRuntime runtime)
         {
-            this.clearColor = clearColor;
             this.canvas = canvas;
             Runtime = runtime;
 
@@ -84,7 +82,6 @@ namespace Fusee.Base.Imp.Blazor
         /// <param name="elapsedMilliseconds"></param>
         public virtual void Update(double elapsedMilliseconds)
         {
-
         }
 
         /// <summary>
@@ -96,9 +93,6 @@ namespace Fusee.Base.Imp.Blazor
 
             gl.Viewport(0, 0, canvasWidth, canvasHeight);
             Resize(canvasWidth, canvasHeight);
-
-            gl.ClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
-            gl.Clear(WebGLRenderingContextBase.COLOR_BUFFER_BIT);
         }
 
         /// <summary>
@@ -111,7 +105,6 @@ namespace Fusee.Base.Imp.Blazor
             gl.Viewport(0, 0, width, height);
             canvasWidth = width;
             canvasHeight = height;
-            gl.Clear(WebGLRenderingContextBase.COLOR_BUFFER_BIT);
         }
     }
 }

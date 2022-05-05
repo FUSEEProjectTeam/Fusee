@@ -36,7 +36,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
         internal static FontMap RalewayFontMap = new(FontRaleway, 24);
 
-        internal static float alphaInv = 0.5f;
+        internal static float alphaInv = 0.25f;
         internal static float alphaVis = 1f;
 
         internal static readonly float4 Green = new float4(0.14117f, 0.76078f, 0.48627f, alphaVis).LinearColorFromSRgb();

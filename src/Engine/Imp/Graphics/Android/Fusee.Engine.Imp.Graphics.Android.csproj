@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.38">
+﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.44">
 	
 	<PropertyGroup>
 		<TargetFramework>MonoAndroid11.0</TargetFramework>
@@ -22,7 +22,7 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 
-		<PackageReference Include="Xamarin.Legacy.OpenTK" Version="1.0.1" />
+		<PackageReference Include="Xamarin.Legacy.OpenTK" Version="1.0.2" />
 	</ItemGroup>
 
 	<Import Project="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />

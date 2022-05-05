@@ -225,7 +225,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="ray">The ray to test against.</param>
         /// <returns></returns>
-        public bool IntersectRay(Rayf ray)
+        public bool IntersectRay(RayF ray)
         {
             if (this.Intersects(ray.Origin))
                 return true;

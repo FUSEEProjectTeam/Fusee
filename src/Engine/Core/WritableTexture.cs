@@ -206,7 +206,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateDepthTex(int width, int height, ImagePixelFormat pxFormat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Depth, pxFormat, width, height, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, compareMode, compareFunc);
+            return new WritableTexture(RenderTargetTextureTypes.Depth, pxFormat, width, height, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToEdge, compareMode, compareFunc);
         }
 
         /// <summary>
@@ -214,10 +214,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
+        /// <param name="pxFormat">The color format of this texture.</param>
         /// <returns></returns>
-        public static WritableTexture CreateSSAOTex(int width, int height)
+        public static WritableTexture CreateSSAOTex(int width, int height, ImagePixelFormat pxFormat)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.Nearest);
+            return new WritableTexture(RenderTargetTextureTypes.Ssao, pxFormat, width, height, false, TextureFilterMode.Nearest);
         }
 
         /// <summary>
