@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -49,8 +49,8 @@
 
 		<PackageReference Include="CommandLineParser" Version="2.8.0" />
 		
-		<!-- Do not update Google.Protobuf.Tools past 3.11.4 without testing a clean built Blender addon -->
-		<PackageReference Include="Google.Protobuf.Tools" Version="3.11.4" />
+		<!-- Always update the the python plugin to the same version -->
+		<PackageReference Include="Google.Protobuf.Tools" Version="3.20.1" />
 
 		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
 	</ItemGroup>
