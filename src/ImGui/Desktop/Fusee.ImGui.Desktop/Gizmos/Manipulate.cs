@@ -3,7 +3,7 @@ using ImGuiNET;
 using System;
 using System.Numerics;
 
-namespace Fusee.DImGui.Desktop.Gizmos
+namespace Fusee.ImGuiDesktop.Gizmos
 {
     public static class Manipulate
     {

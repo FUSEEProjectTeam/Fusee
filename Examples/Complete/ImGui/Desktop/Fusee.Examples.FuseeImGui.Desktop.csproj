@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<OutputPath>$(BaseOutputPath)\Examples\ImGui\Desktop\</OutputPath>
+
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets\FuseeIconTop32.png" />
+	  <None Remove="Assets\ImGuiSettings.ini" />
+	  <None Remove="Assets\Lato-Black.ttf" />
+	  <None Remove="Assets\RocketFus.fus" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Assets\FuseeIconTop32.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\ImGuiSettings.ini">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\Lato-Black.ttf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\RocketFus.fus">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiDesktop.csproj" />
+	</ItemGroup>
+
+</Project>

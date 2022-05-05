@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Fusee.DImGui.Desktop.Gizmos
+namespace Fusee.ImGuiDesktop.Gizmos
 {
 
     [Flags]

@@ -8,7 +8,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.DImGui.Desktop.Gizmos
+namespace Fusee.ImGuiDesktop.Gizmos
 {
     public static class Grid
     {

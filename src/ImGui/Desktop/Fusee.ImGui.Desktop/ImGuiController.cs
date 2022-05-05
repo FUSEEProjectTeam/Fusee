@@ -1,20 +1,17 @@
 ﻿using Fusee.Base.Core;
-using Fusee.DImGui.Desktop.Gizmos;
 using Fusee.Engine.Core;
-using Fusee.Examples.Simple.Core;
 using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Fusee.DImGui.Desktop
+namespace Fusee.ImGuiDesktop
 {
-    internal class ImGuiController
+    public class ImGuiController
     {
         private static int _vertexArray;
         private static int _vertexBuffer;
@@ -22,12 +19,10 @@ namespace Fusee.DImGui.Desktop
         private static int _indexBuffer;
         private static int _indexBufferSize;
 
-        private static int _gameWindowWidth;
-        private static int _gameWindowHeight;
+        public int GameWindowWidth;
+        public int GameWindowHeight;
 
-        private static bool _dockspaceOpen;
-
-        private static Vector2 _scaleFactor = System.Numerics.Vector2.One;
+        private static Vector2 _scaleFactor = Vector2.One;
 
         private static readonly string _vertexSource = @"#version 330 core
                                                 uniform mat4 projection_matrix;
@@ -55,43 +50,42 @@ namespace Fusee.DImGui.Desktop
         private static int _shaderProgram;
         private static readonly Dictionary<string, UniformFieldInfo> _uniformVarToLocation = new();
 
-        private static int _depthRenderbuffer;
-        private static int _texture4ImGui;
+        public ImGuiController(int width, int height) => WindowResized(width, height);
 
-        public int ViewportFramebuffer { get; private set; }
-        public int IntermediateFrameBuffer { get; private set; }
-        public int ViewportRenderTexture { get; private set; }
-
-
-        public Vector2 FuseeViewportMin { get; private set; } = new(0, 0);
-        public Vector2 FuseeViewportMax { get; private set; } = new(0, 0);
-        public Vector2 FuseeViewportSize { get; private set; } = new(0, 0);
-        public Vector2 FuseeViewportPos { get; private set; } = new(0, 0);
-
-        private static GameWindow? _gameWindow;
-
-        internal ImGuiController(GameWindow gw) => (_gameWindow) = (gw);
-
-        public void InitImGUI()
+        public void WindowResized(int width, int height)
         {
-            _gameWindowWidth = _gameWindow.Size.X;
-            _gameWindowHeight = _gameWindow.Size.Y;
+            GL.Viewport(0, 0, GameWindowWidth, GameWindowHeight);
+            (GameWindowWidth, GameWindowHeight) = (width, height);
+        }
 
+        /// <summary>
+        /// Init ImGui controller, set font size in px and font texture here
+        /// </summary>
+        /// <param name="fontSize">size in px</param>
+        /// <param name="pathToFontTexture">path to texture (e. g. "Assets/Lato-Black.ttf")</param>
+        public void InitImGUI(int fontSize = 14, string pathToFontTexture = "")
+        {
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
 
             var io = ImGui.GetIO();
-            //io.Fonts.AddFontFromFileTTF("Assets/Lato-Black.ttf", 14);
-            io.Fonts.AddFontDefault();
+            if (pathToFontTexture != string.Empty)
+            {
+                io.Fonts.AddFontFromFileTTF(pathToFontTexture, fontSize);
+            }
+            else
+            {
+                io.Fonts.AddFontDefault();
+            }
 
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
-            FuseeGUI.SetImGuiDesign();
-
             CreateDeviceResources();
             SetPerFrameImGuiData(1f / 60f);
 
+            if (File.Exists("Assets/ImGuiSettings.ini"))
+                ImGui.LoadIniSettingsFromDisk("Assets/ImGuiSettings.ini");
         }
 
         private void CreateDeviceResources()
@@ -189,20 +183,9 @@ namespace Fusee.DImGui.Desktop
                 throw new Exception($"OpenGL Error {GL.GetError()}");
             }
 
-            // FRAMEBUFFER STUFF
-            GL.CreateFramebuffers(1, out int fb);
-            ViewportFramebuffer = fb;
-            GL.GenTextures(1, out int renderTex);
-            ViewportRenderTexture = renderTex;
-            GL.GenRenderbuffers(1, out _depthRenderbuffer);
-
-            // Set up texture to blt to
-            _texture4ImGui = GL.GenTexture();
-            GL.CreateFramebuffers(1, out int iFb);
-            IntermediateFrameBuffer = iFb;
         }
 
-        private static unsafe void RecreateFontDeviceTexture()
+        private unsafe void RecreateFontDeviceTexture()
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
@@ -225,12 +208,11 @@ namespace Fusee.DImGui.Desktop
 
         private void SetPerFrameImGuiData(float deltaSeconds)
         {
-            _gameWindowHeight = _gameWindow.Size.Y;
-            _gameWindowWidth = _gameWindow.Size.X;
+
             ImGuiIOPtr io = ImGui.GetIO();
             io.DisplaySize = new System.Numerics.Vector2(
-                _gameWindowWidth / _scaleFactor.X,
-                _gameWindowHeight / _scaleFactor.Y);
+                GameWindowWidth / _scaleFactor.X,
+                GameWindowHeight / _scaleFactor.Y);
             io.DisplayFramebufferScale = _scaleFactor;
             io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
         }
@@ -243,7 +225,7 @@ namespace Fusee.DImGui.Desktop
             ImGui.NewFrame();
         }
 
-        private static void UpdateImGuiInput()
+        private void UpdateImGuiInput()
         {
             ImGuiIOPtr io = ImGui.GetIO();
 
@@ -257,174 +239,15 @@ namespace Fusee.DImGui.Desktop
             io.MouseWheelH = 0;
         }
 
-
-        private float[] snap = new float[] { 1, 1, 1, 1 };
-        private float[] bounds = new float[] { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
-        private float[] boundsSnap = new float[] { 0.1f, 0.1f, 0.1f, 0.1f };
-
-        private float4x4 resMat = float4x4.Identity;
-        private float4x4 deltaMat = float4x4.Identity;
-
-        private bool useSnap = false;
-        private bool boundSizing = false;
-        private bool boundSizingSnap = false;
-
         public void RenderImGui()
         {
-            // Set Window flags for Dockspace
-            var wndDockspaceFlags =
-                    ImGuiWindowFlags.NoDocking
-                    | ImGuiWindowFlags.NoTitleBar
-                    | ImGuiWindowFlags.NoCollapse
-                    | ImGuiWindowFlags.NoResize
-                    | ImGuiWindowFlags.NoMove
-                    | ImGuiWindowFlags.NoBringToFrontOnFocus
-                    | ImGuiWindowFlags.NoFocusOnAppearing;
-
-            var dockspaceFlags = ImGuiDockNodeFlags.PassthruCentralNode /*| ImGuiDockNodeFlags.AutoHideTabBar*/;
-
-            var viewport = ImGui.GetMainViewport();
-
-            // Set the parent window's position, size, and viewport to match that of the main viewport. This is so the parent window
-            // completely covers the main viewport, giving it a "full-screen" feel.
-            ImGui.SetNextWindowPos(viewport.WorkPos);
-            ImGui.SetNextWindowSize(viewport.WorkSize);
-            ImGui.SetNextWindowViewport(viewport.ID);
-
-            // Set the parent window's styles to match that of the main viewport:
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f); // No corner rounding on the window
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f); // No border around the window
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(0.0f, 0.0f));
-
-            // Create Dockspace
-            ImGui.Begin("DockSpace", ref _dockspaceOpen, wndDockspaceFlags);
-
-            var dockspace_id = ImGui.GetID("DockSpace");
-            ImGui.DockSpace(dockspace_id, new Vector2(0.0f, 0.0f), dockspaceFlags);
-
-            ImGui.PopStyleVar();
-            ImGui.PopStyleVar();
-            ImGui.PopStyleVar();
-
-            // Titlebar
-            FuseeGUI.DrawMainMenuBar();
-
-            ImGui.Begin("Viewport",
-                 ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse);
-
-
-            var parentMin = ImGui.GetWindowContentRegionMin();
-            var parentMax = ImGui.GetWindowContentRegionMax();
-            var size = parentMax - parentMin;
-
-            // Using a Child allow to fill all the space of the window.
-            // It also allows customization
-            ImGui.BeginChild("GameRender", size, true, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
-
-            var rc = Simple.RenderContext;
-            var pos = ImGui.GetWindowPos();
-            Grid.DrawGrid(rc.View, rc.Projection, float4x4.Identity, 100f, size, pos);
-
-
-            // var viewManipulateRight = ImGui.GetWindowPos().X + size.X - 128;
-            // var viewManipulateTop = ImGui.GetWindowPos().Y;
-
-            //ViewManipulateCube.DrawManipulateCube(rc.View, rc.Projection.M22,
-            //    new Vector2(viewManipulateRight, viewManipulateTop),
-            //    new Vector2(128, 128), 0x10101010);
-
-
-
-            MODE mCurrentGizmoMode = MODE.LOCAL;
-
-
-            Gizmos.Gizmos.SetRect(pos.X, pos.Y, size.X, size.Y);
-
-
-
-            if (Simple._rocketScene != null)
-            {
-                var aabb = new AABBCalculator(Simple._rocketScene);
-
-                var min = aabb.GetBox().Value.min;
-                var max = aabb.GetBox().Value.max;
-
-
-                bounds = new float[] { min.x, min.y, min.z, max.x, max.y, max.z };
-            }
-
-            resMat = float4x4.Scale(4, 4, 4);
-
-            Manipulate.DrawManipulate(rc.View, rc.Projection, OPERATION.UNIVERSAL, mCurrentGizmoMode, ref resMat,
-               ref deltaMat, ref snap, ref bounds, ref boundsSnap);
-
-
-            //if (MathF.Abs(resMat.Determinant) > float.Epsilon)
-            //    rc.Model = resMat;
-
-            FuseeViewportMin = ImGui.GetWindowContentRegionMin();
-            FuseeViewportMax = ImGui.GetWindowContentRegionMax();
-            FuseeViewportSize = FuseeViewportMax - FuseeViewportMin;
-            FuseeViewportPos = ImGui.GetWindowPos();
-
-            GL.BindTexture(TextureTarget.Texture2D, _texture4ImGui);
-            ImGui.Image(new IntPtr(_texture4ImGui), FuseeViewportSize,
-                new Vector2(0, 1),
-                new Vector2(1, 0));
-
-
-
-            ImGui.EndChild();
-            ImGui.End();
-
-            FuseeGUI.DrawGUI();
-
             ImGui.Render();
-
             RenderImDrawData(ImGui.GetDrawData());
-
-            _gameWindow?.SwapBuffers();
         }
 
-        public void UpdateRenderTexture(int width, int height)
+        internal unsafe void RenderImDrawData(ImDrawDataPtr draw_data)
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, IntermediateFrameBuffer);
-            GL.BindTexture(TextureTarget.Texture2D, _texture4ImGui);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, new IntPtr());
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _texture4ImGui, 0);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-            GL.Enable(EnableCap.Multisample);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, ViewportFramebuffer);
-            GL.BindTexture(TextureTarget.Texture2DMultisample, ViewportRenderTexture);
-
-            GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.Rgba, width, height, true);
-
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _depthRenderbuffer);
-            GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, 4, RenderbufferStorage.DepthComponent24, width, height);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, _depthRenderbuffer);
-
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, ViewportRenderTexture, 0);
-
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) == 0)
-            {
-                throw new Exception("Error Framebuffer!");
-            }
-
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-        }
-
-        internal static unsafe void RenderImDrawData(ImDrawDataPtr draw_data)
-        {
+            if (draw_data.NativePtr == IntPtr.Zero.ToPointer()) return;
 
             uint vertexOffsetInVertices = 0;
             uint indexOffsetInElements = 0;
@@ -527,7 +350,7 @@ namespace Fusee.DImGui.Desktop
 
                         // We do _windowHeight - (int)clip.W instead of (int)clip.Y because gl has flipped Y when it comes to these coordinates
                         var clip = pcmd.ClipRect;
-                        GL.Scissor((int)clip.X, _gameWindowHeight - (int)clip.W, (int)(clip.Z - clip.X), (int)(clip.W - clip.Y));
+                        GL.Scissor((int)clip.X, GameWindowHeight - (int)clip.W, (int)(clip.Z - clip.X), (int)(clip.W - clip.Y));
 
                         GL.DrawElementsBaseVertex(PrimitiveType.Triangles, (int)pcmd.ElemCount, DrawElementsType.UnsignedShort, (IntPtr)(idx_offset * sizeof(ushort)), vtx_offset);
                     }

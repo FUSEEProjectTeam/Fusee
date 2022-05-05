@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.DImGui.Desktop
+namespace Fusee.ImGuiDesktop
 {
     internal class ImGuiRenderContextImp
     {

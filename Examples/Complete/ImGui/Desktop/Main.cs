@@ -4,33 +4,15 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Imp.Graphics.Desktop;
-using Fusee.Math.Core;
 using Fusee.Serialization;
-using ImGuiNET;
-using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Numerics;
-using ImVec4 = System.Numerics.Vector4;
-using System.Drawing;
-using Font = Fusee.Base.Core.Font;
-using static System.Net.Mime.MediaTypeNames;
 
-
-namespace Fusee.Examples.Simple.Desktop
+namespace Fusee.Examples.FuseeImGui.Desktop
 {
-    public class Simple
+    public class ImGuiExample
     {
-        public static Core.Simple app;
-        private static RenderCanvasImp _renderCanvas;
-        private static RenderContextImp _renderCtx;
-
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
@@ -72,22 +54,18 @@ namespace Fusee.Examples.Simple.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
+            // no injection or shared base project, as we are currently limited to desktop only with ImGui.NET
+            var app = new Core();
 
-            app = new Core.Simple();
-
-            // Inject Fusee.Engine InjectMe dependencies (hard coded)
             var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
             app.CanvasImplementor = new Fusee.ImGuiDesktop.ImGuiRenderCanvasImp(icon);
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Fusee.ImGuiDesktop.ImGuiInputImp(app.CanvasImplementor));
-            //Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
 
             app.InitApp();
 
             // Start the app
             app.Run();
         }
-
     }
 }
-

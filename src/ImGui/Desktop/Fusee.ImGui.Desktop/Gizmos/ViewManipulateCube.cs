@@ -8,9 +8,8 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.DImGui.Desktop.Gizmos
+namespace Fusee.ImGuiDesktop.Gizmos
 {
-
     //
     // Please note that this cubeview is patented by Autodesk : https://patents.google.com/patent/US7782319B2/en
     // It seems to be a defensive patent in the US. I don't think it will bring troubles using it as

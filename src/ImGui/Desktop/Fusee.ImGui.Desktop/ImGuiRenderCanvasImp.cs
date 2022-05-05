@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.DImGui.Desktop
+namespace Fusee.ImGuiDesktop
 {
     struct UniformFieldInfo
     {
@@ -77,7 +77,7 @@ namespace Fusee.DImGui.Desktop
 
             try
             {
-                _gameWindow = new DImGui.Desktop.RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
+                _gameWindow = new ImGuiDesktop.RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
             catch
             {
@@ -111,7 +111,7 @@ namespace Fusee.DImGui.Desktop
                 _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, resBytes.ToArray()) });
             }
 
-            _controller = new ImGuiController(_gameWindow);
+            _controller = new ImGuiController(_gameWindow.Size.X, _gameWindow.Size.Y);
         }
 
         public void Run()
@@ -137,8 +137,8 @@ namespace Fusee.DImGui.Desktop
 
         protected internal void DoInit()
         {
+            _controller.InitImGUI(14, "Assets/Lato-Black.ttf");
             Init?.Invoke(this, new InitEventArgs());
-            _controller.InitImGUI();
             _initialized = true;
         }
 
@@ -155,42 +155,14 @@ namespace Fusee.DImGui.Desktop
         protected internal void DoRender()
         {
             if (!_initialized) return;
+            if (_controller.GameWindowWidth <= 0) return;
 
-            #region FuseeRender
+            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
 
-            if (_controller.FuseeViewportSize.X > 0)
-            {
-                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
-                Width = (int)_controller.FuseeViewportSize.X;
-                Height = (int)_controller.FuseeViewportSize.Y;
-
-                // Enable FB
-                _controller.UpdateRenderTexture(Width, Height);
-                DoResize(Width, Height);
-
-                Time.Instance.DeltaTimeIncrement = DeltaTime;
-
-                Render?.Invoke(this, new RenderEventArgs());
-
-                Input.Instance.PostRender();
-
-                // after rendering, blt result into ViewportRenderTexture
-                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _controller.ViewportFramebuffer);
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _controller.IntermediateFrameBuffer);
-                GL.BlitFramebuffer(0, 0, Width, Height, 0, 0, Width, Height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
-
-            }
-
-            // Disable FB
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            GL.Viewport(0, 0, _gameWindow.Size.X, _gameWindow.Size.Y);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
-            #endregion
+            Render?.Invoke(this, new RenderEventArgs());
 
             _controller.RenderImGui();
+            _gameWindow?.SwapBuffers();
         }
 
         protected internal void DoUnLoad()
@@ -201,6 +173,7 @@ namespace Fusee.DImGui.Desktop
         protected internal void DoResize(int width, int height)
         {
             Resize?.Invoke(this, new ResizeEventArgs(width, height));
+            _controller.WindowResized(width, height);
         }
 
         public void SetCursor(CursorType cursorType)
@@ -225,6 +198,7 @@ namespace Fusee.DImGui.Desktop
 
         private void ResizeWindow()
         {
+            _controller.WindowResized(Width, Height);
             //_gameWindow.WindowBorder = _windowBorderHidden ? OpenTK.Windowing.Common.WindowBorder.Hidden : OpenTK.Windowing.Common.WindowBorder.Resizable;
             //_gameWindow.Bounds = new OpenTK.Mathematics.Box2i(BaseLeft, BaseTop, BaseWidth, BaseHeight);
         }
@@ -369,7 +343,7 @@ namespace Fusee.DImGui.Desktop
         /// </summary>
         public event EventHandler<ResizeEventArgs>? Resize;
 
-        internal readonly DImGui.Desktop.RenderCanvasGameWindow _gameWindow;
+        internal readonly ImGuiDesktop.RenderCanvasGameWindow _gameWindow;
 
     }
 
