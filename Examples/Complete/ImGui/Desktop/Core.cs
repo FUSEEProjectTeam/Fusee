@@ -19,7 +19,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         #region StaticBindingVars
 
-        private static bool _dockspaceOpen;
+        private static bool _dockspaceOpen = true;
 
         private static float _threshold;
         private static float _fuseeViewportMinProj;
@@ -37,7 +37,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         private static float _color;
 
         private CoreViewport _fuControl;
-        private CoreViewport _fuControl2;
         #endregion
 
 
@@ -99,12 +98,10 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             var dockspace_id = ImGui.GetID("DockSpace");
             ImGui.DockSpace(dockspace_id, Vector2.Zero, dockspaceFlags);
 
-            ImGui.PopStyleVar();
-            ImGui.PopStyleVar();
-            ImGui.PopStyleVar();
+            ImGui.PopStyleVar(3);
 
             // Titlebar
-            DrawMainMenuBar();
+            //DrawMainMenuBar();
 
             // Fusee Viewport
             ImGui.Begin("Viewport",

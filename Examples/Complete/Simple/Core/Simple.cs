@@ -6,7 +6,6 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System;
-using ImGuiNET;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -133,15 +132,15 @@ namespace Fusee.Examples.Simple.Core
             _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
             _sceneRenderer.Render(RC);
 
-            //Constantly check for interactive objects.
-            //_guiRenderer.Render(RC);
-            //if (!Mouse.Desc.Contains("Android"))
-            //    _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            //if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            //{
-            //    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            //}
-            //
+            // Constantly check for interactive objects.
+            _guiRenderer.Render(RC);
+            if (!Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }

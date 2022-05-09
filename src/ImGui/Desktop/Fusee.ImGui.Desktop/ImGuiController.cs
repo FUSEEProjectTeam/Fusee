@@ -88,7 +88,7 @@ namespace Fusee.ImGuiDesktop
                 ImGui.LoadIniSettingsFromDisk("Assets/ImGuiSettings.ini");
         }
 
-        private void CreateDeviceResources()
+        private static void CreateDeviceResources()
         {
             _shaderProgram = GL.CreateProgram();
 

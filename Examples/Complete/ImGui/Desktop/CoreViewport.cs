@@ -85,7 +85,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         protected override void RenderAFrame()
         {
             _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
-
             _renderer.Render(_rc);
         }
 
