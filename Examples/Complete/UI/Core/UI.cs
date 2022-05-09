@@ -174,7 +174,7 @@ namespace Fusee.Examples.UI.Core
 
             var nineSliceTextureNode = TextureNode.Create(
                 "testImage",
-                new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
 
@@ -384,9 +384,9 @@ namespace Fusee.Examples.UI.Core
 
             _fontMap = new FontMap(fontLato, 24);
 
-            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians.jpg"));
-            var bltScrTex = new Texture(AssetStorage.Get<ImageData>("censored_79_16.png"));
-            _bltDestinationTex.Blt(180, 225, bltScrTex);
+            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians_297x500.jpg"));
+            var bltScrImgData = AssetStorage.Get<ImageData>("censored_rgba.png");
+            _bltDestinationTex.Blt(210, 225, bltScrImgData);
 
             _btnCanvas = new GuiButton
             {

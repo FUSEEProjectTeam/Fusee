@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Fusee.Base.Imp.Desktop
+namespace Fusee.Base.Imp.Blazor
 {
     /// <summary>
     /// Provides methods for platform specific conversions of file content.
@@ -33,8 +33,11 @@ namespace Fusee.Base.Imp.Desktop
         {
             try
             {
+                using var ms = new MemoryStream();
+                file.CopyTo(ms);
+                ms.Position = 0;
                 //Load the image
-                using var image = Image.Load(file, out var imgFormat);
+                using var image = Image.Load(ms, out var imgFormat);
 
                 //ImageSharp loads from the top-left pixel, whereas OpenGL loads from the bottom-left, causing the texture to be flipped vertically.
                 //This will correct that, making the texture display properly.

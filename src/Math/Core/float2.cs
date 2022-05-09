@@ -425,6 +425,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 Normalize(float2 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = 1.0f / vec.Length;
             vec.x *= scale;
             vec.y *= scale;
@@ -444,6 +445,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 NormalizeFast(float2 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
             vec.x *= scale;
             vec.y *= scale;
@@ -514,7 +516,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float2 Lerp(float2 a, float2 b, float2 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;

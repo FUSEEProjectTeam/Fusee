@@ -617,6 +617,7 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { new int4(0, 0, 4, 0), new float4(0, 0, 1, 0) };
             yield return new object[] { new int4(0, 0, 0, 4), new float4(0, 0, 0, 1) };
             yield return new object[] { new int4(1, 1, 1, 1), new float4(0.5f, 0.5f, 0.5f, 0.5f) };
+            yield return new object[] { int4.Zero, float4.Zero };
         }
 
         public static IEnumerable<object[]> GetAddition()

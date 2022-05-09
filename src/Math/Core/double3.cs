@@ -539,14 +539,12 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 Normalize(double3 vec)
         {
-            if (vec.Length > M.EpsilonDouble)
-            {
-                var scale = 1.0 / vec.Length;
+            if (vec.Length <= M.EpsilonDouble) return Zero;
+            var scale = 1.0 / vec.Length;
+            vec.x *= scale;
+            vec.y *= scale;
+            vec.z *= scale;
 
-                vec.x *= scale;
-                vec.y *= scale;
-                vec.z *= scale;
-            }
 
             return vec;
         }
@@ -586,6 +584,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 NormalizeFast(double3 vec)
         {
+            if (vec.Length <= M.EpsilonDouble) return Zero;
             var scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
             vec.x *= scale;
             vec.y *= scale;
@@ -679,7 +678,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static double3 Lerp(double3 a, double3 b, double3 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;

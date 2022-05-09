@@ -5,7 +5,6 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -245,16 +244,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (icon != null)
             {
                 // convert Bgra to Rgba for OpenTK.WindowIcon
-                var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(icon.PixelData, icon.Width, icon.Height);
-                var bgra = pxData.CloneAs<Rgba32>();
-                bgra.Mutate(x => x.AutoOrient());
-                bgra.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
 
-                if (!bgra.TryGetSinglePixelSpan(out var res))
-                {
-                    Diagnostics.Warn("Couldn't convert icon image to Rgba32!");
-                    return;
-                }
+                var res = new Span<Rgba32>(new Rgba32[width * height]);
+                var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(icon.PixelData, icon.Width, icon.Height);
+                pxData.Mutate(x => x.AutoOrient());
+                pxData.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+
+                pxData.CopyPixelDataTo(res);
+
                 var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
                 _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, resBytes.ToArray()) });
             }
@@ -444,15 +441,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             DoRender();
             DoResize(width, height);
 
-            var bmp = new Image<Rgba32>(Width, Height);
-            bmp.TryGetSinglePixelSpan(out var mem);
-            GL.PixelStorei(PixelStoreParameter.PackRowLength, 1);
-            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, ref mem[0]);
+            var mem = new byte[width * height * 4];
+            GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
+            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
 
-            bmp.Mutate(x => x.AutoOrient());
-            bmp.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+            var img = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(mem, Width, Height);
 
-            return bmp;
+            img.Mutate(x => x.AutoOrient());
+            img.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+
+            return img;
         }
 
         #endregion
