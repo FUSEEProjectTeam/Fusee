@@ -4,9 +4,7 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
-using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Fusee.Examples.Camera.Desktop

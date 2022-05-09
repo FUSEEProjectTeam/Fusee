@@ -1,7 +1,5 @@
 ﻿using Fusee.Math.Core;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Fusee.Engine.Core.Scene
 {

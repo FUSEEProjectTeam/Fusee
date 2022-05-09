@@ -1853,7 +1853,7 @@ namespace Fusee.Math.Core
                 Sse.Store(r + 0, Sse.MoveLowToHigh(l12, l34));
                 Sse.Store(r + 4, Sse.MoveHighToLow(l34, l12));
                 Sse.Store(r + 8, Sse.MoveLowToHigh(h12, h34));
-                Sse.Store(r + 12,Sse.MoveHighToLow(h34, h12));
+                Sse.Store(r + 12, Sse.MoveHighToLow(h34, h12));
             }
         }
 #endif

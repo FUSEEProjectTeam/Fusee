@@ -153,14 +153,19 @@ namespace Fusee.Engine.Common
         /// Implementation Tasks: Gets a value indicating whether [Tangents Set].
         /// </summary>
         bool TangentsSet { get; }
+
+        void InvalidateTangents();
+
         /// <summary>
         /// Implementation Tasks: Gets a value indicating whether [BiTangents Set].
         /// </summary>
         bool BiTangentsSet { get; }
 
+        void InvalidateBiTangents();
+
         /// <summary>
         ///     Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
         /// </summary>
-        OpenGLPrimitiveType MeshType { get; set; }
+        PrimitiveType MeshType { get; set; }
     }
 }

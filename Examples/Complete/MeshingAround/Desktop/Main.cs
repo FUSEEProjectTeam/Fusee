@@ -5,7 +5,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Fusee.Examples.MeshingAround.Desktop

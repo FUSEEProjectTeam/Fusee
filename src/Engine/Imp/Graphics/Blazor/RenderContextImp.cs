@@ -130,13 +130,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             };
         }
 
-        private static TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
+        private static TexturePixelInfo GetTexturePixelInfo(ImagePixelFormat pxFormat)
         {
             uint internalFormat;
             uint format;
             uint pxType;
 
-            switch (tex.PixelFormat.ColorFormat)
+            //The wrong row alignment will lead to malformed textures.
+            //See https://www.khronos.org/opengl/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
+            //and https://www.khronos.org/opengl/wiki/Pixel_Transfer#Pixel_layout
+            int rowAlignment = 4;
+
+            switch (pxFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = RGBA;
@@ -147,11 +152,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     internalFormat = RGB;
                     format = RGB;
                     pxType = UNSIGNED_BYTE;
+                    rowAlignment = 1;
                     break;
                 case ColorFormat.Intensity:
                     internalFormat = R8;
                     format = RED;
                     pxType = UNSIGNED_BYTE;
+                    rowAlignment = 1;
                     break;
                 case ColorFormat.Depth24:
                     internalFormat = DEPTH_COMPONENT24;
@@ -167,19 +174,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     internalFormat = RGBA8UI;
                     format = RGBA;
                     pxType = UNSIGNED_INT;
+                    rowAlignment = 1;
                     break;
                 case ColorFormat.fRGB32:
                     throw new NotSupportedException("WebGL 2.0: fRGB32 not supported");
-                    //internalFormat = RGB32F;
-                    //format = RGB;
-                    //pxType = FLOAT;
-                    break;
+                //internalFormat = RGB32F;
+                //format = RGB;
+                //pxType = FLOAT;
                 case ColorFormat.fRGB16:
                     throw new NotSupportedException("WebGL 2.0: fRGB16 not supported");
-                    //internalFormat = RGB16F;
-                    //format = RGB;
-                    //pxType = HALF_FLOAT;
-                    break;
+                //internalFormat = RGB16F;
+                //format = RGB;
+                //pxType = HALF_FLOAT;
                 case ColorFormat.fRGBA16:
                     internalFormat = RGBA16F;
                     format = RGBA;
@@ -191,19 +197,20 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     pxType = FLOAT;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {tex.PixelFormat.ColorFormat}");
+                    throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {pxFormat.ColorFormat}");
             }
 
             return new TexturePixelInfo()
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType
+                PxType = pxType,
+                RowAlignment = rowAlignment
 
             };
         }
 
-        private static Array GetEmptyArray(ITextureBase tex)
+        private static Array GetEmptyArray(IWritableTexture tex)
         {
             return tex.PixelFormat.ColorFormat switch
             {
@@ -235,7 +242,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int magFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             var data = GetEmptyArray(img);
 
@@ -276,11 +283,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var maxFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            gl2.PixelStorei(UNPACK_ALIGNMENT, pxInfo.RowAlignment);
+            gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
-            if (img.DoGenerateMipMaps && img.PixelFormat.ColorFormat != ColorFormat.Intensity)
+            if (img.DoGenerateMipMaps && img.ImageData.PixelFormat.ColorFormat != ColorFormat.Intensity)
                 gl2.GenerateMipmap(TEXTURE_2D);
 
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, minFilter);
@@ -291,7 +299,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             uint err = gl2.GetError();
             if (err != 0)
-                throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {img.PixelFormat.ColorFormat}, BPP {img.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
+                throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {img.ImageData.PixelFormat.ColorFormat}, BPP {img.ImageData.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
 
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
@@ -313,7 +321,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var magFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             Array imgData = GetEmptyArray(img);
 
@@ -352,13 +360,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            TexturePixelInfo info = GetTexturePixelInfo(img);
+            TexturePixelInfo info = GetTexturePixelInfo(img.ImageData.PixelFormat);
             uint format = info.Format;
             uint pxType = info.PxType;
 
             // copy the bytes from img to GPU texture
-            int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
-            IEnumerator<ScanLine> scanlines = img.ScanLines(startX, startY, width, height);
+            int bytesTotal = width * height * img.ImageData.PixelFormat.BytesPerPixel;
+            IEnumerator<ScanLine> scanlines = img.ImageData.ScanLines(startX, startY, width, height);
             byte[] bytes = new byte[bytesTotal];
             int offset = 0;
             do
@@ -624,7 +632,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
 
         /// <summary>
-        /// Sets a <see cref="float2[]" /> shader parameter.
+        /// Sets a <see cref="float2" /> array as shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
@@ -1550,34 +1558,34 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
                 switch (((MeshImp)mr).MeshType)
                 {
-                    case OpenGLPrimitiveType.Triangles:
+                    case PrimitiveType.Triangles:
                     default:
                         gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.Points:
+                    case PrimitiveType.Points:
                         gl2.DrawElements(POINTS, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.Lines:
+                    case PrimitiveType.Lines:
                         gl2.DrawElements(LINES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LineLoop:
+                    case PrimitiveType.LineLoop:
                         gl2.DrawElements(LINE_LOOP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LineStrip:
+                    case PrimitiveType.LineStrip:
                         gl2.DrawElements(LINE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.Patches:
+                    case PrimitiveType.Patches:
                         gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         Diagnostics.Warn("Mesh type set to triangles due to unavailability of PATCHES");
                         break;
-                    case OpenGLPrimitiveType.QuadStrip:
+                    case PrimitiveType.QuadStrip:
                         gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         Diagnostics.Warn("Mesh type set to triangles due to unavailability of QUAD_STRIP");
                         break;
-                    case OpenGLPrimitiveType.TriangleFan:
+                    case PrimitiveType.TriangleFan:
                         gl2.DrawElements(TRIANGLE_FAN, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.TriangleStrip:
+                    case PrimitiveType.TriangleStrip:
                         gl2.DrawElements(TRIANGLE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                 }
@@ -2376,7 +2384,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             var data = new uint[img.Width * img.Height * img.Layers];
 

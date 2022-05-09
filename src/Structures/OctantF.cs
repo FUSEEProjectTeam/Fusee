@@ -143,11 +143,28 @@ namespace Fusee.Structures
         }
 
         /// <summary>
-        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// Checks if this Octant lies within or intersects a Frustum.
+        /// Returns true if one of the Frustum planes is intersecting this octant.
         /// </summary>
         /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
         public bool InsideOrIntersectingFrustum(FrustumF frustum)
+        {
+            return frustum.Near.InsideOrIntersecting(Center, Size) &&
+                frustum.Far.InsideOrIntersecting(Center, Size) &&
+                frustum.Left.InsideOrIntersecting(Center, Size) &&
+                frustum.Right.InsideOrIntersecting(Center, Size) &&
+                frustum.Top.InsideOrIntersecting(Center, Size) &&
+                frustum.Bottom.InsideOrIntersecting(Center, Size);
+        }
+
+        /// <summary>
+        /// Checks if this Octant lies within or intersects a Frustum.
+        /// Assumes that we do not need to process this octant if the near plane is completely inside it.
+        /// </summary>
+        /// <param name="frustum">The frustum to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustumFast(FrustumF frustum)
         {
             if (!frustum.Near.InsideOrIntersecting(Center, Size))
                 return false;

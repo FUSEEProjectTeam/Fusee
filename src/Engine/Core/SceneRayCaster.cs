@@ -4,7 +4,6 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -109,7 +108,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         public Cull CullMode { get; private set; }
 
-
+        /// <summary>
+        /// The <see cref="SceneContainer"/>, containing the scene that gets rendered.
+        /// </summary>
         protected SceneContainer _sc;
 
         internal PrePassVisitor PrePassVisitor { get; private set; }

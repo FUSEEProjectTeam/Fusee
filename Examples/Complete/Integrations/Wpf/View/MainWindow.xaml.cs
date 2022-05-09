@@ -7,7 +7,6 @@ using Fusee.Examples.Integrations.Wpf.Model;
 using Fusee.Examples.Integrations.Wpf.ViewModel;
 using Fusee.Serialization;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 

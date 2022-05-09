@@ -1,14 +1,11 @@
-﻿using Fusee.Base.Common;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 
 namespace Fusee.Examples.ThreeDFont.Core

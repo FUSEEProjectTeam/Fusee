@@ -1,7 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using System;
 
 namespace Fusee.Engine.Core
 {

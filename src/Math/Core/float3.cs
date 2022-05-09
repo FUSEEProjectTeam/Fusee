@@ -539,14 +539,12 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 Normalize(float3 vec)
         {
-            if (vec.Length > M.EpsilonFloat)
-            {
-                var scale = 1.0f / vec.Length;
+            if (vec.Length <= M.EpsilonFloat) return Zero;
+            var scale = 1.0f / vec.Length;
+            vec.x *= scale;
+            vec.y *= scale;
+            vec.z *= scale;
 
-                vec.x *= scale;
-                vec.y *= scale;
-                vec.z *= scale;
-            }
 
             return vec;
         }
@@ -586,6 +584,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 NormalizeFast(float3 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             var scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
             vec.x *= scale;
             vec.y *= scale;

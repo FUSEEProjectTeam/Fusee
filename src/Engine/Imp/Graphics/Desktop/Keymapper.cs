@@ -1,5 +1,4 @@
 ﻿using Fusee.Engine.Common;
-using OpenTK.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Generic;
 

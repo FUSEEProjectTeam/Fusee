@@ -29,6 +29,7 @@ namespace Fusee.Engine.Core.Effects
                     ParamDecl.Add(param.Hash, param);
             }
 
+            RendererStates = RenderStateSet.Default;
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
         }
 

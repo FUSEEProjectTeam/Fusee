@@ -173,9 +173,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
             };
         }
 
-        private TextureComponentCount GetTexTureComponentCount(ITextureBase tex)
+        private TextureComponentCount GetTexTureComponentCount(ImagePixelFormat format)
         {
-            return tex.PixelFormat.ColorFormat switch
+            return format.ColorFormat switch
             {
                 ColorFormat.RGBA => TextureComponentCount.Rgba,
                 ColorFormat.RGB => TextureComponentCount.Rgb,
@@ -195,13 +195,18 @@ namespace Fusee.Engine.Imp.Graphics.Android
         After some research it seems the OpenTK 30es branch suffers due to the development of OpenTK 40es....
         Furthermore it doesn't seem possible to attach a depth texture to a framebuffer (DEPTH_ATTACHMENT), therefore we need to render depth into a COLOR_ATTACHMENT and create a Depth render buffer.
         This is bound to create a overhead.*/
-        private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
+        private TexturePixelInfo GetTexturePixelInfo(ImagePixelFormat pixelFormat)
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
             PixelType pxType;
 
-            switch (tex.PixelFormat.ColorFormat)
+            //The wrong row alignment will lead to malformed textures.
+            //See https://www.khronos.org/opengl/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
+            //and https://www.khronos.org/opengl/wiki/Pixel_Transfer#Pixel_layout
+            int rowAlignment = 4;
+
+            switch (pixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
@@ -213,12 +218,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
+                    rowAlignment = 1;
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
                     pxType = PixelType.UnsignedByte;
+                    rowAlignment = 1;
                     break;
 
                 case ColorFormat.Depth24:
@@ -236,6 +243,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
+                    rowAlignment = 1;
                     break;
 
                 case ColorFormat.fRGB32:
@@ -293,7 +301,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType
+                PxType = pxType,
+                RowAlignment = rowAlignment
             };
         }
 
@@ -311,9 +320,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
-            GL.TexImage3D(TextureTarget3D.Texture2DArray, 0, GetTexTureComponentCount(img), img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+            GL.TexImage3D(TextureTarget3D.Texture2DArray, 0, GetTexTureComponentCount(img.PixelFormat), img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2DArray);
@@ -346,7 +355,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             for (int i = 0; i < 6; i++)
                 GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
@@ -378,9 +387,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2D);
@@ -414,7 +424,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
@@ -449,11 +459,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            PixelFormat format = GetTexturePixelInfo(img).Format;
+            PixelFormat format = GetTexturePixelInfo(img.ImageData.PixelFormat).Format;
 
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
-                format, PixelType.UnsignedByte, img.PixelData);
+                format, PixelType.UnsignedByte, img.ImageData.PixelData);
         }
 
         /// <summary>
@@ -1208,8 +1218,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int vertsBytes = vertices.Length * 3 * sizeof(float);
             if (((MeshImp)mr).VertexBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).VertexBufferObject);
-
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).VertexBufferObject = bufferIdx;
+            }
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
@@ -1236,7 +1248,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int vertsBytes = tangents.Length * 4 * sizeof(float);
             if (((MeshImp)mr).TangentBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).TangentBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).TangentBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), tangents, BufferUsage.StaticDraw);
@@ -1263,7 +1278,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int vertsBytes = bitangents.Length * 3 * sizeof(float);
             if (((MeshImp)mr).BitangentBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).BitangentBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).BitangentBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), bitangents, BufferUsage.StaticDraw);
@@ -1291,7 +1309,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int normsBytes = normals.Length * 3 * sizeof(float);
             if (((MeshImp)mr).NormalBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).NormalBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).NormalBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsage.StaticDraw);
@@ -1318,7 +1339,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int indicesBytes = boneIndices.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneIndexBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).BoneIndexBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).BoneIndexBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsage.StaticDraw);
@@ -1345,7 +1369,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int weightsBytes = boneWeights.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneWeightBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).BoneWeightBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).BoneWeightBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsage.StaticDraw);
@@ -1372,7 +1399,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int uvsBytes = uvs.Length * 2 * sizeof(float);
             if (((MeshImp)mr).UVBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).UVBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).UVBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsage.StaticDraw);
@@ -1399,7 +1429,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).ColorBufferObject = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
@@ -1426,7 +1459,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject1 == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject1);
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).ColorBufferObject1 = bufferIdx;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
@@ -1452,10 +1488,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             int colsBytes = colors.Length * sizeof(uint);
-            if (((MeshImp)mr).ColorBufferObject1 == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject1);
+            if (((MeshImp)mr).ColorBufferObject2 == 0)
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).ColorBufferObject2 = bufferIdx;
+            }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
@@ -1481,7 +1520,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
             int trisBytes = triangleIndices.Length * sizeof(short);
 
             if (((MeshImp)mr).ElementBufferObject == 0)
-                GL.GenBuffers(1, out ((MeshImp)mr).ElementBufferObject);
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).ElementBufferObject = bufferIdx;
+            }
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices,
@@ -1499,7 +1541,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveVertices(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).VertexBufferObject);
+            int bufferObj = ((MeshImp)mr).VertexBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateVertices();
         }
 
@@ -1509,7 +1552,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveNormals(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).NormalBufferObject);
+            int bufferObj = ((MeshImp)mr).NormalBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateNormals();
         }
 
@@ -1519,7 +1563,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject);
+            int bufferObj = ((MeshImp)mr).ColorBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateColors();
         }
 
@@ -1529,7 +1574,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors1(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject1);
+            int bufferObj = ((MeshImp)mr).ColorBufferObject1;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateColors1();
         }
 
@@ -1539,7 +1585,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors2(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject2);
+            int bufferObj = ((MeshImp)mr).ColorBufferObject2;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateColors2();
         }
 
@@ -1549,7 +1596,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveUVs(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).UVBufferObject);
+            int bufferObj = ((MeshImp)mr).UVBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateUVs();
         }
 
@@ -1559,7 +1607,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTriangles(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).ElementBufferObject);
+            int bufferObj = ((MeshImp)mr).ElementBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateTriangles();
         }
 
@@ -1569,7 +1618,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneWeights(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).BoneWeightBufferObject);
+            int bufferObj = ((MeshImp)mr).BoneWeightBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateBoneWeights();
         }
 
@@ -1579,7 +1629,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneIndices(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).BoneIndexBufferObject);
+            int bufferObj = ((MeshImp)mr).BoneIndexBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateBoneIndices();
         }
 
@@ -1589,7 +1640,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTangents(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).TangentBufferObject);
+            int bufferObj = ((MeshImp)mr).TangentBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateTangents();
         }
 
@@ -1599,7 +1651,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBiTangents(IMeshImp mr)
         {
-            GL.DeleteBuffers(1, ref ((MeshImp)mr).BitangentBufferObject);
+            int bufferObj = ((MeshImp)mr).BitangentBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateBiTangents();
         }
 
@@ -1697,12 +1750,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 switch (((MeshImp)mr).MeshType)
                 {
-                    case OpenGLPrimitiveType.Triangles:
+                    case Common.PrimitiveType.Triangles:
                     default:
                         GL.DrawElements(BeginMode.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.Points:
+                    case Common.PrimitiveType.Points:
                         // enable gl_PointSize to set the point size
                         GL.Enable(EnableCap.DepthTest);
                         //GL.Enable(EnableCap.DepthTest);
@@ -1711,27 +1764,27 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         GL.DrawElements(BeginMode.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.Lines:
+                    case Common.PrimitiveType.Lines:
                         GL.DrawElements(BeginMode.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.LineLoop:
+                    case Common.PrimitiveType.LineLoop:
                         GL.DrawElements(BeginMode.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.LineStrip:
+                    case Common.PrimitiveType.LineStrip:
                         GL.DrawElements(BeginMode.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.Patches:
+                    case Common.PrimitiveType.Patches:
                         throw new NotSupportedException("Patches is no valid primitive type within OpenGL ES 3.0");
-                    case OpenGLPrimitiveType.QuadStrip:
+                    case Common.PrimitiveType.QuadStrip:
                         throw new NotSupportedException("Quad strip is no valid primitive type within OpenGL ES 3.0");
-                    case OpenGLPrimitiveType.TriangleFan:
+                    case Common.PrimitiveType.TriangleFan:
                         GL.DrawElements(BeginMode.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.TriangleStrip:
+                    case Common.PrimitiveType.TriangleStrip:
                         GL.DrawElements(BeginMode.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                 }
