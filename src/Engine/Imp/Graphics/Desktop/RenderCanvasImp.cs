@@ -307,7 +307,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 //TODO: Select correct monitor
-               Monitors.TryGetMonitorInfo(0, out var mon);
+                Monitors.TryGetMonitorInfo(0, out var mon);
 
                 var oneScreenWidth = mon.HorizontalResolution;
                 var oneScreenHeight = mon.VerticalResolution;
@@ -442,8 +442,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             DoResize(width, height);
 
             var mem = new byte[width * height * 4];
-            GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
-            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+
+            GL.PixelStorei(PixelStoreParameter.PackRowLength, 1);
+
+            unsafe
+            {
+                using var dataMemHandle = mem.AsMemory().Pin();
+                GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, dataMemHandle.Pointer);
+            }
 
             var img = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(mem, Width, Height);
 

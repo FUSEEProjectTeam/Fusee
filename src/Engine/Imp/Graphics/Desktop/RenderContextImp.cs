@@ -216,13 +216,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 case ColorFormat.RGBA:
                     internalFormat = InternalFormat.Rgba;
-                    format = PixelFormat.Bgra;
+                    format = PixelFormat.Rgba;
                     pxType = PixelType.UnsignedByte;
                     break;
 
                 case ColorFormat.RGB:
                     internalFormat = InternalFormat.Rgb;
-                    format = PixelFormat.Bgr;
+                    format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
                     rowAlignment = 1;
                     break;
@@ -379,11 +379,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
             unsafe
             {
-                using var pxDataMem = img.PixelData.AsMemory().Pin();
-                GL.TexImage2D(TextureTarget.Texture2d, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, pxDataMem.Pointer);
+                using var pxDataMem = img.ImageData.PixelData.AsMemory().Pin();
+                GL.TexImage2D(TextureTarget.Texture2d, 0, (int)pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, pxDataMem.Pointer);
             }
 
             if (img.DoGenerateMipMaps)
@@ -416,13 +416,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var glWrapMode = GetWrapMode(tex.WrapMode);
             var pxInfo = GetTexturePixelInfo(tex.PixelFormat);
 
-            GL.TexImage2D(TextureTarget.Texture2d, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2d, 0, (int)pxInfo.InternalFormat, tex.Width, tex.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
-            if (img.DoGenerateMipMaps)
+            if (tex.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2d);
 
-            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
-            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(tex.CompareMode));
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(tex.CompareFunc));
             GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)glWrapMode);
@@ -2099,7 +2099,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                     break;
                 case RenderState.BlendFactor:
-                    var col = Color.FromArgb((int)value);
+                    var col = System.Drawing.Color.FromArgb((int)value);
                     GL.BlendColor(col.R, col.G, col.B, col.A);
                     break;
                 default:
