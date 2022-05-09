@@ -118,8 +118,8 @@ namespace Fusee.ImGuiDesktop
         {
             if (_gameWindow != null)
             {
-                _gameWindow.UpdateFrequency = 0;
-                _gameWindow.RenderFrequency = 0;
+                _gameWindow.UpdateFrequency = 60;
+                _gameWindow.RenderFrequency = 60;
 
                 _gameWindow.Run();
             }

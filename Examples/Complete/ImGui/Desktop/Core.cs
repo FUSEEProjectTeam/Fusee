@@ -36,16 +36,17 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         private static float _color;
 
-        private CoreViewport _viewport;
-
+        private CoreViewport _fuControl;
+        private CoreViewport _fuControl2;
         #endregion
 
 
         private async Task Load()
         {
             SetImGuiDesign();
-            _viewport = new CoreViewport(RC, Width, Height);
-            _viewport.Init();
+
+            _fuControl = new CoreViewport(RC);
+            _fuControl.Init();
         }
 
         public override async Task InitAsync()
@@ -61,7 +62,8 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         public override void Resize(ResizeEventArgs e)
         {
-            _viewport.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
+            _fuControl.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
+
         }
 
         public override void RenderAFrame()
@@ -105,7 +107,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             DrawMainMenuBar();
 
             // Fusee Viewport
-
             ImGui.Begin("Viewport",
               ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse);
 
@@ -122,7 +123,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             var fuseeViewportSize = fuseeViewportMax - fuseeViewportMin;
             var fuseeViewportPos = ImGui.GetWindowPos();
 
-            ImGui.Image(_viewport.RenderToTexture((int)size.X, (int)size.Y), fuseeViewportSize,
+            ImGui.Image(_fuControl.RenderToTexture((int)size.X, (int)size.Y), fuseeViewportSize,
                 new Vector2(0, 1),
                 new Vector2(1, 0));
 

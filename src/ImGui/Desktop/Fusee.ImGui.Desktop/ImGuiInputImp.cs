@@ -1,9 +1,12 @@
 ﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Desktop;
+using ImGuiNET;
 using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,10 +18,10 @@ namespace Fusee.ImGuiDesktop
         private readonly GameWindow _gameWindow;
         private readonly KeyboardDeviceImp _keyboard;
         private readonly MouseDeviceImp _mouse;
-        private readonly GamePadDeviceImp _gamePad0;
-        private readonly GamePadDeviceImp _gamePad1;
-        private readonly GamePadDeviceImp _gamePad2;
-        private readonly GamePadDeviceImp _gamePad3;
+        //private readonly GamePadDeviceImp _gamePad0;
+        //private readonly GamePadDeviceImp _gamePad1;
+        //private readonly GamePadDeviceImp _gamePad2;
+        //private readonly GamePadDeviceImp _gamePad3;
 
         public ImGuiInputImp(IRenderCanvasImp renderCanvas)
         {
@@ -135,6 +138,21 @@ namespace Fusee.ImGuiDesktop
             // GC.SuppressFinalize(this);
         }
         #endregion
+
+
+        public static void UpdateImGuiInput()
+        {
+            ImGuiIOPtr io = ImGui.GetIO();
+
+            io.MouseDown[0] = Input.Mouse.LeftButton;
+            io.MouseDown[1] = Input.Mouse.MiddleButton;
+            io.MouseDown[2] = Input.Mouse.RightButton;
+
+            io.MousePos = new Vector2(Input.Mouse.X, Input.Mouse.Y);
+
+            io.MouseWheel = Input.Mouse.Wheel;
+            io.MouseWheelH = 0;
+        }
     }
 
 

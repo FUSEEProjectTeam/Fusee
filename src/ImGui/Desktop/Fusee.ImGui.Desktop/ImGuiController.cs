@@ -185,7 +185,7 @@ namespace Fusee.ImGuiDesktop
 
         }
 
-        private unsafe void RecreateFontDeviceTexture()
+        private static unsafe void RecreateFontDeviceTexture()
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
@@ -220,24 +220,12 @@ namespace Fusee.ImGuiDesktop
         public void UpdateImGui(float DeltaTimeUpdate)
         {
             SetPerFrameImGuiData(DeltaTimeUpdate);
-            UpdateImGuiInput();
+            ImGuiInputImp.UpdateImGuiInput();
 
             ImGui.NewFrame();
         }
 
-        private void UpdateImGuiInput()
-        {
-            ImGuiIOPtr io = ImGui.GetIO();
 
-            io.MouseDown[0] = Input.Mouse.LeftButton;
-            io.MouseDown[1] = Input.Mouse.MiddleButton;
-            io.MouseDown[2] = Input.Mouse.RightButton;
-
-            io.MousePos = new Vector2(Input.Mouse.X, Input.Mouse.Y);
-
-            io.MouseWheel = Input.Mouse.Wheel;
-            io.MouseWheelH = 0;
-        }
 
         public void RenderImGui()
         {
@@ -367,7 +355,5 @@ namespace Fusee.ImGuiDesktop
 
             draw_data.Clear();
         }
-
-
     }
 }
