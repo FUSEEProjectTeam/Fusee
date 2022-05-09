@@ -10,5 +10,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public uint InternalFormat;
         public uint Format;
         public uint PxType;
+        public int RowAlignment;
     }
 }

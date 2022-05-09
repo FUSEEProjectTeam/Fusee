@@ -1,4 +1,6 @@
-﻿namespace Fusee.Engine.Common
+﻿using Fusee.Base.Common;
+
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// TODO: Write the actual VideoStream implementations.
@@ -11,7 +13,8 @@
         /// Gets the current frame.
         /// </summary>
         /// <returns></returns>
-        ITexture GetCurrentFrame();
+        IImageData GetCurrentFrame();
+
         /// <summary>
         /// Starts this stream.
         /// </summary>

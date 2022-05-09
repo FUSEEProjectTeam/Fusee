@@ -1,6 +1,7 @@
 ﻿using Fusee.Engine.Core.Effects;
 using Fusee.PointCloud.Common;
 using System;
+using System.IO;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {
@@ -14,7 +15,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         public PointThresholdHandler PointThresholdHandler;
         public ProjectedSizeModifierHandler ProjectedSizeModifierHandler;
 
-        public string PathToOocFile = @"Assets\Cube1030301\Potree";
+        public string PathToOocFile = Path.Combine("Assets", "Cube1030301", "Potree");
 
         public ShaderEffect DepthPassEf;
         public SurfaceEffectPointCloud ColorPassEf;

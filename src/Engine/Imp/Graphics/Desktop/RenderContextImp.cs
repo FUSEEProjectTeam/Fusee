@@ -7,7 +7,6 @@ using Fusee.Math.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -198,50 +197,59 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
         }
 
-        private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
+        private TexturePixelInfo GetTexturePixelInfo(ImagePixelFormat pixelFormat)
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
             PixelType pxType;
 
-            switch (tex.PixelFormat.ColorFormat)
+            //The wrong row alignment will lead to malformed textures.
+            //See https://www.khronos.org/opengl/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
+            //and https://www.khronos.org/opengl/wiki/Pixel_Transfer#Pixel_layout
+            int rowAlignment = 4;
+
+            switch (pixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
-                    format = PixelFormat.Bgra;
+                    format = PixelFormat.Rgba;
                     pxType = PixelType.UnsignedByte;
-
                     break;
+
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
-                    format = PixelFormat.Bgr;
+                    format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
-
+                    rowAlignment = 1;
                     break;
+
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.R8;
                     format = PixelFormat.Red;
                     pxType = PixelType.UnsignedByte;
-
+                    rowAlignment = 1;
                     break;
+
                 case ColorFormat.Depth24:
                     internalFormat = PixelInternalFormat.DepthComponent24;
                     format = PixelFormat.DepthComponent;
                     pxType = PixelType.Float;
-
                     break;
+
                 case ColorFormat.Depth16:
                     internalFormat = PixelInternalFormat.DepthComponent16;
                     format = PixelFormat.DepthComponent;
                     pxType = PixelType.Float;
                     break;
+
                 case ColorFormat.uiRgb8:
                     internalFormat = PixelInternalFormat.Rgba8ui;
                     format = PixelFormat.RgbaInteger;
                     pxType = PixelType.UnsignedByte;
-
+                    rowAlignment = 1;
                     break;
+
                 case ColorFormat.fRGB32:
                     internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormat.Rgb;
@@ -253,11 +261,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     format = PixelFormat.Rgb;
                     pxType = PixelType.Float;
                     break;
+
                 case ColorFormat.fRGBA16:
                     internalFormat = PixelInternalFormat.Rgba16f;
                     format = PixelFormat.Rgba;
                     pxType = PixelType.Float;
                     break;
+
                 case ColorFormat.fRGBA32:
                     internalFormat = PixelInternalFormat.Rgba32f;
                     format = PixelFormat.Rgba;
@@ -278,7 +288,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType
+                PxType = pxType,
+                RowAlignment = rowAlignment
             };
         }
 
@@ -362,10 +373,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             var glWrapMode = (int)GetWrapMode(img.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            GL.TextureStorage2D(id, 1, GetSizedInteralFormat(img.PixelFormat), img.Width, img.Height);
-            GL.TextureSubImage2D(id, 0, 0, 0, img.Width, img.Height, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            GL.TextureStorage2D(id, 1, GetSizedInteralFormat(img.ImageData.PixelFormat), img.ImageData.Width, img.ImageData.Height);
+            GL.TextureSubImage2D(id, 0, 0, 0, img.ImageData.Width, img.ImageData.Height, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateTextureMipmap(id);
@@ -384,24 +395,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
-        /// <param name="img">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
+        /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(IWritableTexture img)
+        public ITextureHandle CreateTexture(IWritableTexture tex)
         {
             GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
 
-            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
             var minFilter = (int)glMinMagFilter.Item1;
             var magFilter = (int)glMinMagFilter.Item2;
-            var glWrapMode = (int)GetWrapMode(img.WrapMode);
+            var glWrapMode = (int)GetWrapMode(tex.WrapMode);
 
-            GL.TextureStorage2D(id, 1, GetSizedInteralFormat(img.PixelFormat), img.Width, img.Height);
+            GL.TextureStorage2D(id, 1, GetSizedInteralFormat(tex.PixelFormat), tex.Width, tex.Height);
 
-            if (img.DoGenerateMipMaps)
+            if (tex.DoGenerateMipMaps)
                 GL.GenerateTextureMipmap(id);
 
-            var compareMode = (int)GetTexComapreMode(img.CompareMode);
-            var compareFunc = (int)GetDepthCompareFunc(img.CompareFunc);
+            var compareMode = (int)GetTexComapreMode(tex.CompareMode);
+            var compareFunc = (int)GetDepthCompareFunc(tex.CompareFunc);
             GL.TextureParameterI(id, TextureParameterName.TextureCompareMode, ref compareMode);
             GL.TextureParameterI(id, TextureParameterName.TextureCompareFunc, ref compareFunc);
             GL.TextureParameterI(id, TextureParameterName.TextureMinFilter, ref minFilter);
@@ -426,11 +437,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            PixelFormat format = GetTexturePixelInfo(img).Format;
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
+            PixelFormat format = pxInfo.Format;
 
             // copy the bytes from img to GPU texture
-            int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
-            var scanlines = img.ScanLines(startX, startY, width, height);
+            int bytesTotal = width * height * img.ImageData.PixelFormat.BytesPerPixel;
+            var scanlines = img.ImageData.ScanLines(startX, startY, width, height);
             byte[] bytes = new byte[bytesTotal];
             int offset = 0;
             do
@@ -2392,7 +2404,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                     break;
                 case RenderState.BlendFactor:
-                    GL.BlendColor(Color.FromArgb((int)value));
+                    GL.BlendColor(System.Drawing.Color.FromArgb((int)value));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(renderState));
@@ -2938,7 +2950,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public IImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
             ImageData image = ImageData.CreateImage(w, h, ColorUint.Black);
-            GL.ReadPixels(x, y, w, h, PixelFormat.Bgr /* yuk, yuk ??? */, PixelType.UnsignedByte, image.PixelData);
+            GL.ReadPixels(x, y, w, h, PixelFormat.Rgb, PixelType.UnsignedByte, image.PixelData);
             return image;
         }
 

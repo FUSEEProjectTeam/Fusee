@@ -1,9 +1,11 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.IO;
 
@@ -66,9 +68,11 @@ namespace Fusee.Tests.Render.Desktop
                 app.InitApp();
                 app.Init();
 
+                var renderTex = new WritableTexture(Engine.Common.RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA), width, height);
+                app.RC.SetRenderTarget(renderTex);
                 // Render a single frame and save it
-                var bmp = cimp.ShootCurrentFrame(width, height);
-                bmp.Save(arg, System.Drawing.Imaging.ImageFormat.Png);
+                using var img = cimp.ShootCurrentFrame(width, height) as Image<Rgba32>;
+                img.SaveAsPng(arg);
 
                 // Done
                 Console.Error.WriteLine($"SUCCESS: Image {arg} generated.");
