@@ -80,10 +80,13 @@ namespace Fusee.ImGuiDesktop
 
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+            io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
 
             CreateDeviceResources();
             SetPerFrameImGuiData(1f / 60f);
+            ImGuiInputImp.InitImGuiInput();
 
+            // TODO(mr): Let user decide
             if (File.Exists("Assets/ImGuiSettings.ini"))
                 ImGui.LoadIniSettingsFromDisk("Assets/ImGuiSettings.ini");
         }

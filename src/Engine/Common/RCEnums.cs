@@ -20,7 +20,7 @@ namespace Fusee.Engine.Common
         ZWriteEnable = 14,
 
         // Blend states
-        // Blending assignments (always independent for rgb and alpha: 
+        // Blending assignments (always independent for rgb and alpha:
         //      OUTrgb = SRCrgb * SourceBlend       <BlendOperation(+,-,-inv,min,max)>        DSTrgb * DestinationBlend;
         //      OUTa   = SRCa   * SourceBlendAlpha  <BlendOperationAlpha(+,-,-inv,min,max)>   DSTa   * DestinationBlendAlpha;
         // OUT: The new pixel written to the output buffer
@@ -40,7 +40,7 @@ namespace Fusee.Engine.Common
         Wrap2 = 130,
         Wrap3 = 131,
 
-        /*        
+        /*
         ShadeMode = 9,
         ZWriteEnable = 14,
         AlphaTestEnable = 15,
@@ -218,7 +218,7 @@ namespace Fusee.Engine.Common
     }
     // These values are binary compatible with ClearBufferMask
     /// <summary>
-    ///Specifies the buffer to use when calling the Clear method. 
+    ///Specifies the buffer to use when calling the Clear method.
     /// </summary>
     [Flags]
     public enum ClearFlags : int
@@ -233,7 +233,7 @@ namespace Fusee.Engine.Common
 
     //[Flags]
     /// <summary>
-    /// Specifies the possible key values on a keyboard. 
+    /// Specifies the possible key values on a keyboard.
     /// </summary>
     public enum KeyCodes : int
     {
@@ -464,7 +464,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// Specifies the axis types for mouse devices. 
+    /// Specifies the axis types for mouse devices.
     /// </summary>
     public enum MouseAxes : int
     {
@@ -509,7 +509,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         TY = 1,
         /// <summary>
-        /// Translation axis in z direction. 
+        /// Translation axis in z direction.
         /// </summary>
         TZ = 2,
         /// <summary>
@@ -605,7 +605,7 @@ namespace Fusee.Engine.Common
         Touchpoint_4_Y,
         Touchpoint_5_X,
         Touchpoint_5_Y,
-        // More touchpoints (if supported) can be reached by 
+        // More touchpoints (if supported) can be reached by
         // (int) Touchpoint0 + i)
 #pragma warning restore 1591
         // Resharper restore InconsistentNaming
@@ -626,7 +626,7 @@ namespace Fusee.Engine.Common
         Touchpoint_3,
         Touchpoint_4,
         Touchpoint_5,
-        // More touch points (if supported) can be reached by 
+        // More touch points (if supported) can be reached by
         // (int) Touchpoint0 + i)
 #pragma warning restore 1591
         // Resharper restore InconsistentNaming

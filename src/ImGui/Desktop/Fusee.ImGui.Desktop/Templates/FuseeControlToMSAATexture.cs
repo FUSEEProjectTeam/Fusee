@@ -27,6 +27,15 @@ namespace Fusee.ImGuiDesktop.Templates
 
         /// <summary>
         /// This method is called from within the base class, do not change anything inside base class
+        /// Insert your usual update methods (e. g. input, etc.)
+        /// </summary>
+        public virtual void Update(bool allowInput)
+        {
+
+        }
+
+        /// <summary>
+        /// This method is called from within the base class, do not change anything inside base class
         /// Insert your usual render loop
         /// </summary>
         protected virtual void RenderAFrame()
@@ -34,14 +43,7 @@ namespace Fusee.ImGuiDesktop.Templates
 
         }
 
-        /// <summary>
-        /// This method is called from within the base class, do not change anything inside base class
-        /// Insert your usual update methods (e. g. input, etc.)
-        /// </summary>
-        protected virtual void Update()
-        {
 
-        }
 
         /// <summary>
         /// This method is called from within the base class, do not change anything inside base class
@@ -112,7 +114,6 @@ namespace Fusee.ImGuiDesktop.Templates
 
             // Do the actual rendering
             // this can be set from the user code
-            Update();
             RenderAFrame();
 
             // after rendering, blt result into ViewportRenderTexture

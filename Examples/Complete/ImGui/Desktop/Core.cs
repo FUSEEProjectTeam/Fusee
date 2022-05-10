@@ -1,6 +1,7 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.ImGuiDesktop;
+using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -36,6 +37,10 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         private static float _color;
 
+        private static bool _isMouseInsideFuControl;
+
+        private static string _inputText = "Write here";
+
         private CoreViewport _fuControl;
         #endregion
 
@@ -57,6 +62,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         public override void Update()
         {
+            _fuControl.Update(_isMouseInsideFuControl);
         }
 
         public override void Resize(ResizeEventArgs e)
@@ -101,7 +107,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             ImGui.PopStyleVar(3);
 
             // Titlebar
-            //DrawMainMenuBar();
+            DrawMainMenuBar();
 
             // Fusee Viewport
             ImGui.Begin("Viewport",
@@ -124,6 +130,9 @@ namespace Fusee.Examples.FuseeImGui.Desktop
                 new Vector2(0, 1),
                 new Vector2(1, 0));
 
+            // check if mouse is inside window, if true, accept update() inputs
+            _isMouseInsideFuControl = ImGui.IsItemHovered();
+
             ImGui.EndChild();
             ImGui.End();
 
@@ -133,7 +142,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         internal static void DrawGUI()
         {
-
             ImGui.Begin("Settings");
             ImGui.Text("Fusee PointCloud Rendering");
             ImGui.Text($"Application average {1000.0f / ImGui.GetIO().Framerate:0.00} ms/frame ({ImGui.GetIO().Framerate:0} FPS)");
@@ -200,7 +208,16 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
             ImGui.EndGroup();
 
+
+            ImGui.BeginGroup();
+
+            ImGui.InputTextMultiline("TextInputTest", ref _inputText, 2000, new float2(200, 200).ToNumericsVector());
+
+            ImGui.EndGroup();
+
             ImGui.End();
+
+
         }
 
         internal static void DrawMainMenuBar()

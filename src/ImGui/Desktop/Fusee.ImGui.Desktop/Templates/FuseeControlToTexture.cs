@@ -23,6 +23,15 @@ namespace Fusee.ImGuiDesktop.Templates
         }
 
         /// <summary>
+        /// Call this method when <see cref="RenderCanvas.Update()"/> is called
+        /// Insert your usual update methods (e. g. input, etc.)
+        /// </summary>
+        public virtual void Update(bool allowInput)
+        {
+
+        }
+
+        /// <summary>
         /// This method is called from within the base class, do not change anything inside base class
         /// Insert your usual render loop
         /// </summary>
@@ -31,14 +40,7 @@ namespace Fusee.ImGuiDesktop.Templates
 
         }
 
-        /// <summary>
-        /// This method is called from within the base class, do not change anything inside base class
-        /// Insert your usual update methods (e. g. input, etc.)
-        /// </summary>
-        protected virtual void Update()
-        {
 
-        }
 
         /// <summary>
         /// This method is called from within the base class, do not change anything inside base class
@@ -94,7 +96,7 @@ namespace Fusee.ImGuiDesktop.Templates
         /// <returns>IntPtr to texture to use with <see cref="ImGuiNET.ImGui.Image(IntPtr, System.Numerics.Vector2)"/></returns>
         public IntPtr RenderToTexture(int width, int height)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             // Enable FB
             UpdateRenderTexture(width, height);
@@ -107,14 +109,13 @@ namespace Fusee.ImGuiDesktop.Templates
 
             // Do the actual rendering
             // this can be set from the user code
-            Update();
             RenderAFrame();
 
             // Disable FB, reset size etc. to previous size
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.Viewport(0, 0, _originalWidth, _originalHeight);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             // bind the render result and return ptr to texture
             GL.BindTexture(TextureTarget.Texture2D, _returnTexture);

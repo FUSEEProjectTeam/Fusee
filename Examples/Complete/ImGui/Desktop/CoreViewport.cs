@@ -63,8 +63,15 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             _renderer = new SceneRendererForward(_rocketScene);
         }
 
-        protected override void Update()
+        public override void Update(bool allowInput)
         {
+            if (!allowInput)
+            {
+                _angleVelHorz = 0;
+                _angleVelVert = 0;
+                return;
+            }
+
             if (Input.Mouse.LeftButton)
             {
                 _angleVelHorz = RotationSpeed *  Input.Mouse.XVel * Time.DeltaTimeUpdate * 0.0005f;
