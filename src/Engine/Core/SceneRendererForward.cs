@@ -343,6 +343,8 @@ namespace Fusee.Engine.Core
 
             if (tex != null)
                 _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
+            // FIXME(mr): This interferes with my to texture rendering, use camera to render to texture?
+            // whats with MSAA?
             else
                 _rc.SetRenderTarget();
 
@@ -695,7 +697,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a Mesh is visited the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
+        /// If a Mesh is visited the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.
         /// </summary>
         /// <param name="mesh">The Mesh.</param>
         [VisitMethod]
