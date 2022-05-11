@@ -28,21 +28,33 @@ namespace Fusee.Engine.Core.Scene
 
         public Suid SessionUniqueId { get; internal set; }
 
-        public InstanceData(int amount, float3[] translations, float4[] colors = null)
+        public InstanceData(int amount, float3[] translations, float3[] rotations = null, float3[] scales = null, float4[] colors = null)
         {
             Amount = amount;
             if (Amount != translations.Length)
                 throw new ArgumentOutOfRangeException();
-            Translations = new float3[amount];
+            Translations = translations;
+
+            if(scales != null)
+            {
+                if (Amount != scales.Length)
+                    throw new ArgumentOutOfRangeException();
+                Scales = scales;
+            }
+
+            if (rotations != null)
+            {
+                if (Amount != rotations.Length)
+                    throw new ArgumentOutOfRangeException();
+                Rotations = rotations;
+            }
 
             if (colors != null)
             {
                 if (Amount != colors.Length)
                     throw new ArgumentOutOfRangeException();
-                Colors = new float4[amount];
+                Colors = colors;
             }
-            else
-                Colors = null;
         }
 
     }

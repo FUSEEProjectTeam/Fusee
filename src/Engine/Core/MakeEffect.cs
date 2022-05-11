@@ -399,6 +399,41 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Builds a simple shader effect with diffuse lighting component. This will set up the underlying shader for instanced rendering.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="albedoTex">The albedo texture.</param>
+        /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
+        /// <param name="normalTex">The normal map.</param>
+        /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
+        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
+        /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
+        public static SurfaceEffect FromDiffuseInstanced(float4 albedoColor, float roughness = 0f, float3 emissionColor = new float3(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
+        {
+            var input = new DiffuseInput()
+            {
+                Albedo = albedoColor,
+                AlbedoMix = albedoMix,
+                AlbedoTex = albedoTex,
+                NormalTex = normalTex,
+                NormalMappingStrength = normalMapStrength,
+                TexTiles = texTiles,
+                Roughness = roughness,
+                Emission = emissionColor
+            };
+
+            var texSetup = TextureSetup.NoTextures;
+            if (albedoTex != null)
+                texSetup |= TextureSetup.AlbedoTex;
+            if (normalTex != null)
+                texSetup |= TextureSetup.NormalMap;
+            input.TextureSetup = texSetup;
+
+            return new SurfaceEffect(input, true);
+        }
+
+        /// <summary>
         /// Builds a simple shader effect with diffuse and specular lighting components.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>

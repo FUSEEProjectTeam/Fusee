@@ -89,7 +89,6 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.SurfOut)]
         public string SurfOutVertMethod;
         //======================================================//
-
         /// <summary>
         /// Fragment shader "in" declaration for the uv coordinates.
         /// </summary>

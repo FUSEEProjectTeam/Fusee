@@ -52,7 +52,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Hash code for the <see cref="VertexColor"/> parameter.
         /// </summary>
-        public static readonly int InstanceColorHash = InstancedColor.GetHashCode();
+        public static readonly int InstanceColorHash = InstanceColor.GetHashCode();
 
         /// <summary>
         /// The color attribute name.
@@ -470,30 +470,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public static readonly int PointSizeModeHash = PointSizeMode.GetHashCode();
 
-        #endregion
-
-        #region GPU Instancing
-
-        /// <summary>
-        /// The var name for the uniform ClippingPlanes variable.
-        /// </summary>
-        public const string InstancedModelMat = "FUSEE_InstancedModelMat";
-
-        /// <summary>
-        /// Hash code for the <see cref="InstancedModelMat"/> parameter.
-        /// </summary>
-        public static readonly int InstancedModelMatHash = InstancedModelMat.GetHashCode();
-
-        /// <summary>
-        /// The var name for the uniform ClippingPlanes variable.
-        /// </summary>
-        public const string InstancedColor = "FUSEE_InstancedColor";
-        /// <summary>
-        /// Hash code for the <see cref="InstancedColor"/> parameter.
-        /// </summary>
-        public static readonly int InstancedColorHash = InstancedColor.GetHashCode();
-
-        #endregion
+        #endregion        
 
         #region Light
         public const string AllLightsArray = "FUSEE_allLights";

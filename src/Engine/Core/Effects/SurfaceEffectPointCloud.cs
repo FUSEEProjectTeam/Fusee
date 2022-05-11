@@ -233,6 +233,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="rendererStates">The renderer state set for this effect.</param>
         public SurfaceEffectPointCloud(RenderStateSet rendererStates = null)
             : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) },
+                  false,
                   VertShards.SurfOutBody(ShadingModel.Edl).Concat(CalculateVaryings).Concat(CalculatePointSizeMode).ToList(),
                   FragShards.SurfOutBody(ShadingModel.Edl, TextureSetup.NoTextures).Concat(CalculatePointShape).ToList(),
                   rendererStates)

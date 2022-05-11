@@ -271,10 +271,7 @@ namespace Fusee.Engine.Core
                 throw new ArgumentException("Mesh is not registered yet. Use RegisterMesh first.");
             }
 
-            if (!_identifierToInstanceDataImpDictionary.TryGetValue(mesh.SessionUniqueIdentifier, out var instanceImp))
-            {
-                throw new ArgumentException("InstanceData is not registered yet. Use RegisterInstanceData first.");
-            }
+            var instanceImp = _renderContextImp.CreateInstanceDataImp();
 
             instanceData.DataChanged += InstanceDataChanged;
             instanceData.DisposeData += DisposeInstanceData;

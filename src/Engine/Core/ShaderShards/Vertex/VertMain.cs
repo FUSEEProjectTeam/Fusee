@@ -52,7 +52,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string VertexMain(ShadingModel shadingModel, TextureSetup texSetup)
+        public static string VertexMain(ShadingModel shadingModel, TextureSetup texSetup, bool isInstanced = true)
         {
             var vertMainBody = new List<string>
             {
@@ -76,8 +76,18 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add($"TBN = mat3(T,B,{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Normal.Item2});");
             }
 
-            vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(changedVert, 1.0);");
-            vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
+            if (isInstanced)
+            {
+                vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Projection} * {UniformNameDeclarations.View} * ({UniformNameDeclarations.InstanceModelMat} * {UniformNameDeclarations.Model}) * vec4(changedVert, 1.0);");
+                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.InstanceColor};");
+            }
+            else
+            {
+                vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(changedVert, 1.0);");
+                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
+            }
+
+            
             vertMainBody.Add($"{VaryingNameDeclarations.Color1} = {UniformNameDeclarations.VertexColor1};");
             vertMainBody.Add($"{VaryingNameDeclarations.Color2} = {UniformNameDeclarations.VertexColor2};");
 
