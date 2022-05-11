@@ -10,7 +10,7 @@ namespace Fusee.Engine.Core
     /// Input device instances expose access to underlying physical input devices such as mouse, keyboard, game pads etc.
     /// Users can either poll axis values or button state from an Input device or add event listeners reacting
     /// on value or state changes, no matter how the underlying physical device provides axis or button data.
-    /// Additionally users can define their own axes by specifying calculation rules how to generate values from
+    /// Additionally users can define their own axes by specifying calculation rules how to generate values from 
     /// existing axes or buttons.
     /// </summary>
     public class InputDevice
@@ -19,11 +19,11 @@ namespace Fusee.Engine.Core
         internal IInputDeviceImp DeviceImp => _inpDevImp;
 
         private readonly Dictionary<int, AxisDescription> _axes;        // All axes provided by this device. Includes polled, listened and calculated axes
-        private readonly Dictionary<int, float> _axesToPoll;            // Axes that need to be polled
+        private readonly Dictionary<int, float> _axesToPoll;            // Axes that need to be polled 
         private readonly Dictionary<int, float> _axesToListen;          // Axes changed by event from the underlying implementation
 
         private readonly Dictionary<int, ButtonDescription> _buttons;        // All buttons provided by this device.
-        private readonly Dictionary<int, bool> _buttonsToPoll;               // Buttons that need to be polled
+        private readonly Dictionary<int, bool> _buttonsToPoll;               // Buttons that need to be polled 
         private readonly Dictionary<int, bool> _buttonsToListen;             // Buttons changed by event from the underlying implementation
         private readonly Dictionary<int, bool> _buttonsToListenJustChanged;  // Temporary list of changed buttons to fire notification events right before rendering.
 
@@ -44,7 +44,7 @@ namespace Fusee.Engine.Core
             _calculatedAxes = new Dictionary<int, CalculatedAxisDescription>();
 
             _nextAxisId = 0;
-            // Look for each axis if its pollable or listenable. Prepare the axis to be accessed
+            // Look for each axis if its pollable or listenable. Prepare the axis to be accessed 
             // the other way (poll a listenable axis / listen to a pollable axis).
             foreach (var axisImpDescription in _inpDevImp.AxisImpDesc)
             {
@@ -107,7 +107,7 @@ namespace Fusee.Engine.Core
             if (!_buttonsToListen.ContainsKey(args.Button.Id))
                 throw new InvalidOperationException($"Unknown Button {args.Button.Name} ({args.Button.Id})");
 
-            // Just save the information about the changed value. All other handling including
+            // Just save the information about the changed value. All other handling including 
             // firing the user event is done in PreRender.
             _buttonsToListenJustChanged[args.Button.Id] = args.Pressed;
         }
@@ -221,7 +221,7 @@ namespace Fusee.Engine.Core
         public int AxesCount => _axes.Count;
 
         /// <summary>
-        /// Gets a description of the axis. This value can be used in user setup-dialogs or
+        /// Gets a description of the axis. This value can be used in user setup-dialogs or 
         /// to match axes of devices of different categories.
         /// </summary>
         /// <value>
@@ -350,7 +350,7 @@ namespace Fusee.Engine.Core
         public int ButtonCount => _buttons.Count;
 
         /// <summary>
-        /// Gets the name of the button. This value can be used in user setup-dialogs or
+        /// Gets the name of the button. This value can be used in user setup-dialogs or 
         /// to match buttons of devices of different categories.
         /// </summary>
         /// <value>
@@ -400,7 +400,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="buttonId">The button identifier.</param>
         /// <returns>
-        /// true if the button was pressed during this frame and is still pressed down. false, if the button is released
+        /// true if the button was pressed during this frame and is still pressed down. false, if the button is released 
         /// or if it was pressed some frames ago.
         /// </returns>
         public bool IsButtonDown(int buttonId)
@@ -416,7 +416,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="buttonId">The button identifier.</param>
         /// <returns>
-        /// true if the button was released during this frame and is still released. false, if the button is pressed
+        /// true if the button was released during this frame and is still released. false, if the button is pressed 
         /// or if it was released some frames ago.
         /// </returns>
         public bool IsButtonUp(int buttonId)
@@ -434,7 +434,7 @@ namespace Fusee.Engine.Core
         #region Derived Axis Handling
         //public delegate float AxisValueCalculator(float oldVal, float newVal, float time);
 
-        // Any state the calculation depends upon should be queried from the device or
+        // Any state the calculation depends upon should be queried from the device or 
         // "statically" stored in the closure.
         /// <summary>
         /// A delegate for functions that calculate the value of an axis.
@@ -462,7 +462,7 @@ namespace Fusee.Engine.Core
         /// <remarks>
         /// To register your own axis you need to provide a working <see cref="AxisValueCalculator"/>. This method
         /// is called whenever the axis value needs to be present.
-        /// Any state the calculation depends upon should be queried from existing axes presented by the input device
+        /// Any state the calculation depends upon should be queried from existing axes presented by the input device 
         /// or "statically" stored in the closure around the calculator. The methods
         /// <list type="bullet"></list>
         /// <item><see cref="RegisterSingleButtonAxis"/></item>
@@ -498,8 +498,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="origAxisId">The original axis identifier.</param>
         /// <param name="triggerButtonId">If a valid id is passed, the derived axis only produces values if the specified button is pressed. The velocity is only
-        /// calculated based on the axis value when the trigger button is pressed. This allows touch velocities to always start with a speed of zero when the touch starts (e.g. the
-        /// button identifying that a touchpoint has contact). Otherwise touch velocities would become huge between two click-like touches on different screen locations.
+        /// calculated based on the axis value when the trigger button is pressed. This allows touch velocities to always start with a speed of zero when the touch starts (e.g. the 
+        /// button identifying that a touchpoint has contact). Otherwise touch velocities would become huge between two click-like touches on different screen locations. 
         /// If this parameter is 0 (zero), the derived axis will always be calculated based on the original axis only.</param>
         /// <param name="velocityAxisId">The derived axis identifier. Note this value must be bigger than all existing axis Ids. Leave this value
         /// zero to have a new identifier calculated automatically.</param>
@@ -613,7 +613,7 @@ namespace Fusee.Engine.Core
         /// <param name="name">The name of the new axis.</param>
         /// <returns>The axis description of the newly created calculated axis.</returns>
         /// <remarks>
-        ///   Button axes are useful to simulate a trigger or thrust panel with the help of individual buttons. There is a user-definable acceleration and
+        ///   Button axes are useful to simulate a trigger or thrust panel with the help of individual buttons. There is a user-definable acceleration and 
         ///   deceleration period, so a simulation resulting on this input delivers a feeling of inertance.
         /// </remarks>
         public AxisDescription RegisterSingleButtonAxis(int origButtonId, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.2f, float rampDownTime = 0.2f, int buttonAxisId = 0, string name = null)
@@ -705,8 +705,8 @@ namespace Fusee.Engine.Core
         /// The axis description of the newly created calculated axis.
         /// </returns>
         /// <remarks>
-        /// Button axes are useful to simulate one axis of a joypad or a joystick with the help of two individual buttons. One button acts as pushing the
-        /// joystick into the positive direction along the given axis by animating the axis' value to 1 and the a second button acts as pushing the joystick
+        /// Button axes are useful to simulate one axis of a joypad or a joystick with the help of two individual buttons. One button acts as pushing the 
+        /// joystick into the positive direction along the given axis by animating the axis' value to 1 and the a second button acts as pushing the joystick 
         /// into the negative direction by animating the value to -1. Releasing both buttons will animate the value to 0. Pushing both buttons simultaneously
         /// will stop the animation and keep the value at its current amount.
         /// There is a user-definable acceleration and deceleration period, so a simulation resulting on this input delivers a feeling of inertance.

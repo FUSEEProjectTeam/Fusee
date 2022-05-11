@@ -1,13 +1,11 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -23,7 +21,7 @@ namespace Fusee.Examples.Integrations.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -41,9 +39,9 @@ namespace Fusee.Examples.Integrations.Core
         private Transform _camTransform;
 
         // Init is called on startup.
-        public async Task Load()
+        public override void Init()
         {
-            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Integrations Example");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Integrations Example");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -65,22 +63,14 @@ namespace Fusee.Examples.Integrations.Core
             };
             _rocketScene.Children.Add(camNode);
 
-
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
 
             rocketTransform = _rocketScene.Children[0].GetTransform();
 
             FusToWpfEvents?.Invoke(this, new StartupInfoEvent(VSync));
         }
-
-        public override async Task InitAsync()
-        {
-            await Load();
-            await base.InitAsync();
-        }
-
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -97,7 +87,7 @@ namespace Fusee.Examples.Integrations.Core
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
-            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
@@ -132,7 +122,7 @@ namespace Fusee.Examples.Integrations.Core
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }

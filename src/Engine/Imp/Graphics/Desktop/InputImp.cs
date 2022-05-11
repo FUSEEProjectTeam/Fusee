@@ -13,9 +13,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class RenderCanvasInputDriverImp : IInputDriverImp
     {
-
         /// <summary>
-        /// Constructor. Use this in platform specific application projects.
+        /// Constructor. Use this in platform specific application projects. 
         /// </summary>
         /// <param name="renderCanvas">The render canvas to provide mouse and keyboard input for.</param>
         public RenderCanvasInputDriverImp(IRenderCanvasImp renderCanvas)
@@ -77,7 +76,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
         /// full class name (including namespace).
         /// </summary>
         public string DriverId
@@ -157,7 +156,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private readonly int DeviceID;
         private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
 
-        public GamePadDeviceImp(GameWindow window, int deviceID = 0)
+        internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
         {
             _gameWindow = window;
             DeviceID = deviceID;
@@ -530,7 +529,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Should be called by the driver only.
         /// </summary>
         /// <param name="gameWindow"></param>
-        public KeyboardDeviceImp(GameWindow gameWindow)
+        internal KeyboardDeviceImp(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
             _keymapper = new Keymapper();
@@ -605,7 +604,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
         /// full class name (including namespace).
         /// </summary>
         public string Id
@@ -876,7 +875,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public string Desc => "Standard Mouse implementation.";
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
         /// full class name (including namespace).
         /// </summary>
         public string Id => GetType().FullName;

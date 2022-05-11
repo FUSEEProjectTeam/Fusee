@@ -315,9 +315,6 @@ namespace Fusee.Math.Core
 
         #endregion public Round()
 
-
-
-
         /// <summary>
         /// Converts this float4 - which is interpreted as a color - from sRgb space to linear color space.
         /// </summary>

@@ -340,10 +340,5 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _angleHorz = _angleVert = 0;
             _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 20);
         }
-
-        public void InitApp()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

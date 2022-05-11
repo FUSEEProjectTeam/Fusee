@@ -1,7 +1,6 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
@@ -15,15 +14,13 @@ namespace Fusee.Examples.Simple.Core
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
-        public static RenderContext RenderContext;
-
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        public static SceneContainer _rocketScene;
+        private SceneContainer _rocketScene;
         private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
@@ -40,8 +37,6 @@ namespace Fusee.Examples.Simple.Core
 
         private async Task Load()
         {
-            RenderContext = RC;
-
             Console.WriteLine("Loading scene ...");
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
@@ -63,7 +58,7 @@ namespace Fusee.Examples.Simple.Core
                         Components = new System.Collections.Generic.List<SceneComponent>()
                         {
                             new Transform() { Translation = new float3(0, 2, -10) },
-                            new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy) { BackgroundColor = new float4(0,0,0,0) }
+                            new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy) { BackgroundColor = float4.One }
                         }
                     }
                 },
@@ -83,6 +78,12 @@ namespace Fusee.Examples.Simple.Core
         {
             await Load();
             await base.InitAsync();
+        }
+
+        // Init is called on startup.
+        public override void Init()
+        {
+
         }
 
         public override void Update()
@@ -132,7 +133,7 @@ namespace Fusee.Examples.Simple.Core
             _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
             _sceneRenderer.Render(RC);
 
-            // Constantly check for interactive objects.
+            //Constantly check for interactive objects.
             _guiRenderer.Render(RC);
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);

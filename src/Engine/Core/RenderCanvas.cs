@@ -166,8 +166,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Initializes the application and prepares it for the rendering loop.
         /// </summary>
-        /// <param name="rc">Possible custom <see cref="RenderContext"/> which can be set during app initialization</param>
-        public void InitApp(RenderContext rc = null)
+        public void InitApp()
         {
             // InitImplementors();
             CanvasImplementor.Caption = GetAppName();
@@ -178,7 +177,7 @@ namespace Fusee.Engine.Core
             if (windowWidth != -1 && windowHeight != -1)
                 SetWindowSize(windowWidth, windowHeight);
 
-            RC = rc is null ? new RenderContext(ContextImplementor) : rc;
+            RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
             RC.SetRenderStateSet(RenderStateSet.Default);
 
@@ -200,7 +199,6 @@ namespace Fusee.Engine.Core
                 if (!IsLoaded) return;
 
                 Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
-                //Console.WriteLine(CanvasImplementor.DeltaTimeUpdate);
                 Update();
             };
 
