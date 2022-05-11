@@ -14,7 +14,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         private Transform _camPivotTransform;
 
-
         public int Width;
         public int Height;
 
@@ -45,20 +44,20 @@ namespace Fusee.Examples.FuseeImGui.Desktop
                     new SceneNode()
                     {
                         Name = "MainCam",
-                        Components = new System.Collections.Generic.List<SceneComponent>()
+                        Components = new List<SceneComponent>()
                         {
                             new Transform() { Translation = new float3(0, 2, -10) },
                             new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy) { BackgroundColor = new float4(0,0,0,0) }
                         }
                     }
                 },
-                Components = new System.Collections.Generic.List<SceneComponent>()
+                Components = new List<SceneComponent>()
                 {
                     _camPivotTransform
                 }
             };
-            _rocketScene.Children.Add(camNode);
 
+            _rocketScene.Children.Add(camNode);
 
             _renderer = new SceneRendererForward(_rocketScene);
         }
@@ -99,6 +98,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         {
             Width = width;
             Height = height;
+
             // FIXME (later) (mr)
             // This is necessary as the camera uses the defaultState, for reseting original size, too
             // see: SceneRendererForward:297

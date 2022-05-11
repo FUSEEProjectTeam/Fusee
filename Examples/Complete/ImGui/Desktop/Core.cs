@@ -18,7 +18,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
     public class Core : RenderCanvas
     {
 
-        #region StaticBindingVars
+#region StaticBindingVars
 
         private static bool _dockspaceOpen = true;
 
@@ -42,7 +42,8 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         private static string _inputText = "Write here";
 
         private CoreViewport _fuControl;
-        #endregion
+
+#endregion
 
 
         private async Task Load()

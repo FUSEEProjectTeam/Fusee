@@ -119,12 +119,6 @@ namespace Fusee.ImGuiDesktop
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~RenderCanvasInputDriverImp() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
         // This code added to correctly implement the disposable pattern.
         /// <summary>
         /// Part of the dispose pattern.
@@ -262,30 +256,41 @@ namespace Fusee.ImGuiDesktop
                     if(e.Button.Id == (int)KeyCodes.LShift || e.Button.Id == (int)KeyCodes.RShift)
                     {
                         _uppercase = e.Pressed;
+                        return;
                     }
 
                     // filter, use only ids which aren't bound to control keys
-                    if (isDown &&
+                    if (isDown && (
                             (e.Button.Id >= 48 && e.Button.Id <= 90)
                         ||  (e.Button.Id >= 96 && e.Button.Id <= 111)
                         ||  (e.Button.Id >= 186 && e.Button.Id <= 226)
                         || e.Button.Id == 9
                         || e.Button.Id == 13
+                        || e.Button.Id == 32
                         || e.Button.Id == 109
-                        || e.Button.Id == 110)
+                        || e.Button.Id == 110))
                     {
-                        var value = ((char)e.Button.Id).ToString().ToLower();
+                        var value = "";
 
-                        if(_uppercase)
+                        value = e.Button.Id switch
+                        {
+                            190 => ".",
+                            188 => ",",
+                            109 => "-",
+                            107 => "+",
+                            _ => ((char)e.Button.Id).ToString().ToLower(),
+                        };
+
+                        if (_uppercase)
                         {
                             // not working with numbers, however this can be added later
                             // attention: keyboard layout!
                             value = value.ToUpper();
                         }
 
+
                         io.AddInputCharactersUTF8(value);
                     }
-
                 }
             };
         }
