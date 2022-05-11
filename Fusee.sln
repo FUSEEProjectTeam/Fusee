@@ -302,6 +302,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.FuseeImGui.D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImGui", "ImGui", "{D1853E25-C274-44E7-8AB6-9BE3A4E61928}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudPotree2.ImGui", "Examples\Complete\PointCloudPotree2\ImGui\Fusee.Examples.PointCloudPotree2.ImGui.csproj", "{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -1756,6 +1758,24 @@ Global
 		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1889,6 +1909,7 @@ Global
 		{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1} = {425DDCA8-659F-44FB-832E-117C7DED152E}
 		{A1E5AC7E-97B2-4BED-AB75-780416E422A5} = {D1853E25-C274-44E7-8AB6-9BE3A4E61928}
 		{D1853E25-C274-44E7-8AB6-9BE3A4E61928} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

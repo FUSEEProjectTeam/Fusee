@@ -345,8 +345,8 @@ namespace Fusee.Engine.Core
                 _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
             // FIXME(mr): This interferes with my to texture rendering, use camera to render to texture?
             // whats with MSAA?
-            else
-                _rc.SetRenderTarget();
+            //else
+            //    _rc.SetRenderTarget();
 
             _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out var viewport);
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
