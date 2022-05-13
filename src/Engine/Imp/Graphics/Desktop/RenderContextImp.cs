@@ -2139,6 +2139,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat3);
                 GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat4);
 
+                GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedModelMatBindingIndex, ((InstanceDataImp)instanceData).InstanceTransformBufferObject, IntPtr.Zero, 16 * sizeof(float));
+                GL.VertexArrayVertexBuffer(vao, AttributeLocations.Color2AttribBindingIndex, ((InstanceDataImp)instanceData).InstanceColorBufferObject, IntPtr.Zero, 4 * sizeof(float));
                 GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero, instanceData.Amount);
 
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat1);

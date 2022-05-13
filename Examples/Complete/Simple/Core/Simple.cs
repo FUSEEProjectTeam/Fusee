@@ -95,14 +95,14 @@ namespace Fusee.Examples.Simple.Core
             //_guiRenderer = new SceneRendererForward(_gui);
         }
 
-        private float3[] GetRndInstanceTranslations()
+        private float3[] GetRndInstanceTranslations(int amount)
         {
-            var instanceTranslations = new float3[instanceAmount];
-            for (int i = 0; i < instanceAmount; i++)
+            var instanceTranslations = new float3[amount];
+            for (int i = 0; i < amount; i++)
             {
-                var x = _random.Next(-30, 30);
-                var y = _random.Next(-30, 30);
-                var z = _random.Next(-30, 30);
+                var x = _random.Next(-2, 2);
+                var y = _random.Next(-2, 2);
+                var z = _random.Next(-2, 2);
 
                 instanceTranslations[i] = new float3(x, y, z);
             }
@@ -115,24 +115,24 @@ namespace Fusee.Examples.Simple.Core
             return (float)val;
         }
 
-        private float3[] GetRndInstanceScales()
+        private float3[] GetRndInstanceScales(int amount)
         {
-            var instanceTranslations = new float3[instanceAmount];
-            for (int i = 0; i < instanceAmount; i++)
+            var instanceTranslations = new float3[amount];
+            for (int i = 0; i < amount; i++)
             {
-                var x = NextFloat(0.1f, 0.5f);
-                var y = NextFloat(0.1f, 0.5f);
-                var z = NextFloat(0.1f, 0.5f);
+                var x = NextFloat(0.1f, 0.1f);
+                var y = NextFloat(0.1f, 0.1f);
+                var z = NextFloat(0.1f, 0.1f);
 
                 instanceTranslations[i] = new float3(x, y, z);
             }
             return instanceTranslations;
         }
 
-        public float4[] RandomColors()
+        public float4[] RandomColors(int amount)
         {
-            var instanceColors= new float4[instanceAmount];
-            for (int i = 0; i < instanceAmount; i++)
+            var instanceColors= new float4[amount];
+            for (int i = 0; i < amount; i++)
             {
                 var res = float4.Zero;
                 // Very bad way to generate a random color
@@ -187,23 +187,38 @@ namespace Fusee.Examples.Simple.Core
                 }
             };
 
-            var instanceComp = new InstanceData(instanceAmount, GetRndInstanceTranslations(), null, GetRndInstanceScales(), RandomColors());
+            var instanceComp = new InstanceData(5, GetRndInstanceTranslations(5), null, GetRndInstanceScales(5), RandomColors(5));
+            var instanceComp1 = new InstanceData(5, GetRndInstanceTranslations(5), null, GetRndInstanceScales(5), RandomColors(5));
 
-            
+            var plane = new Plane();
+
             var cubeNode = new SceneNode()
             {
                 Name = "CubeNode",
                 Components = new System.Collections.Generic.List<SceneComponent>()
                 {
-                    new Transform() { Translation = new float3(0, -0, 0), Scale = float3.One},
+                    new Transform() { Translation = new float3(-5, -0, 0), Scale = float3.One},
                     instanceComp,
                     MakeEffect.FromDiffuseInstanced(new float4(1,0,0,1)),
-                    new Cube()
+                    plane
+                }
+            };
+
+            var cubeNode1 = new SceneNode()
+            {
+                Name = "CubeNode1",
+                Components = new System.Collections.Generic.List<SceneComponent>()
+                {
+                    new Transform() { Translation = new float3(5, -0, 0), Scale = float3.One},
+                    instanceComp1,
+                    MakeEffect.FromDiffuseInstanced(new float4(0,1,0,1)),
+                    plane
                 }
             };
 
             _rocketScene.Children.RemoveAt(0);
             _rocketScene.Children.Add(cubeNode);
+            _rocketScene.Children.Add(cubeNode1);
             _rocketScene.Children.Add(camNode);
 
             // Wrap a SceneRenderer around the model.

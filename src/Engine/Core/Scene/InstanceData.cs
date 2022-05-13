@@ -16,47 +16,78 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public event EventHandler<InstanceDataChangedEventArgs> DisposeData;
 
-        public float3[] Translations { get; }
+        public float3[] Translations {
+            get => _translations;
+            set
+            {
+                _translations = value;
+                DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
+            }
+        }
+        private float3[] _translations;
 
-        public float3[] Rotations { get; }
+        public float3[] Rotations {
+            get => _rotations;
+            set
+            {
+                _rotations = value;
+                DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
+            }
+        }
+        private float3[] _rotations;
 
-        public float3[] Scales { get; }
+        public float3[] Scales {
+            get => _scales;
+            set
+            {
+                _scales = value;
+                DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
+            }
+        }
+        private float3[] _scales;
 
-        public float4[] Colors { get; }
+        public float4[] Colors {
+            get => _colors;
+            set
+            {
+                _colors = value;
+                DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Colors));
+            }
+        }
+        private float4[] _colors;
 
         public int Amount { get; }
 
-        public Suid SessionUniqueId { get; } = new();
+        public Suid SessionUniqueId { get; } = Suid.GenerateSuid();
 
         public InstanceData(int amount, float3[] translations, float3[] rotations = null, float3[] scales = null, float4[] colors = null)
         {
             Amount = amount;
             if (Amount != translations.Length)
                 throw new ArgumentOutOfRangeException();
-            Translations = translations;
+            _translations = translations;
 
             if(scales != null)
             {
                 if (Amount != scales.Length)
                     throw new ArgumentOutOfRangeException();
-                Scales = scales;
+                _scales = scales;
             }
 
             if (rotations != null)
             {
                 if (Amount != rotations.Length)
                     throw new ArgumentOutOfRangeException();
-                Rotations = rotations;
+                _rotations = rotations;
             }
 
             if (colors != null)
             {
                 if (Amount != colors.Length)
                     throw new ArgumentOutOfRangeException();
-                Colors = colors;
+                _colors = colors;
             }
         }
-
 
         #region IDisposable Support
 
@@ -103,7 +134,5 @@ namespace Fusee.Engine.Core.Scene
         }
 
         #endregion
-
-
     }
 }
