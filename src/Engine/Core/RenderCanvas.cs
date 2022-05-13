@@ -200,6 +200,7 @@ namespace Fusee.Engine.Core
 
                 Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
                 Update();
+                Input.Instance.PreRender();
             };
 
             CanvasImplementor.Render += delegate
@@ -209,7 +210,6 @@ namespace Fusee.Engine.Core
                 if (IsShuttingDown) return;
 
                 // pre-rendering
-                Input.Instance.PreRender();
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
 
                 // rendering
