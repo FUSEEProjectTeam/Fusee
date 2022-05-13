@@ -217,7 +217,6 @@ namespace Fusee.Engine.Core
                 // rendering
                 if (Width != 0 || Height != 0)
                     RenderAFrame();
-
             };
 
             CanvasImplementor.Resize += delegate
