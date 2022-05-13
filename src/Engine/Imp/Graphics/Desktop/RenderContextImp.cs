@@ -1202,9 +1202,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
-        public void SetInstanceTransform(IMeshImp mr, IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
+        public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
         {
-            var vao = ((MeshImp)mr).VertexArrayObject;
+            var vao = ((InstanceDataImp)instanceImp).VertexArrayObject;
             if (vao == 0)
             {
                 throw new ApplicationException("Create the VAO first!");
@@ -1212,13 +1212,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             #region Transform
             int instanceTransformBo;
-            if (((InstanceDataImp)instanceImp).InstanceTransform == 0)
+            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == 0)
             {
                 GL.CreateBuffers(1, out instanceTransformBo);
-                ((InstanceDataImp)instanceImp).InstanceTransform = instanceTransformBo;
+                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
             }
             else
-                instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransform;
+                instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
 
             var sizeOfFloat4 = sizeof(float) * 4;
             var sizeOfMat = sizeOfFloat4 * 4;
@@ -1271,12 +1271,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             #endregion
         }
 
-        public void SetInstanceColor(IMeshImp mr, IInstanceDataImp instanceImp, float4[] instanceColors)
+        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
         {
             if (instanceColors == null)
                 return;
 
-            var vao = ((MeshImp)mr).VertexArrayObject;
+            var vao = ((InstanceDataImp)instanceImp).VertexArrayObject;
             if (vao == 0)
             {
                 throw new ApplicationException("Create the VAO first!");
@@ -1296,7 +1296,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 instanceColorBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
 
             GL.NamedBufferStorage(instanceColorBo, iColorBytes, instanceColors, BufferStorageFlags.DynamicStorageBit);
-            GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.InstancedColorBindingIndex, instanceColorBo, IntPtr.Zero, sizeOfCol);
+            GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedColorBindingIndex, instanceColorBo, IntPtr.Zero, sizeOfCol);
 
             GL.GetNamedBufferParameter(instanceColorBo, BufferParameterName.BufferSize, out int instancedColorBytes);
             if (instancedColorBytes != iColorBytes)
@@ -1304,7 +1304,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedColor, 4, VertexAttribType.Float, false, 0);
             GL.VertexArrayAttribBinding(vao, AttributeLocations.InstancedColor, AttributeLocations.InstancedColorBindingIndex);
-            GL.VertexAttribDivisor(AttributeLocations.InstancedColor, 1);
+            GL.VertexArrayBindingDivisor(vao, AttributeLocations.InstancedColor, 1);
             #endregion
         }
 
@@ -1959,9 +1959,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         public void RemoveInstance(IInstanceDataImp instanceImp)
         {
-            GL.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceTransform);
+            GL.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
             GL.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceColorBufferObject);
-            ((InstanceDataImp)instanceImp).InstanceTransform = 0;
+            ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = 0;
             ((InstanceDataImp)instanceImp).InstanceColorBufferObject = 0;
         }
 
@@ -2193,9 +2193,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return new MeshImp();
         }
 
-        public IInstanceDataImp CreateInstanceDataImp()
+        public IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp)
         {
-            return new InstanceDataImp();
+            var instanceImp = new InstanceDataImp
+            {
+                VertexArrayObject = ((MeshImp)meshImp).VertexArrayObject
+            };
+            return instanceImp;
         }
 
         internal static BlendEquationMode BlendOperationToOgl(BlendOperation bo)

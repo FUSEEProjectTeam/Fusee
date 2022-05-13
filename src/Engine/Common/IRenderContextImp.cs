@@ -450,8 +450,9 @@ namespace Fusee.Engine.Common
         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
         void SetVertices(IMeshImp mesh, float3[] vertices);
 
-        public void SetInstanceTransform(IMeshImp mr, IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales);
-        public void SetInstanceColor(IMeshImp mr, IInstanceDataImp instanceImp, float4[] instanceColors);
+        public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales);
+
+        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors);
 
         /// <summary>
         /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -689,7 +690,7 @@ namespace Fusee.Engine.Common
         /// <returns>The <see cref="IMeshImp" /> instance.</returns>
         IMeshImp CreateMeshImp();
 
-        IInstanceDataImp CreateInstanceDataImp();
+        IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp);
 
         /// <summary>
         /// Sets the specified render state to the given setting.

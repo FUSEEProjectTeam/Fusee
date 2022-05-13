@@ -16,7 +16,7 @@ namespace Fusee.PointCloud.Common
         /// Returns a renderable point cloud component.
         /// </summary>
         /// <param name="fileFolderPath">Path to the file.</param>
-        public IPointCloud GetPointCloudComponent(string fileFolderPath);
+        public IPointCloud GetPointCloudComponent(string fileFolderPath, bool doRenderInstanced);
 
         /// <summary>
         /// Returns the point type.

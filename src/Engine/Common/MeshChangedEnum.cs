@@ -2,6 +2,7 @@
 {
     public enum InstanceDataChangedEnum
     {
+        Disposed,
         Transform,
         Colors
     }

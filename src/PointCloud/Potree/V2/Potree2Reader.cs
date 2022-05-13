@@ -71,7 +71,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// Returns a renderable point cloud component.
         /// </summary>
         /// <param name="fileFolderPath">Path to the file.</param>
-        public IPointCloud GetPointCloudComponent(string fileFolderPath)
+        public IPointCloud GetPointCloudComponent(string fileFolderPath, bool doRenderInstanced)
         {
             _fileFolderPath = fileFolderPath;
 
@@ -92,9 +92,20 @@ namespace Fusee.PointCloud.Potree.V2
                     throw new ArgumentOutOfRangeException($"Invalid point type {ptType}");
                 case PointType.PosD3ColF3LblB:
                     PointAccessor = new PosD3ColF3LblBAccessor();
-                    var dataHandler = new PointCloudDataHandler<PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
-                    var imp = new Potree2Cloud(dataHandler, GetOctree());
-                    return new PointCloudComponent(imp);
+
+                    if (!doRenderInstanced)
+                    {
+                        var dataHandler = new PointCloudDataHandler<PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
+                        var imp = new Potree2Cloud(dataHandler, GetOctree());
+                        return new PointCloudComponent(imp, doRenderInstanced);
+                        
+                    }
+                    else
+                    {
+                        var dataHandlerInstanced = new PointCloudDataHandlerInstanced<PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateInstanceDataPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
+                        var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
+                        return new PointCloudComponent(imp, doRenderInstanced);
+                    }
             }
         }
 

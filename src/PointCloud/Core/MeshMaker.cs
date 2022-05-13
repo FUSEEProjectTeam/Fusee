@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common.Accessors;
 using Fusee.PointCloud.Core.Accessors;
@@ -16,7 +17,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Generic method that creates meshes with 65k points maximum.
         /// </summary>
-        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to explicit a explicit point type."/></param>
+        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to a explicit point type."/></param>
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createMeshHandler">The method that defines how to create a GpuMesh from the point cloud points.</param>
         /// <returns></returns>
@@ -119,6 +120,39 @@ namespace Fusee.PointCloud.Core
             var mesh = createMesh(PrimitiveType.Points, vertices, triangles, null, colors);
             mesh.BoundingBox = boundingBox;
             return mesh;
+        }
+
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="PosD3LblB"/>.
+        /// </summary>
+        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to explicit a explicit point type."/></param>
+        /// <param name="points">The lists of "raw" points.</param>
+        public static InstanceData CreateInstanceDataPosD3ColF3LblB<TPoint>(PointAccessor<TPoint> pointAccessor, TPoint[] points)
+        {
+            int numberOfPointsInMesh;
+            numberOfPointsInMesh = points.Length;
+
+            var firstPos = (float3)pointAccessor.GetPositionFloat3_64(ref points[0]);
+            var vertices = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var colors = new float4[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPos, firstPos);
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                var pos = (float3)pointAccessor.GetPositionFloat3_64(ref points[i]);
+
+                vertices[i] = pos;
+                boundingBox |= vertices[i];
+
+                triangles[i] = (ushort)i;
+                colors[i] = new float4(pointAccessor.GetColorFloat3_32(ref points[i]), 1.0f);
+
+                //TODO: add labels correctly
+                var label = pointAccessor.GetLabelUInt_8(ref points[i]);//points[i].Label;
+            }
+
+            return new InstanceData(points.Length, vertices, null, null, colors);
         }
 
         #region Color Conversion

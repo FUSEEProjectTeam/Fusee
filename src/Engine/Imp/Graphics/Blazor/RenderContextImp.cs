@@ -2,6 +2,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Blazor;
 using Fusee.Engine.Imp.SharedAll;
 using Fusee.Math.Core;
@@ -2662,7 +2663,27 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             throw new NotImplementedException();
         }
 
-        public void Render(IMeshImp mr, IInstanceData instanceData)
+        public void Render(IMeshImp mr, IInstanceDataImp instanceData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveInstance(IInstanceDataImp instanceImp)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp)
         {
             throw new NotImplementedException();
         }

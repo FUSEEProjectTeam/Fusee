@@ -145,9 +145,6 @@ namespace Fusee.Engine.Core
 
         private void InstanceDataChanged(object sender, InstanceDataChangedEventArgs instanceDataEventArgs)
         {
-            if (!_identifierToMeshImpDictionary.TryGetValue(instanceDataEventArgs.InstanceData.SessionUniqueId, out IMeshImp meshImp))
-                throw new KeyNotFoundException("Mesh is not registered.");            
-
             if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceDataEventArgs.InstanceData.SessionUniqueId, out var instanceImp))
             {
                 throw new ArgumentException("InstanceData is not registered yet. Use RegisterInstanceData first.");
@@ -158,10 +155,10 @@ namespace Fusee.Engine.Core
             switch (instanceDataEventArgs.ChangedEnum)
             {
                 case InstanceDataChangedEnum.Transform:
-                    _renderContextImp.SetInstanceTransform(meshImp, instanceImp, instanceData.Translations, instanceData.Rotations, instanceData.Scales);
+                    _renderContextImp.SetInstanceTransform(instanceImp, instanceData.Translations, instanceData.Rotations, instanceData.Scales);
                     break;
                 case InstanceDataChangedEnum.Colors:
-                    _renderContextImp.SetInstanceColor(meshImp, instanceImp, instanceData.Colors);
+                    _renderContextImp.SetInstanceColor(instanceImp, instanceData.Colors);
                     break;
             }
         }
@@ -264,22 +261,20 @@ namespace Fusee.Engine.Core
 
         private IInstanceDataImp RegisterNewInstanceData(Mesh mesh, InstanceData instanceData)
         {
-            IInstanceDataImp instanceDataImp = _renderContextImp.CreateInstanceDataImp();
-            instanceDataImp.Amount = instanceData.Amount;
             if (!_identifierToMeshImpDictionary.TryGetValue(mesh.SessionUniqueIdentifier, out var meshImp))
             {
                 throw new ArgumentException("Mesh is not registered yet. Use RegisterMesh first.");
             }
 
-            var instanceImp = _renderContextImp.CreateInstanceDataImp();
-
             instanceData.DataChanged += InstanceDataChanged;
             instanceData.DisposeData += DisposeInstanceData;
 
-            instanceData.SessionUniqueId = mesh.SessionUniqueIdentifier;
-            _identifierToInstanceDataImpDictionary.Add(mesh.SessionUniqueIdentifier, instanceDataImp);
-            _renderContextImp.SetInstanceTransform(meshImp, instanceImp, instanceData.Translations, instanceData.Rotations, instanceData.Scales);
-            _renderContextImp.SetInstanceColor(meshImp, instanceImp, instanceData.Colors);
+            var instanceDataImp = _renderContextImp.CreateInstanceDataImp(meshImp);
+            instanceDataImp.Amount = instanceData.Amount;
+
+            _identifierToInstanceDataImpDictionary.Add(instanceData.SessionUniqueId, instanceDataImp);
+            _renderContextImp.SetInstanceTransform(instanceDataImp, instanceData.Translations, instanceData.Rotations, instanceData.Scales);
+            _renderContextImp.SetInstanceColor(instanceDataImp, instanceData.Colors);
 
             return instanceDataImp;
         }
@@ -354,7 +349,7 @@ namespace Fusee.Engine.Core
                 {
                     var instanceImp = _identifierToInstanceDataImpDictionary.ElementAt(i);
                     Remove(instanceImp.Value);
-                    _identifierToMeshImpDictionary.Remove(instanceImp.Key);
+                    _identifierToInstanceDataImpDictionary.Remove(instanceImp.Key);
                 }
 
                 // Note disposing has been done.

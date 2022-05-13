@@ -1,4 +1,6 @@
-﻿using Fusee.Math.Core;
+﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 
 namespace Fusee.PointCloud.Common
 {
@@ -10,7 +12,7 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Non-Point-type-specific out-out-of-core point cloud implementation.
         /// </summary>
-        public IPointCloudImp PointCloudImp { get; }
+        public IPointCloudImpBase PointCloudImp { get; }
 
         /// <summary>
         /// Center of the point cloud.
@@ -22,4 +24,6 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         public float3 Size { get; }
     }
+
+    
 }

@@ -101,7 +101,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             };
 
             var potreeReader = new Potree2Reader();
-            _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(PtRenderingParams.Instance.PathToOocFile);
+            _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(PtRenderingParams.Instance.PathToOocFile, true);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PtRenderingParams.Instance.PointThreshold;
 
@@ -112,12 +112,13 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 {
                     new Transform()
                     {
-                        Scale = float3.One,
+                        Scale = float3.One * 0.025f,
                         Translation = float3.Zero,
                         Rotation = float3.Zero
                     },
-                    PtRenderingParams.Instance.DepthPassEf,
-                    PtRenderingParams.Instance.ColorPassEf,
+                    //PtRenderingParams.Instance.DepthPassEf,
+                    //PtRenderingParams.Instance.ColorPassEf,
+                    MakeEffect.FromDiffuseInstanced(new float4(1,0,0,1)),
                     _pointCloud
                 }
             };

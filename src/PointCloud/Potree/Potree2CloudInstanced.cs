@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core;
+﻿using Fusee.Engine.Core.Primitives;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
@@ -10,12 +11,14 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2Cloud : IPointCloudImp<GpuMesh>, IDisposable
+    public class Potree2CloudInstanced : IPointCloudImp<InstanceData>, IDisposable
     {
+        public readonly Plane Quad;
+
         /// <summary>
         /// The complete list of meshes that can be rendered.
         /// </summary>
-        public List<GpuMesh> GpuDataToRender { get; set; }
+        public List<InstanceData> GpuDataToRender { get; set; }
 
         /// <summary>
         /// Nows which octants are visible and when to trigger the point loading.
@@ -25,7 +28,7 @@ namespace Fusee.PointCloud.Potree
         /// <summary>
         /// Handles the point and mesh data.
         /// </summary>
-        public PointCloudDataHandlerBase<GpuMesh> DataHandler { get; }
+        public PointCloudDataHandlerBase<InstanceData> DataHandler { get; }
 
         /// <summary>
         /// The number of points that are currently visible.
@@ -83,19 +86,19 @@ namespace Fusee.PointCloud.Potree
         /// </summary>
         public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
 
-        private readonly GetMeshes _getMeshes;
+        private readonly GetInstanceData _getInstanceData;
         private bool _doUpdate = true;
         private bool _disposed;
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
         /// </summary>
-        public Potree2Cloud(PointCloudDataHandlerBase<GpuMesh> dataHandler, IPointCloudOctree octree)
+        public Potree2CloudInstanced(PointCloudDataHandlerBase<InstanceData> dataHandler, IPointCloudOctree octree)
         {
-            GpuDataToRender = new List<GpuMesh>();
+            GpuDataToRender = new List<InstanceData>();
             DataHandler = dataHandler;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
-            _getMeshes = dataHandler.GetGpuData;
+            _getInstanceData = dataHandler.GetGpuData;
         }
 
         /// <summary>
@@ -129,11 +132,11 @@ namespace Fusee.PointCloud.Potree
             {
                 if (guid == null) continue;
 
-                var meshes = _getMeshes(guid);
+                var instanceData = _getInstanceData(guid);
 
-                if (meshes == null) continue; //points for this octant aren't loaded yet.
+                if (instanceData == null) continue; //points for this octant aren't loaded yet.
 
-                GpuDataToRender.AddRange(meshes);
+                GpuDataToRender.AddRange(instanceData);
             }
         }
 
@@ -161,9 +164,9 @@ namespace Fusee.PointCloud.Potree
             {
                 if (disposing)
                 {
-                    foreach (var mesh in GpuDataToRender)
+                    foreach (var data in GpuDataToRender)
                     {
-                        mesh.Dispose();
+                        data.Dispose();
                     }
                 }
                 _disposed = true;
@@ -173,7 +176,7 @@ namespace Fusee.PointCloud.Potree
         /// <summary>
         /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
         /// </summary>
-        ~Potree2Cloud()
+        ~Potree2CloudInstanced()
         {
             Dispose(disposing: false);
         }

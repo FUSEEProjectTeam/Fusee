@@ -1238,10 +1238,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             
-            if (((InstanceDataImp)instanceImp).InstanceTransform == 0)
+            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == 0)
             {
                 GL.GenBuffers(1, out int instanceTransformBo);
-                ((InstanceDataImp)instanceImp).InstanceTransform = instanceTransformBo;
+                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
             }
 
             var sizeOfFloat4 = sizeof(float) * 4;
@@ -1266,7 +1266,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 posBufferData[i * 4 + 3] = modelMats[i].Column4;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceImp).InstanceTransform);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)matBytes, modelMats, BufferUsage.DynamicDraw);
            
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int instancedPosBytes);
@@ -1666,12 +1666,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         public void RemoveInstance(IInstanceDataImp instanceImp)
         {
-            var posBo = ((InstanceDataImp)instanceImp).InstanceTransform;
+            var posBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
             var colBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
 
             GL.DeleteBuffers(1, ref posBo);
             GL.DeleteBuffers(1, ref colBo);
-            ((InstanceDataImp)instanceImp).InstanceTransform = 0;
+            ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = 0;
             ((InstanceDataImp)instanceImp).InstanceColorBufferObject = 0;
         }
 

@@ -9,10 +9,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
 {
     internal class InstanceDataImp : IInstanceDataImp
     {
+        public int Amount { get; set; }
+
         public int InstanceColorBufferObject { get; set; }
 
-        public int InstanceTransform { get; set; }
+        public int InstanceTransformBufferObject { get; set; }
 
-        public int Amount { get; set; } 
+        public int VertexArrayObject { get; set; }
     }
 }

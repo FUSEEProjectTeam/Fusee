@@ -1,5 +1,7 @@
 ﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
+using Fusee.PointCloud.Common;
 using Fusee.Xene;
 using System;
 
@@ -52,6 +54,8 @@ namespace Fusee.PointCloud.Core.Scene
             }
         }
 
+        private Plane quad = new();
+
         /// <summary>
         /// Determines visible points of a point cloud (using the components <see cref="VisibilityTester"/>) and renders them.
         /// </summary>
@@ -67,9 +71,20 @@ namespace Fusee.PointCloud.Core.Scene
             var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
             pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
 
-            foreach (var mesh in pointCloud.PointCloudImp.MeshesToRender)
+
+            if (!pointCloud.DoRenderInstanced)
             {
-                _rc.Render(mesh, true);
+                foreach (var mesh in ((IPointCloudImp<GpuMesh>)pointCloud.PointCloudImp).GpuDataToRender)
+                {
+                    _rc.Render(mesh, true);
+                }
+            }
+            else
+            {
+                foreach (var instanceData in ((IPointCloudImp<InstanceData>)pointCloud.PointCloudImp).GpuDataToRender)
+                {
+                    _rc.Render(quad, instanceData, true);
+                }
             }
         }
     }
