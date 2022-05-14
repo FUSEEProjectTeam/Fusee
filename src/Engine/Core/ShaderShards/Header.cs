@@ -18,12 +18,17 @@ namespace Fusee.Engine.Core.ShaderShards
         public static string EsPrecisionHighpFloat = "precision highp float;";
 
         /// <summary>
-        /// Sets the version to 330es.
+        /// Sets the version to 330 es.
         /// </summary>
-        public static string Version300Es = "#version 300 es\n";
+        public static string Version300Es = "#version 330 es\n";
 
         /// <summary>
-        /// Sets the version to  440core.
+        /// Sets the version to 330 core.
+        /// </summary>
+        public static string Version330Core = "#version 330 core\n";
+
+        /// <summary>
+        /// Sets the version to 440 core.
         /// </summary>
         public static string Version440Core = "#version 440 core\n";
 

@@ -1,4 +1,4 @@
-﻿#version 300 es
+﻿#version 330 core
 
 in vec3 fuVertex;
 in vec3 fuNormal;

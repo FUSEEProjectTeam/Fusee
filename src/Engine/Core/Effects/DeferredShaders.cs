@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.Version330Core);
                 sb.AppendLine("#define ITERATIONS 14");
                 sb.AppendLine($"#define {UniformNameDeclarations.LightedSceneTexture} Albedo");
                 sb.AppendLine("#define EDGE_THRESHOLD_MIN 0.0625");
@@ -290,7 +290,7 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.Version330Core);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
@@ -380,7 +380,7 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.Version330Core);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Model));
@@ -401,7 +401,7 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.Version330Core);
                 sb.AppendLine("#extension GL_ARB_explicit_uniform_location : enable");
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
                 sb.AppendLine("layout (location = 0) out vec4 Depth;");
@@ -424,7 +424,7 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.Version330Core);
 
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Model));
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
@@ -446,7 +446,7 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.Version330Core);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.FragPos));
@@ -479,7 +479,7 @@ namespace Fusee.Engine.Core.Effects
                 // TODO(MR,SBu): check for naming!
 
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.Version330Core);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
                 sb.AppendLine("#define KERNEL_SIZE_HALF 2");
@@ -523,7 +523,7 @@ namespace Fusee.Engine.Core.Effects
                 // TODO(MR,SBu): check for naming!
 
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.Version330Core);
                 sb.AppendLine("#define KERNEL_LENGTH 64");
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 

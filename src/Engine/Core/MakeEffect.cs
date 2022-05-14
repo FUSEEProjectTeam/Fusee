@@ -565,7 +565,7 @@ namespace Fusee.Engine.Core
         private static string CreateDeferredLightingPixelShader(Light lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             var frag = new StringBuilder();
-            frag.Append(Header.Version300Es);
+            frag.Append(Header.Version330Core);
             frag.Append(Header.DefinePi);
             frag.Append(Header.EsPrecisionHighpFloat);
 

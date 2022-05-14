@@ -24,7 +24,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Header)]
-        public string Version = Header.Version300Es;
+        public string Version = Header.Version330Core;
 
         /// <summary>
         /// The shader shard containing the definition of PI.
@@ -181,7 +181,7 @@ namespace Fusee.Engine.Core.Effects
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
             ParamDecl = new Dictionary<int, IFxParamDeclaration>();
 
-            Version = Header.Version300Es;
+            Version = Header.Version330Core;
             Pi = Header.DefinePi;
             Precision = Header.EsPrecisionHighpFloat;
             SurfVaryingFrag = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";

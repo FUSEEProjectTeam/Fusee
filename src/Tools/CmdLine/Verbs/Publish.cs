@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 using Fusee.Engine.Core;
 using System;
 using System.IO;
@@ -203,6 +203,9 @@ namespace Fusee.Tools.CmdLine.Verbs
 
                         // Copy Assets
                         FileTools.DirectoryCopy(Path.Combine(dllDirPath, "Assets"), Path.Combine(outPath, "Assets"), true, true);
+
+                        //TODO: Select the correct shaders by platform.
+                        FileTools.FixShadersForWeb(Path.Combine(outPath, "Assets"));
                     }
                     catch (Exception ex)
                     {

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Fusee.Tools.CmdLine
 {
@@ -80,12 +82,25 @@ namespace Fusee.Tools.CmdLine
             }
         }
 
-        /*
-         static void Main()
-         {
-             // Copy from the current directory, include subdirectories.
-             DirectoryCopy(".", @".\temp", true);
-         }*/
+        /// <summary>
+        /// Resets the shaders in the given path to "version 300 es".
+        /// </summary>
+        /// <param name="assetsPath"></param>
+        public static void FixShadersForWeb(string assetsPath)
+        {
+            var extensions = new List<string> { ".frag", ".vert" };
+            string[] shaderFiles = Directory.GetFiles(assetsPath, "*.*", SearchOption.AllDirectories).Where(f => extensions.IndexOf(Path.GetExtension(f)) >= 0).ToArray();
 
+            foreach (string shaderFile in shaderFiles)
+            {
+                var fileContent = File.ReadAllLines(shaderFile);
+
+                if (fileContent != null && fileContent.Length > 0 && fileContent[0].StartsWith("#version"))
+                {
+                    fileContent[0] = "#version 330 es";
+                    File.WriteAllLines(shaderFile, fileContent);
+                }
+            }
+        }
     }
 }
