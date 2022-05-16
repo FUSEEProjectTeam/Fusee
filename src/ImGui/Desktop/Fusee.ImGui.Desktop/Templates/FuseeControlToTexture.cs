@@ -1,4 +1,5 @@
 ﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
 using TextureWrapMode = OpenTK.Graphics.OpenGL.TextureWrapMode;
@@ -12,6 +13,8 @@ namespace Fusee.ImGuiDesktop.Templates
 
         private int _lastWidth;
         private int _lastHeight;
+
+        protected RenderContext _rc;
 
 
         #region UserCode
@@ -63,10 +66,8 @@ namespace Fusee.ImGuiDesktop.Templates
         /// </summary>
         /// <param name="samplingFactor">MSAA sampling factor, default = 4</param>
         /// <exception cref="Exception"></exception>
-        public FuseeControlToTexture()
-        {
+        public FuseeControlToTexture(RenderContext rc) => (_rc) = (rc);
 
-        }
 
         /// <summary>
         /// Update original game window dims so we can restore the viewport after rendering Fusee content
@@ -78,6 +79,12 @@ namespace Fusee.ImGuiDesktop.Templates
         {
             _originalWidth = width;
             _originalHeight = height;
+
+            if (_rc.DefaultState != null)
+            {
+                _rc.DefaultState.CanvasWidth = width;
+                _rc.DefaultState.CanvasHeight = height;
+            }
         }
 
         /// <summary>

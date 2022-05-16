@@ -56,11 +56,9 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         //private SixDOFDevice _spaceMouse;
         private PointCloudComponent _pointCloud;
 
-        private RenderContext _rc;
 
-        public PointCloudControlCore(RenderContext rc) : base()
+        public PointCloudControlCore(RenderContext rc) : base(rc)
         {
-            _rc = rc;
 
         }
 
@@ -295,12 +293,6 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
             Width = width;
             Height = height;
-
-            if(_rc.DefaultState != null)
-            {
-                _rc.DefaultState.CanvasWidth = Width;
-                _rc.DefaultState.CanvasHeight = Height;
-            }
 
             // delete old texture, generate new
             RenderTexture?.Dispose();
