@@ -1,5 +1,6 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
@@ -10,7 +11,7 @@ using System.Collections.Generic;
 
 namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 {
-    internal class CoreViewport : ImGuiDesktop.Templates.FuseeControlToTexture
+    internal class PointCloudControlCore : ImGuiDesktop.Templates.FuseeControlToTexture
     {
         public bool UseWPF { get; set; }
         public bool ReadyToLoadNewFile { get; private set; }
@@ -57,9 +58,10 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         private RenderContext _rc;
 
-        public CoreViewport(RenderContext rc) : base()
+        public PointCloudControlCore(RenderContext rc) : base()
         {
             _rc = rc;
+
         }
 
         public override void Init()
@@ -139,23 +141,28 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             _sceneRenderer = new SceneRendererForward(_scene);
             _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule());
 
+
             IsInitialized = true;
         }
 
+        private WritableTexture RenderTexture;
+
         // RenderAFrame is called once a frame
-        protected override void RenderAFrame()
+        protected override ITextureHandle RenderAFrame()
         {
             ReadyToLoadNewFile = false;
 
             if (_closingRequested)
             {
                 ReadyToLoadNewFile = true;
-                return;
+
+                return new Engine.Imp.Graphics.Desktop.TextureHandle
+                {
+                    DepthRenderBufferHandle = -1,
+                    FrameBufferHandle = -1,
+                    TexHandle = -1
+                };
             }
-
-
-            // TOOD(mr): Idea: insert a new template class where one can specify invidividual passes
-            // and set them inside RenderAFrame_Pass1, and so on.
 
             if (PtRenderingParams.Instance.EdlStrength != 0f)
             {
@@ -164,6 +171,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 PtRenderingParams.Instance.ColorPassEf.Active = false;
 
                 _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
+
                 _sceneRenderer.Render(_rc);
                 _cam.RenderTexture = null;
 
@@ -171,9 +179,12 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 PtRenderingParams.Instance.ColorPassEf.Active = true;
             }
 
+            _cam.RenderTexture = RenderTexture;
             _sceneRenderer.Render(_rc);
 
             ReadyToLoadNewFile = true;
+
+            return RenderTexture.TextureHandle;
         }
 
         public override void Update(bool allowInput)
@@ -200,7 +211,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 _keys = true;
 
 
-                _twoTouchRepeated = false;
+            _twoTouchRepeated = false;
 
 
             // UpDown / LeftRight rotation
@@ -279,20 +290,20 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         // Is called when the window was resized
         protected override void Resize(int width, int height)
         {
+            if (width <= 0 || height <= 0)
+                return;
+
             Width = width;
             Height = height;
 
-            // FIXME (later) (mr)
-            // This is necessary as the camera uses the defaultState, for reseting original size, too
-            // see: SceneRendererForward:297
-            if (_rc.DefaultState != null)
-            {
-                _rc.DefaultState.CanvasWidth = Width;
-                _rc.DefaultState.CanvasHeight = Height;
-            }
+            // delete old texture, generate new
+            RenderTexture?.Dispose();
+            RenderTexture = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA), width, height);
 
             if (PtRenderingParams.Instance.EdlStrength == 0f) return;
+            PtRenderingParams.Instance.ColorPassEf.DepthTex?.Dispose();
             PtRenderingParams.Instance.ColorPassEf.DepthTex = WritableTexture.CreateDepthTex(width, height, new ImagePixelFormat(ColorFormat.Depth24));
+
         }
 
         //public override void DeInit()

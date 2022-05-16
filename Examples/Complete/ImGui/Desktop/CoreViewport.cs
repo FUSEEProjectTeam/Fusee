@@ -88,11 +88,11 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             _angleVert += _angleVelVert;
         }
 
-        protected override void RenderAFrame()
-        {
-            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
-            _renderer.Render(_rc);
-        }
+        //public override void RenderAFrame()
+        //{
+        //    _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
+        //    _renderer.Render(_rc);
+        //}
 
         protected override void Resize(int width, int height)
         {

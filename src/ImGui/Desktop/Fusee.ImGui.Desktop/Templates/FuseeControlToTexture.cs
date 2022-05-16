@@ -1,16 +1,18 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using Fusee.Engine.Common;
+using OpenTK.Graphics.OpenGL;
 using System;
+using TextureWrapMode = OpenTK.Graphics.OpenGL.TextureWrapMode;
 
 namespace Fusee.ImGuiDesktop.Templates
 {
     public abstract class FuseeControlToTexture
     {
-        private readonly int _viewportFramebuffer;
-        private readonly int _depthRenderbuffer;
-        private readonly int _returnTexture;
-
         private int _originalWidth;
         private int _originalHeight;
+
+        private int _lastWidth;
+        private int _lastHeight;
+
 
         #region UserCode
 
@@ -35,9 +37,9 @@ namespace Fusee.ImGuiDesktop.Templates
         /// This method is called from within the base class, do not change anything inside base class
         /// Insert your usual render loop
         /// </summary>
-        protected virtual void RenderAFrame()
+        protected virtual ITextureHandle RenderAFrame()
         {
-
+            return new Engine.Imp.Graphics.Desktop.TextureHandle();
         }
 
 
@@ -63,16 +65,6 @@ namespace Fusee.ImGuiDesktop.Templates
         /// <exception cref="Exception"></exception>
         public FuseeControlToTexture()
         {
-            GL.CreateFramebuffers(1, out int fb);
-            _viewportFramebuffer = fb;
-            GL.GenRenderbuffers(1, out _depthRenderbuffer);
-
-            _returnTexture = GL.GenTexture();
-
-            if (GL.GetError() != 0)
-            {
-                throw new Exception($"OpenGL Error {GL.GetError()}");
-            }
 
         }
 
@@ -96,57 +88,27 @@ namespace Fusee.ImGuiDesktop.Templates
         /// <returns>IntPtr to texture to use with <see cref="ImGuiNET.ImGui.Image(IntPtr, System.Numerics.Vector2)"/></returns>
         public IntPtr RenderToTexture(int width, int height)
         {
-            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
-            // Enable FB
-            UpdateRenderTexture(width, height);
-            Resize(width, height);
-            // FIXME (later) (mr)
-            // This should be RC.Viewport() which also sets _rc.DefaultState, howeever this is not possible right now
-            // therefore we rely upon setting _rc.DefaultState later on (needed for Camera which needs the original size after rendering, too)
-            GL.Viewport(0, 0, width, height);
-
+            // prevent calls to resize every frame
+            if(_lastHeight != height || _lastWidth != width)
+            {
+                _lastWidth = width;
+                _lastHeight = height;
+                Resize(width, height);
+            }
 
             // Do the actual rendering
-            // this can be set from the user code
-            RenderAFrame();
+            var hndl = RenderAFrame();
+            var tex = ((Engine.Imp.Graphics.Desktop.TextureHandle)hndl).TexHandle;
 
             // Disable FB, reset size etc. to previous size
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.Viewport(0, 0, _originalWidth, _originalHeight);
-            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             // bind the render result and return ptr to texture
-            GL.BindTexture(TextureTarget.Texture2D, _returnTexture);
-            return new IntPtr(_returnTexture);
+            GL.BindTexture(TextureTarget.Texture2D, tex);
+            return new IntPtr(tex);
         }
 
-
-        private void UpdateRenderTexture(int width, int height)
-        {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _viewportFramebuffer);
-            GL.BindTexture(TextureTarget.Texture2D, _returnTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, new IntPtr());
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
-
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _depthRenderbuffer);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, width, height);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, _depthRenderbuffer);
-
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _returnTexture, 0);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) == 0)
-            {
-                throw new Exception("Error Framebuffer!");
-            }
-
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-        }
     }
 }

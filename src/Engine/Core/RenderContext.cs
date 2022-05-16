@@ -195,7 +195,7 @@ namespace Fusee.Engine.Core
         /// The view matrix.
         /// </value>
         /// <remarks>
-        /// This matrix is also referred often as the camera transformation(not the projection). 
+        /// This matrix is also referred often as the camera transformation(not the projection).
         /// It describes the orientation of the view that is used to render a scene.
         /// You can use <see cref="float4x4.LookAt(float3, float3, float3)"/> to create a valid view matrix and analyze how it is build up.
         /// </remarks>
@@ -834,7 +834,7 @@ namespace Fusee.Engine.Core
         /// <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
         /// <param name="y">topmost pixel of the rectangular output region within the output buffer.</param>
         /// <param name="width">horizontal size (in pixels) of the output region.</param>
-        /// <param name="height">vertical size (in pixels) of the output region.</param>       
+        /// <param name="height">vertical size (in pixels) of the output region.</param>
         /// <remarks>
         /// Setting the Viewport limits the rendering output to the specified rectangular region.
         /// </remarks>
@@ -1173,7 +1173,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets the <see cref="CompiledEffect"/> from the RC's dictionary and creates all effect parameters. 
+        /// Gets the <see cref="CompiledEffect"/> from the RC's dictionary and creates all effect parameters.
         /// </summary>
         /// <param name="ef">The ShaderEffect the parameters are created for.</param>
         /// <param name="cFx">The compiled shader effect for which the effect variables will be created.</param>
@@ -1504,7 +1504,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping.
         /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
         /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
         /// </summary>
@@ -1580,8 +1580,8 @@ namespace Fusee.Engine.Core
         /// boolean value, or even a color.  </param>
         /// <param name="doLockState">Forces this state to have the given value and locks the state. Unlock it by calling <see cref="UnlockRenderState(RenderState, bool)"/></param>
         /// <remarks>This method is close to the underlying implementation layer and might be awkward to use
-        /// due to the ambiguity of the value parameter type. If you want type-safe state values and also 
-        /// want to set a couple of states at the same time, try the more 
+        /// due to the ambiguity of the value parameter type. If you want type-safe state values and also
+        /// want to set a couple of states at the same time, try the more
         /// elaborate <see cref="SetRenderStateSet(RenderStateSet, bool)"/> method.</remarks>
         public void SetRenderState(RenderState renderState, uint value, bool doLockState = false)
         {
@@ -1613,8 +1613,8 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Apply a number of render states to this render context. All subsequent rendering will be
-        /// performed using the currently set state set unless one of its values it is changed. Use this 
-        /// method to change more than one render state at once. 
+        /// performed using the currently set state set unless one of its values it is changed. Use this
+        /// method to change more than one render state at once.
         /// </summary>
         /// <param name="renderStateSet">A set of render states with their respective values to be set.</param>
         /// <param name="doLockState">Forces all states that are set in this <see cref="RenderStateSet"/> to have the given value and locks them. Unlock them by calling <see cref="UnlockRenderState(RenderState, bool)"/></param>

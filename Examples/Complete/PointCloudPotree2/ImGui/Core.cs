@@ -18,7 +18,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
     public class Core : RenderCanvas
     {
 
-#region StaticBindingVars
+        #region StaticBindingVars
 
         private static bool _dockspaceOpen = true;
 
@@ -41,16 +41,16 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         private static string _inputText = "Write here";
 
-        private CoreViewport _fuControl;
+        private PointCloudControlCore _fuControl;
 
-#endregion
+        #endregion
 
 
         private async Task Load()
         {
             SetImGuiDesign();
 
-            _fuControl = new CoreViewport(RC);
+            _fuControl = new PointCloudControlCore(RC);
             _fuControl.Init();
         }
 
@@ -127,7 +127,9 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             var fuseeViewportSize = fuseeViewportMax - fuseeViewportMin;
             var fuseeViewportPos = ImGui.GetWindowPos();
 
-            ImGui.Image(_fuControl.RenderToTexture((int)size.X, (int)size.Y), fuseeViewportSize,
+            var hndl = _fuControl.RenderToTexture((int)fuseeViewportSize.X, (int)fuseeViewportSize.Y);
+
+            ImGui.Image(hndl, fuseeViewportSize,
                 new Vector2(0, 1),
                 new Vector2(1, 0));
 

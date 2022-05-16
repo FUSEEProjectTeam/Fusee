@@ -63,7 +63,19 @@ namespace Fusee.Engine.Common
     }
 
     /// <summary>
-    /// Depth textures can be sampled in one of two ways. 
+    /// Enable Multisample for textures
+    /// </summary>
+    public enum Multisample
+    {
+        Disabled,
+        x2,
+        x4,
+        x8,
+        x16
+    }
+
+    /// <summary>
+    /// Depth textures can be sampled in one of two ways.
     /// They can be sampled as a normal texture, which simply retrieves the depth value, this will return a vec4 containing a single floating-point value,
     /// or they can be fetched in comparison mode. The result of the comparison depends on the comparison function set in the texture. If the function succeeds, the resulting value is 1.0f; if it fails, it is 0.0f.
     /// see: https://www.khronos.org/opengl/wiki/Sampler_Object
@@ -86,7 +98,7 @@ namespace Fusee.Engine.Common
     public enum TextureFilterMode
     {
         /// <summary>
-        /// Default texture filtering method. When set, the pixel which center is closest to the texture coordinate is selected. 
+        /// Default texture filtering method. When set, the pixel which center is closest to the texture coordinate is selected.
         /// </summary>
         Nearest,
         /// <summary>
@@ -98,7 +110,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         NearestMipmapNearest,
         /// <summary>
-        /// Takes the nearest mipmap level and samples using linear interpolation. 
+        /// Takes the nearest mipmap level and samples using linear interpolation.
         /// </summary>
         LinearMipmapNearest,
         /// <summary>
