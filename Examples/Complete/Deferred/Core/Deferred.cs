@@ -203,6 +203,17 @@ namespace Fusee.Examples.Deferred.Core
             _angleVelVert = 0;
 
             _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 200);
+
+            if (Keyboard.IsKeyDown(KeyCodes.F))
+                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
+
+            if (Keyboard.IsKeyDown(KeyCodes.G) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
+
+            if (Keyboard.IsKeyDown(KeyCodes.F1) && _renderDeferred)
+                _renderDeferred = false;
+            else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
+                _renderDeferred = true;
         }
 
         // RenderAFrame is called once a frame
@@ -233,16 +244,7 @@ namespace Fusee.Examples.Deferred.Core
 
             _campComp.BackgroundColor = _backgroundColor;
 
-            if (Keyboard.IsKeyDown(KeyCodes.F))
-                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
-
-            if (Keyboard.IsKeyDown(KeyCodes.G) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
-
-            if (Keyboard.IsKeyDown(KeyCodes.F1) && _renderDeferred)
-                _renderDeferred = false;
-            else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
-                _renderDeferred = true;
+            
 
             if (_renderDeferred)
                 _sceneRendererDeferred.Render(RC);
