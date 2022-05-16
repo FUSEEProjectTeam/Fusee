@@ -1380,7 +1380,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int sizeOfTangent = 4 * sizeof(float);
-            int tangentBytes = tangents.Length * 4 * sizeOfTangent;
+            int tangentBytes = tangents.Length * sizeOfTangent;
             int tBo;
             if (((MeshImp)mr).TangentBufferObject == 0)
             {
@@ -1438,7 +1438,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int sizeOfBiTangent = 3 * sizeof(float);
-            int bitangentBytes = bitangents.Length * 3 * sizeOfBiTangent;
+            int bitangentBytes = bitangents.Length * sizeOfBiTangent;
             int btBo;
             if (((MeshImp)mr).BitangentBufferObject == 0)
             {
