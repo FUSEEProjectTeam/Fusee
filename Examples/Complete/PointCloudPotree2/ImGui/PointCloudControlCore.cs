@@ -296,6 +296,12 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             Width = width;
             Height = height;
 
+            if(_rc.DefaultState != null)
+            {
+                _rc.DefaultState.CanvasWidth = Width;
+                _rc.DefaultState.CanvasHeight = Height;
+            }
+
             // delete old texture, generate new
             RenderTexture?.Dispose();
             RenderTexture = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA), width, height);
