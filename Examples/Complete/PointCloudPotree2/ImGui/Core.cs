@@ -3,12 +3,8 @@ using Fusee.Engine.Core;
 using Fusee.ImGuiDesktop;
 using Fusee.Math.Core;
 using ImGuiNET;
-using OpenTK.Graphics.OpenGL;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
@@ -22,7 +18,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         private static bool _dockspaceOpen = true;
 
-        private static float _threshold;
+        private static int _threshold;
         private static float _fuseeViewportMinProj;
 
         private static int _edlNeighbour;
@@ -30,7 +26,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         private static int _currentPtShape;
         private static int _currentPtSizeMethod;
-        private static float _ptSize;
+        private static int _ptSize = 1;
 
         private static Vector4 _ptColor;
         private static bool _colorPickerOpen;
@@ -159,8 +155,13 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.Spacing();
             ImGui.BeginGroup();
             ImGui.Text("Visibility");
-            ImGui.InputFloat("Threshold", ref _threshold);
+            ImGui.InputInt("Threshold", ref _threshold, 1, 1);
             ImGui.SliderFloat("Min. Projection Size Modifier", ref _fuseeViewportMinProj, 0f, 1f);
+
+
+            PtRenderingParams.Instance.PointThreshold = _threshold;
+            PtRenderingParams.Instance.ProjectedSizeModifier = _fuseeViewportMinProj;
+
             ImGui.EndGroup();
 
 
@@ -170,21 +171,43 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.Text("Lighting");
             ImGui.SliderInt("EDL Neighbor Px", ref _edlNeighbour, 0, 5);
             ImGui.SliderFloat("EDL Strength", ref _edlStrength, -1f, 5f);
+
+            PtRenderingParams.Instance.EdlStrength = _edlStrength;
+            PtRenderingParams.Instance.EdlNoOfNeighbourPx = _edlNeighbour;
+
             ImGui.EndGroup();
 
             ImGui.NewLine();
             ImGui.Spacing();
             ImGui.BeginGroup();
             ImGui.Text("Point Shape");
-            ImGui.Combo("PointShape", ref _currentPtShape, new string[] { "Paraboloid", "Box", "Square" }, 3);
+            ImGui.Combo("PointShape", ref _currentPtShape, new string[] { "Paraboloid", "Rect", "Circle" }, 3);
+
+            PtRenderingParams.Instance.Shape = _currentPtShape switch
+            {
+                0 => PointCloud.Common.PointShape.Paraboloid,
+                1 => PointCloud.Common.PointShape.Rect,
+                2 => PointCloud.Common.PointShape.Circle,
+                _ => PointCloud.Common.PointShape.Paraboloid
+            };
+
             ImGui.EndGroup();
 
             ImGui.NewLine();
             ImGui.Spacing();
             ImGui.BeginGroup();
             ImGui.Text("Point Size Method");
-            ImGui.Combo("Point Size Method", ref _currentPtSizeMethod, new string[] { "FixedPixelSize", "Adaptive", "Third" }, 3);
-            ImGui.SliderFloat("Point Size", ref _ptSize, 0.2f, 20f);
+            ImGui.Combo("Point Size Method", ref _currentPtSizeMethod, new string[] { "FixedPixelSize", "FixedWorldSize" }, 2);
+            ImGui.SliderInt("Point Size", ref _ptSize, 1, 20);
+
+            PtRenderingParams.Instance.Size = _ptSize;
+            PtRenderingParams.Instance.PtMode = _currentPtSizeMethod switch
+            {
+                0 => PointCloud.Common.PointSizeMode.FixedPixelSize,
+                1 => PointCloud.Common.PointSizeMode.FixedWorldSize,
+                _ => PointCloud.Common.PointSizeMode.FixedPixelSize
+            };
+
             ImGui.EndGroup();
 
             ImGui.NewLine();

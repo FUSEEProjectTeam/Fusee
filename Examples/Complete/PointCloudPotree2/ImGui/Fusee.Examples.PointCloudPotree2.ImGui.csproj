@@ -5,7 +5,7 @@
 		<OutputPath>$(BaseOutputPath)\Examples\PointCloudPotree2\ImGui\</OutputPath>
 
 		<OutputType>Exe</OutputType>
-
+		<LangVersion>9.0</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 

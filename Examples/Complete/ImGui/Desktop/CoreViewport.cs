@@ -27,7 +27,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         private const float ZFar = 1000;
         private readonly float _fovy = M.PiOver4;
 
-        public CoreViewport(RenderContext ctx) : base()
+        public CoreViewport(RenderContext ctx) : base(ctx)
         {
             _rc = ctx;
         }

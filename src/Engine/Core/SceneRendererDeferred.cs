@@ -494,16 +494,18 @@ namespace Fusee.Engine.Core
 
             RenderLayer = cam.Item2.Camera.RenderLayer;
 
+            float4 viewport;
+
             if (tex != null)
             {
                 _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
-                _rc.Projection = cam.Item2.Camera.GetProjectionMat(cam.Item2.Camera.RenderTexture.Width, cam.Item2.Camera.RenderTexture.Height, out var viewport);
+                _rc.Projection = cam.Item2.Camera.GetProjectionMat(cam.Item2.Camera.RenderTexture.Width, cam.Item2.Camera.RenderTexture.Height, out viewport);
                 _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
             }
             else
             {
                 _rc.SetRenderTarget();
-                _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out var viewport);
+                _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out viewport);
                 _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
             }
 
