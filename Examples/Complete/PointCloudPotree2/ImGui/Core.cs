@@ -5,6 +5,7 @@ using Fusee.PointCloud.Common;
 using ImGuiNET;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -297,7 +298,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             {
                 var file = openFileDialog.FileName;
 
-                PtRenderingParams.Instance.PathToOocFile = file;
+                PtRenderingParams.Instance.PathToOocFile = new FileInfo(file).Directory.FullName;
 
                 if (_fuControl != null)
                 {
