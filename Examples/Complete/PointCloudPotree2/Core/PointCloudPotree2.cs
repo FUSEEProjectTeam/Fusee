@@ -70,7 +70,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             PtRenderingParams.Instance.DepthPassEf.Active = false;
             PtRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
             PtRenderingParams.Instance.ProjectedSizeModifierHandler = OnProjectedSizeModifierChanged;
-            
+
             IsAlive = true;
 
             ApplicationIsShuttingDown += (object sender, EventArgs e) =>
@@ -116,12 +116,13 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                         Scale = float3.One,
                         Translation = float3.Zero,
                         Rotation = float3.Zero
-                    },                    
+                    },
                     PtRenderingParams.Instance.DepthPassEf,
                     PtRenderingParams.Instance.ColorPassEf,
                     _pointCloud
                 }
             };
+
 
             _camTransform.Translation = _initCameraPos = _pointCloud.Center - new float3(0, 0, _pointCloud.Size.z * 2);
 
@@ -143,7 +144,11 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Out-Of-Core Point Cloud Rendering");
             _sih = new SceneInteractionHandler(_gui);
 
-            _sceneRenderer = new SceneRendererDeferred(_scene);
+            _sceneRenderer = new SceneRendererDeferred(_scene)
+            {
+                SsaoOn = false,
+                FxaaOn = false
+            };
             _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
             _guiRenderer = new SceneRendererForward(_gui);
 
