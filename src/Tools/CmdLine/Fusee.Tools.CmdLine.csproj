@@ -47,7 +47,7 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 
-		<PackageReference Include="CommandLineParser" Version="2.8.0" />
+		<PackageReference Include="CommandLineParser" Version="2.9.1" />
 		
 		<!-- Always update the the python plugin in /ext and requirements.txt to the same version -->
 		<PackageReference Include="Google.Protobuf.Tools" Version="3.20.1" />
