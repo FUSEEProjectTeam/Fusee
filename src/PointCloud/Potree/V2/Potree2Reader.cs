@@ -22,12 +22,6 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         public IPointAccessor PointAccessor { get; private set; }
 
-        public Potree2Reader()
-        {
-            // TODO(mr): Ask SBu
-            //FileDataInstance = null;
-        }
-
         internal PotreeData FileDataInstance
         {
             get
@@ -61,8 +55,7 @@ namespace Fusee.PointCloud.Potree.V2
             }
         }
 
-        // TODO(mr): Ask SBu
-        private /*static*/ PotreeData _instance;
+        private PotreeData _instance;
         private string _fileFolderPath;
         private string _metadataFilePath;
 
