@@ -56,7 +56,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             }
         }
 
-        private int _size = 3;
+        private int _size = 1;
         public int Size
         {
             get { return _size; }

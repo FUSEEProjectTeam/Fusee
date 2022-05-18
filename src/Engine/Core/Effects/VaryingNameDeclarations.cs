@@ -13,6 +13,16 @@ namespace Fusee.Engine.Core.Effects
         public const string SurfOutVaryingName = "surfOut";
 
         /// <summary>
+        /// The vertex position in view space.
+        /// </summary>
+        public const string ViewPos = "vViewPos";
+
+        /// <summary>
+        /// Alternative to "gl_pointCoord" when using instance rendering.
+        /// </summary>
+        public const string PointCoord = "vPointCoord";
+
+        /// <summary>
         /// The variable name of the TBN (Tangent, Bitangent, Normal) matrix.
         /// </summary>
         public const string TBN = "TBN";

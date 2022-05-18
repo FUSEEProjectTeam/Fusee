@@ -8,5 +8,6 @@ namespace Fusee.Engine.Common
         None = 1,
         Bones = 2,
         Instanced = 4,
+        PointCloud = 8,
     }
 }

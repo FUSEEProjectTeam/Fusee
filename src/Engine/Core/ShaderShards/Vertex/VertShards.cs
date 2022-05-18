@@ -42,15 +42,20 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// <summary>
         /// Returns a default method body for the vertex shaders "ChangeSurf" method.
         /// </summary>
-        internal static List<string> SurfOutBody(ShadingModel shadingModel)
+        internal static List<string> SurfOutBody(ShadingModel shadingModel, bool doRenderBillboards)
         {
             var res = new List<string>();
             switch (shadingModel)
             {
                 case ShadingModel.Edl:
                 case ShadingModel.Unlit:
-                    res.Add("OUT.position = fuVertex;");
-                    break;
+                    {
+                        if(!doRenderBillboards)
+                            res.Add("OUT.position = fuVertex;");
+                        else
+                            res.Add($"OUT.position = {VaryingNameDeclarations.ViewPos};");
+                        break;
+                    }
                 case ShadingModel.DiffuseSpecular:
                 case ShadingModel.DiffuseOnly:
                 case ShadingModel.Glossy:

@@ -146,7 +146,7 @@ namespace Fusee.PointCloud.Core
                 boundingBox |= vertices[i];
 
                 triangles[i] = (ushort)i;
-                colors[i] = new float4(pointAccessor.GetColorFloat3_32(ref points[i]), 1.0f);
+                colors[i] = new float4(pointAccessor.GetColorFloat3_32(ref points[i]) / 256, 1.0f);
 
                 //TODO: add labels correctly
                 var label = pointAccessor.GetLabelUInt_8(ref points[i]);//points[i].Label;

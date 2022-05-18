@@ -1297,11 +1297,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GL.NamedBufferStorage(instanceColorBo, iColorBytes, instanceColors, BufferStorageFlags.DynamicStorageBit);
             GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedColorBindingIndex, instanceColorBo, IntPtr.Zero, sizeOfCol);
-
             GL.GetNamedBufferParameter(instanceColorBo, BufferParameterName.BufferSize, out int instancedColorBytes);
             if (instancedColorBytes != iColorBytes)
-                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", iColorBytes, instancedColorBytes));
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedColorBytes, iColorBytes));
 
+            // set attribute pointers for matrix (4 times vec4)
             GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedColor, 4, VertexAttribType.Float, false, 0);
             GL.VertexArrayAttribBinding(vao, AttributeLocations.InstancedColor, AttributeLocations.InstancedColorBindingIndex);
             GL.VertexArrayBindingDivisor(vao, AttributeLocations.InstancedColor, 1);
@@ -2099,23 +2099,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (((MeshImp)mr).VertexBufferObject != 0)
                 GL.EnableVertexArrayAttrib(vao, AttributeLocations.VertexAttribLocation);
             if (((MeshImp)mr).ColorBufferObject != 0)
-                GL.EnableVertexAttribArray(AttributeLocations.ColorAttribLocation);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.ColorAttribLocation);
             if (((MeshImp)mr).ColorBufferObject1 != 0)
-                GL.EnableVertexAttribArray(AttributeLocations.Color1AttribLocation);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.Color1AttribLocation);
             if (((MeshImp)mr).ColorBufferObject2 != 0)
-                GL.EnableVertexAttribArray(AttributeLocations.Color2AttribLocation);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.Color2AttribLocation);
             if (((MeshImp)mr).UVBufferObject != 0)
                 GL.EnableVertexArrayAttrib(vao, AttributeLocations.UvAttribLocation);
             if (((MeshImp)mr).NormalBufferObject != 0)
                 GL.EnableVertexArrayAttrib(vao, AttributeLocations.NormalAttribLocation);
             if (((MeshImp)mr).TangentBufferObject != 0)
-                GL.EnableVertexAttribArray(AttributeLocations.TangentAttribLocation);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.TangentAttribLocation);
             if (((MeshImp)mr).BitangentBufferObject != 0)
-                GL.EnableVertexAttribArray(AttributeLocations.BitangentAttribLocation);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.BitangentAttribLocation);
             if (((MeshImp)mr).BoneIndexBufferObject != 0)
-                GL.EnableVertexAttribArray(AttributeLocations.BoneIndexAttribLocation);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.BoneIndexAttribLocation);
             if (((MeshImp)mr).BoneWeightBufferObject != 0)
-                GL.EnableVertexAttribArray(AttributeLocations.BoneWeightAttribLocation);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.BoneWeightAttribLocation);
 
             if (((MeshImp)mr).ElementBufferObject == 0) throw new ApplicationException("Element/Index buffer not initialized!");
             var oglPrimitiveType = ((MeshImp)mr).MeshType switch
@@ -2134,19 +2134,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (instanceData != null)
             {
-                GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat1);
-                GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat2);
-                GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat3);
-                GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat4);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat1);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat2);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat3);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat4);
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.InstancedColor);
 
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedModelMatBindingIndex, ((InstanceDataImp)instanceData).InstanceTransformBufferObject, IntPtr.Zero, 16 * sizeof(float));
-                GL.VertexArrayVertexBuffer(vao, AttributeLocations.Color2AttribBindingIndex, ((InstanceDataImp)instanceData).InstanceColorBufferObject, IntPtr.Zero, 4 * sizeof(float));
+                GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedColorBindingIndex, ((InstanceDataImp)instanceData).InstanceColorBufferObject, IntPtr.Zero, 4 * sizeof(float));
                 GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero, instanceData.Amount);
 
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat1);
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat2);
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat3);
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat4);
+                GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedColor);
             }
             else
                 GL.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);

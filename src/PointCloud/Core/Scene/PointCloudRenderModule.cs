@@ -12,7 +12,7 @@ namespace Fusee.PointCloud.Core.Scene
     /// </summary>
     public class PointCloudRenderModule : IRendererModule
     {
-        RenderContext _rc;
+        RenderContext _rc;        
 
         /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
@@ -23,6 +23,8 @@ namespace Fusee.PointCloud.Core.Scene
         /// The RenderLayer this renderer should render.
         /// </summary>
         public RenderLayers RenderLayer { get; set; }
+
+        private readonly bool _isForwardModule;
 
         /// <summary>
         /// Sets the render context for the given scene.
@@ -56,6 +58,11 @@ namespace Fusee.PointCloud.Core.Scene
 
         private Plane quad = new();
 
+        public PointCloudRenderModule(bool isForwardModule)
+        {
+            _isForwardModule = isForwardModule;
+        }
+
         /// <summary>
         /// Determines visible points of a point cloud (using the components <see cref="VisibilityTester"/>) and renders them.
         /// </summary>
@@ -76,14 +83,14 @@ namespace Fusee.PointCloud.Core.Scene
             {
                 foreach (var mesh in ((IPointCloudImp<GpuMesh>)pointCloud.PointCloudImp).GpuDataToRender)
                 {
-                    _rc.Render(mesh, true);
+                    _rc.Render(mesh, _isForwardModule);
                 }
             }
             else
             {
                 foreach (var instanceData in ((IPointCloudImp<InstanceData>)pointCloud.PointCloudImp).GpuDataToRender)
                 {
-                    _rc.Render(quad, instanceData, true);
+                    _rc.Render(quad, instanceData, _isForwardModule);
                 }
             }
         }

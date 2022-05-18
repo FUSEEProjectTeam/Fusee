@@ -8,6 +8,11 @@
 	<ItemGroup>
 		<Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets\PointCloudInstanced.vert" />
+	  <None Remove="Assets\PointDepthInstanced.frag" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />

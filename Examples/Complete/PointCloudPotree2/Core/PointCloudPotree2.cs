@@ -30,7 +30,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private const float RotationSpeed = 7;
 
         private SceneContainer _scene;
-        private SceneRendererForward _sceneRenderer;
+        private SceneRendererDeferred _sceneRenderer;
 
         private bool _twoTouchRepeated;
         private bool _keys;
@@ -65,11 +65,12 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             VSync = false;
             _spaceMouse = GetDevice<SixDOFDevice>();
 
-            PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
-            PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.ColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
+            PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPassInstanced(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
+            PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPassInstanced(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.ColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
+            PtRenderingParams.Instance.DepthPassEf.Active = false;
             PtRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
             PtRenderingParams.Instance.ProjectedSizeModifierHandler = OnProjectedSizeModifierChanged;
-
+            
             IsAlive = true;
 
             ApplicationIsShuttingDown += (object sender, EventArgs e) =>
@@ -112,13 +113,12 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 {
                     new Transform()
                     {
-                        Scale = float3.One * 0.01f,
+                        Scale = float3.One,
                         Translation = float3.Zero,
                         Rotation = float3.Zero
-                    },
-                    //PtRenderingParams.Instance.DepthPassEf,
-                    //PtRenderingParams.Instance.ColorPassEf,
-                    MakeEffect.FromDiffuseInstanced(new float4(1,0,0,1)),
+                    },                    
+                    PtRenderingParams.Instance.DepthPassEf,
+                    PtRenderingParams.Instance.ColorPassEf,
                     _pointCloud
                 }
             };
@@ -143,8 +143,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Out-Of-Core Point Cloud Rendering");
             _sih = new SceneInteractionHandler(_gui);
 
-            _sceneRenderer = new SceneRendererForward(_scene);
-            _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule());
+            _sceneRenderer = new SceneRendererDeferred(_scene);
+            _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
             _guiRenderer = new SceneRendererForward(_gui);
 
             IsInitialized = true;
@@ -161,19 +161,19 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 return;
             }
 
-            if (PtRenderingParams.Instance.EdlStrength != 0f)
-            {
-                //Render Depth-only pass
-                PtRenderingParams.Instance.DepthPassEf.Active = true;
-                PtRenderingParams.Instance.ColorPassEf.Active = false;
+            //if (PtRenderingParams.Instance.EdlStrength != 0f)
+            //{
+            //    //Render Depth-only pass
+            //    PtRenderingParams.Instance.DepthPassEf.Active = true;
+            //    PtRenderingParams.Instance.ColorPassEf.Active = false;
 
-                _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
-                _sceneRenderer.Render(RC);
-                _cam.RenderTexture = null;
+            //    _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
+            //    _sceneRenderer.Render(RC);
+            //    _cam.RenderTexture = null;
 
-                PtRenderingParams.Instance.DepthPassEf.Active = false;
-                PtRenderingParams.Instance.ColorPassEf.Active = true;
-            }
+            //    PtRenderingParams.Instance.DepthPassEf.Active = false;
+            //    PtRenderingParams.Instance.ColorPassEf.Active = true;
+            //}
 
             _sceneRenderer.Render(RC);
 

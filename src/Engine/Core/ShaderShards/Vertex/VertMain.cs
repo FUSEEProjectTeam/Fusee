@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Effects;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
@@ -52,13 +53,13 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string VertexMain(ShadingModel shadingModel, TextureSetup texSetup, bool isInstanced = true)
+        public static string VertexMain(ShadingModel shadingModel, TextureSetup texSetup, RenderFlags renderMod)
         {
             var vertMainBody = new List<string>
             {
                 $"{VaryingNameDeclarations.SurfOutVaryingName} = {SurfaceEffectNameDeclarations.ChangeSurfVert}();",
                 $"vec3 changedVert = {VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
-                $"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * vec4({VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2}, 1.0)).xyz;",
+                
             };
 
             if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
@@ -76,13 +77,19 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add($"TBN = mat3(T,B,{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Normal.Item2});");
             }
 
-            if (isInstanced)
+            if (renderMod.HasFlag(RenderFlags.Instanced) && !renderMod.HasFlag(RenderFlags.PointCloud))
             {
                 vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Projection} * {UniformNameDeclarations.View} * ({UniformNameDeclarations.InstanceModelMat} * {UniformNameDeclarations.Model}) * vec4(changedVert, 1.0);");
                 vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.InstanceColor};");
             }
+            else if (renderMod.HasFlag(RenderFlags.Instanced) && renderMod.HasFlag(RenderFlags.PointCloud))
+            {
+                vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Projection} * vec4(changedVert, 1.0);");
+                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.InstanceColor};");
+            }
             else
             {
+                vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * vec4({VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2}, 1.0)).xyz;");
                 vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(changedVert, 1.0);");
                 vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
             }

@@ -430,7 +430,7 @@ namespace Fusee.Engine.Core
                 texSetup |= TextureSetup.NormalMap;
             input.TextureSetup = texSetup;
 
-            return new SurfaceEffect(input, true);
+            return new SurfaceEffect(input, RenderFlags.Instanced);
         }
 
         /// <summary>

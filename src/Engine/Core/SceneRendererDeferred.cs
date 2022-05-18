@@ -975,6 +975,11 @@ namespace Fusee.Engine.Core
             {
                 _rc = rc;
 
+                foreach (var module in VisitorModules)
+                {
+                    ((IRendererModule)module).SetContext(_rc);
+                }
+
                 InitRenderTextures();
                 InitState();
             }

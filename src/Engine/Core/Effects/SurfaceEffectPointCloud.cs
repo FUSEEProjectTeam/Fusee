@@ -131,7 +131,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public readonly string ViewPosIn = GLSL.CreateIn(GLSL.Type.Vec4, "vViewPos");
+        public readonly string ViewPosIn = GLSL.CreateIn(GLSL.Type.Vec3, $"{VaryingNameDeclarations.ViewPos}");
 
         /// <summary>
         /// The out variable for the view position in the vertex shader.
@@ -139,7 +139,17 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public readonly string ViewPosOut = GLSL.CreateOut(GLSL.Type.Vec4, "vViewPos");
+        public readonly string ViewPosOut = GLSL.CreateOut(GLSL.Type.Vec3, $"{VaryingNameDeclarations.ViewPos}");
+
+        
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public readonly string PointCoordIn = GLSL.CreateIn(GLSL.Type.Vec2, $"{VaryingNameDeclarations.PointCoord}");
+
+        
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public readonly string PointCoordOut = GLSL.CreateOut(GLSL.Type.Vec2, $"{VaryingNameDeclarations.PointCoord}");
 
         /// <summary>
         /// The in variable for the point radius in the fragment shader.
@@ -157,55 +167,120 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Property)]
         public readonly string WorldSpacePointRadOut = GLSL.CreateOut(GLSL.Type.Float, "vWorldSpacePointRad");
 
-        private static readonly List<string> CalculateVaryings = new()
+        private static List<string> CalculateVaryings(bool doRenderInstanced)
         {
-            $"vViewPos = {UniformNameDeclarations.ModelView} * vec4(fuVertex.xyz, 1.0);",
-            $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
-            "float slope = tan(fov / 2.0);",
-            $"float projFactor = ((1.0 / slope) / -vViewPos.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
-            $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
-        };
+            if (!doRenderInstanced)
+            {
+                return new List<string>() {
+                    $"vViewPos = ({UniformNameDeclarations.ModelView} * vec4(fuVertex.xyz, 1.0)).xyz;",
+                    $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
+                    "float slope = tan(fov / 2.0);",
+                    $"float projFactor = ((1.0 / slope) / -vViewPos.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
+                    $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
+                };
+            }
+            else
+            {
+                return new List<string>() {
+                    $"mat4 mv = FUSEE_V * {UniformNameDeclarations.InstanceModelMat};",
+
+                    //assumption: position x and y are in range [-0.5, 0.5].
+                    $"{VaryingNameDeclarations.PointCoord} = vec2(0.5) / fuVertex.xy;",
+
+                    $"float scaledPtSize = float({UniformNameDeclarations.PointSize}) * 0.01;",
+                    $"{VaryingNameDeclarations.ViewPos} = (mv * vec4(0.0, 0.0, 0.0, 1.0)",
+                    $"         + vec4(fuVertex.x, fuVertex.y, 0.0, 0.0)",
+                    $"         * vec4(scaledPtSize, scaledPtSize, 1.0, 1.0)).xyz;",
+                    $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
+                    "float slope = tan(fov / 2.0);",
+                    $"float projFactor = ((1.0 / slope) / -vViewPos.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
+                    $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
+                };
+            }
+        }
 
         /// <summary>
         /// Fragment Shader Shard for linearizing a depth value using the clipping planes of the current camera.
         /// </summary>
-        private static readonly List<string> CalculatePointShape = new()
+        private static List<string> CalculatePointShape(bool doRenderInstanced)
         {
-            "vec2 distanceVector = (2.0 * gl_PointCoord) - 1.0; //[-1,1]",
-            "float weight;",
-            "",
-            "switch (PointShape)",
-            "{",
-            "    case 0: // default = square",
-            "    default:",
-            "        gl_FragDepth = gl_FragCoord.z;",
-            "        break;",
-            "    case 1: // circle	",
-            "",
-            "        float distanceFromCenter = length(2.0 * gl_PointCoord - 1.0);",
-            "",
-            "        if(distanceFromCenter > 1.0)",
-            "            discard;",
-            "",
-            "        gl_FragDepth = gl_FragCoord.z;",
-            "",
-            "        break;",
-            "    case 2: //paraboloid",
-            "",
-            "        weight = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0)); //paraboloid weight function",
-            "",
-            "        vec4 position = vViewPos;",
-            "        position.z += weight * vWorldSpacePointRad;",
-            "        position = FUSEE_P * position;",
-            "        position /= position.w;",
-            "        gl_FragDepth = (position.z + 1.0) / 2.0;",
-            "",
-            "        break;",
-            "}"
-        };
+            if (!doRenderInstanced)
+            {
+                return new List<string>() {
+                "vec2 distanceVector = (2.0 * gl_PointCoord) - 1.0; //[-1,1]",
+                "float weight;",
+                "",
+                "switch (PointShape)",
+                "{",
+                "    case 0: // default = square",
+                "    default:",
+                "        gl_FragDepth = gl_FragCoord.z;",
+                "        break;",
+                "    case 1: // circle	",
+                "",
+                "        float distanceFromCenter = length(2.0 * gl_PointCoord - 1.0);",
+                "",
+                "        if(distanceFromCenter > 1.0)",
+                "            discard;",
+                "",
+                "        gl_FragDepth = gl_FragCoord.z;",
+                "",
+                "        break;",
+                "    case 2: //paraboloid",
+                "",
+                "        weight = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0)); //paraboloid weight function",
+                "",
+                "        vec4 position = vec4(vViewPos, 1.0);",
+                "        position.z += weight * vWorldSpacePointRad;",
+                "        position = FUSEE_P * position;",
+                "        position /= position.w;",
+                "        gl_FragDepth = (position.z + 1.0) / 2.0;",
+                "",
+                "        break;",
+                "}"
+                };
+            }
+            else
+            {
+                return new List<string>() {
+                "vec2 distanceVector = (2.0 * vPointCoord) - 1.0; //[-1,1]",
+                "float weight;",
+                "",
+                "switch (PointShape)",
+                "{",
+                "    case 0: // default = square",
+                "    default:",
+                "        gl_FragDepth = gl_FragCoord.z;",
+                "        break;",
+                "    case 1: // circle	",
+                "",
+                "        float distanceFromCenter = length(2.0 * vPointCoord - 1.0);",
+                "",
+                "        if(distanceFromCenter > 1.0)",
+                "            discard;",
+                "",
+                "        gl_FragDepth = gl_FragCoord.z;",
+                "",
+                "        break;",
+                "    case 2: //paraboloid",
+                "",
+                "        weight = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0)); //paraboloid weight function",
+                "",
+                "        vec4 position = vec4(vViewPos, 1.0);",
+                "        position.z += weight * vWorldSpacePointRad;",
+                "        position = FUSEE_P * position;",
+                "        position /= position.w;",
+                "        gl_FragDepth = (position.z + 1.0) / 2.0;",
+                "",
+                "        break;",
+                "}"
+                };
+            }
+        }
 
-        private static readonly List<string> CalculatePointSizeMode = new()
+        private static List<string> CalculatePointSizeMode()
         {
+            return new List<string>() {
             "switch(PointSizeMode)",
             "{",
             "   // Fixed pixel size",
@@ -225,20 +300,24 @@ namespace Fusee.Engine.Core.Effects
             "       break;",
             "   }",
             "}"
-        };
+            };
+        }
 
         /// <summary>
         /// Creates a new instance of type PointCloudSurfaceEffect.
         /// </summary>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
-        public SurfaceEffectPointCloud(RenderStateSet rendererStates = null)
+        public SurfaceEffectPointCloud(RenderStateSet rendererStates = null, bool doRenderInstanced = false)
             : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) },
-                  false,
-                  VertShards.SurfOutBody(ShadingModel.Edl).Concat(CalculateVaryings).Concat(CalculatePointSizeMode).ToList(),
-                  FragShards.SurfOutBody(ShadingModel.Edl, TextureSetup.NoTextures).Concat(CalculatePointShape).ToList(),
+                  RenderFlags.PointCloud | (doRenderInstanced ? RenderFlags.Instanced : RenderFlags.None),
+                  CalculateVaryings(doRenderInstanced).Concat(VertShards.SurfOutBody(ShadingModel.Edl, doRenderInstanced)).ToList(),
+                  FragShards.SurfOutBody(ShadingModel.Edl, TextureSetup.NoTextures).Concat(CalculatePointShape(doRenderInstanced)).ToList(),
                   rendererStates)
         {
-            RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);
+            if(!doRenderInstanced)
+                RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);
+            else
+                RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Solid);
         }
     }
 }
