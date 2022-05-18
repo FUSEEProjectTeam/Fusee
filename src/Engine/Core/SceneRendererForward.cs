@@ -354,8 +354,6 @@ namespace Fusee.Engine.Core
                 _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
             }
 
-
-
             _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
 
             if (cam.Item2.Camera.ClearColor)

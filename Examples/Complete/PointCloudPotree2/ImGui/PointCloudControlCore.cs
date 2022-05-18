@@ -1,5 +1,4 @@
 ﻿using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
@@ -7,11 +6,12 @@ using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 {
-    internal class PointCloudControlCore : ImGuiDesktop.Templates.FuseeControlToTexture
+    internal class PointCloudControlCore : ImGuiDesktop.Templates.FuseeControlToTexture, IDisposable
     {
         public bool UseWPF { get; set; }
         public bool ReadyToLoadNewFile { get; private set; }
@@ -19,28 +19,18 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         public bool IsAlive { get; private set; }
 
         // angle variables
-        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit;
-        private static float2 _offset;
-        private static float2 _offsetInit;
-
-        private int Width;
-        private int Height;
-
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
         private const float RotationSpeed = 7;
 
         private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
 
-        private bool _twoTouchRepeated;
         private bool _keys;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
 
         private readonly float _fovy = M.PiOver4;
-
-
-        private float _maxPinchSpeed;
 
         public bool ClosingRequested
         {
@@ -53,7 +43,6 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         private Camera _cam;
         private float3 _initCameraPos;
 
-        //private SixDOFDevice _spaceMouse;
         private PointCloudComponent _pointCloud;
 
 
@@ -64,8 +53,6 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         public override void Init()
         {
-            //_spaceMouse = GetDevice<SixDOFDevice>();
-
             PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
             PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.ColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
             PtRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
@@ -129,21 +116,14 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 }
             };
 
-            _angleRoll = 0;
-            _angleRollInit = 0;
-            _twoTouchRepeated = false;
-            _offset = float2.Zero;
-            _offsetInit = float2.Zero;
-
-
             _sceneRenderer = new SceneRendererForward(_scene);
             _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule());
-
 
             IsInitialized = true;
         }
 
         private WritableTexture RenderTexture;
+        private bool disposedValue;
 
         // RenderAFrame is called once a frame
         protected override ITextureHandle RenderAFrame()
@@ -195,8 +175,6 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 return;
             }
 
-            var isSpaceMouseMoving = SpaceMouseMoving(out float3 velPos, out float3 velRot);
-
             // ------------ Enable to update the Scene only when the user isn't moving ------------------
             /*if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0 || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint) || isSpaceMouseMoving)
                 OocLoader.IsUserMoving = true;
@@ -207,10 +185,6 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
                 _keys = true;
-
-
-            _twoTouchRepeated = false;
-
 
             // UpDown / LeftRight rotation
             if (Input.Mouse.LeftButton)
@@ -230,25 +204,13 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 }
             }
 
-            if (isSpaceMouseMoving)
-            {
-                _angleHorz -= velRot.y;
-                _angleVert -= velRot.x;
+            _angleHorz += _angleVelHorz;
+            _angleVert += _angleVelVert;
+            _angleVelHorz = 0;
+            _angleVelVert = 0;
 
-                float speed = 12;
+            _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
 
-                _camTransform.FpsView(_angleHorz, _angleVert, velPos.z, velPos.x, speed);
-                _camTransform.Translation += new float3(0, velPos.y * speed, 0);
-            }
-            else
-            {
-                _angleHorz += _angleVelHorz;
-                _angleVert += _angleVelVert;
-                _angleVelHorz = 0;
-                _angleVelVert = 0;
-
-                _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
-            }
         }
 
         private void OnThresholdChanged(int newValue)
@@ -261,38 +223,11 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             _pointCloud.PointCloudImp.MinProjSizeModifier = newValue;
         }
 
-        private bool SpaceMouseMoving(out float3 velPos, out float3 velRot)
-        {
-            //if (_spaceMouse != null && _spaceMouse.IsConnected)
-            //{
-            //    bool spaceMouseMovement = false;
-            //    velPos = 0.001f * _spaceMouse.Translation;
-            //    if (velPos.LengthSquared < 0.01f)
-            //        velPos = float3.Zero;
-            //    else
-            //        spaceMouseMovement = true;
-            //    velRot = 0.0001f * _spaceMouse.Rotation;
-            //    velRot.z = 0;
-            //    if (velRot.LengthSquared < 0.000005f)
-            //        velRot = float3.Zero;
-            //    else
-            //        spaceMouseMovement = true;
-            //
-            //    return spaceMouseMovement;
-            //}
-            velPos = float3.Zero;
-            velRot = float3.Zero;
-            return false;
-        }
-
         // Is called when the window was resized
         protected override void Resize(int width, int height)
         {
             if (width <= 0 || height <= 0)
                 return;
-
-            Width = width;
-            Height = height;
 
             // delete old texture, generate new
             RenderTexture?.Dispose();
@@ -301,20 +236,35 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             if (PtRenderingParams.Instance.EdlStrength == 0f) return;
             PtRenderingParams.Instance.ColorPassEf.DepthTex?.Dispose();
             PtRenderingParams.Instance.ColorPassEf.DepthTex = WritableTexture.CreateDepthTex(width, height, new ImagePixelFormat(ColorFormat.Depth24));
-
         }
-
-        //public override void DeInit()
-        //{
-        //    base.DeInit();
-        //    IsAlive = false;
-        //}
 
         public void ResetCamera()
         {
             _camTransform.Translation = _initCameraPos;
             _angleHorz = _angleVert = 0;
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    RenderTexture?.Dispose();
+                    PtRenderingParams.Instance.ColorPassEf.DepthTex?.Dispose();
+                    //potreeReader.Dispose(); <- check for memory leak
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 

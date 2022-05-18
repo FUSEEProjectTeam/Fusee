@@ -2,7 +2,6 @@
 using Fusee.Engine.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
-using TextureWrapMode = OpenTK.Graphics.OpenGL.TextureWrapMode;
 
 namespace Fusee.ImGuiDesktop.Templates
 {
@@ -15,6 +14,7 @@ namespace Fusee.ImGuiDesktop.Templates
         private int _lastHeight;
 
         protected RenderContext _rc;
+        private bool disposedValue;
 
 
         #region UserCode
@@ -96,7 +96,7 @@ namespace Fusee.ImGuiDesktop.Templates
         public IntPtr RenderToTexture(int width, int height)
         {
             // prevent calls to resize every frame
-            if(_lastHeight != height || _lastWidth != width)
+            if (_lastHeight != height || _lastWidth != width)
             {
                 _lastWidth = width;
                 _lastHeight = height;

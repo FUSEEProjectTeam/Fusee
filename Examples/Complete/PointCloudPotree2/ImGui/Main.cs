@@ -1,18 +1,19 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
+using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 {
     public class PointCloudPotree2ImGui
     {
+        // STAThread needed for WPF FileSelectionDialog
+        [STAThread]
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies

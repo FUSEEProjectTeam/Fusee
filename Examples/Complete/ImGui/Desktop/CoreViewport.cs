@@ -10,7 +10,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
     {
         private SceneContainer _rocketScene;
         private SceneRendererForward _renderer;
-        private readonly RenderContext _rc;
 
         private Transform _camPivotTransform;
 

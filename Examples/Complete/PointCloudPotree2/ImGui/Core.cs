@@ -1,8 +1,9 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.ImGuiDesktop;
-using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
 using ImGuiNET;
+using Microsoft.Win32;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -18,29 +19,27 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         private static bool _dockspaceOpen = true;
 
-        private static int _threshold;
+        private static int _threshold = 1000000;
         private static float _fuseeViewportMinProj;
 
-        private static int _edlNeighbour;
-        private static float _edlStrength;
+        private static int _edlNeighbour = 0;
+        private static float _edlStrength = .5f;
 
         private static int _currentPtShape;
         private static int _currentPtSizeMethod;
         private static int _ptSize = 1;
 
-        private static Vector4 _ptColor;
-        private static bool _colorPickerOpen;
+        private static int _currentColorMode = 0;
 
-        private static float _color;
+        private static Vector4 _ptColor = new(0, 0, 0, 1);
+        private static bool _colorPickerOpen;
 
         private static bool _isMouseInsideFuControl;
 
-        private static string _inputText = "Write here";
 
         private PointCloudControlCore _fuControl;
 
         #endregion
-
 
         private async Task Load()
         {
@@ -139,23 +138,34 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         }
 
 
-        internal static void DrawGUI()
+        internal void DrawGUI()
         {
             ImGui.Begin("Settings");
             ImGui.Text("Fusee PointCloud Rendering");
             ImGui.Text($"Application average {1000.0f / ImGui.GetIO().Framerate:0.00} ms/frame ({ImGui.GetIO().Framerate:0} FPS)");
             ImGui.NewLine();
-            ImGui.Button("Open File");
+            if (ImGui.Button("Open File"))
+            {
+                LoadPointcloudDialog();
+            }
             ImGui.SameLine();
-            ImGui.Button("Reset Camera");
+
+            if (ImGui.Button("Reset Camera"))
+            {
+                _fuControl.ResetCamera();
+            }
             ImGui.SameLine();
-            ImGui.Button("Show Octree");
+
+            if (ImGui.Button("Show Octree"))
+            {
+                // not implemented
+            }
 
             ImGui.NewLine();
             ImGui.Spacing();
             ImGui.BeginGroup();
             ImGui.Text("Visibility");
-            ImGui.InputInt("Threshold", ref _threshold, 1, 1);
+            ImGui.InputInt("Point threshold", ref _threshold, 1000, 10000);
             ImGui.SliderFloat("Min. Projection Size Modifier", ref _fuseeViewportMinProj, 0f, 1f);
 
 
@@ -170,7 +180,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.BeginGroup();
             ImGui.Text("Lighting");
             ImGui.SliderInt("EDL Neighbor Px", ref _edlNeighbour, 0, 5);
-            ImGui.SliderFloat("EDL Strength", ref _edlStrength, -1f, 5f);
+            ImGui.SliderFloat("EDL Strength", ref _edlStrength, 0f, 5f);
 
             PtRenderingParams.Instance.EdlStrength = _edlStrength;
             PtRenderingParams.Instance.EdlNoOfNeighbourPx = _edlNeighbour;
@@ -185,10 +195,10 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
             PtRenderingParams.Instance.Shape = _currentPtShape switch
             {
-                0 => PointCloud.Common.PointShape.Paraboloid,
-                1 => PointCloud.Common.PointShape.Rect,
-                2 => PointCloud.Common.PointShape.Circle,
-                _ => PointCloud.Common.PointShape.Paraboloid
+                0 => PointShape.Paraboloid,
+                1 => PointShape.Rect,
+                2 => PointShape.Circle,
+                _ => PointShape.Paraboloid
             };
 
             ImGui.EndGroup();
@@ -214,39 +224,45 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.Spacing();
             ImGui.BeginGroup();
             ImGui.Text("Color Mode");
-            if (ImGui.ColorButton("Toggle Color Picker", _ptColor))
+
+            ImGui.Combo("Color mode", ref _currentColorMode, new string[] { "VertexColor0", "VertexColor1", "VertexColor2", "Single" }, 4);
+
+            PtRenderingParams.Instance.ColorMode = _currentColorMode switch
             {
-                _colorPickerOpen = !_colorPickerOpen;
+                0 => PointColorMode.VertexColor0,
+                1 => PointColorMode.VertexColor1,
+                2 => PointColorMode.VertexColor2,
+                3 => PointColorMode.Single,
+                _ => PointColorMode.VertexColor0
+            };
 
-            }
-            if (_colorPickerOpen)
+            if (_currentColorMode == (int)PointColorMode.Single)
             {
-                ImGui.Begin("Color Picker", ref _colorPickerOpen, ImGuiWindowFlags.AlwaysAutoResize);
-                ImGui.ColorPicker4("Color", ref _ptColor);
-                ImGui.End();
+                ImGui.Spacing();
+                ImGui.BeginGroup();
+                ImGui.Text("Color picker");
+
+                if (ImGui.ColorButton("Toggle Color Picker", _ptColor, ImGuiColorEditFlags.DefaultOptions, Vector2.One * 50))
+                {
+                    _colorPickerOpen = !_colorPickerOpen;
+                }
+                if (_colorPickerOpen)
+                {
+                    ImGui.Begin("Color Picker", ref _colorPickerOpen, ImGuiWindowFlags.AlwaysAutoResize);
+                    ImGui.ColorPicker4("Color", ref _ptColor);
+                    ImGui.End();
+
+                    PtRenderingParams.Instance.ColorPassEf.SurfaceInput.Albedo = _ptColor.ToFuseeVector();
+                }
+                ImGui.EndGroup();
             }
 
             ImGui.EndGroup();
-
-            ImGui.BeginGroup();
-
-            ImGui.SliderAngle("Colorpicker", ref _color);
-
-            ImGui.EndGroup();
-
-
-            ImGui.BeginGroup();
-
-            ImGui.InputTextMultiline("TextInputTest", ref _inputText, 2000, new float2(200, 200).ToNumericsVector());
-
-            ImGui.EndGroup();
-
             ImGui.End();
-
-
         }
 
-        internal static void DrawMainMenuBar()
+
+        internal void DrawMainMenuBar()
         {
             if (ImGui.BeginMainMenuBar())
             {
@@ -254,7 +270,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 {
                     if (ImGui.MenuItem("Open"))
                     {
-
+                        LoadPointcloudDialog();
                     }
                     if (ImGui.MenuItem("Exit"))
                     {
@@ -264,6 +280,36 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 }
             }
             ImGui.EndMainMenuBar();
+        }
+
+        private void LoadPointcloudDialog()
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                CheckFileExists = true,
+                CheckPathExists = true,
+                Filter = "Potree2 json (*.json)|*.json",
+                ValidateNames = true,
+            };
+
+
+            if (openFileDialog.ShowDialog().Value)
+            {
+                var file = openFileDialog.FileName;
+
+                PtRenderingParams.Instance.PathToOocFile = file;
+
+                if (_fuControl != null)
+                {
+                    _fuControl.Dispose();
+                    _fuControl = new PointCloudControlCore(RC);
+                    _fuControl.Init();
+                    _fuControl.UpdateOriginalGameWindowDimensions(Width, Height);
+                    _fuControl.ResetCamera();
+                    // reset color picker
+                    _currentColorMode = 0;
+                }
+            }
         }
 
         /// <summary>
