@@ -1903,6 +1903,11 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh mesh, InstanceData instanceData = null, bool doRenderForward = true)
         {
+            if(instanceData != null)
+            {
+
+            }
+
             var cFx = GetCompiledFxForRenderMethod(doRenderForward);
             SetCompiledFx(cFx.GpuHandle);
             SetRenderStateSet(_currentEffect.RendererStates);

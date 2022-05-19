@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The shader shard containing the definition of PI.
         /// </summary>
-        [FxShader(ShaderCategory.Fragment)]
+        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Header)]
         public string Pi = Header.DefinePi;
 

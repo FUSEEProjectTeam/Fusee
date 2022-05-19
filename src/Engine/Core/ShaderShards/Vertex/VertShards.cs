@@ -22,16 +22,14 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             {
                 case ShadingModel.Edl:
                 case ShadingModel.Unlit:
-                    res.Add("OUT.position = fuVertex;");
+                    res.Add($"OUT.position = {UniformNameDeclarations.Vertex};");
                     break;
                 case ShadingModel.DiffuseSpecular:
                 case ShadingModel.DiffuseOnly:
                 case ShadingModel.Glossy:
                 case ShadingModel.BRDF:
-                    res.Add(@"
-                    OUT.position = fuVertex;
-                    OUT.normal = fuNormal;"
-                    );
+                    res.Add($"OUT.position = vec4({UniformNameDeclarations.Vertex}, 1.0);");
+                    res.Add("OUT.normal = fuNormal;");
                     break;
                 default:
                     throw new ArgumentException("Invalid ShadingModel!");
@@ -51,7 +49,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 case ShadingModel.Unlit:
                     {
                         if(!doRenderBillboards)
-                            res.Add("OUT.position = fuVertex;");
+                            res.Add($"OUT.position = vec4({UniformNameDeclarations.Vertex}, 1.0);");
                         else
                             res.Add($"OUT.position = {VaryingNameDeclarations.ViewPos};");
                         break;
@@ -60,10 +58,8 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 case ShadingModel.DiffuseOnly:
                 case ShadingModel.Glossy:
                 case ShadingModel.BRDF:
-                    res.Add(@"
-                    OUT.position = fuVertex;
-                    OUT.normal = fuNormal;"
-                    );
+                    res.Add($"OUT.position = vec4({UniformNameDeclarations.Vertex}, 1.0);");
+                    res.Add("OUT.normal = fuNormal;");
                     break;
                 default:
                     throw new ArgumentException("Invalid ShadingModel!");

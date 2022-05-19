@@ -149,6 +149,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 SsaoOn = false,
                 FxaaOn = false
             };
+
             _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
             _guiRenderer = new SceneRendererForward(_gui);
 

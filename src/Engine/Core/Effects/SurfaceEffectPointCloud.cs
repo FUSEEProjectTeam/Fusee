@@ -131,7 +131,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public readonly string ViewPosIn = GLSL.CreateIn(GLSL.Type.Vec3, $"{VaryingNameDeclarations.ViewPos}");
+        public readonly string ViewPosIn = GLSL.CreateIn(GLSL.Type.Vec4, $"{VaryingNameDeclarations.ViewPos}");
 
         /// <summary>
         /// The out variable for the view position in the vertex shader.
@@ -139,7 +139,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public readonly string ViewPosOut = GLSL.CreateOut(GLSL.Type.Vec3, $"{VaryingNameDeclarations.ViewPos}");
+        public readonly string ViewPosOut = GLSL.CreateOut(GLSL.Type.Vec4, $"{VaryingNameDeclarations.ViewPos}");
 
         
         [FxShader(ShaderCategory.Fragment)]
@@ -172,7 +172,7 @@ namespace Fusee.Engine.Core.Effects
             if (!doRenderInstanced)
             {
                 return new List<string>() {
-                    $"vViewPos = ({UniformNameDeclarations.ModelView} * vec4(fuVertex.xyz, 1.0)).xyz;",
+                    $"vViewPos = ({UniformNameDeclarations.ModelView} * vec4({UniformNameDeclarations.Vertex}.xyz, 1.0)).xyz;",
                     $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
                     "float slope = tan(fov / 2.0);",
                     $"float projFactor = ((1.0 / slope) / -vViewPos.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
@@ -185,13 +185,17 @@ namespace Fusee.Engine.Core.Effects
                     $"mat4 mv = FUSEE_V * {UniformNameDeclarations.InstanceModelMat};",
 
                     //assumption: position x and y are in range [-0.5, 0.5].
-                    $"{VaryingNameDeclarations.PointCoord} = vec2(0.5) / fuVertex.xy;",
-
-                    $"float scaledPtSize = float({UniformNameDeclarations.PointSize}) * 0.01;",
-                    $"{VaryingNameDeclarations.ViewPos} = (mv * vec4(0.0, 0.0, 0.0, 1.0)",
-                    $"         + vec4(fuVertex.x, fuVertex.y, 0.0, 0.0)",
-                    $"         * vec4(scaledPtSize, scaledPtSize, 1.0, 1.0)).xyz;",
-                    $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
+                    $"{VaryingNameDeclarations.PointCoord} = vec2(0.5) / {UniformNameDeclarations.Vertex}.xy;",
+                    $"vec4 unscaledViewPos = mv * vec4({UniformNameDeclarations.Vertex}, 1.0);",
+                    $"float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]) * 180.0 / PI;",
+                    "float billboardHeight = 1.0;",
+                    $"float sizeInPx = (billboardHeight / (2.0 * tan(fov / 2.0) * unscaledViewPos.z)) * float({UniformNameDeclarations.ViewportPx});",
+                    "float scaleFactor = float(PointSize) / sizeInPx;",
+                    
+                    $"{VaryingNameDeclarations.ViewPos} = mv * vec4(0.0, 0.0, 0.0, 1.0)",
+                    $"         + vec4({UniformNameDeclarations.Vertex}.x, {UniformNameDeclarations.Vertex}.y, 0.0, 0.0)",
+                    $"         * vec4(scaleFactor, scaleFactor, 1.0, 1.0);",
+                    "",
                     "float slope = tan(fov / 2.0);",
                     $"float projFactor = ((1.0 / slope) / -vViewPos.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
                     $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
@@ -230,9 +234,9 @@ namespace Fusee.Engine.Core.Effects
                 "",
                 "        weight = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0)); //paraboloid weight function",
                 "",
-                "        vec4 position = vec4(vViewPos, 1.0);",
+                $"       vec4 position = {VaryingNameDeclarations.ViewPos};",
                 "        position.z += weight * vWorldSpacePointRad;",
-                "        position = FUSEE_P * position;",
+                $"       position = {UniformNameDeclarations.Projection} * position;",
                 "        position /= position.w;",
                 "        gl_FragDepth = (position.z + 1.0) / 2.0;",
                 "",
@@ -266,9 +270,9 @@ namespace Fusee.Engine.Core.Effects
                 "",
                 "        weight = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0)); //paraboloid weight function",
                 "",
-                "        vec4 position = vec4(vViewPos, 1.0);",
+                $"       vec4 position = {VaryingNameDeclarations.ViewPos};",
                 "        position.z += weight * vWorldSpacePointRad;",
-                "        position = FUSEE_P * position;",
+                $"       position = {UniformNameDeclarations.Projection} * position;",
                 "        position /= position.w;",
                 "        gl_FragDepth = (position.z + 1.0) / 2.0;",
                 "",
@@ -314,10 +318,14 @@ namespace Fusee.Engine.Core.Effects
                   FragShards.SurfOutBody(ShadingModel.Edl, TextureSetup.NoTextures).Concat(CalculatePointShape(doRenderInstanced)).ToList(),
                   rendererStates)
         {
-            if(!doRenderInstanced)
+            if (!doRenderInstanced)
+            {
                 RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);
+            }
             else
+            {
                 RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Solid);
+            }
         }
     }
 }

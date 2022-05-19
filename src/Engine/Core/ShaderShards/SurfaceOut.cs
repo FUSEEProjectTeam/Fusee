@@ -92,7 +92,7 @@ namespace Fusee.Engine.Core.ShaderShards
     public static class SurfaceOut
     {
         #region Variables that can be changed in a Shader Shard
-        internal static readonly Tuple<GLSL.Type, string> Pos = new(GLSL.Type.Vec3, "position");
+        internal static readonly Tuple<GLSL.Type, string> Pos = new(GLSL.Type.Vec4, "position");
         internal static readonly Tuple<GLSL.Type, string> Normal = new(GLSL.Type.Vec3, "normal");
         internal static readonly Tuple<GLSL.Type, string> Albedo = new(GLSL.Type.Vec4, "albedo");
         internal static readonly Tuple<GLSL.Type, string> Emission = new(GLSL.Type.Vec3, "emission");
@@ -111,11 +111,11 @@ namespace Fusee.Engine.Core.ShaderShards
 
         private static readonly Dictionary<ShadingModel, ShadingModelShards> _shadingModelCache = new();
 
-        private static readonly string DefaultUnlitOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0), vec3(0))";
-        private static readonly string DefaultDiffuseOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0)";
-        private static readonly string DefaultDiffSpecOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0)";
-        private static readonly string DefaultGlossyOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0),vec3(0), vec3(0), 0.0)";
-        private static readonly string DerfafultBRDFOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1), 0.0)";
+        private static readonly string DefaultUnlitOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec4(0), vec4(0), vec3(0))";
+        private static readonly string DefaultDiffuseOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec4(0), vec4(0), vec3(0), vec3(0), 0.0)";
+        private static readonly string DefaultDiffSpecOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec4(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0)";
+        private static readonly string DefaultGlossyOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec4(0), vec4(0),vec3(0), vec3(0), 0.0)";
+        private static readonly string DerfafultBRDFOut = $"{SurfaceEffectNameDeclarations.StructTypeName}(vec4(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1), 0.0)";
 
         /// <summary>
         /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffectBase.SurfaceOutput"/> struct.
