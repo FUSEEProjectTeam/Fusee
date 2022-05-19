@@ -48,7 +48,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 case ShadingModel.Edl:
                 case ShadingModel.Unlit:
                     {
-                        if(!doRenderBillboards)
+                        if (!doRenderBillboards)
                             res.Add($"OUT.position = vec4({UniformNameDeclarations.Vertex}, 1.0);");
                         else
                             res.Add($"OUT.position = {VaryingNameDeclarations.ViewPos};");

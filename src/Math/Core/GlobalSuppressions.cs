@@ -72,4 +72,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "API design", Scope = "type", Target = "~T:Fusee.Math.Core.float3x3")]
 [assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "API design", Scope = "type", Target = "~T:Fusee.Math.Core.float4")]
 [assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "API design", Scope = "type", Target = "~T:Fusee.Math.Core.float4x4")]
-[assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "API design", Scope = "type", Target = "~T:Fusee.Math.Core.int3")]
+[assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "API design", Scope = "type", Target = "~T:Fusee.Math.Core.int3")] 

@@ -1224,7 +1224,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var sizeOfMat = sizeOfFloat4 * 4;
             var amount = instancePositions.Length;
             int matBytes = amount * sizeOfMat;
-            
+
             var posBufferData = new float4[amount * 4];
 
             var modelMats = new float4x4[amount];
@@ -1235,7 +1235,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 if (instanceScales != null)
                     mat = float4x4.CreateScale(instanceScales[i]);
                 if (instanceRotations != null)
-                   mat *= float4x4.CreateRotationZXY(instanceRotations[i]);
+                    mat *= float4x4.CreateRotationZXY(instanceRotations[i]);
                 mat *= float4x4.CreateTranslation(instancePositions[i]);
                 modelMats[i] = mat;
             }
@@ -1345,7 +1345,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 vbo = ((MeshImp)mr).VertexBufferObject;
                 GL.GetNamedBufferParameter(vbo, BufferParameterName.BufferSize, out int size);
-                if(size < vertsBytes)
+                if (size < vertsBytes)
                 {
                     GL.DeleteBuffer(vbo);
                     GL.CreateBuffers(1, out vbo);
@@ -1400,7 +1400,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 tBo = ((MeshImp)mr).TangentBufferObject;
-                
+
                 GL.GetNamedBufferParameter(tBo, BufferParameterName.BufferSize, out int size);
                 if (size < tangentBytes)
                 {
@@ -2146,7 +2146,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 }
 
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedModelMatBindingIndex, ((InstanceDataImp)instanceData).InstanceTransformBufferObject, IntPtr.Zero, 16 * sizeof(float));
-                
+
                 GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero, instanceData.Amount);
 
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat1);

@@ -21,7 +21,7 @@ namespace Fusee.PointCloud.Common
         public static ShaderEffect ForDepthPass(int size, PointSizeMode pointSizeMode, PointShape shape)
         {
             return new ShaderEffect(
-            
+
             new List<IFxParamDeclaration>
             {
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = size},

@@ -11,7 +11,7 @@
         /// </summary>
         public static readonly int VertexAttribLocation = 0;
 
-        public static readonly int VertexAttribBindingIndex = VertexAttribLocation; 
+        public static readonly int VertexAttribBindingIndex = VertexAttribLocation;
 
         /// <summary>
         /// The color attribute location index.

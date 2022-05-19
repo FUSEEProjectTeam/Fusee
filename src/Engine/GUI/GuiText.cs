@@ -160,7 +160,7 @@ namespace Fusee.Engine.Gui
             }
 
             Triangles = allTriangles.ToArray();
-            Vertices = allVerts.ToArray();            
+            Vertices = allVerts.ToArray();
             Normals = allNormals.ToArray();
             UVs = allUvs.ToArray();
 

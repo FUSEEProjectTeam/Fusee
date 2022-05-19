@@ -1,5 +1,5 @@
-﻿using Fusee.Math.Core;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
+using Fusee.Math.Core;
 using System;
 
 namespace Fusee.Engine.Core.Scene
@@ -16,7 +16,8 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public event EventHandler<InstanceDataChangedEventArgs> DisposeData;
 
-        public float3[] Translations {
+        public float3[] Translations
+        {
             get => _translations;
             set
             {
@@ -26,7 +27,8 @@ namespace Fusee.Engine.Core.Scene
         }
         private float3[] _translations;
 
-        public float3[] Rotations {
+        public float3[] Rotations
+        {
             get => _rotations;
             set
             {
@@ -36,7 +38,8 @@ namespace Fusee.Engine.Core.Scene
         }
         private float3[] _rotations;
 
-        public float3[] Scales {
+        public float3[] Scales
+        {
             get => _scales;
             set
             {
@@ -46,7 +49,8 @@ namespace Fusee.Engine.Core.Scene
         }
         private float3[] _scales;
 
-        public float4[] Colors {
+        public float4[] Colors
+        {
             get => _colors;
             set
             {
@@ -67,7 +71,7 @@ namespace Fusee.Engine.Core.Scene
                 throw new ArgumentOutOfRangeException();
             _translations = translations;
 
-            if(scales != null)
+            if (scales != null)
             {
                 if (Amount != scales.Length)
                     throw new ArgumentOutOfRangeException();

@@ -178,7 +178,7 @@ namespace Fusee.Engine.Core
                         return;
                 }
             }
-            
+
             if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
             {
                 if (mesh.MeshType == PrimitiveType.Points)
@@ -491,7 +491,7 @@ namespace Fusee.Engine.Core
                 _rc.SetRenderTarget();
                 _rc.Projection = cam.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out viewport);
             }
-            
+
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
             _rc.ClearColor = cam.Camera.BackgroundColor;
@@ -710,7 +710,7 @@ namespace Fusee.Engine.Core
                     !lightVisRes.Light.IsCastingShadows ||
                     !lightVisRes.Light.Active ||
                     (lightVisRes.Light.Type == LightType.Point && !_canUseGeometryShaders)) continue;
-                
+
                 var shadowParams = CreateShadowParams(lightVisRes);
                 _currentLightType = lightVisRes.Light.Type;
 

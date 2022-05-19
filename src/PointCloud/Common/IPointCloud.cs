@@ -1,6 +1,4 @@
-﻿using Fusee.Engine.Core;
-using Fusee.Engine.Core.Scene;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 
 namespace Fusee.PointCloud.Common
 {
@@ -25,5 +23,5 @@ namespace Fusee.PointCloud.Common
         public float3 Size { get; }
     }
 
-    
+
 }

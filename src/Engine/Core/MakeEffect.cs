@@ -74,7 +74,7 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
-                                
+
                 new FxParamDeclaration<float3[]> {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
                 new FxParamDeclaration<Texture> {Name = UniformNameDeclarations.NoiseTex, Value = ssaoNoiseTex}
             },
@@ -298,7 +298,7 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Subsurface], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Subsurface]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Depth]},
-                
+
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
                 new FxParamDeclaration<float4> { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.SsaoOn, Value = 1},

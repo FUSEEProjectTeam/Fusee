@@ -98,7 +98,7 @@ namespace Fusee.PointCloud.Potree.V2
                         var dataHandler = new PointCloudDataHandler<PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
                         var imp = new Potree2Cloud(dataHandler, GetOctree());
                         return new PointCloudComponent(imp, doRenderInstanced);
-                        
+
                     }
                     else
                     {

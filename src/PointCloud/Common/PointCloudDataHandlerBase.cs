@@ -1,5 +1,4 @@
-﻿using Fusee.Engine.Core;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Common
 {

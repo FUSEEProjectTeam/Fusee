@@ -59,7 +59,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             {
                 $"{VaryingNameDeclarations.SurfOutVaryingName} = {SurfaceEffectNameDeclarations.ChangeSurfVert}();",
                 $"vec4 changedVert = {VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
-                
+
             };
 
             if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
@@ -96,7 +96,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
             }
 
-            
+
             vertMainBody.Add($"{VaryingNameDeclarations.Color1} = {UniformNameDeclarations.VertexColor1};");
             vertMainBody.Add($"{VaryingNameDeclarations.Color2} = {UniformNameDeclarations.VertexColor2};");
 

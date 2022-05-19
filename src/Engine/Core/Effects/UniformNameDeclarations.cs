@@ -576,7 +576,7 @@ namespace Fusee.Engine.Core.Effects
         /// Hash code for the <see cref="BackgroundColor"/> parameter.
         /// </summary>
         public static readonly int BackgroundColorHash = BackgroundColor.GetHashCode();
-                
+
         /// <summary>
         /// Hash code for the <see cref="ViewportPx"/> parameter.
         /// </summary>

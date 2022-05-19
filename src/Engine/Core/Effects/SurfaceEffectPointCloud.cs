@@ -141,12 +141,12 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Property)]
         public readonly string ViewPosOut = GLSL.CreateOut(GLSL.Type.Vec4, $"{VaryingNameDeclarations.ViewPos}");
 
-        
+
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public readonly string PointCoordIn = GLSL.CreateIn(GLSL.Type.Vec2, $"{VaryingNameDeclarations.PointCoord}");
 
-        
+
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
         public readonly string PointCoordOut = GLSL.CreateOut(GLSL.Type.Vec2, $"{VaryingNameDeclarations.PointCoord}");
@@ -191,7 +191,7 @@ namespace Fusee.Engine.Core.Effects
                     "float billboardHeight = 1.0;",
                     $"float sizeInPx = (billboardHeight / (2.0 * tan(fov / 2.0) * z)) * float({UniformNameDeclarations.ViewportPx});",
                     "float scaleFactor = float(PointSize) / sizeInPx;",
-                    
+
                     $"{VaryingNameDeclarations.ViewPos} = mv * vec4(0.0, 0.0, 0.0, 1.0)",
                     $"         + vec4({UniformNameDeclarations.Vertex}.x, {UniformNameDeclarations.Vertex}.y, 0.0, 0.0)",
                     $"         * vec4(scaleFactor, scaleFactor, 1.0, 1.0);",

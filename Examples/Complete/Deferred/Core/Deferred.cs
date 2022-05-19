@@ -244,7 +244,7 @@ namespace Fusee.Examples.Deferred.Core
 
             _campComp.BackgroundColor = _backgroundColor;
 
-            
+
 
             if (_renderDeferred)
                 _sceneRendererDeferred.Render(RC);

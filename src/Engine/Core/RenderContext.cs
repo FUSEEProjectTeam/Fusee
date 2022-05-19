@@ -1903,7 +1903,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh mesh, InstanceData instanceData = null, bool doRenderForward = true)
         {
-            if(instanceData != null)
+            if (instanceData != null)
             {
 
             }

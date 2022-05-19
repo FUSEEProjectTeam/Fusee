@@ -131,7 +131,7 @@ namespace Fusee.Examples.Simple.Core
 
         public float4[] RandomColors(int amount)
         {
-            var instanceColors= new float4[amount];
+            var instanceColors = new float4[amount];
             for (int i = 0; i < amount; i++)
             {
                 var res = float4.Zero;

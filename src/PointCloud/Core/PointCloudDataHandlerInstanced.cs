@@ -97,7 +97,7 @@ namespace Fusee.PointCloud.Core
             else if (_pointCache.TryGetValue(guid, out var points))
             {
                 //does not have to be a list/enumerable here - this is because of PointCloudDataHandlerBase and the 65k vertex constraint for meshes.
-                instanceData = new List<InstanceData>() { _createInstanceDataHandler.Invoke(_pointAccessor, points) };  
+                instanceData = new List<InstanceData>() { _createInstanceDataHandler.Invoke(_pointAccessor, points) };
                 _instanceDataCache.Add(guid, instanceData);
             }
             //no points yet, probably in loading queue

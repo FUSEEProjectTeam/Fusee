@@ -106,6 +106,6 @@ namespace Fusee.Engine.Core.Effects
         /// The shader shard is, or is part of, the main method of the source shader.
         /// </summary>
         Main = 256,
-        
+
     }
 }

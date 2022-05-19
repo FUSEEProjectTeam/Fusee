@@ -67,7 +67,7 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// The <see cref="GpuMesh"/>, created from visible octants/point chunks, that are ready to be rendered.
         /// </summary>
-        public List<TGpuData> GpuDataToRender { get; set; }        
+        public List<TGpuData> GpuDataToRender { get; set; }
 
     }
 }

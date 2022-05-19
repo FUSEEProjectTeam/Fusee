@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                if(ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
                     sb.AppendLine(Header.Version460Core);
                 else
                     sb.AppendLine(Header.Version300Es);

@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core.Effects
                 SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, input.ShadingModel);
             else
                 SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(VertShards.SurfOutBody(input), input.ShadingModel);
-            
+
             VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, VertMain.VertexMain(SurfaceInput.ShadingModel, SurfaceInput.TextureSetup, RenderModifications)));
 
             //TODO: try to suppress adding these parameters if the effect is used only for deferred rendering.
