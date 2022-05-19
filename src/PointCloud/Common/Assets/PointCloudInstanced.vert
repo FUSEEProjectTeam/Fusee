@@ -8,8 +8,9 @@ uniform int PointSize;
 
 uniform mat4 FUSEE_V;
 uniform mat4 FUSEE_P;
+uniform mat4 FUSEE_M;
 
-out vec3 vViewPos;
+out vec4 vViewPos;
 //out vec3 vColor;
 out vec2 vPointCoord; //equivalent to gl_pointCoord
 
@@ -30,14 +31,14 @@ void main(void)
     vPointCoord = vec2(0.5)/fuVertex.xy;
     float billboardHeight = 1.0;
 
-    vec4 unscaledViewPos = mv * vec4(fuVertex, 1.0);
+    float z = mv[3][2]; //distance from rect to cam
     float fovY = 2.0 * atan(1.0/FUSEE_P[1][1]) * 180.0 / PI;
-    float sizeInPx =  (billboardHeight/ (2.0 * tan(fovY / 2.0) * unscaledViewPos.z)) * float(FUSEE_ViewportPx);
+    float sizeInPx =  (billboardHeight/ (2.0 * tan(fovY / 2.0) * z)) * float(FUSEE_ViewportPx);
     float scaleFactor = float(PointSize) / sizeInPx;
     
-    vec4 vPos = (mv * vec4(0.0, 0.0, 0.0, 1.0)
+    vViewPos = mv * vec4(0.0, 0.0, 0.0, 1.0)
               + vec4(fuVertex.x, fuVertex.y, 0.0, 0.0)
-              * vec4(scaleFactor, scaleFactor, 1.0, 1.0));
-    vViewPos = vPos.xyz;
-    gl_Position = FUSEE_P * vPos;
+              * vec4(scaleFactor, scaleFactor, 1.0, 1.0);
+
+    gl_Position =  FUSEE_P * FUSEE_M * vViewPos;
 }

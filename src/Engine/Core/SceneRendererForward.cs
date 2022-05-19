@@ -689,8 +689,6 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            _state.RenderModification |= RenderFlags.None;
-
             //var wc = CurrentNode.GetWeights();
             //if (wc != null)
             //    AddWeightToMesh(mesh, wc);

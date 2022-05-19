@@ -5,13 +5,13 @@ uniform mat4 FUSEE_P;
 out vec4 FragColor;
 
 in vec2 vPointCoord;
-in vec3 vViewPos;
+in vec4 vViewPos;
 
 
 void main()
 {
 	float weight = 1.0 - (pow(vPointCoord.x, 2.0) + pow(vPointCoord.y, 2.0)); //paraboloid weight function
-	vec4 position = vec4(vViewPos, 1.0);
+	vec4 position = vViewPos;
 	position.z -= weight;
 	position = FUSEE_P * position;
 	position = position / position.w;

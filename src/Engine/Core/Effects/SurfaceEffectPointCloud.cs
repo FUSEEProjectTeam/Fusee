@@ -186,10 +186,10 @@ namespace Fusee.Engine.Core.Effects
 
                     //assumption: position x and y are in range [-0.5, 0.5].
                     $"{VaryingNameDeclarations.PointCoord} = vec2(0.5) / {UniformNameDeclarations.Vertex}.xy;",
-                    $"vec4 unscaledViewPos = mv * vec4({UniformNameDeclarations.Vertex}, 1.0);",
+                    $"float z = mv[3][2]; //disctance from rect to cam",
                     $"float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]) * 180.0 / PI;",
                     "float billboardHeight = 1.0;",
-                    $"float sizeInPx = (billboardHeight / (2.0 * tan(fov / 2.0) * unscaledViewPos.z)) * float({UniformNameDeclarations.ViewportPx});",
+                    $"float sizeInPx = (billboardHeight / (2.0 * tan(fov / 2.0) * z)) * float({UniformNameDeclarations.ViewportPx});",
                     "float scaleFactor = float(PointSize) / sizeInPx;",
                     
                     $"{VaryingNameDeclarations.ViewPos} = mv * vec4(0.0, 0.0, 0.0, 1.0)",
