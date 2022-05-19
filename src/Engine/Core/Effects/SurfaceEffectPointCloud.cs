@@ -173,7 +173,7 @@ namespace Fusee.Engine.Core.Effects
             {
                 return new List<string>() {
                     $"vViewPos = ({UniformNameDeclarations.ModelView} * vec4({UniformNameDeclarations.Vertex}.xyz, 1.0)).xyz;",
-                    $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
+                    $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1])  * 180.0 / PI;",
                     "float slope = tan(fov / 2.0);",
                     $"float projFactor = ((1.0 / slope) / -vViewPos.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
                     $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
@@ -187,7 +187,7 @@ namespace Fusee.Engine.Core.Effects
                     //assumption: position x and y are in range [-0.5, 0.5].
                     $"{VaryingNameDeclarations.PointCoord} = vec2(0.5) / {UniformNameDeclarations.Vertex}.xy;",
                     $"float z = mv[3][2]; //disctance from rect to cam",
-                    $"float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]) * 180.0 / PI;",
+                    $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]) * 180.0 / PI;",
                     "float billboardHeight = 1.0;",
                     $"float sizeInPx = (billboardHeight / (2.0 * tan(fov / 2.0) * z)) * float({UniformNameDeclarations.ViewportPx});",
                     "float scaleFactor = float(PointSize) / sizeInPx;",
