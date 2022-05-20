@@ -146,6 +146,8 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
             var allSceneElements = _fuControl.GetSceneGraphRePresentation();
 
+
+            ImGui.Text("SceneGraph");
             ImGui.BeginTable("SceneGraph", 3, ImGuiTableFlags.Resizable | ImGuiTableFlags.SizingMask | ImGuiTableFlags.Borders);
 
             ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.DefaultSort, 50);
