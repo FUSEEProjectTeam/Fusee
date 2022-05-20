@@ -6,6 +6,7 @@ using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -21,42 +22,33 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 #region StaticBindingVars
 
         private static bool _dockspaceOpen = true;
-
-        private static float _threshold;
-        private static float _fuseeViewportMinProj;
-
-        private static int _edlNeighbour;
-        private static float _edlStrength;
-
-        private static int _currentPtShape;
-        private static int _currentPtSizeMethod;
-        private static float _ptSize;
-
-        private static Vector4 _ptColor;
-        private static bool _colorPickerOpen;
-
-        private static float _color;
-
         private static bool _isMouseInsideFuControl;
 
-        private static string _inputText = "Write here";
+        private CoreControl _fuControl;
 
-        private CoreViewport _fuControl;
+        private Vector4 _rocketColor = Vector4.UnitW; // alpha 255
+        private bool _colorPickerOpen;
 
-#endregion
+        #endregion
 
 
-        private async Task Load()
+        private void Load()
         {
             SetImGuiDesign();
 
-            _fuControl = new CoreViewport(RC);
+            _fuControl = new CoreControl(RC);
             _fuControl.Init();
+
+            // reload last used cfg
+            if(File.Exists(Path.Combine("Assets/MyImGuiSettings.ini")))
+            {
+                ImGui.LoadIniSettingsFromDisk(Path.Combine("Assets/MyImGuiSettings.ini"));
+            }
         }
 
         public override async Task InitAsync()
         {
-            await Load();
+            Load();
             await base.InitAsync();
 
         }
@@ -141,78 +133,82 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         }
 
 
-        internal static void DrawGUI()
+        internal void DrawGUI()
         {
-            ImGui.Begin("Settings");
-            ImGui.Text("Fusee PointCloud Rendering");
+            ImGui.Begin("Sidebar");
+
+            ImGui.BeginGroup();
+            ImGui.Text("Fusee Simple Example");
             ImGui.Text($"Application average {1000.0f / ImGui.GetIO().Framerate:0.00} ms/frame ({ImGui.GetIO().Framerate:0} FPS)");
-            ImGui.NewLine();
-            ImGui.Button("Open File");
-            ImGui.SameLine();
-            ImGui.Button("Reset Camera");
-            ImGui.SameLine();
-            ImGui.Button("Show Octree");
-
-            ImGui.NewLine();
-            ImGui.Spacing();
-            ImGui.BeginGroup();
-            ImGui.Text("Visibility");
-            ImGui.InputFloat("Threshold", ref _threshold);
-            ImGui.SliderFloat("Min. Projection Size Modifier", ref _fuseeViewportMinProj, 0f, 1f);
             ImGui.EndGroup();
-
-
-            ImGui.NewLine();
+          
             ImGui.Spacing();
-            ImGui.BeginGroup();
-            ImGui.Text("Lighting");
-            ImGui.SliderInt("EDL Neighbor Px", ref _edlNeighbour, 0, 5);
-            ImGui.SliderFloat("EDL Strength", ref _edlStrength, -1f, 5f);
-            ImGui.EndGroup();
 
-            ImGui.NewLine();
-            ImGui.Spacing();
-            ImGui.BeginGroup();
-            ImGui.Text("Point Shape");
-            ImGui.Combo("PointShape", ref _currentPtShape, new string[] { "Paraboloid", "Box", "Square" }, 3);
-            ImGui.EndGroup();
+            var allSceneElements = _fuControl.GetSceneGraphRePresentation();
 
-            ImGui.NewLine();
-            ImGui.Spacing();
-            ImGui.BeginGroup();
-            ImGui.Text("Point Size Method");
-            ImGui.Combo("Point Size Method", ref _currentPtSizeMethod, new string[] { "FixedPixelSize", "Adaptive", "Third" }, 3);
-            ImGui.SliderFloat("Point Size", ref _ptSize, 0.2f, 20f);
-            ImGui.EndGroup();
+            ImGui.BeginTable("SceneGraph", 3, ImGuiTableFlags.Resizable | ImGuiTableFlags.SizingMask | ImGuiTableFlags.Borders);
 
-            ImGui.NewLine();
+            ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.DefaultSort, 50);
+            ImGui.TableSetupColumn("Type", ImGuiTableColumnFlags.DefaultSort, 100);
+            ImGui.TableSetupColumn("Value", ImGuiTableColumnFlags.DefaultSort, 500);
+
+            ImGui.TableHeadersRow();
+
+            foreach (var element in allSceneElements)
+            {                
+                ImGui.TableNextColumn();
+                ImGui.Text(element.Name);
+                ImGui.TableNextColumn();
+                ImGui.Text(element.Type.FullName);
+                ImGui.TableNextColumn();
+                ImGui.Text(element.Value);
+                ImGui.TableNextRow();
+            }
+            ImGui.EndTable();
+
             ImGui.Spacing();
+            ImGui.Spacing();
+            ImGui.Spacing();
+            ImGui.Separator();
+
+
             ImGui.BeginGroup();
-            ImGui.Text("Color Mode");
-            if (ImGui.ColorButton("Toggle Color Picker", _ptColor))
+
+            ImGui.Text("Color Rocket");
+
+            if (ImGui.ColorButton("Toggle Color Picker", _rocketColor, ImGuiColorEditFlags.DefaultOptions, Vector2.One * 50))
             {
                 _colorPickerOpen = !_colorPickerOpen;
-
             }
             if (_colorPickerOpen)
             {
                 ImGui.Begin("Color Picker", ref _colorPickerOpen, ImGuiWindowFlags.AlwaysAutoResize);
-                ImGui.ColorPicker4("Color", ref _ptColor);
+                ImGui.ColorPicker4("Color", ref _rocketColor);
                 ImGui.End();
+
+                _fuControl.ColorRocket(_rocketColor.ToFuseeVector());
             }
 
             ImGui.EndGroup();
 
+            ImGui.Spacing();
+            ImGui.Spacing();
+            ImGui.Spacing();
+            ImGui.Separator();
+
+
             ImGui.BeginGroup();
+            ImGui.Spacing();
 
-            ImGui.SliderAngle("Colorpicker", ref _color);
+            if (ImGui.Button("Load layout from *.ini file"))
+            {
+                ImGui.LoadIniSettingsFromDisk(Path.Combine("Assets/MyImGuiSettings.ini"));
+            }
 
-            ImGui.EndGroup();
-
-
-            ImGui.BeginGroup();
-
-            ImGui.InputTextMultiline("TextInputTest", ref _inputText, 2000, new float2(200, 200).ToNumericsVector());
+            if (ImGui.Button("Save layout to *.ini file"))
+            {
+                ImGui.SaveIniSettingsToDisk(Path.Combine("Assets/MyImGuiSettings.ini"));
+            }
 
             ImGui.EndGroup();
 
@@ -221,16 +217,14 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         }
 
+     
+
         internal static void DrawMainMenuBar()
         {
             if (ImGui.BeginMainMenuBar())
             {
                 if (ImGui.BeginMenu("Menu"))
                 {
-                    if (ImGui.MenuItem("Open"))
-                    {
-
-                    }
                     if (ImGui.MenuItem("Exit"))
                     {
                         Environment.Exit(0);
@@ -266,6 +260,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             style.FramePadding.Y = 4;
             style.Alpha = 1.0f;
             style.FrameRounding = 3.0f;
+            
 
 
             colors[(int)ImGuiCol.Text] = new Vector4(0.00f, 0.00f, 0.00f, 1.00f);
@@ -314,6 +309,12 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             colors[(int)ImGuiCol.DragDropTarget] = new Vector4(0.26f, 0.59f, 0.98f, 0.95f);
             colors[(int)ImGuiCol.NavHighlight] = colors[(int)ImGuiCol.HeaderHovered];
             colors[(int)ImGuiCol.NavWindowingHighlight] = new Vector4(0.70f, 0.70f, 0.70f, 0.70f);
+
+            colors[(int)ImGuiCol.TableBorderLight] = new Vector4(0.70f, 0.70f, 0.70f, 0.70f);
+            colors[(int)ImGuiCol.TableBorderStrong] = Vector4.Zero;
+            colors[(int)ImGuiCol.TableRowBg] = new Vector4(0.71f, 0.78f, 0.69f, 0.40f);
+            colors[(int)ImGuiCol.TableRowBgAlt] = new Vector4(0.725f, 0.805f, 0.702f, 1.00f);
+            colors[(int)ImGuiCol.TableHeaderBg] = new Vector4(0.66f, 0.66f, 0.66f, 1.00f);
         }
     }
 }

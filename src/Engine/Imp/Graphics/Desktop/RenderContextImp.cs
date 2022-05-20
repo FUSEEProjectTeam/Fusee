@@ -2234,6 +2234,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="width">Texture width</param>
         public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
         {
+            if (input == null || output == null) return;
+
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, ((TextureHandle)input).FrameBufferHandle);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, ((TextureHandle)output).FrameBufferHandle);
             GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
