@@ -141,12 +141,16 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Property)]
         public readonly string ViewPosOut = GLSL.CreateOut(GLSL.Type.Vec4, $"{VaryingNameDeclarations.ViewPos}");
 
-
+        /// <summary>
+        /// Alternative to gl_PointSize
+        /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public readonly string PointCoordIn = GLSL.CreateIn(GLSL.Type.Vec2, $"{VaryingNameDeclarations.PointCoord}");
 
-
+        /// <summary>
+        /// Alternative to gl_PointSize
+        /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
         public readonly string PointCoordOut = GLSL.CreateOut(GLSL.Type.Vec2, $"{VaryingNameDeclarations.PointCoord}");
@@ -176,8 +180,28 @@ namespace Fusee.Engine.Core.Effects
                     $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1])  * 180.0 / PI;",
                     "float slope = tan(fov / 2.0);",
                     $"float projFactor = ((1.0 / slope) / -vViewPos.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
-                    $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
-                };
+                    $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;",
+
+                    "switch(PointSizeMode)",
+                    "{",
+                    "   // Fixed pixel size",
+                    "   default:",
+                    "   case 0:",
+                    "   {",
+                    $"       gl_PointSize = {UniformNameDeclarations.PointSize};",
+                    "       break;",
+                    "   }",
+                    "   //Fixed world size",
+                    "   case 1:",
+                    "   {",
+                    "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",
+                    "",
+                    "       //Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!",
+                    $"      gl_PointSize = int((float({UniformNameDeclarations.ViewportPx}.y) / 2.0) * (float({UniformNameDeclarations.PointSize}) / ( slope * vViewPos.z)));",
+                    "       break;",
+                    "   }",
+                    "}"
+                    };
             }
             else
             {
@@ -188,17 +212,36 @@ namespace Fusee.Engine.Core.Effects
                     $"{VaryingNameDeclarations.PointCoord} = vec2(0.5) / {UniformNameDeclarations.Vertex}.xy;",
                     $"float z = mv[3][2]; //disctance from rect to cam",
                     $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]) * 180.0 / PI;",
+
+                    "float slope = tan(fov / 2.0);",
+                    $"float projFactor = ((1.0 / slope) / - z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
+                    $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;",
+
+                    $"float sizeInPx = 1.0;",
                     "float billboardHeight = 1.0;",
-                    $"float sizeInPx = (billboardHeight / (2.0 * tan(fov / 2.0) * z)) * float({UniformNameDeclarations.ViewportPx});",
-                    "float scaleFactor = float(PointSize) / sizeInPx;",
+                    "switch(PointSizeMode)",
+                    "{",
+                    "   // Fixed pixel size",
+                    "   case 0:",
+                    "   {",
+                    $"      sizeInPx = (billboardHeight / (2.0 * slope * z)) * float({UniformNameDeclarations.ViewportPx});",
+                    "       break;",
+                    "   }",
+                    "   //Fixed world size",
+                    "   case 1:",
+                    "   {",
+                    "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",                    "",
+                    $"      sizeInPx = (billboardHeight / (2.0 * slope)) * float({UniformNameDeclarations.ViewportPx});",                    
+                    "       break;",
+                    "   }",
+                    "}",
+
+                    $"float scaleFactor = {UniformNameDeclarations.PointSize} / sizeInPx;",
 
                     $"{VaryingNameDeclarations.ViewPos} = mv * vec4(0.0, 0.0, 0.0, 1.0)",
                     $"         + vec4({UniformNameDeclarations.Vertex}.x, {UniformNameDeclarations.Vertex}.y, 0.0, 0.0)",
                     $"         * vec4(scaleFactor, scaleFactor, 1.0, 1.0);",
-                    "",
-                    "float slope = tan(fov / 2.0);",
-                    $"float projFactor = ((1.0 / slope) / -vViewPos.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
-                    $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
+                    
                 };
             }
         }
@@ -247,7 +290,7 @@ namespace Fusee.Engine.Core.Effects
             else
             {
                 return new List<string>() {
-                "vec2 distanceVector = (2.0 * vPointCoord) - 1.0; //[-1,1]",
+                
                 "float weight;",
                 "",
                 "switch (PointShape)",
@@ -268,7 +311,7 @@ namespace Fusee.Engine.Core.Effects
                 "        break;",
                 "    case 2: //paraboloid",
                 "",
-                "        weight = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0)); //paraboloid weight function",
+                "        weight = 1.0 - (pow(vPointCoord.x, 2.0) + pow(vPointCoord.y, 2.0)); //paraboloid weight function",
                 "",
                 $"       vec4 position = {VaryingNameDeclarations.ViewPos};",
                 "        position.z += weight * vWorldSpacePointRad;",
@@ -280,31 +323,6 @@ namespace Fusee.Engine.Core.Effects
                 "}"
                 };
             }
-        }
-
-        private static List<string> CalculatePointSizeMode()
-        {
-            return new List<string>() {
-            "switch(PointSizeMode)",
-            "{",
-            "   // Fixed pixel size",
-            "   default:",
-            "   case 0:",
-            "   {",
-            $"       gl_PointSize = float({UniformNameDeclarations.PointSize});",
-            "       break;",
-            "   }",
-            "   //Fixed world size",
-            "   case 1:",
-            "   {",
-            "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",
-            "",
-            "       //Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!",
-            $"      gl_PointSize = ((float({UniformNameDeclarations.ViewportPx}.y) / 2.0) * (float({UniformNameDeclarations.PointSize}) / ( slope * vViewPos.z))) / 100.0;",
-            "       break;",
-            "   }",
-            "}"
-            };
         }
 
         /// <summary>
