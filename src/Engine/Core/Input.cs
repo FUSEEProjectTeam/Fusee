@@ -449,10 +449,10 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Should be called from the main (rendering-) loop. Typically not to be called by user code unless
+        /// Should be called from the main (update-) loop. Typically not to be called by user code unless
         /// users implement their own rendering/application loop.
         /// </summary>
-        public void PreRender()
+        public void PreUpdate()
         {
             foreach (var inputDevice in InputDevices)
             {
@@ -460,10 +460,10 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Should be called from the main (rendering-) loop. Typically not to be called by user code unless
+        /// Should be called from the main (update-) loop. Typically not to be called by user code unless
         /// users implement their own rendering/application loop.
         /// </summary>
-        public void PostRender()
+        public void PostUpdate()
         {
             foreach (var inputDevice in InputDevices)
             {
