@@ -138,7 +138,7 @@ namespace Fusee.PointCloud.Common
             _ => throw new ArgumentException(nameof(octOr))
         };
 
-        public static string OctantIdToPotreName(OctantId octId)
+        public static string OctantIdToPotreeName(OctantId octId)
         {
             var levels = octId.Level;
 
@@ -148,7 +148,7 @@ namespace Fusee.PointCloud.Common
                 return "r";
             else
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 sb.Append('r');
 
                 for (int i = 1; i < octId.Level; i++)

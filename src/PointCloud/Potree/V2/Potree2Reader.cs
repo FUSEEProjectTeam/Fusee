@@ -425,7 +425,7 @@ namespace Fusee.PointCloud.Potree.V2
 
         private PotreeNode FindNode(OctantId id)
         {
-            return FileDataInstance.Hierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdsToPotreName(id));
+            return FileDataInstance.Hierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdToPotreeName(id));
         }
     }
 }
