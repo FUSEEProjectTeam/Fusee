@@ -146,20 +146,22 @@ namespace Fusee.ImGuiDesktop
         {
             if (!_initialized) return;
 
-            Input.Instance.PreUpdate();
-            
+            // HACK(mr): Fixme, don't know why
+            //Input.Instance.PreUpdate();
 
             Update?.Invoke(this, new RenderEventArgs());
 
             _controller.UpdateImGui(DeltaTimeUpdate);
 
-            Input.Instance.PostUpdate();
+            //Input.Instance.PostUpdate();
         }
 
         protected internal void DoRender()
         {
             if (!_initialized) return;
             if (_controller.GameWindowWidth <= 0) return;
+
+            Input.Instance.PreUpdate();
 
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit | ClearBufferMask.StencilBufferBit);
 
@@ -168,6 +170,9 @@ namespace Fusee.ImGuiDesktop
             _controller.RenderImGui();
 
             _gameWindow?.SwapBuffers();
+
+            Input.Instance.PostUpdate();
+
         }
 
         protected internal void DoUnLoad()
