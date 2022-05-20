@@ -104,8 +104,6 @@ namespace Fusee.Engine.Core
 
         public ITextureHandle TextureHandle { get; internal set; }
 
-        public Multisample Multisample => throw new NotImplementedException();
-
         /// <summary>
         /// Creates a new instance of type "WritableArrayTexture".
         /// </summary>

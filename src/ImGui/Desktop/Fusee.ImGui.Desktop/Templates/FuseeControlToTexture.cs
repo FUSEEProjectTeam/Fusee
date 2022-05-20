@@ -2,6 +2,7 @@
 using Fusee.Engine.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
+using TextureWrapMode = OpenTK.Graphics.OpenGL.TextureWrapMode;
 
 namespace Fusee.ImGuiDesktop.Templates
 {
@@ -14,8 +15,6 @@ namespace Fusee.ImGuiDesktop.Templates
         private int _lastHeight;
 
         protected RenderContext _rc;
-        private bool disposedValue;
-
 
         #region UserCode
 
@@ -45,8 +44,6 @@ namespace Fusee.ImGuiDesktop.Templates
             return new Engine.Imp.Graphics.Desktop.TextureHandle();
         }
 
-
-
         /// <summary>
         /// This method is called from within the base class, do not change anything inside base class
         /// Insert your usual changes during resize, if necessary
@@ -66,7 +63,7 @@ namespace Fusee.ImGuiDesktop.Templates
         /// </summary>
         /// <param name="samplingFactor">MSAA sampling factor, default = 4</param>
         /// <exception cref="Exception"></exception>
-        public FuseeControlToTexture(RenderContext rc) => (_rc) = (rc);
+        public FuseeControlToTexture(RenderContext rc) => _rc = rc;
 
 
         /// <summary>

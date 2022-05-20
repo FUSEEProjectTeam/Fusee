@@ -150,11 +150,17 @@ namespace Fusee.Engine.Imp.Blazor
             Disposed = true;
         }
 
+        /// <summary>
+        /// Sets the albedo texture
+        /// </summary>
         public void SetAlbedoTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
 
+        /// <summary>
+        /// sets the subsurface texture
+        /// </summary>
         public void SetSubsurfaceTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Subsurface] = WritableTexture.CreateSubsurfaceTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));

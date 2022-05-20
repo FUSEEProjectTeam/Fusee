@@ -36,7 +36,12 @@ namespace Fusee.Engine.Common
         /// Specify a two-dimensional texture image. Images require a texel coordinate in the shader - only the value at the specified location will be loaded.
         /// Used in Compute Shaders.
         /// </summary>
-        Image2D
+        Image2D,
+
+        /// <summary>
+        /// A texture with a number of layers which are being used to generate a sampled texture
+        /// </summary>
+        TextureMultisample
     }
 
     /// <summary>
@@ -60,18 +65,6 @@ namespace Fusee.Engine.Common
         /// The coordinates that fall outside the range will be given a specified border color.
         /// </summary>
         ClampToBorder
-    }
-
-    /// <summary>
-    /// Enable Multisample for textures
-    /// </summary>
-    public enum Multisample
-    {
-        Disabled,
-        x2,
-        x4,
-        x8,
-        x16
     }
 
     /// <summary>

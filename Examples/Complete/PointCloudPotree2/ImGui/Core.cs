@@ -4,6 +4,7 @@ using Fusee.ImGuiDesktop;
 using Fusee.PointCloud.Common;
 using ImGuiNET;
 using Microsoft.Win32;
+using OpenTK.Graphics.OpenGL;
 using System;
 using System.IO;
 using System.Numerics;
@@ -124,6 +125,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             var fuseeViewportPos = ImGui.GetWindowPos();
 
             var hndl = _fuControl.RenderToTexture((int)fuseeViewportSize.X, (int)fuseeViewportSize.Y);
+
 
             ImGui.Image(hndl, fuseeViewportSize,
                 new Vector2(0, 1),

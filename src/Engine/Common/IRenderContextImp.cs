@@ -691,6 +691,14 @@ namespace Fusee.Engine.Common
         uint GetRenderState(RenderState renderState);
 
         /// <summary>
+        /// Takes a WritableMultisampleTexture  and blits the result of all samples into an
+        /// existing WritableTexture for further use (e. g. bind and use as Albedo texture)
+        /// </summary>
+        /// <param name="input">WritableMultisampleTexture</param>
+        /// <param name="output">WritableTexture</param>
+        void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output);
+
+        /// <summary>
         /// Renders into the given textures of the RenderTarget.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
@@ -765,7 +773,12 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Checks if geometry shaders can be used.
         /// </summary>
-        CanUseGeometryShaders
+        CanUseGeometryShaders,
+
+        /// <summary>
+        /// Returns the max value for GL_MAX_SAMPLES usable in multi-sample <see cref="IWritableTexture"/> textures 
+        /// </summary>
+        MaxSamples
     }
 
     /// <summary>

@@ -916,6 +916,17 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
+        private void SetShaderParamTexture(IShaderParam param, WritableMultisampleTexture texture)
+        {
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TextureMultisample);
+        }
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texture">An ITexture.</param>
         private void SetShaderParamTexture(IShaderParam param, WritableTexture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
@@ -1278,7 +1289,7 @@ namespace Fusee.Engine.Core
         {
             if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffect)) return;
 
-            _allCompiledEffects.Remove(ef);
+            _ = _allCompiledEffects.Remove(ef);
 
             if (compiledEffect.ForwardFx != null)
                 _rci.RemoveShader(compiledEffect.ForwardFx?.GpuHandle);
@@ -1436,13 +1447,16 @@ namespace Fusee.Engine.Core
                 {
                     SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
                 }
-                else if (param.Value is IWritableTexture)
+                else if (param.Value is WritableTexture wt)
                 {
-                    var wt = ((WritableTexture)param.Value);
                     if (wt.AsImage)
                         SetShaderParamImage(param.Info.Handle, wt);
                     else
                         SetShaderParamTexture(param.Info.Handle, wt);
+                }
+                else if (param.Value is WritableMultisampleTexture wmst)
+                {
+                    SetShaderParamTexture(param.Info.Handle, wmst);
                 }
                 else if (param.Value is ITexture)
                 {
@@ -1467,10 +1481,15 @@ namespace Fusee.Engine.Core
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableCubeMap)param.Value);
                         _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TextureCubeMap);
                     }
-                    else if (param.Value is IWritableTexture)
+                    else if (param.Value is WritableTexture)
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableTexture)param.Value);
                         _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
+                    }
+                    else if (param.Value is WritableMultisampleTexture)
+                    {
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableMultisampleTexture)param.Value);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TextureMultisample);
                     }
                     else if (param.Value is ITexture)
                     {
@@ -1602,7 +1621,7 @@ namespace Fusee.Engine.Core
             var currentVal = CurrentRenderState.GetRenderState(renderState);
             if (doLockState)
             {
-                LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)currentVal);
+                LockedStates[renderState] = new KeyValuePair<bool, uint>(true, currentVal);
             }
             if (currentVal != value)
             {
@@ -1634,6 +1653,17 @@ namespace Fusee.Engine.Core
         public uint GetRenderState(RenderState renderState)
         {
             return CurrentRenderState.GetRenderState(renderState);
+        }
+
+        /// <summary>
+        /// Takes a <see cref="WritableMultisampleTexture"/> and blits the result of all samples into an
+        /// existing <see cref="WritableTexture"/> for further use (e. g. bind and use as Albedo texture)
+        /// </summary>
+        /// <param name="input">WritableMultisampleTexture</param>
+        /// <param name="output">WritableTexture</param>
+        public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
+        {
+            _rci.BlitMultisample2DTextureToTexture(input, output);
         }
 
         /// <summary>
@@ -1675,7 +1705,29 @@ namespace Fusee.Engine.Core
         /// <param name="tex">The render texture.</param>
         public void SetRenderTarget(IWritableTexture tex)
         {
+            if (tex is WritableTexture wt)
+                SetRenderTarget(wt);
+            if (tex is WritableMultisampleTexture wmst)
+                SetRenderTarget(wmst);
+        }
+
+        /// <summary>
+        ///  Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The render texture.</param>
+        public void SetRenderTarget(WritableTexture tex)
+        {
             var texHandle = _textureManager.GetTextureHandle((WritableTexture)tex);
+            _rci.SetRenderTarget(tex, texHandle);
+        }
+
+        /// <summary>
+        ///  Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The render texture.</param>
+        public void SetRenderTarget(WritableMultisampleTexture tex)
+        {
+            var texHandle = _textureManager.GetTextureHandle((WritableMultisampleTexture)tex);
             _rci.SetRenderTarget(tex, texHandle);
         }
 
