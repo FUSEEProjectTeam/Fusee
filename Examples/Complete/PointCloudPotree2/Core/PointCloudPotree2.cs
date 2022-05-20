@@ -160,9 +160,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 return;
             }
 
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
             if (PtRenderingParams.Instance.EdlStrength != 0f)
             {
                 //Render Depth-only pass
@@ -179,8 +176,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _sceneRenderer.Render(RC);
 
-            //Render GUI
-            RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            _guiRenderer.Render(RC);
             // Constantly check for interactive objects.
             if (Mouse != null) //Mouse is null when the pointer is outside the GameWindow?
             {
@@ -191,7 +187,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                     _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
                 }
             }
-            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
