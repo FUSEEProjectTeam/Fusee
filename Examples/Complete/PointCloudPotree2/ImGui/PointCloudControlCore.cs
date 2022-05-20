@@ -1,4 +1,5 @@
 ﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
@@ -122,7 +123,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             IsInitialized = true;
         }
 
-        private WritableMultisampleTexture RenderTexture;
+        private WritableTexture RenderTexture;
         private bool disposedValue;
 
         // RenderAFrame is called once a frame
@@ -162,7 +163,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
             ReadyToLoadNewFile = true;
 
-            return RenderTexture.UsableTextureHandle;
+            return RenderTexture.TextureHandle;
         }
 
         public override void Update(bool allowInput)
@@ -231,7 +232,8 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
             // delete old texture, generate new
             RenderTexture?.Dispose();
-            RenderTexture = WritableMultisampleTexture.GenerateAlbedo(_rc, width, height);
+            // RenderTexture = WritableMultisampleTexture.CreateAlbedoTex(_rc, width, height, 8);
+            RenderTexture = WritableTexture.CreateAlbedoTex(width, height, new ImagePixelFormat(ColorFormat.RGBA));
 
             if (PtRenderingParams.Instance.EdlStrength == 0f) return;
             PtRenderingParams.Instance.ColorPassEf.DepthTex?.Dispose();

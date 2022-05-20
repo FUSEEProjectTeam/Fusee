@@ -61,12 +61,11 @@ namespace Fusee.Engine.Core
         private readonly RenderContext RC;
 
         /// <summary>
-        /// DO NOT USE THIS! USE <see cref="UsableTextureHandle"/>!
         /// Opaque handle to texture, this is the internal handle, which can be used. However this is not yet sampled to one result texture
         /// This is done after rendering by blitting the result into a new <see cref="WritableTexture"/> object.
-        /// To use the <see cref="ITextureHandle"/> with any OpenGL Texture2d method one needs to use the <see cref="UsableTextureHandle"/>!
+        /// To use the <see cref="ITextureHandle"/> with any OpenGL Texture2d method one needs to use the <see cref="TextureHandle"/>!
         /// </summary>
-        public ITextureHandle TextureHandle
+        public ITextureHandle InternalTextureHandle
         {
             get; internal set;
         }
@@ -75,7 +74,7 @@ namespace Fusee.Engine.Core
         /// Resulting <see cref="ITextureHandle"/> after blitting and sampling is finished
         /// Can be used as any other <see cref="WritableTexture"/>, the content is sampled and ready to go.
         /// </summary>
-        public ITextureHandle UsableTextureHandle
+        public ITextureHandle TextureHandle
         {
             get
             {
@@ -86,7 +85,7 @@ namespace Fusee.Engine.Core
                     RC.SetRenderTarget(_internalResultTexture);
                 }
 
-                RC.BlitMultisample2DTextureToTexture(this, _internalResultTexture);
+                RC.BlitMultisample2DTextureToTexture(InternalTextureHandle, _internalResultTexture.TextureHandle, Width, Height);
                 return _internalResultTexture.TextureHandle;
             }
         }
@@ -130,16 +129,16 @@ namespace Fusee.Engine.Core
         /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
         public WritableMultisampleTexture(RenderContext rc, RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, int multisampleFactor = 4, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            var maxSamples = rc.GetHardwareCapabilities(HardwareCapability.MaxSamples);
-            if(maxSamples == 0)
-            {
-                throw new NotSupportedException($"Multisample texture is not supported for this platform");
-            }
-
-            if (multisampleFactor > maxSamples || multisampleFactor == 0)
-            {
-                throw new ArgumentException($"Multisample texture factor {multisampleFactor} is either '0' or too big. GL_MAX_SAMPLES for this ImagePixelFormat is {maxSamples}");
-            }
+            //var maxSamples = rc.GetHardwareCapabilities(HardwareCapability.MaxSamples);
+            //if(maxSamples == 0)
+            //{
+            //    throw new NotSupportedException($"Multisample texture is not supported for this platform");
+            //}
+            //
+            //if (multisampleFactor > maxSamples || multisampleFactor == 0)
+            //{
+            //    throw new ArgumentException($"Multisample texture factor {multisampleFactor} is either '0' or too big. GL_MAX_SAMPLES for this ImagePixelFormat is {maxSamples}");
+            //}
 
             SessionUniqueIdentifier = Suid.GenerateSuid();
             PixelFormat = colorFormat;
@@ -161,7 +160,7 @@ namespace Fusee.Engine.Core
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
         /// <param name="multisampleFactor">Define how many samples are being used to sample this texture, default: 4</param>
-        public static WritableMultisampleTexture GenerateAlbedo(RenderContext rc, int width, int height, int multisampleFactor = 4)
+        public static WritableMultisampleTexture CreateAlbedoTex(RenderContext rc, int width, int height, int multisampleFactor = 4)
         {
             return new WritableMultisampleTexture(rc, RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA),
                 width, height, multisampleFactor);

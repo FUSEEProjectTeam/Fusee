@@ -2230,27 +2230,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
+        /// <param name="height">Texture height</param>
+        /// <param name="width">Texture width</param>
+        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
         {
-            if(input is not WritableMultisampleTexture wtx || output is not WritableTexture wt)
-            {
-                Diagnostics.Warn("Can't blit multisample texture into output texture, wrong formats!");
-                return;
-            }
-
-            if (input.Width != output.Width || input.Height != output.Height)
-            {
-                Diagnostics.Warn("Can't blit multisample texture into output texture, different sizes!");
-                return;
-            }
-
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, ((TextureHandle)wtx.TextureHandle).FrameBufferHandle);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, ((TextureHandle)wt.TextureHandle).FrameBufferHandle);
-            GL.BlitFramebuffer(0, 0, wtx.Width, wtx.Height, 0, 0, wtx.Width, wtx.Height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, ((TextureHandle)input).FrameBufferHandle);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, ((TextureHandle)output).FrameBufferHandle);
+            GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
-
 
         /// <summary>
         /// Renders into the given texture.
@@ -2336,9 +2325,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.ReadBuffer(ReadBufferMode.None);
                 }
 
-                ((TextureHandle)tex.TextureHandle).TexHandle = ((TextureHandle)texHandle).TexHandle;
-                ((TextureHandle)tex.TextureHandle).FrameBufferHandle = ((TextureHandle)texHandle).FrameBufferHandle;
-                ((TextureHandle)tex.TextureHandle).DepthRenderBufferHandle = ((TextureHandle)texHandle).DepthRenderBufferHandle;
+                ((TextureHandle)tex.InternalTextureHandle).TexHandle = ((TextureHandle)texHandle).TexHandle;
+                ((TextureHandle)tex.InternalTextureHandle).FrameBufferHandle = ((TextureHandle)texHandle).FrameBufferHandle;
+                ((TextureHandle)tex.InternalTextureHandle).DepthRenderBufferHandle = ((TextureHandle)texHandle).DepthRenderBufferHandle;
             }
             else
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);

@@ -118,8 +118,8 @@ namespace Fusee.ImGuiDesktop
         {
             if (_gameWindow != null)
             {
-                //_gameWindow.UpdateFrequency = 0;
-                //_gameWindow.RenderFrequency = 0;
+                _gameWindow.UpdateFrequency = 0;
+                _gameWindow.RenderFrequency = 0;
 
                 _gameWindow.Run();
             }
@@ -146,10 +146,14 @@ namespace Fusee.ImGuiDesktop
         {
             if (!_initialized) return;
 
-            Input.Instance.PreRender();
+            Input.Instance.PreUpdate();
+            
+
             Update?.Invoke(this, new RenderEventArgs());
 
             _controller.UpdateImGui(DeltaTimeUpdate);
+
+            Input.Instance.PostUpdate();
         }
 
         protected internal void DoRender()

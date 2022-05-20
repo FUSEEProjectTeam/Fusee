@@ -1661,9 +1661,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
+        /// <param name="width">Texture width</param>
+        /// <param name="height">Texture height</param>
+        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
         {
-            _rci.BlitMultisample2DTextureToTexture(input, output);
+            _rci.BlitMultisample2DTextureToTexture(input, output, width, height);
         }
 
         /// <summary>
@@ -1727,7 +1729,7 @@ namespace Fusee.Engine.Core
         /// <param name="tex">The render texture.</param>
         public void SetRenderTarget(WritableMultisampleTexture tex)
         {
-            var texHandle = _textureManager.GetTextureHandle((WritableMultisampleTexture)tex);
+            var texHandle = _textureManager.GetTextureHandle(tex);
             _rci.SetRenderTarget(tex, texHandle);
         }
 

@@ -2136,7 +2136,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
+        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
         {
             throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
         }
