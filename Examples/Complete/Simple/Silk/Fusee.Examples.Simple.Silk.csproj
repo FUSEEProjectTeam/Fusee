@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<OutputPath>$(BaseOutputPath)\Examples\Simple\Desktop\</OutputPath>
+
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Silk\Fusee.Engine.Imp.Graphics.Silk.csproj" />
+		<ProjectReference Include="..\Core\Fusee.Examples.Simple.Core.csproj" />
+	</ItemGroup>
+
+</Project>

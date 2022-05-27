@@ -4,6 +4,8 @@
 namespace Fusee.Engine.Imp.Graphics.Desktop
 #elif PLATFORM_ANDROID
 namespace Fusee.Engine.Imp.Graphics.Android
+#elif PLATFORM_SILK
+namespace Fusee.Engine.Imp.Graphics.SilkDesktop
 #endif
 {
     /// <summary>

@@ -53,7 +53,7 @@ namespace Fusee.Examples.Integrations.Wpf.View
 
         private void OpenFusee()
         {
-            Task.Run(() =>
+            Task.Run((System.Action)(() =>
             {
                 IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
@@ -100,8 +100,8 @@ namespace Fusee.Examples.Integrations.Wpf.View
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 fuseeApp.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
                 fuseeApp.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(fuseeApp.CanvasImplementor);
-                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(fuseeApp.CanvasImplementor));
-                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(fuseeApp.CanvasImplementor));
+                Input.AddDriverImp((Engine.Common.IInputDriverImp)new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(fuseeApp.CanvasImplementor));
+                Input.AddDriverImp((Engine.Common.IInputDriverImp)new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(fuseeApp.CanvasImplementor));
                 // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
                 // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
                 // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
@@ -110,7 +110,7 @@ namespace Fusee.Examples.Integrations.Wpf.View
 
                 // Start the app
                 fuseeApp.Run();
-            });
+            }));
         }
 
         private void FusToWpfEvents(object sender, Core.FusEvent e)
