@@ -137,75 +137,77 @@ class BlenderVisitor:
     # Adds a NLA-Animation if one exists
     def __AddAnimationIfPresent(self, ob):
         try:
-            selected_strips = [strip for strip in ob.animation_data.nla_tracks]
-            # Variables that store inserted F-Curves and Keyframes to delete them later. 
-            newFC = []
-            newKP = []
+            if(ob.animation_data != None):
+                selected_strips = [strip for strip in ob.animation_data.nla_tracks]
+                # Variables that store inserted F-Curves and Keyframes to delete them later. 
+                newFC = []
+                newKP = []
 
-            for strip in selected_strips:
-                for strips in strip.strips:
-                    self.__fusWriter.BeginAnimation()
-                    action = strips.action
-                    # Create placeholder to see which/if axis is missing
-                    loc = [None] * 3
-                    rotE = [None] * 3
-                    scl = [None] * 3      
-                    for af in action.fcurves:
-                        if(af.data_path == "location"):
-                            loc[af.array_index] = af
-                        elif(af.data_path == "rotation_euler"):
-                            rotE[af.array_index] = af
-                        elif(af.data_path == "scale"):
-                            scl[af.array_index] = af
-                    # If the data_path is still empty because no one used i.e. Scale the list will be deleted        
-                    if(loc.count(None) == len(loc)):
-                        loc.clear()
-                    if(rotE.count(None) == len(rotE)):
-                        rotE.clear()
-                    if(scl.count(None) == len(scl)):
-                        scl.clear()
+                for strip in selected_strips:
+                    for strips in strip.strips:
+                        self.__fusWriter.BeginAnimation()
+                        action = strips.action
+                        # Create placeholder to see which/if axis is missing
+                        loc = [None] * 3
+                        rotE = [None] * 3
+                        rotQ = [None] * 4
+                        scl = [None] * 3      
+                        for af in action.fcurves:
+                            data_path = af.data_path
+                            if(data_path == "location"):
+                                loc[af.array_index] = af
+                            elif(data_path == "rotation_euler"):
+                                rotE[af.array_index] = af
+                            elif(data_path == "scale"):
+                                scl[af.array_index] = af
+                        # If the data_path is still empty because no one used i.e. Scale the list will be deleted        
+                        if(loc.count(None) == len(loc)):
+                            loc.clear()
+                        if(rotE.count(None) == len(rotE)):
+                            rotE.clear()
+                        if(scl.count(None) == len(scl)):
+                            scl.clear()
 
-                    # Creates new F-Curves that don't exist yet     
-                    for idx in range(3):
+                        # Creates new F-Curves that don't exist yet     
+                        for idx in range(3):
+                            if(len(loc) > 0):
+                                if(loc[idx] == None):
+                                    locf = action.fcurves
+                                    loc[idx] = (locf.new(locf[0].data_path, index=idx, action_group=str(locf[0].group.name)))
+                                    newFC.append(loc[idx])
+                                
+                            if(len(rotE) > 0):
+                                if(rotE[idx] == None):
+                                    rotEf = action.fcurves
+                                    rotE[idx] = (rotEf.new(rotEf[0].data_path, index=idx, action_group=str(rotEf[0].group.name)))
+                                    newFC.append(rotE[idx])
+                                
+                            if(len(scl) > 0):
+                                if(scl[idx] == None):
+                                    sclf = action.fcurves
+                                    scl[idx] = (sclf.new("scale", index=idx, action_group=str(sclf[0].group.name)))
+                                    newFC.append(scl[idx])
+                        #Starts the AnimationTrack/AddKeyframe creation
                         if(len(loc) > 0):
-                            if(loc[idx] == None):
-                                locf = action.fcurves
-                                loc[idx] = (locf.new("location", index=idx, action_group=str(locf[0].group.name)))
-                                newFC.append(loc[idx])
-                            
+                            newKP = self.createKP(loc, newKP, ob)
+                            self.__fusWriter.BeginAnimationChannel("Translation", FusSer.Float3, FusSer.Lerp)    
+                            self.AddKeyframes(loc)
+                            self.__fusWriter.EndAnimationChannel()
                         if(len(rotE) > 0):
-                            if(rotE[idx] == None):
-                                rotEf = action.fcurves
-                                rotE[idx] = (rotEf.new("rotation_euler", index=idx, action_group=str(rotEf[0].group.name)))
-                                newFC.append(rotE[idx])
-                            
-                        if(len(scl) > 0):
-                            if(scl[idx] == None):
-                                sclf = action.fcurves
-                                scl[idx] = (sclf.new("scale", index=idx, action_group=str(sclf[0].group.name)))
-                                newFC.append(scl[idx])
-                    
-                    #Starts the AnimationTrack/AddKeyframe creation
-                    if(len(loc) > 0):
-                        newKP = self.createKP(loc, newKP, ob)
-                        self.__fusWriter.BeginAnimationChannel("Translation", FusSer.Float3, FusSer.Lerp)    
-                        self.AddKeyframes(loc)
-                        self.__fusWriter.EndAnimationChannel()
-                    if(len(rotE) > 0):
-                        newKP = self.createKP(rotE, newKP, ob)
-                        self.__fusWriter.BeginAnimationChannel("Rotation", FusSer.Float3, FusSer.Lerp) 
-                        self.AddKeyframes(rotE)
-                        self.__fusWriter.EndAnimationChannel()  
-                    if(not self.DoApplyScale):
-                        if(len(scl) > 0):
-                            newKP = self.createKP(scl, newKP, ob)
-                            self.__fusWriter.BeginAnimationChannel("Scale", FusSer.Float3, FusSer.Lerp)   
-                            self.AddKeyframes(scl)
-                            self.__fusWriter.EndAnimationChannel()                 
+                            newKP = self.createKP(rotE, newKP, ob)
+                            self.__fusWriter.BeginAnimationChannel("Rotation", FusSer.Float3, FusSer.Lerp) 
+                            self.AddKeyframes(rotE)
+                            self.__fusWriter.EndAnimationChannel()  
+                        if(not self.DoApplyScale):
+                            if(len(scl) > 0):
+                                newKP = self.createKP(scl, newKP, ob)
+                                self.__fusWriter.BeginAnimationChannel("Scale", FusSer.Float3, FusSer.Lerp)   
+                                self.AddKeyframes(scl)
+                                self.__fusWriter.EndAnimationChannel()                 
 
 
-                    self.DeleteCreatedKPFC(action, newKP, newFC)
-                    self.__fusWriter.EndAnimation()
+                        self.DeleteCreatedKPFC(action, newKP, newFC)
+                        self.__fusWriter.EndAnimation()
         except Exception:
             print(traceback.format_exc())
             selected_strips = []
@@ -767,8 +769,107 @@ class BlenderVisitor:
 
     def VisitArmature(self, armature):
         self.__fusWriter.AddChild(armature.name)
-        print('Armature: ' + armature.name)       
+        self.__fusWriter.AddTransform(armature.location, armature.rotation_euler, armature.scale)
+        for bone in armature.pose.bones:
+            if(bone.parent == None):
+                self.TraverseBones(bone)
+        print('Armature: ' + armature.name)
+        for mesh in armature.children:
+            self.WeightGen(mesh);    
+        self.__AddBoneAnimationIfPresent(armature)   
 
+    def TraverseBones(self, bones):
+        self.__fusWriter.Push()
+        self.__fusWriter.AddChild(bones.name)
+        self.AddBoneTransform(bones, bones.parent)
+        if(len(bones.children) > 0):
+            self.TraverseBonesChildren(bones)
+        self.__fusWriter.Pop()
+
+    def TraverseBonesChildren(self, bones):
+            for bone in bones.children:
+                self.__fusWriter.Push()
+                self.__fusWriter.AddChild(bone.name)
+                self.AddBoneTransform(bone, bone.parent)
+                if(len(bone.children) > 0):
+                    self.TraverseBonesChildren(bone)
+                self.__fusWriter.Pop()
+
+    def AddBoneTransform(self, bone, boneparent):
+        bone_quaternion = bone.matrix.to_quaternion()
+        if(boneparent is None):
+            bone_parent_quaternion = bone_quaternion
+        else:
+            bone_parent_quaternion = boneparent.matrix.to_quaternion()
+        self.__fusWriter.AddBoneTransform(
+            (bone.bone.head_local.x, bone.bone.head_local.z, bone.bone.head_local.y),
+            
+            (bone_parent_quaternion.rotation_difference(bone_quaternion))
+        )
+
+
+
+    def WeightGen(self, ob):
+        self.__fusWriter.Weight()
+        for v in ob.data.vertices:
+            self.__fusWriter.VertexWeightList()
+            for grp in ob.vertex_groups:
+                try:
+                    weight = grp.weight(v.index)
+                    self.__fusWriter.VertexWeight(grp.index,weight)
+                except:
+                    pass
     def VisitUnknown(self, ob):
         print('WARNING: Type: ' + ob.type + ' of object ' + ob.name + ' not handled ')       
 
+    def __AddBoneAnimationIfPresent(self, ob):
+        try:
+            nla_tracks = [nla_track for nla_track in ob.animation_data.nla_tracks]
+            for nla_strips in nla_tracks:
+                for nla_strip in nla_strips.strips:
+                    self.__fusWriter.BeginAnimation()
+                    action = nla_strip.action
+                    frames = self.OrderKeyframes(nla_strip)
+                    bpy.data.scenes['Scene'].frame_set(frames[0])
+                    old_data_path = ""                 
+                    for af in action.fcurves:
+                        if(old_data_path != af.data_path):
+                            old_data_path = af.data_path
+                            data_path = af.data_path.rpartition('.')[2]
+                            if(data_path == "location"):
+                                self.__fusWriter.BeginAnimationChannel("Translation", FusSer.Float3, FusSer.Lerp)
+                                for frame in frames:
+                                    bpy.data.scenes['Scene'].frame_set(frame)
+                                    bone = af.group.name
+                                    bone = ob.pose.bones[bone]
+                                    self.__fusWriter.AddKeyframe(frame, bone.bone.head_local)
+                                self.__fusWriter.EndAnimationChannel()
+                            elif(data_path == "rotation_quaternion"):
+                                self.__fusWriter.BeginAnimationChannel("Rotation", FusSer.Float4, FusSer.Lerp)
+                                for frame in frames:
+                                    bpy.data.scenes['Scene'].frame_set(frame)
+                                    bone = af.group.name
+                                    bone = ob.pose.bones[bone]
+                                    bone_quaternion = bone.matrix.to_quaternion()
+                                    if(bone.parent is not None):
+                                        bone_parent_quaternion = bone.parent.matrix.to_quaternion()
+                                    elif(bone.parent is None):
+                                        bone_parent_quaternion = bone_quaternion
+                                    rot = bone_parent_quaternion.rotation_difference(bone_quaternion)
+                                    self.__fusWriter.AddKeyframe(frame, rot)
+                                self.__fusWriter.EndAnimationChannel()
+                    self.__fusWriter.EndAnimation()
+        except Exception:       
+            print(traceback.format_exc())
+            selected_strips = []
+        self.__fusWriter.EndAnimation()
+    
+    def OrderKeyframes(self, nla_strip):
+        action = nla_strip.action
+        kps = []
+        for af in action.fcurves:
+            for kp in af.keyframe_points:
+                kps.append(kp.co[0])
+        kps = list(set(kps))
+        kps.sort()
+        return kps

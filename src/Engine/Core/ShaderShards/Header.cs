@@ -37,7 +37,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// </summary>
         public static string DefineBones(Weight wc)
         {
-            return $"#define {BoneDefineVar} {wc.Joints.Count}";
+            return $"#define {BoneDefineVar} {wc.Bones.Count}";
         }
     }
 }

@@ -279,11 +279,11 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderWeight(Weight weight)
         {
-            var boneArray = new float4x4[weight.Joints.Count];
-            for (var i = 0; i < weight.Joints.Count; i++)
+            var boneArray = new float4x4[weight.Bones.Count];
+            for (var i = 0; i < weight.Bones.Count; i++)
             {
                 var tmp = weight.BindingMatrices[i];
-                boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
+                boneArray[i] = _boneMap[weight.Bones[i]] * tmp;
             }
             _rc.Bones = boneArray;
         }
@@ -602,7 +602,7 @@ namespace Fusee.Engine.Core
                 if (vwl.VertexWeights == null)
                 {
                     vwl.VertexWeights =
-                        new List<VertexWeight>(new[] { new VertexWeight { JointIndex = 0, Weight = 1.0f } });
+                        new List<VertexWeight>(new[] { new VertexWeight { BoneIndex = 0, Weight = 1.0f } });
                 }
 
                 var nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
@@ -615,19 +615,19 @@ namespace Fusee.Engine.Core
                     {
                         case 0:
                             boneWeights[iVert].x = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].x = vwl.VertexWeights[iJoint].JointIndex;
+                            boneIndices[iVert].x = vwl.VertexWeights[iJoint].BoneIndex;
                             break;
                         case 1:
                             boneWeights[iVert].y = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].y = vwl.VertexWeights[iJoint].JointIndex;
+                            boneIndices[iVert].y = vwl.VertexWeights[iJoint].BoneIndex;
                             break;
                         case 2:
                             boneWeights[iVert].z = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].z = vwl.VertexWeights[iJoint].JointIndex;
+                            boneIndices[iVert].z = vwl.VertexWeights[iJoint].BoneIndex;
                             break;
                         case 3:
                             boneWeights[iVert].w = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].w = vwl.VertexWeights[iJoint].JointIndex;
+                            boneIndices[iVert].w = vwl.VertexWeights[iJoint].BoneIndex;
                             break;
                     }
                 }

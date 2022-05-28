@@ -39,6 +39,8 @@ class FusSceneWriter:
         self.__curMesh = None
         self.__curAnimation = None
         self.__curAnimationChannel = None
+        self.__curWeightMap = None
+        self.__curVertexWeightList = None
         self.__typeId = None
         self.__inx = 0
 
@@ -108,7 +110,19 @@ class FusSceneWriter:
         xform.Scale.z = scale[2] 
         self.__inx = inx
 
-
+    def AddBoneTransform(self, translation, rotation,name = ""):
+        """Adds a transform component to the current child node."""
+        comp, inx = self.AddComponent(name)        
+        comp.Name = name
+        xform = comp.FusBoneTransform
+        xform.Translation.x = translation[0]
+        xform.Translation.y = translation[1]
+        xform.Translation.z = translation[2]
+        xform.Rotation.x = rotation[0]
+        xform.Rotation.y = rotation[1]
+        xform.Rotation.z = rotation[2]
+        xform.Rotation.w = rotation[3]
+        self.__inx = inx
 #### ANIMATION COMPONENT ####
     def BeginAnimation(self, name = ""):
         if self.__curComponent == None:
@@ -159,6 +173,19 @@ class FusSceneWriter:
         self.__curAnimation = None
         self.__curComponent = None
 
+    def Weight(self, name = ""):
+        if self.__curComponent == None:
+            self.__curComponent,inx = self.AddComponent(name)
+            self.__curWeightMap = self.__curComponent.FusWeight
+
+    def VertexWeightList(self):
+        if self.__curWeightMap != None:
+            self.__curVertexWeightList = self.__curWeightMap.WeightMap.add()
+       
+    def VertexWeight(self, boneIndex, weight):
+            vertexWeight = self.__curVertexWeightList.VertexWeights.add()
+            vertexWeight.BoneIndex = boneIndex
+            vertexWeight.Weight = weight
 
     
 

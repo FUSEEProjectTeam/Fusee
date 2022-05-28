@@ -17,9 +17,9 @@ namespace Fusee.Engine.Core.Scene
         public List<VertexWeightList> WeightMap = new();
 
         /// <summary>
-        /// The joint objects controlling the geometry.
+        /// The bone objects controlling the geometry.
         /// </summary>       
-        public List<SceneNode> Joints = new();
+        public List<SceneNode> Bones = new();
 
         /// <summary>
         /// The binding matrices defining the object's untransformed state.
@@ -47,7 +47,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The joint index controlling the vertex.
         /// </summary>
-        public int JointIndex;
+        public int BoneIndex;
 
         /// <summary>
         /// The weight (the influence) of the bone on the vertex's transformation.
@@ -59,12 +59,12 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj) => obj is VertexWeight w && w.JointIndex.Equals(JointIndex) && w.Weight.Equals(Weight);
+        public override bool Equals(object obj) => obj is VertexWeight w && w.BoneIndex.Equals(BoneIndex) && w.Weight.Equals(Weight);
 
         /// <summary>
         /// Returns the hash code of one vertex weight
         /// </summary>        
-        public override int GetHashCode() => (7 * JointIndex.GetHashCode()) + 5 * Weight.GetHashCode();
+        public override int GetHashCode() => (7 * BoneIndex.GetHashCode()) + 5 * Weight.GetHashCode();
 
         /// <summary>
         /// Check if two vertex weights are the same

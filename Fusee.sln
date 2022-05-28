@@ -310,6 +310,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Animation.Core", "Examples\Complete\Animation\Core\Fusee.Examples.Animation.Core.csproj", "{51364D5B-1C58-403D-93E6-ED4D168D0C95}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Animation.Blazor", "Examples\Complete\Animation\Blazor\Fusee.Examples.Animation.Blazor.csproj", "{8751E127-907E-4DA5-8CCC-64D397BBF3D4}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PickingRayCast.Blazor", "Examples\Complete\PickingRayCast\Blazor\Fusee.Examples.PickingRayCast.Blazor.csproj", "{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1}"
 EndProject
 Global

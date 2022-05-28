@@ -751,14 +751,14 @@ namespace Fusee.Engine.Core
                         VertexWeights = new List<Scene.VertexWeight>()
                     };
 
-                    var currentVertexWeights = wm.VertexWeights.Select(ww => new Scene.VertexWeight { JointIndex = ww.JointIndex, Weight = ww.Weight }).ToList();
+                    var currentVertexWeights = wm.VertexWeights.Select(ww => new Scene.VertexWeight { BoneIndex = ww.BoneIndex, Weight = ww.Weight }).ToList();
 
                     currentWeightList.VertexWeights.AddRange(currentVertexWeights);
                     return currentWeightList;
 
                 }).ToList(),
                 BindingMatrices = w.BindingMatrices,
-                Joints = new List<SceneNode>(),
+                Bones = new List<SceneNode>(),
                 Name = w.Name,
                 Active = w.Active
             };
@@ -766,15 +766,15 @@ namespace Fusee.Engine.Core
             // check if we have bones
             if (_boneContainers.Count >= 1)
             {
-                if (weight.Joints == null) // initialize joint container
+                if (weight.Bones == null) // initialize joint container
                 {
-                    weight.Joints = new List<SceneNode>();
+                    weight.Bones = new List<SceneNode>();
                 }
 
                 // set all bones found until this WeightComponent
                 while (_boneContainers.Count != 0)
                 {
-                    weight.Joints.Add(_boneContainers.Pop());
+                    weight.Bones.Add(_boneContainers.Pop());
                 }
             }
 
@@ -1561,14 +1561,14 @@ namespace Fusee.Engine.Core
                         VertexWeights = new List<Serialization.V1.VertexWeight>()
                     };
 
-                    var currentVertexWeights = wm.VertexWeights.Select(ww => new Serialization.V1.VertexWeight { JointIndex = ww.JointIndex, Weight = ww.Weight }).ToList();
+                    var currentVertexWeights = wm.VertexWeights.Select(ww => new Serialization.V1.VertexWeight { BoneIndex = ww.BoneIndex, Weight = ww.Weight }).ToList();
 
                     currentWeightList.VertexWeights.AddRange(currentVertexWeights);
                     return currentWeightList;
 
                 }).ToList(),
                 BindingMatrices = w.BindingMatrices,
-                Joints = new List<FusComponent>(),
+                Bones = new List<FusComponent>(),
                 Name = w.Name,
                 Active = w.Active
             };
@@ -1576,15 +1576,15 @@ namespace Fusee.Engine.Core
             // check if we have bones
             if (_boneContainers.Count >= 1)
             {
-                if (weight.Joints == null) // initialize joint container
+                if (weight.Bones == null) // initialize joint container
                 {
-                    weight.Joints = new List<FusComponent>();
+                    weight.Bones = new List<FusComponent>();
                 }
 
                 // set all bones found until this WeightComponent
                 while (_boneContainers.Count != 0)
                 {
-                    weight.Joints.Add(_boneContainers.Pop());
+                    weight.Bones.Add(_boneContainers.Pop());
                 }
             }
 

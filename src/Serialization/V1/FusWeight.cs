@@ -18,10 +18,10 @@ namespace Fusee.Serialization.V1
         public List<VertexWeightList> WeightMap = new();
 
         /// <summary>
-        /// The joint objects controlling the geometry.
+        /// The bone objects controlling the geometry.
         /// </summary>
         [ProtoMember(2)]
-        public List<FusComponent> Joints = new();
+        public List<FusComponent> Bones = new();
 
         /// <summary>
         /// The binding matrices defining the object's untransformed state.
@@ -38,10 +38,10 @@ namespace Fusee.Serialization.V1
     public struct VertexWeight
     {
         /// <summary>
-        /// The joint index controlling the vertex.
+        /// The Bone index controlling the vertex.
         /// </summary>
         [ProtoMember(1)]
-        public int JointIndex;
+        public int BoneIndex;
 
         /// <summary>
         /// The weight (the influence) of the bone on the vertex's transformation.
