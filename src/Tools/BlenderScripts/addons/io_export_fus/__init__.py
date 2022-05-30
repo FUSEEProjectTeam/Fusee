@@ -33,7 +33,7 @@ from shutil import copyfile
 
 # Add anything from any existing full-fledged Python installation
 # because we need google.protobuf, PTVSD and other stuff!!!
-paths = os.environ['Path']
+paths = os.environ['PATH']
 paths = paths.split(';')
 for path in paths:
     if path.find('Python')!=-1:

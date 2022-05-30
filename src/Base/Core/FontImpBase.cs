@@ -114,15 +114,16 @@ namespace Fusee.Base.Core
             var glyph = _font.GetGlyphs(new CodePoint(c), ColorFontSupport.None).First();
 
             var scaledPointSize = _font.Size * Dpi;
-            var scaleFactor = scaledPointSize / glyph.GlyphMetrics.ScaleFactor;
+            var scaleFactorX = scaledPointSize / glyph.GlyphMetrics.ScaleFactor.X;
+            var scaleFactorY = scaledPointSize / glyph.GlyphMetrics.ScaleFactor.Y;
 
             GlyphInfo ret;
             ret.CharCode = c;
-            ret.AdvanceX = glyph.GlyphMetrics.AdvanceWidth * scaleFactor;
-            ret.AdvanceY = glyph.GlyphMetrics.AdvanceHeight * scaleFactor;
+            ret.AdvanceX = glyph.GlyphMetrics.AdvanceWidth * scaleFactorX;
+            ret.AdvanceY = glyph.GlyphMetrics.AdvanceHeight * scaleFactorY;
 
-            ret.Width = glyph.GlyphMetrics.Width * scaleFactor;
-            ret.Height = glyph.GlyphMetrics.Height * scaleFactor;
+            ret.Width = glyph.GlyphMetrics.Width * scaleFactorX;
+            ret.Height = glyph.GlyphMetrics.Height * scaleFactorY;
 
             return ret;
         }
