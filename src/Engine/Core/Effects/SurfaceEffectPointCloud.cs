@@ -176,10 +176,10 @@ namespace Fusee.Engine.Core.Effects
             if (!doRenderInstanced)
             {
                 return new List<string>() {
-                    $"vViewPos = ({UniformNameDeclarations.ModelView} * vec4({UniformNameDeclarations.Vertex}.xyz, 1.0)).xyz;",
-                    $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1])  * 180.0 / PI;",
+                    $"{VaryingNameDeclarations.ViewPos} = {UniformNameDeclarations.ModelView} * vec4({UniformNameDeclarations.Vertex}.xyz, 1.0);",
+                    $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
                     "float slope = tan(fov / 2.0);",
-                    $"float projFactor = ((1.0 / slope) / -vViewPos.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
+                    $"float projFactor = ((1.0 / slope) / -{VaryingNameDeclarations.ViewPos}.z) * float({UniformNameDeclarations.ViewportPx}.y) / 2.0;",
                     $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;",
 
                     "switch(PointSizeMode)",
@@ -197,7 +197,7 @@ namespace Fusee.Engine.Core.Effects
                     "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",
                     "",
                     "       //Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!",
-                    $"      gl_PointSize = int((float({UniformNameDeclarations.ViewportPx}.y) / 2.0) * (float({UniformNameDeclarations.PointSize}) / ( slope * vViewPos.z)));",
+                    $"      gl_PointSize = int((float({UniformNameDeclarations.ViewportPx}.y) / 2.0) * (float({UniformNameDeclarations.PointSize}) / ( slope * {VaryingNameDeclarations.ViewPos}.z))) / 100.0;",
                     "       break;",
                     "   }",
                     "}"
