@@ -259,6 +259,7 @@ namespace Fusee.ImGuiDesktop
                         return;
                     }
 
+
                     // filter, use only ids which aren't bound to control keys
                     if (isDown && (
                             (e.Button.Id >= 48 && e.Button.Id <= 90)
@@ -274,10 +275,13 @@ namespace Fusee.ImGuiDesktop
 
                         value = e.Button.Id switch
                         {
-                            190 => ".",
+                            190 => _uppercase ? ":" : ".",
                             188 => ",",
                             109 => "-",
                             107 => "+",
+                            186 => "ö",
+                            219 => "ü",
+                            189 => "\\", // this is not right, however grabbing the `ALT GR` is currently impossible
                             _ => ((char)e.Button.Id).ToString().ToLower(),
                         };
 

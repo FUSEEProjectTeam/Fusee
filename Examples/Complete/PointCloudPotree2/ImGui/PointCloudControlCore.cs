@@ -44,7 +44,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         private Camera _cam;
         private float3 _initCameraPos;
 
-        private PointCloudComponent _pointCloud;
+        private PointCloudComponent? _pointCloud;
 
 
         public PointCloudControlCore(RenderContext rc) : base(rc)
@@ -54,45 +54,47 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         public override void Init()
         {
-            PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
-            PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.ColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
-            PtRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
-            PtRenderingParams.Instance.ProjectedSizeModifierHandler = OnProjectedSizeModifierChanged;
-
-            IsAlive = true;
-
-            _camTransform = new Transform()
+            try
             {
-                Name = "MainCamTransform",
-                Scale = float3.One,
-                Translation = float3.Zero,
-                Rotation = float3.Zero
-            };
+                PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
+                PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.ColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
+                PtRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
+                PtRenderingParams.Instance.ProjectedSizeModifierHandler = OnProjectedSizeModifierChanged;
 
-            _cam = new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
-            {
-                BackgroundColor = float4.One
-            };
+                IsAlive = true;
 
-            var mainCam = new SceneNode()
-            {
-                Name = "MainCam",
-                Components = new List<SceneComponent>()
+                _camTransform = new Transform()
+                {
+                    Name = "MainCamTransform",
+                    Scale = float3.One,
+                    Translation = float3.Zero,
+                    Rotation = float3.Zero
+                };
+
+                _cam = new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
+                {
+                    BackgroundColor = float4.One
+                };
+
+                var mainCam = new SceneNode()
+                {
+                    Name = "MainCam",
+                    Components = new List<SceneComponent>()
                 {
                     _camTransform,
                     _cam
                 }
-            };
+                };
 
-            var potreeReader = new Potree2Reader();
-            _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(PtRenderingParams.Instance.PathToOocFile);
-            _pointCloud.PointCloudImp.MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
-            _pointCloud.PointCloudImp.PointThreshold = PtRenderingParams.Instance.PointThreshold;
+                var potreeReader = new Potree2Reader();
+                _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(PtRenderingParams.Instance.PathToOocFile);
+                _pointCloud.PointCloudImp.MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
+                _pointCloud.PointCloudImp.PointThreshold = PtRenderingParams.Instance.PointThreshold;
 
-            var pointCloudNode = new SceneNode()
-            {
-                Name = "PointCloud",
-                Components = new List<SceneComponent>()
+                var pointCloudNode = new SceneNode()
+                {
+                    Name = "PointCloud",
+                    Components = new List<SceneComponent>()
                 {
                     new Transform()
                     {
@@ -104,23 +106,29 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                     PtRenderingParams.Instance.ColorPassEf,
                     _pointCloud
                 }
-            };
+                };
 
-            _camTransform.Translation = _initCameraPos = _pointCloud.Center - new float3(0, 0, _pointCloud.Size.z * 2);
+                _camTransform.Translation = _initCameraPos = _pointCloud.Center - new float3(0, 0, _pointCloud.Size.z * 2);
 
-            _scene = new SceneContainer
-            {
-                Children = new List<SceneNode>()
+                _scene = new SceneContainer
+                {
+                    Children = new List<SceneNode>()
                 {
                     mainCam,
                     pointCloudNode
                 }
-            };
+                };
 
-            _sceneRenderer = new SceneRendererForward(_scene);
-            _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule());
+                _sceneRenderer = new SceneRendererForward(_scene);
+                _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule());
 
-            IsInitialized = true;
+                IsInitialized = true;
+            }
+            catch (Exception ex)
+            {
+                Diagnostics.Error("Error loading potree2 file", ex);
+                _sceneRenderer = new SceneRendererForward(new SceneContainer());
+            }
         }
 
         private WritableTexture RenderTexture;
@@ -216,12 +224,14 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         private void OnThresholdChanged(int newValue)
         {
-            _pointCloud.PointCloudImp.PointThreshold = newValue;
+            if (_pointCloud != null)
+                _pointCloud.PointCloudImp.PointThreshold = newValue;
         }
 
         private void OnProjectedSizeModifierChanged(float newValue)
         {
-            _pointCloud.PointCloudImp.MinProjSizeModifier = newValue;
+            if (_pointCloud != null)
+                _pointCloud.PointCloudImp.MinProjSizeModifier = newValue;
         }
 
         // Is called when the window was resized

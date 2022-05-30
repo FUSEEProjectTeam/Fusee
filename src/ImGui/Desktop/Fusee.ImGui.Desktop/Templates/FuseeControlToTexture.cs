@@ -102,6 +102,7 @@ namespace Fusee.ImGuiDesktop.Templates
 
             // Do the actual rendering
             var hndl = RenderAFrame();
+            if (hndl == null) return IntPtr.Zero;
             var tex = ((Engine.Imp.Graphics.Desktop.TextureHandle)hndl).TexHandle;
 
             // Disable FB, reset size etc. to previous size

@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Examples\PointCloudPotree2\ImGui\</OutputPath>
 
 		<OutputType>Exe</OutputType>
 		<LangVersion>9.0</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<UseWPF>true</UseWPF>
 	</PropertyGroup>
 
 	<ItemGroup>

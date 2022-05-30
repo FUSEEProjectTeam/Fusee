@@ -1,10 +1,10 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.ImGuiDesktop;
+using Fusee.ImGuiDesktop.Templates;
+using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using ImGuiNET;
-using Microsoft.Win32;
-using OpenTK.Graphics.OpenGL;
 using System;
 using System.IO;
 using System.Numerics;
@@ -43,17 +43,13 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         #endregion
 
-        private async Task Load()
+
+        public override async Task InitAsync()
         {
             SetImGuiDesign();
 
             _fuControl = new PointCloudControlCore(RC);
             _fuControl.Init();
-        }
-
-        public override async Task InitAsync()
-        {
-            await Load();
             await base.InitAsync();
 
         }
@@ -138,6 +134,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.End();
 
             DrawGUI();
+            DrawFilePickerDialog();
         }
 
 
@@ -149,7 +146,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.NewLine();
             if (ImGui.Button("Open File"))
             {
-                LoadPointcloudDialog();
+                spwanOpenFilePopup = true;
             }
             ImGui.SameLine();
 
@@ -273,7 +270,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 {
                     if (ImGui.MenuItem("Open"))
                     {
-                        LoadPointcloudDialog();
+                        spwanOpenFilePopup = true;
                     }
                     if (ImGui.MenuItem("Exit"))
                     {
@@ -285,34 +282,47 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.EndMainMenuBar();
         }
 
-        private void LoadPointcloudDialog()
+        bool filePickerOpen = true;
+        bool spwanOpenFilePopup = false;
+
+        private void DrawFilePickerDialog()
         {
-            var openFileDialog = new OpenFileDialog
+            if (spwanOpenFilePopup)
             {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                Filter = "Potree2 json (*.json)|*.json",
-                ValidateNames = true,
-            };
+                ImGui.SetNextWindowSizeConstraints(new Vector2(700, 555), ImGui.GetWindowViewport().Size);
 
-
-            if (openFileDialog.ShowDialog().Value)
-            {
-                var file = openFileDialog.FileName;
-
-                PtRenderingParams.Instance.PathToOocFile = new FileInfo(file).Directory.FullName;
-
-                if (_fuControl != null)
-                {
-                    _fuControl.Dispose();
-                    _fuControl = new PointCloudControlCore(RC);
-                    _fuControl.Init();
-                    _fuControl.UpdateOriginalGameWindowDimensions(Width, Height);
-                    _fuControl.ResetCamera();
-                    // reset color picker
-                    _currentColorMode = 0;
-                }
+                ImGui.OpenPopup("open-file");
+                spwanOpenFilePopup = false;
             }
+
+            if (ImGui.BeginPopupModal("open-file", ref filePickerOpen, ImGuiWindowFlags.NoTitleBar))
+            {
+                var picker = ImGuiFileDialog.GetFilePicker(this, Path.Combine(Environment.CurrentDirectory, ""), new float4(30, 180, 30, 255), ".json");
+                if (picker.Draw())
+                {
+                    if (string.IsNullOrWhiteSpace(picker.SelectedFile)) return;
+
+                    var file = picker.SelectedFile;
+
+                    PtRenderingParams.Instance.PathToOocFile = new FileInfo(file).Directory.FullName;
+
+                    if (_fuControl != null)
+                    {
+                        _fuControl.Dispose();
+                        _fuControl = new PointCloudControlCore(RC);
+                        _fuControl.Init();
+                        _fuControl.UpdateOriginalGameWindowDimensions(Width, Height);
+                        _fuControl.ResetCamera();
+                        // reset color picker
+                        _currentColorMode = 0;
+                    }
+                    ImGuiFileDialog.RemoveFilePicker(this);
+                }
+
+                ImGui.EndPopup();
+            }
+
+
         }
 
         /// <summary>

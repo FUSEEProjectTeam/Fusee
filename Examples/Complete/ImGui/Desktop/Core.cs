@@ -1,15 +1,10 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.ImGuiDesktop;
-using Fusee.Math.Core;
 using ImGuiNET;
-using OpenTK.Graphics.OpenGL;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Fusee.Examples.FuseeImGui.Desktop
@@ -19,7 +14,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
     public class Core : RenderCanvas
     {
 
-#region StaticBindingVars
+        #region StaticBindingVars
 
         private static bool _dockspaceOpen = true;
         private static bool _isMouseInsideFuControl;
@@ -40,7 +35,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             _fuControl.Init();
 
             // reload last used cfg
-            if(File.Exists(Path.Combine("Assets/MyImGuiSettings.ini")))
+            if (File.Exists(Path.Combine("Assets/MyImGuiSettings.ini")))
             {
                 ImGui.LoadIniSettingsFromDisk(Path.Combine("Assets/MyImGuiSettings.ini"));
             }
@@ -117,7 +112,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             var fuseeViewportMin = ImGui.GetWindowContentRegionMin();
             var fuseeViewportMax = ImGui.GetWindowContentRegionMax();
             var fuseeViewportSize = fuseeViewportMax - fuseeViewportMin;
-            var fuseeViewportPos = ImGui.GetWindowPos();
 
             ImGui.Image(_fuControl.RenderToTexture((int)size.X, (int)size.Y), fuseeViewportSize,
                 new Vector2(0, 1),
@@ -141,7 +135,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             ImGui.Text("Fusee Simple Example");
             ImGui.Text($"Application average {1000.0f / ImGui.GetIO().Framerate:0.00} ms/frame ({ImGui.GetIO().Framerate:0} FPS)");
             ImGui.EndGroup();
-          
+
             ImGui.Spacing();
 
             var allSceneElements = _fuControl.GetSceneGraphRePresentation();
@@ -157,7 +151,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             ImGui.TableHeadersRow();
 
             foreach (var element in allSceneElements)
-            {                
+            {
                 ImGui.TableNextColumn();
                 ImGui.Text(element.Name);
                 ImGui.TableNextColumn();
@@ -219,7 +213,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         }
 
-     
+
 
         internal static void DrawMainMenuBar()
         {
@@ -262,7 +256,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             style.FramePadding.Y = 4;
             style.Alpha = 1.0f;
             style.FrameRounding = 3.0f;
-            
+
 
 
             colors[(int)ImGuiCol.Text] = new Vector4(0.00f, 0.00f, 0.00f, 1.00f);
