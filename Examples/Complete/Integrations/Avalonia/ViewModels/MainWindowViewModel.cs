@@ -1,10 +1,10 @@
+using Avalonia.Threading;
 using Fusee.Example.Integrations.Avalonia.Views;
+using Fusee.Examples.Integrations.Core;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Fusee.Examples.Integrations.Core;
-using ReactiveUI;
-using Avalonia.Threading;
 
 namespace Fusee.Example.Integrations.Avalonia.ViewModels
 {

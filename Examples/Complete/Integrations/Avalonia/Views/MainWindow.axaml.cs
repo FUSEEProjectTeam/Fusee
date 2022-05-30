@@ -1,17 +1,17 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Fusee.Base.Core;
+using Fusee.Avalonia.Desktop;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
+using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Avalonia.Desktop;
 using Fusee.Examples.Integrations.Core;
-using System.IO;
 using Fusee.Serialization;
-using Fusee.Base.Imp.Desktop;
-using System.Threading.Tasks;
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Fusee.Example.Integrations.Avalonia.Views
 {

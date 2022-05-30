@@ -94,22 +94,22 @@ namespace Fusee.ImGuiDesktop
                 _gameWindow.Context.MakeNoneCurrent();
 
             // convert icon to OpenTKImage
-           //if (icon != null)
-           //{
-           //    // convert Bgra to Rgba for OpenTK.WindowIcon
-           //    var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(icon.PixelData, icon.Width, icon.Height);
-           //    var bgra = pxData.CloneAs<Rgba32>();
-           //    bgra.Mutate(x => x.AutoOrient());
-           //    bgra.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
-           //
-           //    if (!bgra.DangerousTryGetSinglePixelMemory(out var res))
-           //    {
-           //        Diagnostics.Warn("Couldn't convert icon image to Rgba32!");
-           //        return;
-           //    }
-           //    var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
-           //    _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, resBytes.ToArray()) });
-           //}
+            //if (icon != null)
+            //{
+            //    // convert Bgra to Rgba for OpenTK.WindowIcon
+            //    var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(icon.PixelData, icon.Width, icon.Height);
+            //    var bgra = pxData.CloneAs<Rgba32>();
+            //    bgra.Mutate(x => x.AutoOrient());
+            //    bgra.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+            //
+            //    if (!bgra.DangerousTryGetSinglePixelMemory(out var res))
+            //    {
+            //        Diagnostics.Warn("Couldn't convert icon image to Rgba32!");
+            //        return;
+            //    }
+            //    var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
+            //    _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, resBytes.ToArray()) });
+            //}
 
             _controller = new ImGuiController(_gameWindow.Size.X, _gameWindow.Size.Y);
         }
@@ -209,7 +209,7 @@ namespace Fusee.ImGuiDesktop
         private void ResizeWindow()
         {
             _controller.WindowResized(Width, Height);
-         }
+        }
 
         /// <summary>
         /// Implementation Tasks: Gets and sets the width(pixel units) of the Canvas.

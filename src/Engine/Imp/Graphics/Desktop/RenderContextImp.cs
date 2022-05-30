@@ -2644,7 +2644,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 HardwareCapability.CanRenderDeferred => !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U,
                 HardwareCapability.CanUseGeometryShaders => 1U,
-                HardwareCapability.MaxSamples => GetSampleSize(),                
+                HardwareCapability.MaxSamples => GetSampleSize(),
                 _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null),
             };
         }

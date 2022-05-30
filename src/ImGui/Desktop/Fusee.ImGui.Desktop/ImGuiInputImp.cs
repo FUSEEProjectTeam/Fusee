@@ -253,7 +253,7 @@ namespace Fusee.ImGuiDesktop
 
                     io.AddKeyEvent(imGuiKey, isDown);
 
-                    if(e.Button.Id == (int)KeyCodes.LShift || e.Button.Id == (int)KeyCodes.RShift)
+                    if (e.Button.Id == (int)KeyCodes.LShift || e.Button.Id == (int)KeyCodes.RShift)
                     {
                         _uppercase = e.Pressed;
                         return;
@@ -263,8 +263,8 @@ namespace Fusee.ImGuiDesktop
                     // filter, use only ids which aren't bound to control keys
                     if (isDown && (
                             (e.Button.Id >= 48 && e.Button.Id <= 90)
-                        ||  (e.Button.Id >= 96 && e.Button.Id <= 111)
-                        ||  (e.Button.Id >= 186 && e.Button.Id <= 226)
+                        || (e.Button.Id >= 96 && e.Button.Id <= 111)
+                        || (e.Button.Id >= 186 && e.Button.Id <= 226)
                         || e.Button.Id == 9
                         || e.Button.Id == 13
                         || e.Button.Id == 32

@@ -280,4 +280,3 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
     }
 
 }
-
