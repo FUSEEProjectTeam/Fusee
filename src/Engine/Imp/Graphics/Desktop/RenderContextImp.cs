@@ -887,9 +887,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4x4 val)
+        public unsafe void SetShaderParam(IShaderParam param, float4x4 val)
         {
-            GL.UniformMatrix4f(((ShaderParam)param).handle, 1, true, val.ToArray());
+            using var float4x4Mem = val.ToArray().AsMemory().Pin();
+            var mat4Span = new Span<Matrix4>(float4x4Mem.Pointer, 16);
+
+            GL.UniformMatrix4f(((ShaderParam)param).handle, 1, true, mat4Span);
         }
 
         /// <summary>
@@ -909,14 +912,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4x4[] val)
+        public unsafe void SetShaderParam(IShaderParam param, float4x4[] val)
         {
-            var tmpArray = new float[val.Length * 4 * 4];
-            for (var i = 0; i < val.Length; i++)
-            {
-                val[i].ToArray().CopyTo(tmpArray, i * 16);
-            }
-            GL.UniformMatrix4f(((ShaderParam)param).handle, val.Length, true, tmpArray);
+            using var mem = val.AsMemory().Pin();
+            var matArraySpan = new Span<Matrix4>(mem.Pointer, val.Length);
+
+            GL.UniformMatrix4f(((ShaderParam)param).handle, val.Length, true, matArraySpan);
         }
 
         /// <summary>
