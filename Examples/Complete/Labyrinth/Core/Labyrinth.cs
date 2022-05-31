@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -9,6 +9,7 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.Xene;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -313,15 +314,14 @@ namespace Fusee.Examples.Labyrinth.Core
             _bodyTransform = _bodyNode?.GetTransform();
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
             if (!_isGameWon && Keyboard.IsKeyUp(KeyCodes.C))
                 _isGameWon = true;
 
             // Mouse movement
             if (Mouse.LeftButton)
-                _angleVelVert = _rotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                _angleVelVert = _rotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
             else
                 _angleVelVert = 0;
 
@@ -346,6 +346,13 @@ namespace Fusee.Examples.Labyrinth.Core
                 };
             }
 
+            Collision();
+            Ballmovement();
+        }
+
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
             if (!_isMoving)
             {
                 _overviewCam.Active = true;
@@ -357,8 +364,6 @@ namespace Fusee.Examples.Labyrinth.Core
                 _mainCam.Active = true;
             }
 
-            Collision();
-            Ballmovement();
             OnWonGame();
 
             _sceneRenderer.Render(RC);
@@ -645,8 +650,8 @@ namespace Fusee.Examples.Labyrinth.Core
                 _oldY = _headTransform.Translation.z;
 
                 //Move the ball
-                _moveX = Keyboard.WSAxis * _speed * DeltaTime;
-                _moveZ = Keyboard.ADAxis * _speed * DeltaTime;
+                _moveX = Keyboard.WSAxis * _speed * DeltaTimeUpdate;
+                _moveZ = Keyboard.ADAxis * _speed * DeltaTimeUpdate;
 
                 var headTranslation = _headTransform.Translation;
                 headTranslation.x += _moveX * M.Sin(_angle);
@@ -979,13 +984,30 @@ namespace Fusee.Examples.Labyrinth.Core
         // Gets one defined Pixel ARGB/RGB/Intensity color
         private static ColorUint GetPixel(ImageData img, int x, int y)
         {
-            return img.PixelFormat switch
+            var bpp = img.PixelFormat.BytesPerPixel;
+            int idx = bpp * (img.Width * y + x);
+            int bytePerChannel;
+
+            switch (img.PixelFormat.ColorFormat)
             {
-                { BytesPerPixel: 4, ColorFormat: ColorFormat.RGBA } => new ColorUint(img.PixelData[4 * (img.Width * y + x) + 2], img.PixelData[4 * (img.Width * y + x) + 1], img.PixelData[4 * (img.Width * y + x)], img.PixelData[4 * (img.Width * y + x) + 3]),
-                { BytesPerPixel: 3, ColorFormat: ColorFormat.RGB } => new ColorUint(img.PixelData[3 * (img.Width * y + x) + 2], img.PixelData[3 * (img.Width * y + x) + 1], img.PixelData[3 * (img.Width * y + x)], 255),
-                { BytesPerPixel: 1, ColorFormat: ColorFormat.Intensity } => new ColorUint(0, 0, 0, img.PixelData[1 * (img.Width * y + x) + 3]),
-                _ => new ColorUint(0, 0, 0, 0)
-            };
+                case ColorFormat.RGBA:
+                case ColorFormat.fRGBA16:
+                case ColorFormat.fRGBA32:
+                case ColorFormat.iRGBA32:
+                    bytePerChannel = bpp / 4;
+                    return new ColorUint(img.PixelData[idx], img.PixelData[idx + bytePerChannel], img.PixelData[idx + 2 * bytePerChannel], img.PixelData[idx + 3 * bytePerChannel]);
+                case ColorFormat.RGB:
+                case ColorFormat.uiRgb8:
+                case ColorFormat.fRGB32:
+                case ColorFormat.fRGB16:
+                    bytePerChannel = bpp / 3;
+                    return new ColorUint(img.PixelData[idx], img.PixelData[idx + bytePerChannel], img.PixelData[idx + 2 * bytePerChannel], 255);
+                case ColorFormat.Intensity:
+                case ColorFormat.Depth24:
+                case ColorFormat.Depth16:
+                default:
+                    throw new NotImplementedException($"Color format {img.PixelFormat.ColorFormat} missing.");
+            }
         }
     }
 }
