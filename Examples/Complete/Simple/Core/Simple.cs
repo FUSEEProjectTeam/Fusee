@@ -128,7 +128,6 @@ namespace Fusee.Examples.Simple.Core
             _angleVert += _angleVelVert;
         }
 
-
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
