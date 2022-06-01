@@ -464,7 +464,7 @@ namespace Fusee.Examples.UI.Core
         public override void RenderAFrame()
         {
             _fpsText.Text = "FPS: " + Time.FramesPerSecond.ToString("0.00");
-            
+
             _sceneRenderer.Render(RC);
 
             // Constantly check for interactive objects.
