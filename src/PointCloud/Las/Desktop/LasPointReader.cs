@@ -57,7 +57,7 @@ namespace Fusee.PointCloud.Las.Desktop
             throw new NotImplementedException();
         }
 
-        public TPoint[] LoadNodeData<TPoint>(string id) where TPoint : new()
+        public TPoint[] LoadNodeData<TPoint>(OctantId id) where TPoint : new()
         {
             throw new NotImplementedException();
         }

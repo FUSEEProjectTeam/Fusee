@@ -15,27 +15,27 @@ namespace Fusee.PointCloud.Core
     /// Called in "determine visibility for node" - if the _pointCache does not contain the points load them.
     /// </summary>
     /// <param name="guid">Unique ID of an octant.</param>
-    public delegate void TriggerPointLoading(string guid);
+    public delegate void TriggerPointLoading(OctantId guid);
 
     /// <summary>
     /// Delegate that allows to inject the loading method of the PointReader - loads the points from file.
     /// </summary>
     /// <param name="guid">Unique ID of an octant.</param>
-    public delegate TPoint[] LoadPointsHandler<TPoint>(string guid);
+    public delegate TPoint[] LoadPointsHandler<TPoint>(OctantId guid);
 
     /// <summary>
     /// Delegate for a method that tries to get the mesh(es) of an octant. If they are not cached yet, they should be created an added to the _gpuDataCache.
     /// </summary>
     /// <param name="guid"></param>
     /// <returns></returns>
-    public delegate IEnumerable<GpuMesh> GetMeshes(string guid);
+    public delegate IEnumerable<GpuMesh> GetMeshes(OctantId guid);
 
     /// <summary>
     /// Delegate for a method that tries to get the <see cref="InstanceData"/> of an octant. If they are not cached yet, they should be created an added to the _gpuDataCache.
     /// </summary>
     /// <param name="guid"></param>
     /// <returns></returns>
-    public delegate IEnumerable<InstanceData> GetInstanceData(string guid);
+    public delegate IEnumerable<InstanceData> GetInstanceData(OctantId guid);
 
     /// <summary>
     /// Generic delegate to inject a method that nows how to actually create a GpuMesh or InstanceData for the given point type.
@@ -57,12 +57,12 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private readonly MemoryCache<string, TPoint[]> _pointCache;
+        private readonly MemoryCache<OctantId, TPoint[]> _pointCache;
 
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private readonly MemoryCache<string, IEnumerable<TGpuData>> _gpuDataCache;
+        private readonly MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
         private readonly PointAccessor<TPoint> _pointAccessor;
         private readonly CreateGpuData<TGpuData, TPoint> _createGpuDataHandler;
@@ -95,7 +95,7 @@ namespace Fusee.PointCloud.Core
             _doRenderInstanced = doRenderInstanced;
 
             LoadingQueue = new((8 ^ 8) / 8);
-            DisposeQueue = new Dictionary<string, IEnumerable<TGpuData>>((8 ^ 8) / 8);
+            DisposeQueue = new Dictionary<OctantId, IEnumerable<TGpuData>>((8 ^ 8) / 8);
 
             _gpuDataCache.HandleEvictedItem = OnItemEvictedFromCache;
         }
@@ -107,7 +107,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="guid">The unique id of an octant.</param>
         /// <returns></returns>
-        public override IEnumerable<TGpuData> GetGpuData(string guid)
+        public override IEnumerable<TGpuData> GetGpuData(OctantId guid)
         {
             if (_gpuDataCache.TryGetValue(guid, out var gpuData))
                 return gpuData;
@@ -166,7 +166,7 @@ namespace Fusee.PointCloud.Core
         /// Loads points from the hard drive if they are neither in the loading queue nor in the PointCahce.
         /// </summary>
         /// <param name="guid">The octant for which the points should be loaded.</param>
-        public override void TriggerPointLoading(string guid)
+        public override void TriggerPointLoading(OctantId guid)
         {
             if (!LoadingQueue.Contains(guid) && LoadingQueue.Count <= MaxNumberOfNodesToLoad)
             {
@@ -195,7 +195,7 @@ namespace Fusee.PointCloud.Core
         {
             lock (LockDisposeQueue)
             {
-                DisposeQueue.Add((string)guid, (IEnumerable<TGpuData>)meshes);
+                DisposeQueue.Add((OctantId)guid, (IEnumerable<TGpuData>)meshes);
             }
         }
 

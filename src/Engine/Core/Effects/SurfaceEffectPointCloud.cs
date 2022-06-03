@@ -231,7 +231,7 @@ namespace Fusee.Engine.Core.Effects
                     "   case 1:",
                     "   {",
                     "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",                    "",
-                    $"      sizeInPx = (billboardHeight / (2.0 * slope)) * float({UniformNameDeclarations.ViewportPx});",                    
+                    $"      sizeInPx = (billboardHeight / (2.0 * slope)) * float({UniformNameDeclarations.ViewportPx});",
                     "       break;",
                     "   }",
                     "}",
@@ -241,7 +241,7 @@ namespace Fusee.Engine.Core.Effects
                     $"{VaryingNameDeclarations.ViewPos} = mv * vec4(0.0, 0.0, 0.0, 1.0)",
                     $"         + vec4({UniformNameDeclarations.Vertex}.x, {UniformNameDeclarations.Vertex}.y, 0.0, 0.0)",
                     $"         * vec4(scaleFactor, scaleFactor, 1.0, 1.0);",
-                    
+
                 };
             }
         }
@@ -290,7 +290,7 @@ namespace Fusee.Engine.Core.Effects
             else
             {
                 return new List<string>() {
-                
+
                 "float weight;",
                 "",
                 "switch (PointShape)",

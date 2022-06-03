@@ -149,7 +149,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <typeparam name="TPoint">The generic point type.</typeparam>
         /// <param name="id">The unique id of the octant.</param>
         /// <returns></returns>
-        public TPoint[] LoadNodeData<TPoint>(string id) where TPoint : new()
+        public TPoint[] LoadNodeData<TPoint>(OctantId id) where TPoint : new()
         {
             var node = FindNode(id);
             TPoint[] points = null;
@@ -295,7 +295,7 @@ namespace Fusee.PointCloud.Potree.V2
             {
                 if (potreeNode.Children[i] != null)
                 {
-                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, potreeNode.Children[i].Name);
+                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, new OctantId(potreeNode.Name));
 
                     if (potreeNode.Children[i].NodeType == NodeType.LEAF)
                     {
@@ -436,9 +436,9 @@ namespace Fusee.PointCloud.Potree.V2
             }
         }
 
-        private PotreeNode FindNode(string id)
+        private PotreeNode FindNode(OctantId id)
         {
-            return FileDataInstance.Hierarchy.Nodes.Find(n => n.Name == id);
+            return FileDataInstance.Hierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdToPotreeName(id));
         }
     }
 }
