@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Common
 {
+    /// <summary>
+    /// Non-generic, point type independent interface, used in point cloud implementations.
+    /// </summary>
     public interface IPointCloudImpBase
     {
         /// <summary>

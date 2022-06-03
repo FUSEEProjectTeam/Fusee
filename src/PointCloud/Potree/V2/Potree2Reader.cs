@@ -1,3 +1,5 @@
+using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Common.Accessors;
@@ -95,14 +97,14 @@ namespace Fusee.PointCloud.Potree.V2
 
                     if (!doRenderInstanced)
                     {
-                        var dataHandler = new PointCloudDataHandler<PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
+                        var dataHandler = new PointCloudDataHandler<GpuMesh, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
                         var imp = new Potree2Cloud(dataHandler, GetOctree());
                         return new PointCloudComponent(imp, doRenderInstanced);
 
                     }
                     else
                     {
-                        var dataHandlerInstanced = new PointCloudDataHandlerInstanced<PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateInstanceDataPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
+                        var dataHandlerInstanced = new PointCloudDataHandler<InstanceData, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateInstanceDataPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>, true);
                         var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
                         return new PointCloudComponent(imp, doRenderInstanced);
                     }

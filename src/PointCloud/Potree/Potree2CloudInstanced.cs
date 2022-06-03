@@ -1,5 +1,4 @@
-﻿using Fusee.Engine.Core.Primitives;
-using Fusee.Engine.Core.Scene;
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
@@ -13,8 +12,6 @@ namespace Fusee.PointCloud.Potree
     /// </summary>
     public class Potree2CloudInstanced : IPointCloudImp<InstanceData>, IDisposable
     {
-        public readonly Plane Quad;
-
         /// <summary>
         /// The complete list of meshes that can be rendered.
         /// </summary>
@@ -102,7 +99,7 @@ namespace Fusee.PointCloud.Potree
         }
 
         /// <summary>
-        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TPoint}"/> to update the visible meshes.
+        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData, TPoint}"/> to update the visible meshes.
         /// Called every frame.
         /// </summary>
         /// <param name="fov">The camera's field of view.</param>
