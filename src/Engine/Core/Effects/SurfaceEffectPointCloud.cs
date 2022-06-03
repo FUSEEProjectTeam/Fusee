@@ -329,6 +329,7 @@ namespace Fusee.Engine.Core.Effects
         /// Creates a new instance of type PointCloudSurfaceEffect.
         /// </summary>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
+        /// <param name="doRenderInstanced">Use instanced rendering for visualizing the point cloud?</param>
         public SurfaceEffectPointCloud(RenderStateSet rendererStates = null, bool doRenderInstanced = false)
             : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) },
                   RenderFlags.PointCloud | (doRenderInstanced ? RenderFlags.Instanced : RenderFlags.None),

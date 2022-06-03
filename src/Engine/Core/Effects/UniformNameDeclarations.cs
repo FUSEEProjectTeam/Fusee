@@ -473,70 +473,151 @@ namespace Fusee.Engine.Core.Effects
         #endregion        
 
         #region Light
+
+        /// <summary>
+        /// Name of the global uniform array that holds all lights in the scene.
+        /// </summary>
         public const string AllLightsArray = "FUSEE_allLights";
 
+        /// <summary>
+        /// Name of a light's position variable.
+        /// </summary>
         public const string LightWorldPos = "position";
+
+        /// <summary>
+        /// Name of a light's intensity/color variable.
+        /// </summary>
         public const string LightIntensities = "intensities";
+
+        /// <summary>
+        /// Name of a light's maximal distance variable.
+        /// </summary>
         public const string LightMaxDist = "maxDistance";
+
+        /// <summary>
+        /// Name of a light's strength variable.
+        /// </summary>
         public const string LightStrength = "strength";
+
+        /// <summary>
+        /// Name of a light's outer cone angle variable.
+        /// </summary>
         public const string LightOuterConeAngle = "outerConeAngle";
+
+        /// <summary>
+        /// Name of a light's maximal distance variable.
+        /// </summary>
         public const string LightInnerConeAngle = "innerConeAngle";
+
+        /// <summary>
+        /// Name of a light's direction variable.
+        /// </summary>
         public const string LightDirection = "direction";
+
+        /// <summary>
+        /// Name of a light's type variable.
+        /// </summary>
         public const string LightType = "lightType";
+
+        /// <summary>
+        /// Name of the variable that determines if the light is active.
+        /// </summary>
         public const string LightIsActive = "isActive";
+
+        /// <summary>
+        /// Name of the variable that determines if the light casts shadows.
+        /// </summary>
         public const string LightIsCastingShadows = "isCastingShadows";
+
+        /// <summary>
+        /// Name of a light's shadow bias variable.
+        /// </summary>
         public const string LightBias = "bias";
 
+
+        /// <summary>
+        /// Returns the full name of the position uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetPosName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightWorldPos;
         }
 
+        /// <summary>
+        /// Returns the full name of the intensity uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetIntensitiesName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightIntensities;
         }
 
+        /// <summary>
+        /// Returns the full name of the maximal distance uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetMaxDistName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightMaxDist;
         }
 
+        /// <summary>
+        /// Returns the full name of the light's strength uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetStrengthName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightStrength;
         }
 
+        /// <summary>
+        /// Returns the full name of the light's outer cone angle uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetOuterConeAngleName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightOuterConeAngle;
         }
 
+        /// <summary>
+        /// Returns the full name of the light's inner cone angle uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetInnerConeAngleName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightInnerConeAngle;
         }
 
+        /// <summary>
+        /// Returns the full name of the light's direction uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetDirectionName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightDirection;
         }
 
+        /// <summary>
+        /// Returns the full name of the light's type uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetTypeName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightType;
         }
 
+        /// <summary>
+        /// Returns the full name of the light's "active" uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetIsActiveName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightIsActive;
         }
 
+        /// <summary>
+        /// Returns the full name of the light's "is casting shadows" uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetIsCastingShadowsName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightIsCastingShadows;
         }
 
+        /// <summary>
+        /// Returns the full name of the light's shadow bias uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
         public static string GetBiasName(int i)
         {
             return AllLightsArray + $"[{i}]." + LightBias;

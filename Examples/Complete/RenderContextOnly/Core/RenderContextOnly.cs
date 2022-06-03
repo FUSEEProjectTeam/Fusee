@@ -40,14 +40,10 @@ namespace Fusee.Examples.RenderContextOnly.Core
         private SurfaceEffect _greenFx;
         private SurfaceEffect _grayFx;
 
-        private async Task Load()
-        {
-
-        }
+        
 
         public override async Task InitAsync()
         {
-            await Load();
             await base.InitAsync();
         }
 

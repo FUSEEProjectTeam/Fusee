@@ -16,7 +16,7 @@ namespace Fusee.Engine.Core
         private readonly Dictionary<Suid, IInstanceDataImp> _identifierToInstanceDataImpDictionary = new();
 
         /// <summary>
-        /// Creates a new Instance of MeshManager. The instance is handling the memory allocation and deallocation on the GPU by observing Mesh.cs objects.
+        /// Creates a new Instance of MeshManager. The instance is handling the memory allocation and deallocation on the GPU by observing Mesh objects.
         /// </summary>
         /// <param name="renderContextImp">The RenderContextImp is used for GPU memory allocation and deallocation. See RegisterMesh.</param>
         public MeshManager(IRenderContextImp renderContextImp)
@@ -67,7 +67,7 @@ namespace Fusee.Engine.Core
 
         private void Remove(IInstanceDataImp instanceData)
         {
-            _renderContextImp.RemoveInstance(instanceData);
+            _renderContextImp.RemoveInstanceData(instanceData);
 
             // Force collection
             GC.Collect();
@@ -155,7 +155,7 @@ namespace Fusee.Engine.Core
             switch (instanceDataEventArgs.ChangedEnum)
             {
                 case InstanceDataChangedEnum.Transform:
-                    _renderContextImp.SetInstanceTransform(instanceImp, instanceData.Translations, instanceData.Rotations, instanceData.Scales);
+                    _renderContextImp.SetInstanceTransform(instanceImp, instanceData.Positions, instanceData.Rotations, instanceData.Scales);
                     break;
                 case InstanceDataChangedEnum.Colors:
                     _renderContextImp.SetInstanceColor(instanceImp, instanceData.Colors);
@@ -273,7 +273,7 @@ namespace Fusee.Engine.Core
             instanceDataImp.Amount = instanceData.Amount;
 
             _identifierToInstanceDataImpDictionary.Add(instanceData.SessionUniqueId, instanceDataImp);
-            _renderContextImp.SetInstanceTransform(instanceDataImp, instanceData.Translations, instanceData.Rotations, instanceData.Scales);
+            _renderContextImp.SetInstanceTransform(instanceDataImp, instanceData.Positions, instanceData.Rotations, instanceData.Scales);
             _renderContextImp.SetInstanceColor(instanceDataImp, instanceData.Colors);
 
             return instanceDataImp;

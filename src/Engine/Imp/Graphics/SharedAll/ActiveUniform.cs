@@ -46,8 +46,14 @@ namespace Fusee.Engine.Imp.SharedAll
         /// </summary>
         public int Hash { get; private set; }
 
+        /// <summary>
+        /// The method that returns the uniform value.
+        /// </summary>
         public GetUniformValue UniformValueGetter { get; set; }
 
+        /// <summary>
+        /// Determines whether this uniform is global or limited to one shader.
+        /// </summary>
         public bool IsGlobal { get; set; }
 
         /// <summary>

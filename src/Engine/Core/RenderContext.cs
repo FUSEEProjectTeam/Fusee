@@ -1257,7 +1257,7 @@ namespace Fusee.Engine.Core
         /// <remarks>A Effect must be attached to a context before you can render geometry with it. The main
         /// task performed in this method is compiling the provided shader source code and uploading the shaders to
         /// the gpu.</remarks>
-        public void SetEffect(Effect ef, RenderFlags renderMod = RenderFlags.None, bool renderForward = true)
+        public void SetEffect(Effect ef, bool renderForward = true)
         {
             if (_rci == null)
                 throw new NullReferenceException("No render context Implementation found!");
@@ -1268,18 +1268,18 @@ namespace Fusee.Engine.Core
             // Is this shader effect already built?
             if (_effectManager.GetEffect(ef) == null)
             {
-                CreateShaderProgram(ef, renderMod, renderForward);
+                CreateShaderProgram(ef, renderForward);
             }
             _currentEffect = ef;
             return;
         }
 
         /// <summary>
-        /// Creates a shader program on the gpu. Needs to be called before <see cref="SetEffect(Effect, RenderFlags, bool)"/>.
+        /// Creates a shader program on the gpu. Needs to be called before <see cref="SetEffect(Effect, bool)"/>.
         /// </summary>
         /// <param name="renderForward">Is a forward or deferred renderer used? Will create the proper shader for the render method.</param>
         /// <param name="ef">The effect.</param>
-        internal void CreateShaderProgram(Effect ef, RenderFlags renderMod = RenderFlags.None, bool renderForward = true)
+        internal void CreateShaderProgram(Effect ef, bool renderForward = true)
         {
             if (ef == null)
                 throw new NullReferenceException("No Effect found!");
@@ -1306,7 +1306,7 @@ namespace Fusee.Engine.Core
                     CreateShaderForShaderEffect(shFx);
                     break;
                 case SurfaceEffectBase surfFx:
-                    CreateShaderForSurfaceEffect(surfFx, renderMod);
+                    CreateShaderForSurfaceEffect(surfFx);
                     break;
             }
 
@@ -1403,7 +1403,7 @@ namespace Fusee.Engine.Core
             _allCompiledEffects.Add(ef, cFx);
         }
 
-        private void CreateShaderForSurfaceEffect(SurfaceEffectBase ef, RenderFlags renderMod = RenderFlags.None)
+        private void CreateShaderForSurfaceEffect(SurfaceEffectBase ef)
         {
             //Add the shader code for the global uniforms
             foreach (var key in GlobalUniforms.Keys)

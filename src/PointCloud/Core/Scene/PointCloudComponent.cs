@@ -24,12 +24,15 @@ namespace Fusee.PointCloud.Core.Scene
         /// </summary>
         public float3 Size { get => PointCloudImp.Size; }
 
+        /// <summary>
+        /// Determines whether this point cloud should be rendered using gpu instancing.
+        /// </summary>
         public readonly bool DoRenderInstanced;
 
         /// <summary>
         /// Instantiates the <see cref="IPointCloudImp{TGpuData}"/>.
         /// </summary>
-        public PointCloudComponent(IPointCloudImpBase imp, bool doRenderInstanced)
+        public PointCloudComponent(IPointCloudImpBase imp, bool doRenderInstanced = false)
         {
             DoRenderInstanced = doRenderInstanced;
             PointCloudImp = imp;

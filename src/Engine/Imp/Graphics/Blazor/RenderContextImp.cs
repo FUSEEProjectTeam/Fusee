@@ -2677,7 +2677,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             throw new NotImplementedException();
         }
 
-        public void RemoveInstance(IInstanceDataImp instanceImp)
+        public void RemoveInstanceData(IInstanceDataImp instanceImp)
         {
             throw new NotImplementedException();
         }

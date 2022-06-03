@@ -1229,6 +1229,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+        /// <summary>
+        /// Creates and binds the instance model matrices onto the GL render context and assigns an buffer object index to the passed <see cref="IInstanceDataImp" /> instance.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
+        /// <param name="instancePositions">The instance positions.</param>
+        /// <param name="instanceRotations">The instance rotations.</param>
+        /// <param name="instanceScales">The instance scale values.</param>
         public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
         {
             var vao = ((InstanceDataImp)instanceImp).VertexArrayObject;
@@ -1289,6 +1296,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat4, 1);
         }
 
+        /// <summary>
+        /// Binds the instance colors onto the GL render context and assigns an buffer object index to the passed <see cref="IInstanceDataImp" /> instance.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
+        /// <param name="instanceColors">The instance colors.</param>
         public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
         {
             if (instanceColors == null)
@@ -1667,15 +1679,19 @@ namespace Fusee.Engine.Imp.Graphics.Android
             ((MeshImp)mr).InvalidateVertices();
         }
 
-        public void RemoveInstance(IInstanceDataImp instanceImp)
+        /// <summary>
+        /// Deletes the buffers associated with the instance data implementation.
+        /// </summary>
+        /// <param name="instanceDataImp">The instance data for which to delete the GPU buffers.</param>
+        public void RemoveInstanceData(IInstanceDataImp instanceDataImp)
         {
-            var posBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
-            var colBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
+            var posBo = ((InstanceDataImp)instanceDataImp).InstanceTransformBufferObject;
+            var colBo = ((InstanceDataImp)instanceDataImp).InstanceColorBufferObject;
 
             GL.DeleteBuffers(1, ref posBo);
             GL.DeleteBuffers(1, ref colBo);
-            ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = 0;
-            ((InstanceDataImp)instanceImp).InstanceColorBufferObject = 0;
+            ((InstanceDataImp)instanceDataImp).InstanceTransformBufferObject = 0;
+            ((InstanceDataImp)instanceDataImp).InstanceColorBufferObject = 0;
         }
 
         /// <summary>
@@ -1812,6 +1828,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="instanceData">Contains the buffers that need to be bound when using instanced rendering.</param>
         public void Render(IMeshImp mr, IInstanceDataImp instanceData = null)
         {
             if (((MeshImp)mr).VertexBufferObject != 0)

@@ -1957,7 +1957,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             ((MeshImp)mr).InvalidateVertices();
         }
 
-        public void RemoveInstance(IInstanceDataImp instanceImp)
+        public void RemoveInstanceData(IInstanceDataImp instanceImp)
         {
             GL.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
             GL.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceColorBufferObject);

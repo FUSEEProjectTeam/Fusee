@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Common
 {
+    /// <summary>
+    /// Delegate for a method that returns the value of a shader parameter.
+    /// </summary>
+    /// <returns></returns>
     public delegate object GetUniformValue();
 
     /// <summary>
@@ -450,8 +454,20 @@ namespace Fusee.Engine.Common
         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
         void SetVertices(IMeshImp mesh, float3[] vertices);
 
+        /// <summary>
+        /// Creates and binds the instance model matrices onto the GL render context and assigns an buffer object index to the passed <see cref="IInstanceDataImp" /> instance.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
+        /// <param name="instancePositions">The instance positions.</param>
+        /// <param name="instanceRotations">The instance rotations.</param>
+        /// <param name="instanceScales">The instance scale values.</param>
         public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales);
 
+        /// <summary>
+        /// Binds the instance colors onto the GL render context and assigns an buffer object index to the passed <see cref="IInstanceDataImp" /> instance.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
+        /// <param name="instanceColors">The instance colors.</param>
         public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors);
 
         /// <summary>
@@ -540,17 +556,21 @@ namespace Fusee.Engine.Common
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="shaderProgramImp">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
-        /// <seealso cref="IRenderContextImp.CreateShaderProgram"/>
-        /// <see cref="IRenderContextImp.Render(IMeshImp)"/>
+        /// <seealso cref="CreateShaderProgram"/>
+        /// <see cref="Render(IMeshImp, IInstanceDataImp)"/>
         void SetShader(IShaderHandle shaderProgramImp);
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffers associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mesh">The mesh for which to delete the GPU buffers.</param>
         void RemoveVertices(IMeshImp mesh);
 
-        void RemoveInstance(IInstanceDataImp instanceData);
+        /// <summary>
+        /// Deletes the buffers associated with the instance data implementation.
+        /// </summary>
+        /// <param name="instanceDataImp">The instance data for which to delete the GPU buffers.</param>
+        void RemoveInstanceData(IInstanceDataImp instanceDataImp);
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
@@ -647,7 +667,8 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
-        /// <param name="mr">The mesh that should be rendered.</param>        
+        /// <param name="mr">The mesh that should be rendered.</param>
+        /// <param name="instanceData">Contains the buffers that need to be bound when using instanced rendering.</param>        
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
@@ -690,6 +711,10 @@ namespace Fusee.Engine.Common
         /// <returns>The <see cref="IMeshImp" /> instance.</returns>
         IMeshImp CreateMeshImp();
 
+        /// <summary>
+        /// Creates the instance data implementation.
+        /// </summary>
+        /// <returns>The <see cref="IInstanceDataImp" /> instance.</returns>
         IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp);
 
         /// <summary>

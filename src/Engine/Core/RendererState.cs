@@ -89,15 +89,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Modifies the gpu buffer creation and Render method.
-        /// </summary>
-        public RenderFlags RenderModification
-        {
-            set => _renderModification.Tos = value;
-            get => _renderModification.Tos;
-        }
-
-        /// <summary>
         /// Creates a new instance of type RenderState.
         /// </summary>
         public RendererState()

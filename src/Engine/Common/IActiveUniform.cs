@@ -37,8 +37,14 @@
         /// </summary>
         public int Hash { get; }
 
+        /// <summary>
+        /// Method that nows how to get this uniforms value.
+        /// </summary>
         public GetUniformValue UniformValueGetter { get; set; }
 
+        /// <summary>
+        /// Determines if this is a global uniform.
+        /// </summary>
         public bool IsGlobal { get; set; }
 
         /// <summary>

@@ -4,6 +4,9 @@ using System;
 
 namespace Fusee.Engine.Core.Scene
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class InstanceData : SceneComponent, IDisposable, IManagedInstanceData
     {
         /// <summary>
@@ -16,17 +19,23 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public event EventHandler<InstanceDataChangedEventArgs> DisposeData;
 
-        public float3[] Translations
+        /// <summary>
+        /// The position of each instance. This array needs to be as long as <see cref="Amount"/>.
+        /// </summary>
+        public float3[] Positions
         {
-            get => _translations;
+            get => _positions;
             set
             {
-                _translations = value;
+                _positions = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
             }
         }
-        private float3[] _translations;
+        private float3[] _positions;
 
+        /// <summary>
+        /// The rotation of each instance. This array needs to be as long as <see cref="Amount"/>.
+        /// </summary>
         public float3[] Rotations
         {
             get => _rotations;
@@ -38,6 +47,9 @@ namespace Fusee.Engine.Core.Scene
         }
         private float3[] _rotations;
 
+        /// <summary>
+        /// The scale of each instance. This array needs to be as long as <see cref="Amount"/>.
+        /// </summary>
         public float3[] Scales
         {
             get => _scales;
@@ -49,6 +61,9 @@ namespace Fusee.Engine.Core.Scene
         }
         private float3[] _scales;
 
+        /// <summary>
+        /// The color of each instance. This array needs to be as long as <see cref="Amount"/>.
+        /// </summary>
         public float4[] Colors
         {
             get => _colors;
@@ -60,16 +75,31 @@ namespace Fusee.Engine.Core.Scene
         }
         private float4[] _colors;
 
+        /// <summary>
+        /// The amount of instances that will be rendered.
+        /// </summary>
         public int Amount { get; }
 
+        /// <summary>
+        /// The unique id of this object.
+        /// </summary>
         public Suid SessionUniqueId { get; } = Suid.GenerateSuid();
 
-        public InstanceData(int amount, float3[] translations, float3[] rotations = null, float3[] scales = null, float4[] colors = null)
+        /// <summary>
+        /// Creates a new instance of type <see cref="InstanceData"/>. Will fail if the length of a provided array doesn't match <see cref="Amount"/>.
+        /// </summary>
+        /// <param name="amount">The amount of instances that will be rendered.</param>
+        /// <param name="positions">The position of each instance.</param>
+        /// <param name="rotations">The rotation of each instance.</param>
+        /// <param name="scales">The scale of each instance.</param>
+        /// <param name="colors">The color of each instance.</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public InstanceData(int amount, float3[] positions, float3[] rotations = null, float3[] scales = null, float4[] colors = null)
         {
             Amount = amount;
-            if (Amount != translations.Length)
+            if (Amount != positions.Length)
                 throw new ArgumentOutOfRangeException();
-            _translations = translations;
+            _positions = positions;
 
             if (scales != null)
             {

@@ -64,15 +64,15 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
             if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
             {
-                vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({VaryingNameDeclarations.SurfOutVaryingName}.normal, 0.0)));");
+                vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({UniformNameDeclarations.ITModelView}* vec4({VaryingNameDeclarations.SurfOutVaryingName}.normal, 0.0)));");
             }
 
             vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
 
             if (texSetup.HasFlag(TextureSetup.NormalMap))
             {
-                vertMainBody.Add($"vec3 T = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Tangent}.xyz, 0.0)));");
-                vertMainBody.Add($"vec3 B = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Bitangent}.xyz, 0.0)));");
+                vertMainBody.Add($"vec3 T = normalize(vec3({UniformNameDeclarations.ITModelView} * vec4({UniformNameDeclarations.Tangent}.xyz, 0.0)));");
+                vertMainBody.Add($"vec3 B = normalize(vec3({UniformNameDeclarations.ITModelView} * vec4({UniformNameDeclarations.Bitangent}.xyz, 0.0)));");
 
                 vertMainBody.Add($"TBN = mat3(T,B,{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Normal.Item2});");
             }

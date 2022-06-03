@@ -13,21 +13,16 @@ namespace Fusee.Engine.Core.Effects
     public class SurfaceEffect : SurfaceEffectBase
     {
         /// <summary>
-        /// Set this to true if GPU instancing is used to render the mesh this effect is used for.
-        /// </summary>
-        readonly RenderFlags RenderModifications;
-
-        /// <summary>
         /// Creates a new instance of type DefaultSurfaceEffect.
         /// </summary>
         /// <param name="input">See <see cref="SurfaceEffectBase.SurfaceInput"/>.</param>
+        /// <param name="renderMod">Provides a flag that may adjust the rendering according to </param>
         /// <param name="surfOutFragBody">The method body for the <see cref="SurfaceEffectBase.SurfOutFragMethod"/></param>
         /// <param name="surfOutVertBody">The method body for the <see cref="SurfaceEffectBase.SurfOutVertMethod"/></param>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
         public SurfaceEffect(SurfaceEffectInput input, RenderFlags renderMod = RenderFlags.None, List<string> surfOutVertBody = null, List<string> surfOutFragBody = null, RenderStateSet rendererStates = null)
             : base(input, rendererStates)
         {
-            RenderModifications = renderMod;
             var inputType = input.GetType();
             if (surfOutFragBody != null)
                 SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutFragBody, inputType);
@@ -39,7 +34,7 @@ namespace Fusee.Engine.Core.Effects
             else
                 SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(VertShards.SurfOutBody(input), input.ShadingModel);
 
-            VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, VertMain.VertexMain(SurfaceInput.ShadingModel, SurfaceInput.TextureSetup, RenderModifications)));
+            VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, VertMain.VertexMain(SurfaceInput.ShadingModel, SurfaceInput.TextureSetup, renderMod)));
 
             //TODO: try to suppress adding these parameters if the effect is used only for deferred rendering.
             //May be difficult because we'd need to remove or add them (and only them) depending on the render method            

@@ -75,7 +75,6 @@ namespace Fusee.PointCloud.Core.Scene
             if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
             //if (_rc.InvView == float4x4.Identity) return;
-            _state.RenderModification |= RenderFlags.Instanced;
 
             var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
             pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);

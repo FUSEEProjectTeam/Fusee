@@ -30,5 +30,22 @@ namespace Fusee.Engine.Core
         {
             return left.Equals(right);
         }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj is null) || !GetType().Equals(obj.GetType()))
+                return false;
+            else
+                return Equals((CameraResult)obj);
+
+        }
+
+        /// <summary>
+        /// Returns the hash for this instance.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Camera.GetHashCode(), View.Row1.GetHashCode(), View.Row2.GetHashCode(), View.Row3.GetHashCode(), View.Row4.GetHashCode());
+        }
     }
 }

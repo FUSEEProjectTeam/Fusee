@@ -11,6 +11,9 @@
         /// </summary>
         public static readonly int VertexAttribLocation = 0;
 
+        /// <summary>
+        /// The binding index for the VAO.
+        /// </summary>
         public static readonly int VertexAttribBindingIndex = VertexAttribLocation;
 
         /// <summary>
@@ -18,6 +21,9 @@
         /// </summary>
         public static readonly int ColorAttribLocation = 1;
 
+        /// <summary>
+        /// The binding index for the Color buffer.
+        /// </summary>
         public static readonly int ColorAttribBindingIndex = ColorAttribLocation;
 
         /// <summary>
@@ -25,6 +31,9 @@
         /// </summary>
         public static readonly int Color1AttribLocation = 2;
 
+        /// <summary>
+        /// The binding index for the second Color buffer.
+        /// </summary>
         public static readonly int Color1AttribBindingIndex = Color1AttribLocation;
 
         /// <summary>
@@ -32,6 +41,9 @@
         /// </summary>
         public static readonly int Color2AttribLocation = 3;
 
+        /// <summary>
+        /// The binding index for the third Color buffer.
+        /// </summary>
         public static readonly int Color2AttribBindingIndex = Color2AttribLocation;
 
         /// <summary>
@@ -39,6 +51,9 @@
         /// </summary>
         public static readonly int NormalAttribLocation = 4;
 
+        /// <summary>
+        /// The binding index for the Normal buffer.
+        /// </summary>
         public static readonly int NormalAttribBindingIndex = NormalAttribLocation;
 
         /// <summary>
@@ -46,6 +61,9 @@
         /// </summary>
         public static readonly int UvAttribLocation = 5;
 
+        /// <summary>
+        /// The binding index for the UV buffer.
+        /// </summary>
         public static readonly int UvAttribBindingIndex = UvAttribLocation;
 
         /// <summary>
@@ -53,6 +71,9 @@
         /// </summary>
         public static readonly int TangentAttribLocation = 6;
 
+        /// <summary>
+        /// The binding index for the Tangent buffer.
+        /// </summary>
         public static readonly int TangentAttribBindingIndex = TangentAttribLocation;
 
         /// <summary>
@@ -60,6 +81,9 @@
         /// </summary>
         public static readonly int BitangentAttribLocation = 7;
 
+        /// <summary>
+        /// The binding index for the Bitangent buffer.
+        /// </summary>
         public static readonly int BitangentAttribBindingIndex = BitangentAttribLocation;
 
         /// <summary>
@@ -67,6 +91,9 @@
         /// </summary>
         public static readonly int BoneWeightAttribLocation = 8;
 
+        /// <summary>
+        /// The binding index for the Bone Weight buffer.
+        /// </summary>
         public static readonly int BoneWeightAttribBindingIndex = BoneWeightAttribLocation;
 
         /// <summary>
@@ -74,6 +101,9 @@
         /// </summary>
         public static readonly int BoneIndexAttribLocation = 9;
 
+        /// <summary>
+        /// The binding index for the Bone Index buffer.
+        /// </summary>
         public static readonly int BoneIndexAttribAttribBindingIndex = BoneIndexAttribLocation;
 
         /// <summary>
@@ -82,6 +112,9 @@
         /// </summary>
         public static readonly int InstancedModelMat1 = 11;
 
+        /// <summary>
+        /// The binding index for the instance model matrix buffer.
+        /// </summary>
         public static readonly int InstancedModelMatBindingIndex = InstancedModelMat1;
 
         /// <summary>
@@ -107,6 +140,9 @@
         /// </summary>
         public static readonly int InstancedColor = 15;
 
+        /// <summary>
+        /// The binding index for the instanced color buffer.
+        /// </summary>
         public static readonly int InstancedColorBindingIndex = InstancedColor;
     }
 }

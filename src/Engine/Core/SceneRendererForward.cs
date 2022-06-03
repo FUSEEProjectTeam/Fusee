@@ -391,7 +391,6 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderBone(Bone bone)
         {
-            _state.RenderModification |= RenderFlags.Bones;
             var boneContainer = CurrentNode;
 
             var trans = boneContainer.GetGlobalTranslation();
@@ -427,7 +426,6 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderInstances(InstanceData instanceData)
         {
-            _state.RenderModification |= RenderFlags.Instanced;
             CurrentInstanceData = instanceData;
         }
 
@@ -663,7 +661,7 @@ namespace Fusee.Engine.Core
         public void RenderEffect(Effect effect)
         {
             _state.Effect = effect;
-            _rc.SetEffect(_state.Effect, _state.RenderModification, true);
+            _rc.SetEffect(_state.Effect, true);
         }
 
         /// <summary>
@@ -812,7 +810,7 @@ namespace Fusee.Engine.Core
         {
             _state.Pop();
             _rc.Model = _state.Model;
-            _rc.SetEffect(_state.Effect, _state.RenderModification, true);
+            _rc.SetEffect(_state.Effect, true);
         }
 
         #endregion

@@ -1,7 +1,6 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
@@ -36,135 +35,17 @@ namespace Fusee.Examples.Simple.Core
 
         private bool _keys;
 
-        private int instanceAmount = 10000;
-        private Random _random = new();
-
         private async Task Load()
-        {
-            //Console.WriteLine("Loading scene ...");
-
-            //_gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
-
-            //// Create the interaction handler
-            //_sih = new SceneInteractionHandler(_gui);
-
-            //// Load the rocket model
-            //_rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
-            //_camPivotTransform = new Transform();
-            //var camNode = new SceneNode()
-            //{
-            //    Name = "CamPivoteNode",
-            //    Children = new ChildList()
-            //    {
-            //        new SceneNode()
-            //        {
-            //            Name = "MainCam",
-            //            Components = new System.Collections.Generic.List<SceneComponent>()
-            //            {
-            //                new Transform() { Translation = new float3(0, 2, -10) },
-            //                new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy) { BackgroundColor = float4.One }
-            //            }
-            //        }
-            //    },
-            //    Components = new System.Collections.Generic.List<SceneComponent>()
-            //    {
-            //        _camPivotTransform
-            //    }
-            //};
-
-            //var instanceComp = new InstanceData(instanceAmount, GetRndInstanceTranslations());
-
-            //var cubeNode = new SceneNode()
-            //{
-            //    Name = "CubeNode",
-            //    Components = new System.Collections.Generic.List<SceneComponent>()
-            //    {
-            //        new Transform() { Translation = new float3(0, 2, 0) },
-            //        instanceComp,
-            //        MakeEffect.FromDiffuse(new float4(1,0,0,1)),
-            //        new Cube()
-            //    }
-            //};
-
-            //_rocketScene.Children.RemoveAt(0);
-            //_rocketScene.Children.Add(cubeNode);
-            //_rocketScene.Children.Add(camNode);
-
-            //// Wrap a SceneRenderer around the model.
-            //_sceneRenderer = new SceneRendererForward(_rocketScene);
-            //_guiRenderer = new SceneRendererForward(_gui);
-        }
-
-        private float3[] GetRndInstanceTranslations(int amount)
-        {
-            var instanceTranslations = new float3[amount];
-            for (int i = 0; i < amount; i++)
-            {
-                var x = _random.Next(-2, 2);
-                var y = _random.Next(-2, 2);
-                var z = _random.Next(-2, 2);
-
-                instanceTranslations[i] = new float3(x, y, z);
-            }
-            return instanceTranslations;
-        }
-
-        public float NextFloat(float min, float max)
-        {
-            double val = (_random.NextDouble() * (max - min) + min);
-            return (float)val;
-        }
-
-        private float3[] GetRndInstanceScales(int amount)
-        {
-            var instanceTranslations = new float3[amount];
-            for (int i = 0; i < amount; i++)
-            {
-                var x = NextFloat(0.1f, 0.1f);
-                var y = NextFloat(0.1f, 0.1f);
-                var z = NextFloat(0.1f, 0.1f);
-
-                instanceTranslations[i] = new float3(x, y, z);
-            }
-            return instanceTranslations;
-        }
-
-        public float4[] RandomColors(int amount)
-        {
-            var instanceColors = new float4[amount];
-            for (int i = 0; i < amount; i++)
-            {
-                var res = float4.Zero;
-                // Very bad way to generate a random color
-                res.r = NextFloat(0, 1);
-                res.g = NextFloat(0, 1);
-                res.b = NextFloat(0, 1);
-                res.a = NextFloat(0.2f, 1f);
-
-                instanceColors[i] = res;
-            }
-
-            return instanceColors;
-        }
-
-        public override async Task InitAsync()
-        {
-            //await Load();
-            //await base.InitAsync();
-        }
-
-        // Init is called on startup.
-        public override void Init()
         {
             Console.WriteLine("Loading scene ...");
 
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("RocketFus.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
             _camPivotTransform = new Transform();
             var camNode = new SceneNode()
             {
@@ -186,44 +67,23 @@ namespace Fusee.Examples.Simple.Core
                     _camPivotTransform
                 }
             };
-
-            var instanceComp = new InstanceData(5, GetRndInstanceTranslations(5), null, GetRndInstanceScales(5), RandomColors(5));
-            var instanceComp1 = new InstanceData(5, GetRndInstanceTranslations(5), null, GetRndInstanceScales(5), RandomColors(5));
-
-            var plane = new Plane();
-
-            var cubeNode = new SceneNode()
-            {
-                Name = "CubeNode",
-                Components = new System.Collections.Generic.List<SceneComponent>()
-                {
-                    new Transform() { Translation = new float3(-5, -0, 0), Scale = float3.One},
-                    instanceComp,
-                    MakeEffect.FromDiffuseInstanced(new float4(1,0,0,1)),
-                    plane
-                }
-            };
-
-            var cubeNode1 = new SceneNode()
-            {
-                Name = "CubeNode1",
-                Components = new System.Collections.Generic.List<SceneComponent>()
-                {
-                    new Transform() { Translation = new float3(5, -0, 0), Scale = float3.One},
-                    instanceComp1,
-                    MakeEffect.FromDiffuseInstanced(new float4(0,1,0,1)),
-                    plane
-                }
-            };
-
-            _rocketScene.Children.RemoveAt(0);
-            _rocketScene.Children.Add(cubeNode);
-            _rocketScene.Children.Add(cubeNode1);
             _rocketScene.Children.Add(camNode);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
+        }
+
+        public override async Task InitAsync()
+        {
+            await Load();
+            await base.InitAsync();
+        }
+
+        // Init is called on startup.
+        public override void Init()
+        {
+
         }
 
         public override void Update()
