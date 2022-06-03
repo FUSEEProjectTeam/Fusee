@@ -33,7 +33,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <typeparam name="TPoint">The generic point type.</typeparam>
         /// <param name="id">The unique id of the octant.</param>
-        public TPoint[] LoadNodeData<TPoint>(string id) where TPoint : new();
+        public TPoint[] LoadNodeData<TPoint>(OctantId id) where TPoint : new();
 
     }
 }
