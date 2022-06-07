@@ -41,8 +41,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected CollapsingStateStack<RenderFlags> _renderModification = new();
 
-        protected CollapsingStateStack<InstanceData> _instanceData = new();
-
         /// <summary>
         /// Gets and sets the top of stack of the Model Matrix state stack.
         /// </summary>

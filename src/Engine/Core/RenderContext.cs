@@ -157,8 +157,6 @@ namespace Fusee.Engine.Core
         private float4x4 _view;
         private float4x4 _model;
 
-        private float4x4[] _bones;
-
         // Derived matrices
         private float4x4 _modelViewProjection;
 
@@ -1896,6 +1894,7 @@ namespace Fusee.Engine.Core
         /// Renders the specified mesh.
         /// </summary>
         /// <param name="mesh">The mesh that should be rendered.</param>
+        /// <param name="instanceData">Optional parameter in case gpu instancing is used to render the given mesh. See <see cref="InstanceData"/>.</param>
         /// <param name="doRenderForward">Is a forward or deferred renderer used? Will fetch the proper shader for the render method.</param>
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
@@ -1903,11 +1902,6 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh mesh, InstanceData instanceData = null, bool doRenderForward = true)
         {
-            if (instanceData != null)
-            {
-
-            }
-
             var cFx = GetCompiledFxForRenderMethod(doRenderForward);
             SetCompiledFx(cFx.GpuHandle);
             SetRenderStateSet(_currentEffect.RendererStates);

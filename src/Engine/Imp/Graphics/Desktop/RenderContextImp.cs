@@ -1144,52 +1144,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Create one single multi-purpose attribute buffer
-        /// </summary>
-        /// <param name="attributes"></param>
-        /// <param name="attributeName"></param>
-        /// <returns></returns>
-        public IAttribImp CreateAttributeBuffer(float3[] attributes, string attributeName)
-        {
-            if (attributes == null || attributes.Length == 0)
-            {
-                throw new ArgumentException("Vertices must not be null or empty");
-            }
-
-            int vertsBytes = attributes.Length * 3 * sizeof(float);
-            GL.GenBuffers(1, out int handle);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, handle);
-
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), attributes, BufferUsageHint.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
-            if (vboBytes != vertsBytes)
-                throw new ApplicationException(string.Format(
-                    "Problem uploading attribute buffer to VBO ('{2}'). Tried to upload {0} bytes, uploaded {1}.",
-                    vertsBytes, vboBytes, attributeName));
-
-            return new AttributeImp { AttributeBufferObject = handle };
-        }
-
-        /// <summary>
-        /// Remove an attribute buffer previously created with <see cref="CreateAttributeBuffer"/> and release all associated resources
-        /// allocated on the GPU.
-        /// </summary>
-        /// <param name="attribHandle">The attribute handle</param>
-        public void DeleteAttributeBuffer(IAttribImp attribHandle)
-        {
-            if (attribHandle != null)
-            {
-                int handle = ((AttributeImp)attribHandle).AttributeBufferObject;
-                if (handle != 0)
-                {
-                    GL.DeleteBuffer(handle);
-                    ((AttributeImp)attribHandle).AttributeBufferObject = 0;
-                }
-            }
-        }
-
-        /// <summary>
         /// Binds the VertexArrayObject onto the GL Render context and assigns its index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -1202,6 +1156,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
+        /// <summary>
+        /// Creates or updates the instance transform buffer. Positions, scales and rotations become the instance model matrices.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="InstanceDataImp"/>.</param>
+        /// <param name="instancePositions">The positions of the instances.</param>
+        /// <param name="instanceRotations">The rotations of the instances.</param>
+        /// <param name="instanceScales">The scales of the instances.</param>
         public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
         {
             var vao = ((InstanceDataImp)instanceImp).VertexArrayObject;
@@ -1210,7 +1171,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ApplicationException("Create the VAO first!");
             }
 
-            #region Transform
             int instanceTransformBo;
             if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == 0)
             {
@@ -1268,9 +1228,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.VertexArrayBindingDivisor(vao, AttributeLocations.InstancedModelMat2, 1);
             GL.VertexArrayBindingDivisor(vao, AttributeLocations.InstancedModelMat3, 1);
             GL.VertexArrayBindingDivisor(vao, AttributeLocations.InstancedModelMat4, 1);
-            #endregion
         }
 
+        /// <summary>
+        /// Creates or updates the instance color buffer..
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="InstanceDataImp"/>.</param>
+        /// <param name="instanceColors">The colors of the instances.</param>
         public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
         {
             if (instanceColors == null)
@@ -1281,8 +1245,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 throw new ApplicationException("Create the VAO first!");
             }
-
-            #region Color
+            
             //TODO: can we use AttributeLocations.Color?
             int sizeOfCol = sizeof(float) * 4;
             int iColorBytes = instanceColors.Length * sizeOfCol;
@@ -1305,7 +1268,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedColor, 4, VertexAttribType.Float, false, 0);
             GL.VertexArrayAttribBinding(vao, AttributeLocations.InstancedColor, AttributeLocations.InstancedColorBindingIndex);
             GL.VertexArrayBindingDivisor(vao, AttributeLocations.InstancedColor, 1);
-            #endregion
         }
 
         /// <summary>
@@ -1949,7 +1911,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh whose buffers respectively GPU memory should be deleted.</param>
         public void RemoveVertices(IMeshImp mr)
         {
             GL.DeleteVertexArray(((MeshImp)mr).VertexArrayObject);
@@ -1957,6 +1919,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             ((MeshImp)mr).InvalidateVertices();
         }
 
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="instanceImp">The instance data whose buffers are to be deleted.</param>
         public void RemoveInstanceData(IInstanceDataImp instanceImp)
         {
             GL.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
@@ -2091,6 +2057,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="instanceData">Optional parameter for using instance rendering.</param>
         public void Render(IMeshImp mr, IInstanceDataImp instanceData = null)
         {
             var vao = ((MeshImp)mr).VertexArrayObject;
@@ -2202,6 +2169,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return new MeshImp();
         }
 
+        /// <summary>
+        /// Creates the instance data implementation.
+        /// </summary>
+        /// <returns>The <see cref="IInstanceDataImp" /> instance.</returns>
         public IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp)
         {
             var instanceImp = new InstanceDataImp

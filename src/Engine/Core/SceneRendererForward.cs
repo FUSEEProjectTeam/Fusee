@@ -42,6 +42,9 @@ namespace Fusee.Engine.Core
         }
         private RenderLayers _renderLayer;
 
+        /// <summary>
+        /// Returns currently visited <see cref="InstanceData"/> during a traversal.
+        /// </summary>
         protected InstanceData CurrentInstanceData;
 
         /// <summary>
@@ -420,7 +423,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// 
+        /// Sets <see cref="CurrentInstanceData"/>.
         /// </summary>
         /// <param name="instanceData"></param>
         [VisitMethod]

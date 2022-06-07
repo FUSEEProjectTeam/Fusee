@@ -24,6 +24,9 @@ namespace Fusee.Engine.Core
         public Suid SessionUniqueIdentifier { get; private set; }
         #endregion
 
+        /// <summary>
+        /// The <see cref="IImageData"/> of this texture.
+        /// </summary>
         public IImageData ImageData { get; private set; }
 
         #region Properties

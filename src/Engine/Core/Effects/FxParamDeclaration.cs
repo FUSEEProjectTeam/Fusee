@@ -78,7 +78,7 @@ namespace Fusee.Engine.Core.Effects
         /// Sets the value of this parameter declaration.
         /// </summary>
         /// <param name="val">The new parameter value.</param>
-        /// <returns></returns>
+        /// <returns>Returns false if the new value equals the old one.</returns>
         public bool SetValue(object val)
         {
             if (ParamType != typeof(T))
@@ -92,6 +92,9 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
+        /// <summary>
+        /// Gets the value of this parameter declaration.
+        /// </summary>
         public object GetValue()
         {
             return Value;
