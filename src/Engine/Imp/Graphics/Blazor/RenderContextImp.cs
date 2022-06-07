@@ -365,7 +365,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             uint format = info.Format;
             uint pxType = info.PxType;
 
-            // copy the bytes from img to GPU texture
+            // copy the bytes from image to GPU texture
             int bytesTotal = width * height * img.ImageData.PixelFormat.BytesPerPixel;
             IEnumerator<ScanLine> scanlines = img.ImageData.ScanLines(startX, startY, width, height);
             byte[] bytes = new byte[bytesTotal];
@@ -1106,6 +1106,111 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
+        /// Creates or updates the instance transform buffer. Positions, scales and rotations become the instance model matrices.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="InstanceDataImp"/>.</param>
+        /// <param name="instancePositions">The positions of the instances.</param>
+        /// <param name="instanceRotations">The rotations of the instances.</param>
+        /// <param name="instanceScales">The scales of the instances.</param>
+        public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
+        {
+            var vao = ((InstanceDataImp)instanceImp).VertexArrayObject;
+            if (vao == null)
+            {
+                throw new ApplicationException("Create the VAO first!");
+            }
+
+            WebGLBuffer instanceTransformBo;
+            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == null)
+            {
+                instanceTransformBo = gl2.CreateBuffer();
+                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
+            }
+            else
+                instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
+            gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
+
+            var sizeOfFloat4 = sizeof(float) * 4;
+            var sizeOfMat = sizeOfFloat4 * 4;
+            var amount = instancePositions.Length;
+            int matBytes = amount * sizeOfMat;
+
+            var posBufferData = new float4[amount * 4];
+
+            var modelMats = new float4x4[amount];
+
+            for (int i = 0; i < amount; i++)
+            {
+                var mat = float4x4.Identity;
+                if (instanceScales != null)
+                    mat = float4x4.CreateScale(instanceScales[i]);
+                if (instanceRotations != null)
+                    mat *= float4x4.CreateRotationZXY(instanceRotations[i]);
+                mat *= float4x4.CreateTranslation(instancePositions[i]);
+                modelMats[i] = mat;
+            }
+
+            for (var i = 0; i < modelMats.Length; i++)
+            {
+                posBufferData[i * 4] = modelMats[i].Column1;
+                posBufferData[i * 4 + 1] = modelMats[i].Column2;
+                posBufferData[i * 4 + 2] = modelMats[i].Column3;
+                posBufferData[i * 4 + 3] = modelMats[i].Column4;
+            }
+
+            gl2.BufferData(ARRAY_BUFFER, posBufferData, STATIC_DRAW);
+            var instancedPosBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            if (instancedPosBytes != matBytes)
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedPosBytes, matBytes));
+
+            gl2.BindVertexArray(((InstanceDataImp)instanceImp).VertexArrayObject);
+            // set attribute pointers for matrix (4 times vec4)
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat1);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat1, 4, FLOAT, false, sizeOfMat, 0);
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat2);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat2, 4, FLOAT, false, sizeOfMat, (uint)(1 * sizeOfFloat4));
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat3);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat3, 4, FLOAT, false, sizeOfMat, (uint)(2 * sizeOfFloat4));
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat4);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat4, 4, FLOAT, false, sizeOfMat, (uint)(3 * sizeOfFloat4));
+
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedModelMat1, 1);
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedModelMat2, 1);
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedModelMat3, 1);
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedModelMat4, 1);
+        }
+
+        /// <summary>
+        /// Creates or updates the instance color buffer..
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="InstanceDataImp"/>.</param>
+        /// <param name="instanceColors">The colors of the instances.</param>
+        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
+        {
+            if (instanceColors == null || instanceColors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            int vboBytes;
+            int colsBytes = instanceColors.Length * 4 * sizeof(float);
+            if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == null)
+                ((InstanceDataImp)instanceImp).InstanceColorBufferObject = gl2.CreateBuffer();
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
+            gl2.BufferData(ARRAY_BUFFER, instanceColors, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            if (vboBytes != colsBytes)
+                throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
+
+            gl2.BindVertexArray(((InstanceDataImp)instanceImp).VertexArrayObject);
+            // set attribute pointers for matrix (4 times vec4)
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedColor);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedColor, 4, FLOAT, false, 4 * sizeof(float), 0);
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedColor, 1);
+        }
+
+        /// <summary>
         /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -1402,6 +1507,58 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
+        /// Binds the second set of colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <exception cref="ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors1(IMeshImp mr, uint[] colors)
+        {
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            int vboBytes;
+            int colsBytes = colors.Length * sizeof(uint);
+            if (((MeshImp)mr).Color1BufferObject == null)
+                ((MeshImp)mr).Color1BufferObject = gl2.CreateBuffer();
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color1BufferObject);
+            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            if (vboBytes != colsBytes)
+                throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
+        }
+
+        /// <summary>
+        /// Binds the third set of colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <exception cref="ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors2(IMeshImp mr, uint[] colors)
+        {
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            int vboBytes;
+            int colsBytes = colors.Length * sizeof(uint);
+            if (((MeshImp)mr).Color2BufferObject == null)
+                ((MeshImp)mr).Color2BufferObject = gl2.CreateBuffer();
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color2BufferObject);
+            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            if (vboBytes != colsBytes)
+                throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
+        }
+
+        /// <summary>
         /// Binds the triangles onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -1442,6 +1599,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
+        /// <param name="instanceImp">The instance data whose buffers are to be deleted.</param>
+        public void RemoveInstanceData(IInstanceDataImp instanceImp)
+        {
+            gl2.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
+            gl2.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceColorBufferObject);
+            ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = null;
+            ((InstanceDataImp)instanceImp).InstanceColorBufferObject = null;
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveNormals(IMeshImp mr)
         {
@@ -1457,6 +1626,26 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             gl2.DeleteBuffer(((MeshImp)mr).ColorBufferObject);
             ((MeshImp)mr).InvalidateColors();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveColors1(IMeshImp mesh)
+        {
+            gl2.DeleteBuffer(((MeshImp)mesh).Color1BufferObject);
+            ((MeshImp)mesh).InvalidateColors1();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveColors2(IMeshImp mesh)
+        {
+            gl2.DeleteBuffer(((MeshImp)mesh).Color2BufferObject);
+            ((MeshImp)mesh).InvalidateColors2();
         }
 
         /// <summary>
@@ -1522,7 +1711,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        public void Render(IMeshImp mr)
+        public void Render(IMeshImp mr, IInstanceDataImp instanceData = null)
         {
             if (((MeshImp)mr).VertexBufferObject != null)
             {
@@ -1573,45 +1762,46 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
                 gl2.VertexAttribPointer((uint)AttributeLocations.BoneWeightAttribLocation, 4, FLOAT, false, 0, 0);
             }
+
             if (((MeshImp)mr).ElementBufferObject != null)
             {
                 gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
 
-                switch (((MeshImp)mr).MeshType)
+                var oglPrimitiveType = ((MeshImp)mr).MeshType switch
                 {
-                    case PrimitiveType.Triangles:
-                    default:
-                        gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case PrimitiveType.Points:
-                        gl2.DrawElements(POINTS, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case PrimitiveType.Lines:
-                        gl2.DrawElements(LINES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case PrimitiveType.LineLoop:
-                        gl2.DrawElements(LINE_LOOP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case PrimitiveType.LineStrip:
-                        gl2.DrawElements(LINE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case PrimitiveType.Patches:
-                        gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        Diagnostics.Warn("Mesh type set to triangles due to unavailability of PATCHES");
-                        break;
-                    case PrimitiveType.QuadStrip:
-                        gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        Diagnostics.Warn("Mesh type set to triangles due to unavailability of QUAD_STRIP");
-                        break;
-                    case PrimitiveType.TriangleFan:
-                        gl2.DrawElements(TRIANGLE_FAN, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case PrimitiveType.TriangleStrip:
-                        gl2.DrawElements(TRIANGLE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                }
-            }
+                    PrimitiveType.Points => POINTS,
+                    PrimitiveType.Lines => LINES,
+                    PrimitiveType.LineLoop => LINE_LOOP,
+                    PrimitiveType.LineStrip => LINE_STRIP,
+                    PrimitiveType.Patches => throw new NotSupportedException("Patches aren't supported."),
+                    PrimitiveType.QuadStrip => throw new NotSupportedException("QuadStrips aren't supported."),
+                    PrimitiveType.TriangleFan => TRIANGLE_FAN,
+                    PrimitiveType.TriangleStrip => TRIANGLE_STRIP,
+                    PrimitiveType.Quads => throw new NotSupportedException("Quads aren't supported."),
+                    _ => TRIANGLES,
+                };
 
+                if (instanceData != null)
+                {
+                    gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceData).InstanceTransformBufferObject);
+
+                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != null)
+                    {
+                        gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedColor);
+                        gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceData).InstanceColorBufferObject);
+                        gl2.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
+                    }
+
+                    gl2.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0, instanceData.Amount);
+
+                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != null)
+                    {
+                        gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedColor);
+                    }
+                }
+                else
+                    gl2.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+            }
 
             if (((MeshImp)mr).VertexBufferObject != null)
             {
@@ -1663,6 +1853,19 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public IMeshImp CreateMeshImp()
         {
             return new MeshImp();
+        }
+
+        /// <summary>
+        /// Creates the instance data implementation.
+        /// </summary>
+        /// <returns>The <see cref="IInstanceDataImp" /> instance.</returns>
+        public IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp)
+        {
+            var instanceImp = new InstanceDataImp
+            {
+                VertexArrayObject = ((MeshImp)meshImp).VertexArrayObject
+            };
+            return instanceImp;
         }
 
         internal static uint BlendOperationToOgl(BlendOperation bo)
@@ -2022,7 +2225,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
-                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; Colorformat: {tex.PixelFormat.ColorFormat}");
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; color format: {tex.PixelFormat.ColorFormat}");
 
             gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
         }
@@ -2061,7 +2264,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
-                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; Pixelformat: {tex.PixelFormat}");
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; pixel format: {tex.PixelFormat}");
 
 
             gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
@@ -2113,7 +2316,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
             {
-                throw new Exception($"Error creating Framebuffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
+                throw new Exception($"Error creating frame buffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
                     $"DepthBuffer set? {renderTarget.DepthBufferHandle != null}");
             }
 
@@ -2484,7 +2687,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
-        /// Creates a computeshader programm
+        /// Creates a compute shader program.
         /// Not supported in WebGL2 ?
         /// </summary>
         /// <param name="cs"></param>
@@ -2518,7 +2721,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
-        /// Genereates a GBuffer target
+        /// Generates a GBuffer target
         /// </summary>
         /// <param name="res"></param>
         /// <returns></returns>
@@ -2550,7 +2753,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
-        /// Returns a shader uniform param based on a name
+        /// Returns a shader uniform parameter based on a name
         /// Not supported in WebGL2 ?
         /// </summary>
         /// <param name="shaderProgram"></param>
@@ -2563,7 +2766,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
-        /// Sets the shader param, casts to float first
+        /// Sets the shader parameter, casts to float first.
         /// </summary>
         /// <param name="param"></param>
         /// <param name="val"></param>
@@ -2574,7 +2777,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
-        /// Sets an shader param to an image
+        /// Sets an shader parameter to an image.
         /// </summary>
         /// <param name="param"></param>
         /// <param name="texId"></param>
@@ -2621,6 +2824,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
+        /// Defines a barrier ordering memory transactions. At the moment it will insert all supported barriers.
+        /// </summary>
+        public void MemoryBarrier()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Not supported?
         /// </summary>
         /// <param name="kernelIndex"></param>
@@ -2629,60 +2840,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="threadGroupsZ"></param>
         /// <exception cref="NotImplementedException"></exception>
         public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Not supported?
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        public void MemoryBarrier()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetColors1(IMeshImp mr, uint[] colors)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetColors2(IMeshImp mr, uint[] colors)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveColors1(IMeshImp mesh)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveColors2(IMeshImp mesh)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Render(IMeshImp mr, IInstanceDataImp instanceData)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveInstanceData(IInstanceDataImp instanceImp)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp)
         {
             throw new NotImplementedException();
         }

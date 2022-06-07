@@ -711,7 +711,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Returns a List of type <see cref="ShaderParamInfo"/> for all ShaderStorageBlocks
+        /// Returns a List of type <see cref="ActiveUniform"/> for all ShaderStorageBlocks
         /// </summary>
         /// <param name="shaderProgram">The shader program to query.</param>
         public IList<ActiveUniform> GetShaderStorageBufferList(IShaderHandle shaderProgram)
@@ -1910,12 +1910,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 if (instanceData != null)
                 {
-                    //TODO: Check need for EnableVertexAttribArray for instance buffers
-                    GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceData.Amount);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceData).InstanceTransformBufferObject);                    
+
+                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != 0)
+                    {
+                        GL.EnableVertexAttribArray(AttributeLocations.InstancedColor);
+                        GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceData).InstanceColorBufferObject);
+                        GL.VertexAttribPointer(AttributeLocations.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
+                    }
+                    
+                    GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero, instanceData.Amount);
+
+                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != 0)
+                    {
+                        GL.DisableVertexAttribArray(AttributeLocations.InstancedColor);
+                    }
                 }
                 else
                     GL.DrawElements((BeginMode)oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                //GL.DrawArrays(GL.Enums.All.POINTS, 0, shape.Vertices.Length);
 
                 switch (((MeshImp)mr).MeshType)
                 {
@@ -1958,24 +1970,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         break;
                 }
             }
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             if (((MeshImp)mr).VertexBufferObject != 0)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(AttributeLocations.VertexAttribLocation);
             }
             if (((MeshImp)mr).ColorBufferObject != 0)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(AttributeLocations.ColorAttribLocation);
             }
             if (((MeshImp)mr).NormalBufferObject != 0)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(AttributeLocations.NormalAttribLocation);
             }
             if (((MeshImp)mr).UVBufferObject != 0)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(AttributeLocations.UvAttribLocation);
             }
         }
@@ -1985,7 +1995,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="quad">The Rectangle where the content is draw into.</param>
         /// <param name="texId">The texture identifier.</param>
-        public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
+        public void GetBufferContent(Rectangle quad, ITextureHandle texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexId);
             GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width,
@@ -2001,9 +2011,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
             return new MeshImp();
         }
 
+        /// <summary>
+        /// Creates the instance data implementation.
+        /// </summary>
+        /// <returns>The <see cref="IInstanceDataImp" /> instance.</returns>
         public IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp)
         {
-            throw new NotImplementedException();
+            var instanceImp = new InstanceDataImp
+            {
+                VertexArrayObject = ((MeshImp)meshImp).VertexArrayObject
+            };
+            return instanceImp;
         }
 
         internal static BlendEquationMode BlendOperationToOgl(BlendOperation bo)
