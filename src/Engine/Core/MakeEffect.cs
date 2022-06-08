@@ -138,8 +138,7 @@ namespace Fusee.Engine.Core
 
             if (lc.IsCastingShadows)
             {
-                effectParams.Add(new FxParamDeclaration<int> { Name = "light.isCastingShadows", Value = 0 });
-                effectParams.Add(new FxParamDeclaration<float> { Name = "light.bias", Value = 0.0f });
+
                 if (lc.Type != LightType.Point)
                 {
                     effectParams.Add(new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity });
@@ -149,7 +148,7 @@ namespace Fusee.Engine.Core
                     effectParams.Add(new FxParamDeclaration<WritableCubeMap> { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
             }
 
-            effectParams.AddRange(DeferredLightParams(lc.Type));
+            effectParams.AddRange(DeferredLightParams());
 
             return new ShaderEffect(
             effectParams.ToArray(),
@@ -180,17 +179,17 @@ namespace Fusee.Engine.Core
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
-            if (lc.IsCastingShadows)
-            {
-                effectParams.Add(new FxParamDeclaration<int> { Name = "light.isCastingShadows", Value = 0 });
-                effectParams.Add(new FxParamDeclaration<float> { Name = "light.bias", Value = 0.0f });
-            }
+            //if (lc.IsCastingShadows)
+            //{
+            //    effectParams.Add(new FxParamDeclaration<int> { Name = "light.isCastingShadows", Value = 0 });
+            //    effectParams.Add(new FxParamDeclaration<float> { Name = "light.bias", Value = 0.0f });
+            //}
 
-            effectParams.Add(new FxParamDeclaration<float4x4[]> { Name = "LightSpaceMatrices[0]", Value = Array.Empty<float4x4>() });
-            effectParams.Add(new FxParamDeclaration<WritableArrayTexture> { Name = "ShadowMap", Value = shadowMap });
+            effectParams.Add(new FxParamDeclaration<float4x4[]> { Name = $"{UniformNameDeclarations.LightSpaceMatrices}[0]", Value = Array.Empty<float4x4>() });
+            effectParams.Add(new FxParamDeclaration<WritableArrayTexture> { Name = $"{UniformNameDeclarations.ShadowMap}", Value = shadowMap });
             effectParams.Add(new FxParamDeclaration<float2[]> { Name = $"{UniformNameDeclarations.LightMatClipPlanes}[0]", Value = clipPlanes });
 
-            effectParams.AddRange(DeferredLightParams(lc.Type));
+            effectParams.AddRange(DeferredLightParams());
 
             return new ShaderEffect(
 
@@ -217,9 +216,9 @@ namespace Fusee.Engine.Core
         {
             var effectParamDecls = new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<float2> { Name = "LightMatClipPlanes", Value = float2.One },
-                new FxParamDeclaration<float3> { Name = "LightPos", Value = float3.One },
-                new FxParamDeclaration<float4x4[]> { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
+                new FxParamDeclaration<float2> { Name = $"{UniformNameDeclarations.LightMatClipPlanes}", Value = float2.One },
+                new FxParamDeclaration<float3> { Name = $"{UniformNameDeclarations.LightShadowPos}", Value = float3.One },
+                new FxParamDeclaration<float4x4[]> { Name = $"{UniformNameDeclarations.LightSpaceMatrices}[0]", Value = lightSpaceMatrices }
             };
 
             return new ShaderEffect(
@@ -245,9 +244,9 @@ namespace Fusee.Engine.Core
         {
             var effectParamDecls = new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<float2> { Name = "LightMatClipPlanes", Value = float2.One },
-                new FxParamDeclaration<float3> { Name = "LightPos", Value = float3.One },
-                new FxParamDeclaration<float4x4[]> { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
+                new FxParamDeclaration<float2> { Name = $"{UniformNameDeclarations.LightMatClipPlanes}", Value = float2.One },
+                new FxParamDeclaration<float3> { Name = $"{UniformNameDeclarations.LightShadowPos}", Value = float3.One },
+                new FxParamDeclaration<float4x4[]> { Name = $"{UniformNameDeclarations.LightSpaceMatrices}[0]", Value = lightSpaceMatrices }
             };
 
             return new ShaderEffect(
@@ -305,36 +304,21 @@ namespace Fusee.Engine.Core
             };
         }
 
-        private static List<IFxParamDeclaration> DeferredLightParams(LightType type)
+        private static List<IFxParamDeclaration> DeferredLightParams()
         {
-            return type switch
+            return new List<IFxParamDeclaration>()
             {
-                LightType.Point => new List<IFxParamDeclaration>()
-                    {
-                        new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f) },
-                        new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
-                        new FxParamDeclaration<float> { Name = "light.maxDistance", Value = 0.0f },
-                        new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
-                        new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
-                    },
-                LightType.Legacy or LightType.Parallel => new List<IFxParamDeclaration>()
-                    {
-                        new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
-                        new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero },
-                        new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
-                        new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
-                    },
-                _ => new List<IFxParamDeclaration>()
-                    {
-                        new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f) },
-                        new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
-                        new FxParamDeclaration<float> { Name = "light.maxDistance", Value = 0.0f },
-                        new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
-                        new FxParamDeclaration<float> { Name = "light.outerConeAngle", Value = 0.0f },
-                        new FxParamDeclaration<float> { Name = "light.innerConeAngle", Value = 0.0f },
-                        new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero },
-                        new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
-                    },
+                new FxParamDeclaration<float3> { Name = $"light.{UniformNameDeclarations.LightWorldPos}", Value = new float3(0, 0, -1.0f) },
+                new FxParamDeclaration<float4> { Name = $"light.{UniformNameDeclarations.LightIntensities}", Value = float4.Zero },
+                new FxParamDeclaration<float> { Name = $"light.{UniformNameDeclarations.LightMaxDist}", Value = 0.0f },
+                new FxParamDeclaration<float> { Name = $"light.{UniformNameDeclarations.LightStrength}", Value = 0.0f },
+                new FxParamDeclaration<float> { Name = $"light.{UniformNameDeclarations.LightOuterConeAngle}", Value = 0.0f },
+                new FxParamDeclaration<float> { Name = $"light.{UniformNameDeclarations.LightInnerConeAngle}", Value = 0.0f },
+                new FxParamDeclaration<float3> { Name = $"light.{UniformNameDeclarations.LightDirection}", Value = float3.Zero },
+                new FxParamDeclaration<int> { Name = $"light.{UniformNameDeclarations.LightIsActive}", Value = 1 },
+                new FxParamDeclaration<int> { Name = $"light.{UniformNameDeclarations.LightType}", Value = 0 },
+                new FxParamDeclaration<int> { Name = $"light.{UniformNameDeclarations.LightIsCastingShadows}", Value = 0 },
+                new FxParamDeclaration<float> { Name = $"light.{UniformNameDeclarations.LightBias}", Value = 0.0f }
             };
         }
 
@@ -481,7 +465,7 @@ namespace Fusee.Engine.Core
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
-        /// <param name="roughness">Used to calculate the GGX microfacet distribution.</param>
+        /// <param name="roughness">Used to calculate the GGX micro facet distribution.</param>
         public static SurfaceEffect FromGlossy(float4 albedoColor, float roughness = 0f, Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
         {
             var input = new GlossyInput()
@@ -506,7 +490,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Builds a simple shader effect for physicalli-base lighting using a bidirectional reflectance distribution function.
+        /// Builds a simple shader effect for physically-based lighting using a bidirectional reflectance distribution function.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>

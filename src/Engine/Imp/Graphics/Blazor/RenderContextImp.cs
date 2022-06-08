@@ -51,6 +51,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             gl2 = ((RenderCanvasImp)renderCanvasImp)._gl;
 
+            gl2.Enable(CULL_FACE);
+            gl2.CullFace(BACK);
+
             gl2.Enable(DEPTH_TEST);
             gl2.Enable(SCISSOR_TEST);
         }
@@ -484,12 +487,16 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
             gl2.BindAttribLocation(program, (uint)AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.ColorAttribLocation, UniformNameDeclarations.VertexColor);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.Color1AttribLocation, UniformNameDeclarations.VertexColor1);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.Color2AttribLocation, UniformNameDeclarations.VertexColor2);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.TangentAttribLocation, UniformNameDeclarations.Tangent);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.InstancedColor, UniformNameDeclarations.InstanceColor);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.InstancedModelMat1, UniformNameDeclarations.InstanceModelMat);
 
             gl2.LinkProgram(program);
 
@@ -588,25 +595,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     Size = activeInfo.Size,
                     HasValueChanged = true
                 };
-                uint uType = activeInfo.Type;//activeInfo.GlType;
+                //uint uType = activeInfo.Type;//activeInfo.GlType;
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
-
-                //paramInfo.Type = uType switch
-                //{
-                //    INT => typeof(int),
-                //    FLOAT => typeof(float),
-                //    FLOAT_VEC2 => typeof(float2),
-                //    FLOAT_VEC3 => typeof(float3),
-                //    FLOAT_VEC4 => typeof(float4),
-                //    FLOAT_MAT4 => typeof(float4x4),
-                //    INT_VEC2 => typeof(float2),
-                //    INT_VEC3 => typeof(float3),
-                //    INT_VEC4 => typeof(float4),
-                //    SAMPLER_2D or UNSIGNED_INT_SAMPLER_2D or INT_SAMPLER_2D or SAMPLER_2D_SHADOW => typeof(ITextureBase),
-                //    SAMPLER_CUBE_SHADOW or SAMPLER_CUBE => typeof(IWritableCubeMap),
-                //    SAMPLER_2D_ARRAY or SAMPLER_2D_ARRAY_SHADOW => typeof(IWritableArrayTexture),
-                //    _ => throw new ArgumentOutOfRangeException($"Argument {paramInfo.Type} of {paramInfo.Name} not recognized, size {paramInfo.Size}"),
-                //};
                 paramList.Add(paramInfo);
             }
             return paramList;
@@ -1079,6 +1069,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).VertexBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, 3, FLOAT, false, 0, 0);
 
             float[] verticesFlat = new float[vertices.Length * 3];
 
@@ -1128,14 +1119,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
             else
                 instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
-            gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
 
             var sizeOfFloat4 = sizeof(float) * 4;
             var sizeOfMat = sizeOfFloat4 * 4;
-            var amount = instancePositions.Length;
+            var amount = instanceImp.Amount;
             int matBytes = amount * sizeOfMat;
 
-            var posBufferData = new float4[amount * 4];
+            var posBufferData = new float[amount * 16];
 
             var modelMats = new float4x4[amount];
 
@@ -1152,12 +1142,28 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             for (var i = 0; i < modelMats.Length; i++)
             {
-                posBufferData[i * 4] = modelMats[i].Column1;
-                posBufferData[i * 4 + 1] = modelMats[i].Column2;
-                posBufferData[i * 4 + 2] = modelMats[i].Column3;
-                posBufferData[i * 4 + 3] = modelMats[i].Column4;
+                posBufferData[i * 4] = modelMats[i].M11;
+                posBufferData[i * 4 + 1] = modelMats[i].M21;
+                posBufferData[i * 4 + 2] = modelMats[i].M31;
+                posBufferData[i * 4 + 3] = modelMats[i].M41;
+
+                posBufferData[i * 4 + 4] = modelMats[i].M12;
+                posBufferData[i * 4 + 5] = modelMats[i].M22;
+                posBufferData[i * 4 + 6] = modelMats[i].M32;
+                posBufferData[i * 4 + 7] = modelMats[i].M42;
+
+                posBufferData[i * 4 + 8] = modelMats[i].M13;
+                posBufferData[i * 4 + 9] = modelMats[i].M23;
+                posBufferData[i * 4 + 10] = modelMats[i].M33;
+                posBufferData[i * 4 + 11] = modelMats[i].M43;
+
+                posBufferData[i * 4 + 12] = modelMats[i].M14;
+                posBufferData[i * 4 + 13] = modelMats[i].M24;
+                posBufferData[i * 4 + 14] = modelMats[i].M34;
+                posBufferData[i * 4 + 15] = modelMats[i].M44;
             }
 
+            gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
             gl2.BufferData(ARRAY_BUFFER, posBufferData, STATIC_DRAW);
             var instancedPosBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (instancedPosBytes != matBytes)
@@ -1187,18 +1193,27 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="instanceColors">The colors of the instances.</param>
         public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
         {
-            if (instanceColors == null || instanceColors.Length == 0)
-            {
-                throw new ArgumentException("colors must not be null or empty");
-            }
+            if (instanceColors == null)
+                return;
 
             int vboBytes;
             int colsBytes = instanceColors.Length * 4 * sizeof(float);
             if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == null)
                 ((InstanceDataImp)instanceImp).InstanceColorBufferObject = gl2.CreateBuffer();
 
+            float[] colorsFlat = new float[instanceColors.Length * 4];
+            int i = 0;
+            foreach (float4 v in instanceColors)
+            {
+                colorsFlat[i] = v.x;
+                colorsFlat[i + 1] = v.y;
+                colorsFlat[i + 2] = v.z;
+                colorsFlat[i + 3] = v.w;
+                i += 4;
+            }
+
             gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
-            gl2.BufferData(ARRAY_BUFFER, instanceColors, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, colorsFlat, STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1230,6 +1245,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).TangentBufferObject = gl2.CreateBuffer(); ;
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.TangentAttribLocation, 3, FLOAT, false, 0, 0);
 
             float[] tangentsFlat = new float[tangents.Length * 4];
 
@@ -1271,6 +1287,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).BitangentBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BitangentBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.BitangentAttribLocation, 3, FLOAT, false, 0, 0);
 
             float[] bitangentsFlat = new float[bitangents.Length * 3];
 
@@ -1316,6 +1333,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).NormalBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).NormalBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.NormalAttribLocation, 3, FLOAT, false, 0, 0);
 
             float[] normalsFlat = new float[normals.Length * 3];
 
@@ -1362,6 +1380,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).BoneIndexBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneIndexBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.BoneIndexAttribLocation, 4, FLOAT, false, 0, 0);
 
             float[] boneIndicesFlat = new float[boneIndices.Length * 4];
 
@@ -1408,6 +1427,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).BoneWeightBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.BoneWeightAttribLocation, 4, FLOAT, false, 0, 0);
 
             float[] boneWeightsFlat = new float[boneWeights.Length * 4];
 
@@ -1455,6 +1475,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).UVBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.UvAttribLocation, 2, FLOAT, false, 0, 0);
 
             float[] uvsFlat = new float[uvs.Length * 2];
 
@@ -1500,6 +1521,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).ColorBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
             gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
@@ -1526,6 +1548,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).Color1BufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color1BufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.Color1AttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
             gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
@@ -1552,6 +1575,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).Color2BufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color2BufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.Color2AttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
             gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
@@ -1711,57 +1735,40 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="instanceData">The <see cref="IInstanceDataImp" /></param>
         public void Render(IMeshImp mr, IInstanceDataImp instanceData = null)
         {
+            gl2.BindVertexArray(((MeshImp)mr).VertexArrayObject);
+
             if (((MeshImp)mr).VertexBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, 3, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).ColorBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
-            }
+
+            if (((MeshImp)mr).Color1BufferObject != null)
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
+
+            if (((MeshImp)mr).Color2BufferObject != null)
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
 
             if (((MeshImp)mr).UVBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.UvAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.UvAttribLocation, 2, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).NormalBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.NormalAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).NormalBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.NormalAttribLocation, 3, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).TangentBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.TangentAttribLocation, 3, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).BitangentBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.BitangentAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BitangentBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.BitangentAttribLocation, 3, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).BoneIndexBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.BoneIndexAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneIndexBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.BoneIndexAttribLocation, 4, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).BoneWeightBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.BoneWeightAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.BoneWeightAttribLocation, 4, FLOAT, false, 0, 0);
-            }
 
             if (((MeshImp)mr).ElementBufferObject != null)
             {
@@ -1783,56 +1790,69 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
                 if (instanceData != null)
                 {
+                    var sizeOfFloat4 = sizeof(float) * 4;
+                    var sizeOfMat = sizeOfFloat4 * 4;
+                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != null)
+                    {
+                        gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceData).InstanceColorBufferObject);
+                        gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedColor);
+                        //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
+                        gl2.VertexAttribPointer((uint)AttributeLocations.InstancedColor, 4, FLOAT, false, 4 * sizeof(float), 0);
+                    }
+                    
                     gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceData).InstanceTransformBufferObject);
 
-                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != null)
-                    {
-                        gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedColor);
-                        gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceData).InstanceColorBufferObject);
-                        gl2.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
-                    }
+                    // set attribute pointers for matrix (4 times vec4)
+                    gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat1);
+                    gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat2);
+                    gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat3);
+                    gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat4);
 
-                    gl2.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0, instanceData.Amount);
+                    //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
+                    gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat1, 4, FLOAT, false, sizeOfMat, 0);
+                    gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat2, 4, FLOAT, false, sizeOfMat, (uint)(1 * sizeOfFloat4));
+                    gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat3, 4, FLOAT, false, sizeOfMat, (uint)(2 * sizeOfFloat4));
+                    gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat4, 4, FLOAT, false, sizeOfMat, (uint)(3 * sizeOfFloat4));
 
-                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != null)
-                    {
-                        gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedColor);
-                    }
+                    gl2.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0U, instanceData.Amount);
+
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat1);
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat2);
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat3);
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat4);
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedColor);
                 }
                 else
                     gl2.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
             }
 
+            gl2.BindBuffer(ARRAY_BUFFER, null);
             if (((MeshImp)mr).VertexBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
-            }
+
             if (((MeshImp)mr).ColorBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
-            }
+
+            if (((MeshImp)mr).Color1BufferObject != null)
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.Color1AttribLocation);
+
+            if (((MeshImp)mr).Color2BufferObject != null)
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.Color2AttribLocation);
+
             if (((MeshImp)mr).NormalBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.NormalAttribLocation);
-            }
+
             if (((MeshImp)mr).UVBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.UvAttribLocation);
-            }
+
             if (((MeshImp)mr).TangentBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
-            }
+
             if (((MeshImp)mr).BitangentBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
-            }
+
+            gl2.BindVertexArray(null);
+
         }
 
         /// <summary>
@@ -2436,7 +2456,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
+        /// <param name="height">The height.</param>Render
         public void Viewport(int x, int y, int width, int height)
         {
             gl2.Viewport(x, y, width, height);

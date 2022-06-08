@@ -59,10 +59,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.DebugMessageCallback(_openGlDebugDelegate, IntPtr.Zero);
             GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DebugSeverityNotification, 0, Array.Empty<int>(), false);
 #endif
-
-            // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
-            // the meaning of what's Front and Back of a face simply flips.
-            // TODO - implement this in render states!!!
             GL.CullFace(CullFaceMode.Back);
 
             //Needed for rendering more than one viewport.
@@ -2109,9 +2105,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 if (((InstanceDataImp)instanceData).InstanceColorBufferObject != 0)
                 {
                     GL.EnableVertexArrayAttrib(vao, AttributeLocations.InstancedColor);
+                    //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
                     GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedColorBindingIndex, ((InstanceDataImp)instanceData).InstanceColorBufferObject, IntPtr.Zero, 4 * sizeof(float));
                 }
 
+                //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedModelMatBindingIndex, ((InstanceDataImp)instanceData).InstanceTransformBufferObject, IntPtr.Zero, 16 * sizeof(float));
 
                 GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero, instanceData.Amount);
