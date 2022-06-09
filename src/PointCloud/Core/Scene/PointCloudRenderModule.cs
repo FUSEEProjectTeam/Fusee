@@ -58,9 +58,13 @@ namespace Fusee.PointCloud.Core.Scene
 
         private Plane quad = new();
 
-        public PointCloudRenderModule(bool isForwardModule)
+        /// <summary>
+        /// Creates a new instance of type <see cref="PointCloudRenderModule"/>.
+        /// </summary>
+        /// <param name="doRenderForward">Propagated the render type (forward or deferred) to the <see cref="RenderContext"/>.</param>
+        public PointCloudRenderModule(bool doRenderForward)
         {
-            _isForwardModule = isForwardModule;
+            _isForwardModule = doRenderForward;
         }
 
         /// <summary>

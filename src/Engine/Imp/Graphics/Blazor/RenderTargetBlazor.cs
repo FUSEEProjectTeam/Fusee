@@ -11,9 +11,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
     /// </summary>
     public class RenderTargetBlazor : RenderTarget
     {
-        public RenderTargetBlazor(TexRes texRes) : base(texRes)
-        {
-        }
+        /// <summary>
+        /// Creates a new instance of type <see cref="RenderTargetBlazor"/>.
+        /// </summary>
+        /// <param name="texRes">The <see cref="TexRes"/> of this render target.</param>
+        public RenderTargetBlazor(TexRes texRes) : base(texRes) { }
 
         /// <summary>
         /// Sets a RenderTexture into the correct position in the RederTexture array.

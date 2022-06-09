@@ -127,7 +127,7 @@ namespace Fusee.PointCloud.Potree
 
             foreach (var guid in VisibilityTester.VisibleNodes)
             {
-                if (guid == null) continue;
+                if (!guid.Valid) continue;
 
                 var instanceData = _getInstanceData(guid);
 

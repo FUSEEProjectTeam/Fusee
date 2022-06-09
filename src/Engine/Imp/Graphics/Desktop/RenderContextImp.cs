@@ -1241,7 +1241,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 throw new ApplicationException("Create the VAO first!");
             }
-            
+
             //TODO: can we use AttributeLocations.Color?
             int sizeOfCol = sizeof(float) * 4;
             int iColorBytes = instanceColors.Length * sizeOfCol;

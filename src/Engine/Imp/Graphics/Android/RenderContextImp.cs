@@ -1850,7 +1850,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.EnableVertexAttribArray(AttributeLocations.BoneIndexAttribLocation);
             if (((MeshImp)mr).BoneWeightBufferObject != 0)
                 GL.EnableVertexAttribArray(AttributeLocations.BoneWeightAttribLocation);
-            
+
 
             if (((MeshImp)mr).ElementBufferObject != 0)
             {
