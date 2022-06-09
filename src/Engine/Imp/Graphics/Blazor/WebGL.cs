@@ -1,4 +1,5 @@
 using Fusee.Base.Imp.Blazor;
+using Fusee.Math.Core;
 using Microsoft.JSInterop;
 using System;
 
@@ -809,10 +810,29 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("bufferData", target, size, usage);
         }
 
-        public void BufferData(uint target, Array data, uint usage)
+        public void BufferData(uint target, float[] data, uint usage)
         {
             // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
-            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferData", target, data, usage);
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataFloat", target, data, usage);
+        }
+
+        public void BufferData(uint target, double[] data, uint usage)
+        {
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataFloat", target, data, usage);
+        }
+
+        public void BufferData(uint target, uint[] data, uint usage)
+        {
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataUInt", target, data, usage);
+
+        }
+
+        public void BufferData(uint target, ushort[] data, uint usage)
+        {
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataUShort", target, data, usage);
         }
 
         public void BufferSubData(uint target, uint offset, Array data)

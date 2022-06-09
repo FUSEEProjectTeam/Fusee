@@ -1016,8 +1016,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int vertsBytes = attributes.Length * 3 * sizeof(float);
             WebGLBuffer handle = gl2.CreateBuffer();
 
+            float[] attribFlat = new float[attributes.Length * 3];
+            int i = 0;
+            foreach (float3 v in attributes)
+            {
+                attribFlat[i] = v.x;
+                attribFlat[i + 1] = v.y;
+                attribFlat[i + 2] = v.z;
+                i += 3;
+            }
+
             gl2.BindBuffer(ARRAY_BUFFER, handle);
-            gl2.BufferData(ARRAY_BUFFER, attributes, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, attribFlat, STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != vertsBytes)
             {
@@ -1072,13 +1082,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, 3, FLOAT, false, 0, 0);
 
             float[] verticesFlat = new float[vertices.Length * 3];
-
-            //{
-            ////fixed(float3* pBytes = &vertices[0])
-            //{
-            //Marshal.Copy((IntPtr)(pBytes), verticesFlat, 0, verticesFlat.Length);
-            //}
-            //}
             int i = 0;
             foreach (float3 v in vertices)
             {
@@ -1125,8 +1128,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var amount = instanceImp.Amount;
             int matBytes = amount * sizeOfMat;
 
-            var posBufferData = new float[amount * 16];
-
             var modelMats = new float4x4[amount];
 
             for (int i = 0; i < amount; i++)
@@ -1140,27 +1141,28 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 modelMats[i] = mat;
             }
 
+            var posBufferData = new float[amount * 16];
             for (var i = 0; i < modelMats.Length; i++)
             {
-                posBufferData[i * 4] = modelMats[i].M11;
-                posBufferData[i * 4 + 1] = modelMats[i].M21;
-                posBufferData[i * 4 + 2] = modelMats[i].M31;
-                posBufferData[i * 4 + 3] = modelMats[i].M41;
+                posBufferData[i * 16] = modelMats[i].M11;
+                posBufferData[i * 16 + 1] = modelMats[i].M21;
+                posBufferData[i * 16 + 2] = modelMats[i].M31;
+                posBufferData[i * 16 + 3] = modelMats[i].M41;
 
-                posBufferData[i * 4 + 4] = modelMats[i].M12;
-                posBufferData[i * 4 + 5] = modelMats[i].M22;
-                posBufferData[i * 4 + 6] = modelMats[i].M32;
-                posBufferData[i * 4 + 7] = modelMats[i].M42;
+                posBufferData[i * 16 + 4] = modelMats[i].M12;
+                posBufferData[i * 16 + 5] = modelMats[i].M22;
+                posBufferData[i * 16 + 6] = modelMats[i].M32;
+                posBufferData[i * 16 + 7] = modelMats[i].M42;
 
-                posBufferData[i * 4 + 8] = modelMats[i].M13;
-                posBufferData[i * 4 + 9] = modelMats[i].M23;
-                posBufferData[i * 4 + 10] = modelMats[i].M33;
-                posBufferData[i * 4 + 11] = modelMats[i].M43;
+                posBufferData[i * 16 + 8] = modelMats[i].M13;
+                posBufferData[i * 16 + 9] = modelMats[i].M23;
+                posBufferData[i * 16 + 10] = modelMats[i].M33;
+                posBufferData[i * 16 + 11] = modelMats[i].M43;
 
-                posBufferData[i * 4 + 12] = modelMats[i].M14;
-                posBufferData[i * 4 + 13] = modelMats[i].M24;
-                posBufferData[i * 4 + 14] = modelMats[i].M34;
-                posBufferData[i * 4 + 15] = modelMats[i].M44;
+                posBufferData[i * 16 + 12] = modelMats[i].M14;
+                posBufferData[i * 16 + 13] = modelMats[i].M24;
+                posBufferData[i * 16 + 14] = modelMats[i].M34;
+                posBufferData[i * 16 + 15] = modelMats[i].M44;
             }
 
             gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
@@ -1168,6 +1170,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var instancedPosBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (instancedPosBytes != matBytes)
                 throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedPosBytes, matBytes));
+
+            //var mem = new Memory<byte>();
+            //gl2.GetBufferSubData(ARRAY_BUFFER, 0, mem, 0, (uint)matBytes);
+            //var arrayMem = mem.ToArray();
 
             gl2.BindVertexArray(((InstanceDataImp)instanceImp).VertexArrayObject);
             // set attribute pointers for matrix (4 times vec4)
@@ -1607,7 +1613,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             vboBytes = (int)gl2.GetBufferParameter(ELEMENT_ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
-
         }
 
         /// <summary>
@@ -1799,7 +1804,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                         //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
                         gl2.VertexAttribPointer((uint)AttributeLocations.InstancedColor, 4, FLOAT, false, 4 * sizeof(float), 0);
                     }
-                    
+
                     gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceData).InstanceTransformBufferObject);
 
                     // set attribute pointers for matrix (4 times vec4)
@@ -2517,9 +2522,19 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int numItems = 2;
             WebGLBuffer posBuffer = gl2.CreateBuffer();
 
+            float[] verticesFlat = new float[vertices.Length * 3];
+            int i = 0;
+            foreach (float3 v in vertices)
+            {
+                verticesFlat[i] = v.x;
+                verticesFlat[i + 1] = v.y;
+                verticesFlat[i + 2] = v.z;
+                i += 3;
+            }
+
             gl2.EnableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
             gl2.BindBuffer(ARRAY_BUFFER, posBuffer);
-            gl2.BufferData(ARRAY_BUFFER, vertices, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, verticesFlat, STATIC_DRAW);
             gl2.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, itemSize, FLOAT, false, 0, 0);
 
             gl2.DrawArrays(LINE_STRIP, 0, numItems);
