@@ -57,12 +57,12 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         public override void Update()
         {
-            _fuControl.Update(_isMouseInsideFuControl);
+            _fuControl?.Update(_isMouseInsideFuControl);
         }
 
         public override void Resize(ResizeEventArgs e)
         {
-            _fuControl.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
+            _fuControl?.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
 
         }
 
