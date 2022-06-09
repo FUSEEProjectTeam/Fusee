@@ -55,7 +55,7 @@ namespace Fusee.PointCloud.Potree.V2
             }
         }
 
-        private static PotreeData _instance;
+        private PotreeData _instance;
         private string _fileFolderPath;
         private string _metadataFilePath;
 

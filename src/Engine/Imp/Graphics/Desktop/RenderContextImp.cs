@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Imp.Shared;
 using Fusee.Math.Core;
@@ -285,6 +286,22 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
         }
 
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(IWritableTexture img)
+        {
+            if (img is WritableTexture wt)
+                return CreateTexture(wt);
+            if (img is WritableMultisampleTexture mswt)
+                return CreateTexture(mswt);
+
+            throw new NotImplementedException($"CreateTexture typeof({img}) not found!");
+        }
+
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
@@ -391,7 +408,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(IWritableTexture tex)
+        public ITextureHandle CreateTexture(WritableTexture tex)
         {
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
@@ -413,6 +430,38 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+
+            return texID;
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(WritableMultisampleTexture tex)
+        {
+            GL.Enable(EnableCap.Multisample);
+
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2DMultisample, id);
+
+            var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+            var glWrapMode = GetWrapMode(tex.WrapMode);
+
+            GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, tex.MultisampleFactor, PixelInternalFormat.Rgba, tex.Width, tex.Height, true);
+
+            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(tex.CompareMode));
+            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(tex.CompareFunc));
+            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)magFilter);
+            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapS, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapT, (int)glWrapMode);
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
@@ -729,7 +778,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets the shader parameter list of a specific <see cref="IShaderHandle" />. 
+        /// Gets the shader parameter list of a specific <see cref="IShaderHandle" />.
         /// </summary>
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
@@ -941,6 +990,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     break;
                 case TextureType.ArrayTexture:
                     GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
+                    break;
+                case TextureType.TextureMultisample:
+                    GL.BindTexture(TextureTarget.Texture2DMultisample, ((TextureHandle)texId).TexHandle);
                     break;
                 case TextureType.Image2D:
                 default:
@@ -1170,7 +1222,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping.
         /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
         /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
         /// </summary>
@@ -2173,11 +2225,43 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Takes a <see cref="WritableMultisampleTexture"/> and blits the result of all samples into an
+        /// existing <see cref="WritableTexture"/> for further use (e. g. bind and use as Albedo texture)
+        /// </summary>
+        /// <param name="input">WritableMultisampleTexture</param>
+        /// <param name="output">WritableTexture</param>
+        /// <param name="height">Texture height</param>
+        /// <param name="width">Texture width</param>
+        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
+        {
+            if (input == null || output == null) return;
+
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, ((TextureHandle)input).FrameBufferHandle);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, ((TextureHandle)output).FrameBufferHandle);
+            GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
+
+        /// <summary>
         /// Renders into the given texture.
         /// </summary>
         /// <param name="tex">The texture.</param>
         /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle)
+        {
+            if (tex is WritableTexture wt)
+                SetRenderTarget(wt, texHandle);
+            if (tex is WritableMultisampleTexture mswt)
+                SetRenderTarget(mswt, texHandle);
+        }
+
+        /// <summary>
+        /// Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        public void SetRenderTarget(WritableTexture tex, ITextureHandle texHandle)
         {
             if (((TextureHandle)texHandle).FrameBufferHandle == -1)
             {
@@ -2189,8 +2273,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0);
+
                     GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
                 }
                 else
@@ -2199,6 +2284,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.DrawBuffer(DrawBufferMode.None);
                     GL.ReadBuffer(ReadBufferMode.None);
                 }
+
+               ((TextureHandle)tex.TextureHandle).TexHandle = ((TextureHandle)texHandle).TexHandle;
+                ((TextureHandle)tex.TextureHandle).FrameBufferHandle = ((TextureHandle)texHandle).FrameBufferHandle;
+                ((TextureHandle)tex.TextureHandle).DepthRenderBufferHandle = ((TextureHandle)texHandle).DepthRenderBufferHandle;
             }
             else
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
@@ -2208,6 +2297,49 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
+
+
+        /// <summary>
+        /// Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        public void SetRenderTarget(WritableMultisampleTexture tex, ITextureHandle texHandle)
+        {
+            if (((TextureHandle)texHandle).FrameBufferHandle == -1)
+            {
+                var fBuffer = GL.GenFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
+
+                GL.BindTexture(TextureTarget.Texture2DMultisample, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
+                {
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBufferMultisample(tex.Width, tex.Height, tex.MultisampleFactor);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, ((TextureHandle)texHandle).TexHandle, 0);
+                    GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+                }
+                else
+                {
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2DMultisample, ((TextureHandle)texHandle).TexHandle, 0);
+                    GL.DrawBuffer(DrawBufferMode.None);
+                    GL.ReadBuffer(ReadBufferMode.None);
+                }
+
+                ((TextureHandle)tex.InternalTextureHandle).TexHandle = ((TextureHandle)texHandle).TexHandle;
+                ((TextureHandle)tex.InternalTextureHandle).FrameBufferHandle = ((TextureHandle)texHandle).FrameBufferHandle;
+                ((TextureHandle)tex.InternalTextureHandle).DepthRenderBufferHandle = ((TextureHandle)texHandle).DepthRenderBufferHandle;
+            }
+            else
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+
+            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+        }
+
 
         /// <summary>
         /// Renders into the given cube map.
@@ -2353,6 +2485,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return gDepthRenderbufferHandle;
         }
 
+        private int CreateDepthRenderBufferMultisample(int width, int height, int samples)
+        {
+            GL.Enable(EnableCap.DepthTest);
+
+            GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
+            //((FrameBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
+            GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, samples, RenderbufferStorage.DepthComponent24, width, height);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
+            return gDepthRenderbufferHandle;
+        }
+
         private int CreateFrameBuffer(IRenderTarget renderTarget, ITextureHandle[] texHandles)
         {
             var gBuffer = GL.GenFramebuffer();
@@ -2405,7 +2549,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will detach the texture currently associated with <see cref="FramebufferAttachment.ColorAttachment1"/>.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with <see cref="FramebufferAttachment.DepthAttachment"/> will be detached.</param>       
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with <see cref="FramebufferAttachment.DepthAttachment"/> will be detached.</param>
         public void DetachTextureFromFbo(IRenderTarget renderTarget, bool isDepthTex, int attachment = 0)
         {
             ChangeFramebufferTexture2D(renderTarget, attachment, 0, isDepthTex);
@@ -2417,7 +2561,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will attach the texture to <see cref="FramebufferAttachment.ColorAttachment1"/>.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to <see cref="FramebufferAttachment.DepthAttachment"/>.</param>        
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to <see cref="FramebufferAttachment.DepthAttachment"/>.</param>
         /// <param name="texHandle">The gpu handle of the texture.</param>
         public void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0)
         {
@@ -2464,7 +2608,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Set the Viewport of the rendering output window by x,y position and width,height parameters. 
+        /// Set the Viewport of the rendering output window by x,y position and width,height parameters.
         /// The Viewport is the portion of the final image window.
         /// </summary>
         /// <param name="x">The x.</param>
@@ -2500,14 +2644,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 HardwareCapability.CanRenderDeferred => !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U,
                 HardwareCapability.CanUseGeometryShaders => 1U,
+                HardwareCapability.MaxSamples => GetSampleSize(),
                 _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null),
             };
         }
 
-        /// <summary> 
+        private uint GetSampleSize()
+        {
+            GL.GetInternalformat(ImageTarget.Texture2DMultisample, GetSizedInteralFormat(new ImagePixelFormat(ColorFormat.RGBA)), InternalFormatParameter.Samples, 32, out int sampleSize);
+            return (uint)sampleSize;
+        }
+
+        /// <summary>
         /// Returns a human readable description of the underlying graphics hardware. This implementation reports GL_VENDOR, GL_RENDERER, GL_VERSION and GL_EXTENSIONS.
-        /// </summary> 
-        /// <returns></returns> 
+        /// </summary>
+        /// <returns></returns>
         public string GetHardwareDescription()
         {
             return "Vendor: " + GL.GetString(StringName.Vendor) + "\nRenderer: " + GL.GetString(StringName.Renderer) + "\nVersion: " + GL.GetString(StringName.Version) + "\nExtensions: " + GL.GetString(StringName.Extensions);

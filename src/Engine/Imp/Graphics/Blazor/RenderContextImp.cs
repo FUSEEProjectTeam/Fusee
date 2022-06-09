@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Imp.Blazor;
 using Fusee.Math.Core;
@@ -312,6 +313,21 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableTexture img)
+        {
+            if (img is not WritableTexture wt)
+            {
+                throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
+            }
+
+            return CreateTexture(wt);
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(WritableTexture img)
         {
             WebGLTexture id = gl2.CreateTexture();
             gl2.BindTexture(TEXTURE_2D, id);
@@ -1974,6 +1990,21 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle)
         {
+            if (tex is not WritableTexture wt)
+            {
+                throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
+            }
+
+            SetRenderTarget(wt, texHandle);
+        }
+
+        /// <summary>
+        /// Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        public void SetRenderTarget(WritableTexture tex, ITextureHandle texHandle)
+        {
             if (((TextureHandle)texHandle).FrameBufferHandle == null)
             {
                 WebGLFramebuffer fBuffer = gl2.CreateFramebuffer();
@@ -2097,6 +2128,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
 
             gl2.Clear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT);
+        }
+
+        /// <summary>
+        /// Takes a <see cref="WritableMultisampleTexture"/> and blits the result of all samples into an
+        /// existing <see cref="WritableTexture"/> for further use (e. g. bind and use as Albedo texture)
+        /// </summary>
+        /// <param name="input">WritableMultisampleTexture</param>
+        /// <param name="output">WritableTexture</param>
+        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
+        {
+            throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
         }
 
         private WebGLRenderbuffer CreateDepthRenderBuffer(int width, int height)
@@ -2242,6 +2284,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 HardwareCapability.CanRenderDeferred => 1U,
                 HardwareCapability.CanUseGeometryShaders => 0U,
+                HardwareCapability.MaxSamples => 0U, // not supported
                 _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null),
             };
         }
