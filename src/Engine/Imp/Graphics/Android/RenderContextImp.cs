@@ -1874,8 +1874,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 {
                     var sizeOfFloat4 = sizeof(float) * 4;
                     var sizeOfMat = sizeOfFloat4 * 4;
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceData).InstanceTransformBufferObject);
-
                     if (((InstanceDataImp)instanceData).InstanceColorBufferObject != 0)
                     {
                         GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceData).InstanceColorBufferObject);
@@ -1900,10 +1898,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                     GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero, instanceData.Amount);
 
-                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != 0)
-                    {
-                        GL.DisableVertexAttribArray(AttributeLocations.InstancedColor);
-                    }
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedModelMat1);
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedModelMat2);
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedModelMat3);
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedModelMat4);
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedColor);
                 }
                 else
                     GL.DrawElements((BeginMode)oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
