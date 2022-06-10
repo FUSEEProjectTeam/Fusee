@@ -27,6 +27,8 @@ namespace Fusee.Engine.Core.Scene
             get => _positions;
             set
             {
+                if (Amount != value.Length)
+                    throw new ArgumentOutOfRangeException();
                 _positions = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
             }
@@ -41,6 +43,8 @@ namespace Fusee.Engine.Core.Scene
             get => _rotations;
             set
             {
+                if (Amount != value.Length)
+                    throw new ArgumentOutOfRangeException();
                 _rotations = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
             }
@@ -55,6 +59,8 @@ namespace Fusee.Engine.Core.Scene
             get => _scales;
             set
             {
+                if (Amount != value.Length)
+                    throw new ArgumentOutOfRangeException();
                 _scales = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
             }
@@ -69,6 +75,8 @@ namespace Fusee.Engine.Core.Scene
             get => _colors;
             set
             {
+                if (Amount != value.Length)
+                    throw new ArgumentOutOfRangeException();
                 _colors = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Colors));
             }

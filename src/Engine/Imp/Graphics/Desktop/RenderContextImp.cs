@@ -1167,15 +1167,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ApplicationException("Create the VAO first!");
             }
 
-            int instanceTransformBo;
-            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == 0)
-            {
-                GL.CreateBuffers(1, out instanceTransformBo);
-                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
-            }
-            else
-                instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
-
             var sizeOfFloat4 = sizeof(float) * 4;
             var sizeOfMat = sizeOfFloat4 * 4;
             var amount = instancePositions.Length;
@@ -1204,7 +1195,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 posBufferData[i * 4 + 3] = modelMats[i].Column4;
             }
 
-            GL.NamedBufferStorage(instanceTransformBo, matBytes, posBufferData, BufferStorageFlags.DynamicStorageBit);
+            int instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
+            if (instanceTransformBo == 0)
+            {
+                GL.CreateBuffers(1, out instanceTransformBo);
+                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
+                GL.NamedBufferStorage(instanceTransformBo, matBytes, posBufferData, BufferStorageFlags.DynamicStorageBit);
+            }
+            else
+            {
+                GL.NamedBufferSubData(instanceTransformBo, IntPtr.Zero, matBytes, posBufferData);
+                instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
+            }
+
             GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedModelMatBindingIndex, instanceTransformBo, IntPtr.Zero, sizeOfMat);
             GL.GetNamedBufferParameter(instanceTransformBo, BufferParameterName.BufferSize, out int instancedPosBytes);
             if (instancedPosBytes != matBytes)
@@ -1245,16 +1248,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             //TODO: can we use AttributeLocations.Color?
             int sizeOfCol = sizeof(float) * 4;
             int iColorBytes = instanceColors.Length * sizeOfCol;
-            int instanceColorBo;
-            if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == 0)
+            int instanceColorBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
+            if (instanceColorBo == 0)
             {
                 GL.CreateBuffers(1, out instanceColorBo);
                 ((InstanceDataImp)instanceImp).InstanceColorBufferObject = instanceColorBo;
+                GL.NamedBufferStorage(instanceColorBo, iColorBytes, instanceColors, BufferStorageFlags.DynamicStorageBit);
             }
             else
+            {
                 instanceColorBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
+                GL.NamedBufferSubData(instanceColorBo, IntPtr.Zero, iColorBytes, instanceColors);
+            }
 
-            GL.NamedBufferStorage(instanceColorBo, iColorBytes, instanceColors, BufferStorageFlags.DynamicStorageBit);
             GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedColorBindingIndex, instanceColorBo, IntPtr.Zero, sizeOfCol);
             GL.GetNamedBufferParameter(instanceColorBo, BufferParameterName.BufferSize, out int instancedColorBytes);
             if (instancedColorBytes != iColorBytes)

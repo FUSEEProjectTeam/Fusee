@@ -1114,15 +1114,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 throw new ApplicationException("Create the VAO first!");
             }
 
-            WebGLBuffer instanceTransformBo;
-            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == null)
-            {
-                instanceTransformBo = gl2.CreateBuffer();
-                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
-            }
-            else
-                instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
-
             var sizeOfFloat4 = sizeof(float) * 4;
             var sizeOfMat = sizeOfFloat4 * 4;
             var amount = instanceImp.Amount;
@@ -1165,8 +1156,21 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 posBufferData[i * 16 + 15] = modelMats[i].M44;
             }
 
-            gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
-            gl2.BufferData(ARRAY_BUFFER, posBufferData, STATIC_DRAW);
+            WebGLBuffer instanceTransformBo;
+            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == null)
+            {
+                instanceTransformBo = gl2.CreateBuffer();
+                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
+                gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
+                gl2.BufferData(ARRAY_BUFFER, posBufferData, DYNAMIC_DRAW);
+            }
+            else
+            {
+                instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
+                gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
+                gl2.BufferSubData(ARRAY_BUFFER, 0, posBufferData);
+            }
+            
             var instancedPosBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (instancedPosBytes != matBytes)
                 throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedPosBytes, matBytes));
@@ -1202,11 +1206,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             if (instanceColors == null)
                 return;
 
-            int vboBytes;
-            int colsBytes = instanceColors.Length * 4 * sizeof(float);
-            if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == null)
-                ((InstanceDataImp)instanceImp).InstanceColorBufferObject = gl2.CreateBuffer();
-
             float[] colorsFlat = new float[instanceColors.Length * 4];
             int i = 0;
             foreach (float4 v in instanceColors)
@@ -1218,8 +1217,20 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 i += 4;
             }
 
-            gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
-            gl2.BufferData(ARRAY_BUFFER, colorsFlat, STATIC_DRAW);
+            int vboBytes;
+            int colsBytes = instanceColors.Length * 4 * sizeof(float);
+            if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == null)
+            {
+                ((InstanceDataImp)instanceImp).InstanceColorBufferObject = gl2.CreateBuffer();
+                gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
+                gl2.BufferData(ARRAY_BUFFER, colorsFlat, DYNAMIC_DRAW);
+            }
+            else
+            {
+                gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
+                gl2.BufferSubData(ARRAY_BUFFER, 0, colorsFlat);
+            }
+            
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));

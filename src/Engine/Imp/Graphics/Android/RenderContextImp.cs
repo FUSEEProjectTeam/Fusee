@@ -1233,12 +1233,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException("Create the VAO first!");
             }
 
-            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == 0)
-            {
-                GL.GenBuffers(1, out int instanceTransformBo);
-                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
-            }
-
             var sizeOfFloat4 = sizeof(float) * 4;
             var sizeOfMat = sizeOfFloat4 * 4;
             var amount = instancePositions.Length;
@@ -1261,8 +1255,18 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 posBufferData[i * 4 + 3] = modelMats[i].Column4;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)matBytes, modelMats, BufferUsage.DynamicDraw);
+            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int instanceTransformBo);
+                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
+                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)matBytes, modelMats, BufferUsage.DynamicDraw);
+            }
+            else
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
+                GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, (IntPtr)matBytes, modelMats);
+            }
 
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int instancedPosBytes);
             if (instancedPosBytes != matBytes)
@@ -1303,14 +1307,20 @@ namespace Fusee.Engine.Imp.Graphics.Android
             //TODO: can we use AttributeLocations.Color?
             int sizeOfCol = sizeof(float) * 4;
             int iColorBytes = instanceColors.Length * sizeOfCol;
-            int instanceColorBo;
-            if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == 0)
+            int instanceColorBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
+            if (instanceColorBo == 0)
             {
                 GL.GenBuffers(1, out instanceColorBo);
                 ((InstanceDataImp)instanceImp).InstanceColorBufferObject = instanceColorBo;
+                GL.BindBuffer(BufferTarget.ArrayBuffer, instanceColorBo);
+                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)iColorBytes, instanceColors, BufferUsage.StaticDraw);
+            }
+            else
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, instanceColorBo);
+                GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, (IntPtr)iColorBytes, instanceColors);
             }
 
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)iColorBytes, instanceColors, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int instancedColorBytes);
             if (instancedColorBytes != iColorBytes)
                 throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedColorBytes, iColorBytes));
