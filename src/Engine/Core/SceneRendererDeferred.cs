@@ -187,6 +187,7 @@ namespace Fusee.Engine.Core
                     _rc.SetEffect(_shadowCubeMapEffect);
             }
             _rc.Render(mesh, CurrentInstanceData, _currentPass == RenderPasses.Shadow);
+            CurrentInstanceData = null;
         }
 
         /// <summary>

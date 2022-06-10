@@ -695,6 +695,7 @@ namespace Fusee.Engine.Core
             //    AddWeightToMesh(mesh, wc);
 
             _rc.Render(mesh, CurrentInstanceData, true);
+            CurrentInstanceData = null;
         }
 
         /// <summary>
