@@ -37,6 +37,8 @@ namespace Fusee.Examples.Deferred.Core
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
+        private bool _renderDeferred = true;
+
         private async Task Load()
         {
             VSync = false;
@@ -165,34 +167,8 @@ namespace Fusee.Examples.Deferred.Core
             await base.InitAsync();
         }
 
-        private bool _renderDeferred = true;
-
         public override void Update()
         {
-            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f) * DeltaTime * 50, 0 ,0));
-
-            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
-            if (deg < 0)
-                deg = (360 + deg);
-
-            var normalizedDeg = (deg) / 360;
-            float localLerp;
-
-            if (normalizedDeg <= 0.5)
-            {
-                _backgroundColor = _backgroundColorDay;
-                localLerp = normalizedDeg / 0.5f;
-                _backgroundColor.xyz = float3.Lerp(_backgroundColorDay.xyz, _backgroundColorNight.xyz, localLerp);
-            }
-            else
-            {
-                _backgroundColor = _backgroundColorNight;
-                localLerp = (normalizedDeg - 0.5f) / (0.5f);
-                _backgroundColor.xyz = float3.Lerp(_backgroundColorNight.xyz, _backgroundColorDay.xyz, localLerp);
-            }
-
-            _campComp.BackgroundColor = _backgroundColor;
-
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -216,8 +192,8 @@ namespace Fusee.Examples.Deferred.Core
             {
                 if (_keys)
                 {
-                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
             }
 
@@ -226,7 +202,18 @@ namespace Fusee.Examples.Deferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 200);
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 200);
+
+            if (Keyboard.IsKeyDown(KeyCodes.F))
+                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
+
+            if (Keyboard.IsKeyDown(KeyCodes.G) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
+
+            if (Keyboard.IsKeyDown(KeyCodes.F1) && _renderDeferred)
+                _renderDeferred = false;
+            else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
+                _renderDeferred = true;
         }
 
         // RenderAFrame is called once a frame
@@ -255,17 +242,6 @@ namespace Fusee.Examples.Deferred.Core
             }
 
             _campComp.BackgroundColor = _backgroundColor;
-
-            if (Keyboard.IsKeyDown(KeyCodes.F))
-                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
-
-            if (Keyboard.IsKeyDown(KeyCodes.G) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
-
-            if (Keyboard.IsKeyDown(KeyCodes.F1) && _renderDeferred)
-                _renderDeferred = false;
-            else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
-                _renderDeferred = true;
 
             if (_renderDeferred)
                 _sceneRendererDeferred.Render(RC);

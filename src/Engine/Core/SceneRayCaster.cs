@@ -187,8 +187,7 @@ namespace Fusee.Engine.Core
             PrePassVisitor.PrePassTraverse(_sc);
             var cams = PrePassVisitor.CameraPrepassResults;
 
-            float2 pickPosClip = float2.Zero;
-
+            float2 pickPosClip;
             if (cams.Count == 0)
             {
                 pickPosClip = (pickPos * new float2(2.0f / rc.ViewportWidth, -2.0f / rc.ViewportHeight)) + new float2(-1, 1);
