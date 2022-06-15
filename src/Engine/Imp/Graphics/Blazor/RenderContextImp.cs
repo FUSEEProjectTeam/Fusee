@@ -1168,16 +1168,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
                 gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
-                gl2.BufferSubData(ARRAY_BUFFER, 0, posBufferData);
+                gl2.BufferSubData(ARRAY_BUFFER, IntPtr.Zero, posBufferData);
             }
             
             var instancedPosBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (instancedPosBytes != matBytes)
                 throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedPosBytes, matBytes));
-
-            //var mem = new Memory<byte>();
-            //gl2.GetBufferSubData(ARRAY_BUFFER, 0, mem, 0, (uint)matBytes);
-            //var arrayMem = mem.ToArray();
 
             gl2.BindVertexArray(((InstanceDataImp)instanceImp).VertexArrayObject);
             // set attribute pointers for matrix (4 times vec4)
@@ -1228,7 +1224,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             else
             {
                 gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
-                gl2.BufferSubData(ARRAY_BUFFER, 0, colorsFlat);
+                gl2.BufferSubData(ARRAY_BUFFER, IntPtr.Zero, colorsFlat);
             }
             
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
