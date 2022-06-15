@@ -218,7 +218,6 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            var renderStatesBefore = _rc.CurrentRenderState.Copy();
             if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
             {
                 if (mesh.MeshType == PrimitiveType.Points)
@@ -508,7 +507,7 @@ namespace Fusee.Engine.Core
             RenderAllPasses(viewport, renderTex);
         }
 
-        private void RenderAllPasses(float4 lightingPassViewport, WritableTexture renderTex = null)
+        private void RenderAllPasses(float4 lightingPassViewport, WritableTexture renderTex)
         {
             var preRenderStateSet = _rc.CurrentRenderState.Copy(); //"Snapshot" of the current render states as they came from the user code.
             var preRenderLockedStates = new Dictionary<RenderState, KeyValuePair<bool, uint>>(_rc.LockedStates);
