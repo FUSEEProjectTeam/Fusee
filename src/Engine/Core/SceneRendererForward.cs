@@ -309,18 +309,28 @@ namespace Fusee.Engine.Core
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
                 var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Camera.Layer);
+
+                //Clear for all cameras
+                foreach (var cam in cams)
+                {
+                    if (cam.Camera.Active)
+                        PerCamClear(cam);
+                }
+
+                //Render for all cameras
                 foreach (var cam in cams)
                 {
                     if (cam.Camera.Active)
                     {
                         DoFrumstumCulling = cam.Camera.FrustumCullingOn;
                         PerCamRender(cam);
-                        //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
-                        _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
-                        //Standard value: frustum culling is on.
-                        DoFrumstumCulling = true;
                     }
                 }
+
+                //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
+                _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
+                //Standard value: frustum culling is on.
+                DoFrumstumCulling = true;
             }
             else
             {
@@ -329,13 +339,32 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private void PerCamRender(CameraResult cam)
+        internal void PerCamClear(CameraResult cam)
         {
             var tex = cam.Camera.RenderTexture;
-
             RenderLayer = cam.Camera.RenderLayer;
 
+            float4 viewport = tex != null
+                ? cam.Camera.GetViewportInPx(tex.Width, tex.Height)
+                : cam.Camera.GetViewportInPx(_rc.GetWindowWidth(), _rc.GetWindowHeight());
+
+            _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+
+            _rc.ClearColor = cam.Camera.BackgroundColor;
+            if (cam.Camera.ClearColor)
+                _rc.Clear(ClearFlags.Color);
+
+            if (cam.Camera.ClearDepth)
+                _rc.Clear(ClearFlags.Depth);
+        }
+
+        private void PerCamRender(CameraResult cam)
+        {
+            RenderLayer = cam.Camera.RenderLayer;
+            _rc.View = cam.View;
+
             float4 viewport;
+            var tex = cam.Camera.RenderTexture;
             if (tex != null)
             {
                 _rc.SetRenderTarget(cam.Camera.RenderTexture);
@@ -344,24 +373,15 @@ namespace Fusee.Engine.Core
             else
             {
                 _rc.SetRenderTarget();
-                _rc.Projection = cam.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out viewport);
+                _rc.Projection = cam.Camera.GetProjectionMat(_rc.GetWindowWidth(), _rc.GetWindowHeight(), out viewport);
             }
 
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
-            _rc.ClearColor = cam.Camera.BackgroundColor;
-
-            if (cam.Camera.ClearColor)
-                _rc.Clear(ClearFlags.Color);
-
-            if (cam.Camera.ClearDepth)
-                _rc.Clear(ClearFlags.Depth);
-
-            _rc.View = cam.View;
-
             UpdateShaderParamsForAllLights();
 
             Traverse(_sc.Children);
+
         }
 
         /// <summary>

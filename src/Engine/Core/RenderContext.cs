@@ -123,6 +123,16 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int ViewportYStart { get; private set; }
 
+        /// <summary>
+        /// Gets the window width.
+        /// </summary>
+        internal Func<int> GetWindowWidth;
+
+        /// <summary>
+        /// Sets the window width.
+        /// </summary>
+        internal Func<int> GetWindowHeight;
+
         #endregion
 
         #region Shader Management fields
