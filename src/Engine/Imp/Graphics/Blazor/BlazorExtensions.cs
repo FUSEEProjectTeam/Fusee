@@ -14,7 +14,7 @@ namespace Fusee.Base.Imp.Blazor
         public static IJSRuntime Runtime;
 
         /// <summary>
-        /// Sets the specifed attribute (key/value pair) of a given javascript object (as <see cref="IJSObjectReference"/>)
+        /// Sets the specified attribute (key/value pair) of a given javascript object (as <see cref="IJSObjectReference"/>)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
@@ -26,7 +26,7 @@ namespace Fusee.Base.Imp.Blazor
         }
 
         /// <summary>
-        /// Sets the specifed object property (key/value pair) of a given javascript object (as <see cref="IJSObjectReference"/>)
+        /// Sets the specified object property (key/value pair) of a given javascript object (as <see cref="IJSObjectReference"/>)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
@@ -38,7 +38,7 @@ namespace Fusee.Base.Imp.Blazor
         }
 
         /// <summary>
-        /// Returns the object propertry of a given javascript obect (given as <see cref="IJSObjectReference"/>)
+        /// Returns the object property of a given javascript object (given as <see cref="IJSObjectReference"/>)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
@@ -50,7 +50,7 @@ namespace Fusee.Base.Imp.Blazor
         }
 
         /// <summary>
-        /// Sets the specifed object property (key/value pair) of a given javascript object (as <see cref="IJSObjectReference"/>)
+        /// Sets the specified object property (key/value pair) of a given javascript object (as <see cref="IJSObjectReference"/>)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
@@ -62,7 +62,7 @@ namespace Fusee.Base.Imp.Blazor
         }
 
         /// <summary>
-        /// Returns the object properties of a given javascript obect (given as <see cref="IJSObjectReference"/>)
+        /// Returns the object properties of a given javascript object (given as <see cref="IJSObjectReference"/>)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
@@ -74,7 +74,7 @@ namespace Fusee.Base.Imp.Blazor
         }
 
         /// <summary>
-        /// Returns the object properties of a given javascript obect (given as <see cref="IJSObjectReference"/>)
+        /// Returns the object properties of a given javascript object (given as <see cref="IJSObjectReference"/>)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
