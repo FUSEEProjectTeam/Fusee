@@ -160,6 +160,9 @@ namespace Fusee.Engine.Core
         // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
         private IMeshImp RegisterNewMesh(Mesh mesh)
         {
+            // wire all EventHandler
+            mesh.InitMesh();
+
             var meshImp = _renderContextImp.CreateMeshImp();
 
             _renderContextImp.SetVertexArrayObject(meshImp);
