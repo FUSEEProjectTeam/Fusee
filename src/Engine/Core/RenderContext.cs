@@ -126,12 +126,12 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Gets the window width.
         /// </summary>
-        internal Func<int> GetWindowWidth;
+        public Func<int> GetWindowWidth { get; internal set; }
 
         /// <summary>
         /// Sets the window width.
         /// </summary>
-        internal Func<int> GetWindowHeight;
+        public Func<int> GetWindowHeight { get; internal set; }
 
         #endregion
 

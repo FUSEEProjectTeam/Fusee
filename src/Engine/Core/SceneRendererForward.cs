@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core
                 _renderLayer = value;
                 foreach (var module in VisitorModules)
                 {
-                    ((IRendererModule)module).RenderLayer = _renderLayer;
+                    ((IRendererModule)module).UpdateRenderLayer(_renderLayer);
                 }
             }
         }
@@ -276,18 +276,25 @@ namespace Fusee.Engine.Core
                 _rc = rc;
                 foreach (var module in VisitorModules)
                 {
-                    ((IRendererModule)module).SetContext(_rc);
+                    ((IRendererModule)module).UpdateContext(_rc);
                 }
                 InitState();
             }
         }
 
-        private void SetStateAndRenderLayerInModules()
+        protected void NotifyStateChanges()
         {
             foreach (var module in VisitorModules)
             {
-                ((IRendererModule)module).RenderLayer = _renderLayer;
-                ((IRendererModule)module).SetState(_state);
+                ((IRendererModule)module).UpdateState(_state);
+            }
+        }
+
+        protected void NotifyCameraChanges(Camera cam)
+        {
+            foreach (var module in VisitorModules)
+            {
+                ((IRendererModule)module).UpdateCamera(cam);
             }
         }
 
@@ -297,10 +304,10 @@ namespace Fusee.Engine.Core
         /// Renders the scene.
         /// </summary>
         /// <param name="rc"></param>
-        public void Render(RenderContext rc)
+        public virtual void Render(RenderContext rc)
         {
             SetContext(rc);
-            SetStateAndRenderLayerInModules();
+            NotifyStateChanges();
 
             PrePassVisitor.PrePassTraverse(_sc);
 
@@ -322,6 +329,7 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Camera.Active)
                     {
+                        NotifyCameraChanges(cam.Camera);
                         DoFrumstumCulling = cam.Camera.FrustumCullingOn;
                         PerCamRender(cam);
                     }

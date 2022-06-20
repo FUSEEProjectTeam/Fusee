@@ -60,6 +60,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private SixDOFDevice _spaceMouse;
         private PointCloudComponent _pointCloud;
 
+        private WritableTexture rt = WritableTexture.CreateAlbedoTex(1280, 720, new ImagePixelFormat(ColorFormat.RGBA));
+
         public override void Init()
         {
             VSync = false;
@@ -86,9 +88,26 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 Rotation = float3.Zero
             };
 
+            var cam1Transform = new Transform()
+            {
+                Name = "MainCamTransform",
+                Scale = float3.One,
+                Translation = float3.Zero,
+                Rotation = float3.Zero
+            };
+
             _cam = new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
             {
-                BackgroundColor = float4.One
+                BackgroundColor = float4.One,
+                Viewport = new float4(0, 0, 50, 100)
+            };
+
+            
+
+            var cam1 = new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
+            {
+                BackgroundColor = float4.One,
+                Viewport = new float4(50, 0, 50, 100)
             };
 
             var mainCam = new SceneNode()
@@ -97,7 +116,17 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 Components = new List<SceneComponent>()
                 {
                     _camTransform,
-                    _cam
+                    _cam,
+                }
+            };
+
+            var secondCam = new SceneNode()
+            {
+                Name = "SecondCam",
+                Components = new List<SceneComponent>()
+                {
+                    cam1Transform,
+                    cam1
                 }
             };
 
@@ -123,14 +152,16 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 }
             };
 
-
             _camTransform.Translation = _initCameraPos = _pointCloud.Center - new float3(0, 0, _pointCloud.Size.z * 2);
+            cam1Transform.Translation = _pointCloud.Center + new float3(0, _pointCloud.Size.y * 2, 0);
+            cam1Transform.RotationMatrix = float4x4.CreateRotationX(M.DegreesToRadians(90));
 
             _scene = new SceneContainer
             {
                 Children = new List<SceneNode>()
                 {
                     mainCam,
+                    secondCam,
                     pointCloudNode
                 }
             };
@@ -150,6 +181,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 FxaaOn = false
             };
 
+            _pointCloud.Camera = _cam;
             _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
             _guiRenderer = new SceneRendererForward(_gui);
 

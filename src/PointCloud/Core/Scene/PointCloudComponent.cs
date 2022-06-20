@@ -30,6 +30,11 @@ namespace Fusee.PointCloud.Core.Scene
         public readonly bool DoRenderInstanced;
 
         /// <summary>
+        /// Reference to the Camera whose properties are used to control the visibility of point cloud chunks (octants).
+        /// </summary>
+        public Camera Camera;
+
+        /// <summary>
         /// Instantiates the <see cref="IPointCloudImp{TGpuData}"/>.
         /// </summary>
         public PointCloudComponent(IPointCloudImpBase imp, bool doRenderInstanced = false)

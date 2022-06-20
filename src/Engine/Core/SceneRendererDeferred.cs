@@ -440,10 +440,10 @@ namespace Fusee.Engine.Core
         /// Renders the scene.
         /// </summary>
         /// <param name="rc">The <see cref="RenderContext"/>.</param>
-        public void Render(RenderContext rc)
+        public override void Render(RenderContext rc)
         {
             SetContext(rc);
-            SetStateAndRenderLayerInModules();
+            NotifyStateChanges();
 
             PrePassVisitor.PrePassTraverse(_sc);
             AccumulateLight();
@@ -460,7 +460,9 @@ namespace Fusee.Engine.Core
                 foreach (var cam in cams)
                 {
                     if (cam.Camera.Active)
+                    {
                         PerCamClear(cam);
+                    }
                 }
 
                 //Render for all cameras
@@ -468,6 +470,7 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Camera.Active)
                     {
+                        NotifyCameraChanges(cam.Camera);
                         DoFrumstumCulling = cam.Camera.FrustumCullingOn;
                         PerCamRender(cam, cam.Camera.RenderTexture);
                     }
@@ -972,20 +975,11 @@ namespace Fusee.Engine.Core
 
                 foreach (var module in VisitorModules)
                 {
-                    ((IRendererModule)module).SetContext(_rc);
+                    ((IRendererModule)module).UpdateContext(_rc);
                 }
 
                 InitRenderTextures();
                 InitState();
-            }
-        }
-
-        private void SetStateAndRenderLayerInModules()
-        {
-            foreach (var module in VisitorModules)
-            {
-                //((IRendererModule)module).RenderLayer = _renderLayer;
-                ((IRendererModule)module).SetState(_state);
             }
         }
 

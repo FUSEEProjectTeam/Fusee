@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core.Scene
         public RenderLayers RenderLayer;
 
         /// <summary>
-        /// Scales the orthograpic viewing frustum. Dosn't have an effect if <see cref="ProjectionMethod.Perspective"/> is used.
+        /// Scales the orthographic viewing frustum. Doesn't have an effect if <see cref="ProjectionMethod.Perspective"/> is used.
         /// </summary>
         public float Scale = 1;
 
