@@ -204,8 +204,7 @@ namespace Fusee.Examples.MeshingAround.Core
             _renderer = new SceneRendererForward(sc);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
             float2 speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
@@ -213,7 +212,11 @@ namespace Fusee.Examples.MeshingAround.Core
                 _alpha -= speed.x * 0.0001f;
                 _beta -= speed.y * 0.0001f;
             }
+        }
 
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
             _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_beta, _alpha, 0);
 
             _renderer.Render(RC);

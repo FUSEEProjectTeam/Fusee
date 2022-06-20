@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<OutputPath>$(BaseOutputPath)\Examples\PointCloudPotree2\ImGui\</OutputPath>
+
+		<OutputType>Exe</OutputType>
+		<LangVersion>9.0</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets\Cube1030301\Las\Cube1030301.las" />
+	  <None Remove="Assets\Cube1030301\Potree\hierarchy.bin" />
+	  <None Remove="Assets\Cube1030301\Potree\metadata.json" />
+	  <None Remove="Assets\Cube1030301\Potree\octree.bin" />
+	  <None Remove="Assets\FuseeIconTop32.png" />
+	  <None Remove="Assets\ImGuiSettings.ini" />
+	  <None Remove="Assets\Lato-Black.ttf" />
+	  <None Remove="Assets\RocketFus.fus" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Assets\Cube1030301\Las\Cube1030301.las">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\Cube1030301\Potree\hierarchy.bin">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\Cube1030301\Potree\metadata.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\Cube1030301\Potree\octree.bin">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\FUSEERocket.fus">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\FuseeText.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\FuseeIconTop32.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\ImGuiSettings.ini">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\Lato-Black.ttf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\RocketFus.fus">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiDesktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Potree\Fusee.PointCloud.Potree.csproj" />
+	</ItemGroup>
+
+</Project>

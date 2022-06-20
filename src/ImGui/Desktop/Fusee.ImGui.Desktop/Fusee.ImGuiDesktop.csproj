@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ImGui.NET" Version="1.87.2" />
+	</ItemGroup>
+
+</Project>

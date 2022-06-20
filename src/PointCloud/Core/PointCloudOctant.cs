@@ -22,7 +22,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// The globally unique identifier for this octant.
         /// </summary>
-        public string Guid { get; set; }
+        public OctantId OctId { get; set; }
 
         /// <summary>
         /// Center of this Bucket in world space coordinates.
@@ -59,18 +59,18 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="center">The center of this octant.</param>
         /// <param name="size">The size (in all three dimensions) of this octant.</param>
-        /// <param name="guid"></param>
+        /// <param name="octId"></param>
         /// <param name="children">The octants child octants.</param>
-        public PointCloudOctant(double3 center, double size, string guid, PointCloudOctant[] children = null)
+        public PointCloudOctant(double3 center, double size, OctantId octId, PointCloudOctant[] children = null)
         {
             Center = center;
             Size = size;
 
-            Guid = guid;
+            OctId = octId;
 
-            Level = Guid.Length;
+            Level = OctId.Level;
 
-            int.TryParse(Guid[Level - 1].ToString(), out int posInParent);
+            int.TryParse(OctId[Level - 1].ToString(), out int posInParent);
             PosInParent = posInParent;
 
             if (children == null)

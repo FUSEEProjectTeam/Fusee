@@ -34,7 +34,7 @@ namespace Fusee.PointCloud.Potree.V2
                     FileDataInstance.Metadata.FolderPath = _fileFolderPath;
 
                     // Changing AABBs to have local coordinates
-                    // Fliping all YZ coordinates
+                    // Flipping all YZ coordinates
                     for (int i = 0; i < FileDataInstance.Hierarchy.Nodes.Count; i++)
                     {
                         var node = FileDataInstance.Hierarchy.Nodes[i];
@@ -43,7 +43,7 @@ namespace Fusee.PointCloud.Potree.V2
                     FileDataInstance.Metadata.OffsetList = new List<double>(3) { FileDataInstance.Metadata.Offset.x, FileDataInstance.Metadata.Offset.z, FileDataInstance.Metadata.Offset.y };
                     FileDataInstance.Metadata.ScaleList = new List<double>(3) { FileDataInstance.Metadata.Scale.x, FileDataInstance.Metadata.Scale.z, FileDataInstance.Metadata.Scale.y };
 
-                    // Setting the metadata BoundingBox to the values of the root node. No fliping required since that was done in the for loop
+                    // Setting the metadata BoundingBox to the values of the root node. No flipping required since that was done in the for loop
                     FileDataInstance.Metadata.BoundingBox.MinList = new List<double>(3) { FileDataInstance.Hierarchy.Root.Aabb.min.x, FileDataInstance.Hierarchy.Root.Aabb.min.y, FileDataInstance.Hierarchy.Root.Aabb.min.z };
                     FileDataInstance.Metadata.BoundingBox.MaxList = new List<double>(3) { FileDataInstance.Hierarchy.Root.Aabb.max.x, FileDataInstance.Hierarchy.Root.Aabb.max.y, FileDataInstance.Hierarchy.Root.Aabb.max.z };
                 }
@@ -55,7 +55,7 @@ namespace Fusee.PointCloud.Potree.V2
             }
         }
 
-        private static PotreeData _instance;
+        private PotreeData _instance;
         private string _fileFolderPath;
         private string _metadataFilePath;
 
@@ -136,7 +136,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <typeparam name="TPoint">The generic point type.</typeparam>
         /// <param name="id">The unique id of the octant.</param>
         /// <returns></returns>
-        public TPoint[] LoadNodeData<TPoint>(string id) where TPoint : new()
+        public TPoint[] LoadNodeData<TPoint>(OctantId id) where TPoint : new()
         {
             var node = FindNode(id);
             TPoint[] points = null;
@@ -282,7 +282,7 @@ namespace Fusee.PointCloud.Potree.V2
             {
                 if (potreeNode.Children[i] != null)
                 {
-                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, potreeNode.Children[i].Name);
+                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, new OctantId(potreeNode.Name));
 
                     if (potreeNode.Children[i].NodeType == NodeType.LEAF)
                     {
@@ -423,9 +423,9 @@ namespace Fusee.PointCloud.Potree.V2
             }
         }
 
-        private PotreeNode FindNode(string id)
+        private PotreeNode FindNode(OctantId id)
         {
-            return FileDataInstance.Hierarchy.Nodes.Find(n => n.Name == id);
+            return FileDataInstance.Hierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdToPotreeName(id));
         }
     }
 }

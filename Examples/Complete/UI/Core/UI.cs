@@ -418,11 +418,8 @@ namespace Fusee.Examples.UI.Core
             _sceneRenderer = new SceneRendererForward(_scene);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
-            _fpsText.Text = "FPS: " + Time.FramesPerSecond.ToString("0.00");
-
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
             {
@@ -432,26 +429,26 @@ namespace Fusee.Examples.UI.Core
             if (Input.Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
-                _angleVelVert = RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * Input.Mouse.YVel * Time.DeltaTimeUpdate * 0.0005f;
             }
             else if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Input.Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
-                _angleVelVert = RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * touchVel.x * Time.DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * Time.DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
-                    _angleVelVert = RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
+                    _angleVelHorz = RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTimeUpdate;
                 }
                 else
                 {
-                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTimeUpdate);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -460,7 +457,14 @@ namespace Fusee.Examples.UI.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            _camPivot.RotationMatrix = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            _camPivot.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
+        }
+
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
+            _fpsText.Text = "FPS: " + Time.FramesPerSecond.ToString("0.00");
+
             _sceneRenderer.Render(RC);
 
             // Constantly check for interactive objects.

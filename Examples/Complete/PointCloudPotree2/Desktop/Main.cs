@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Fusee.Examples.PointCloudPotree2.Desktop
 {
-    public class PcRendering
+    public class PointCloudPotree2
     {
         public static void Main()
         {

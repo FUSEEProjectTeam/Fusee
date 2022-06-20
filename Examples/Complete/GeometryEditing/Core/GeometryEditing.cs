@@ -60,13 +60,14 @@ namespace Fusee.Examples.GeometryEditing.Core
         };
         private Transform _camTransform;
 
+        private bool _isPickRequested;
+
         // Init is called on startup.
         public override void Init()
         {
-            var gui = CreateUi();//FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
+            var gui = CreateUi();
             _uiRenderer = new SceneRendererForward(gui);
 
-            ////////////////// Fill SceneNodeContainer ////////////////////////////////
             var checkerboardTex = new Texture(AssetStorage.Get<ImageData>("checkerboard.jpg"), true, TextureFilterMode.LinearMipmapLinear);
             _parentNode = new SceneNode
             {
@@ -121,17 +122,38 @@ namespace Fusee.Examples.GeometryEditing.Core
             _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
-            //////////////////////////////////////////////////////////////////////////
-
             _activeGeometrys = new Dictionary<int, Geometry>();
+        }
+
+        public override void Update()
+        {
+            HandleCameraAndPicking();
+            InteractionHandler();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
             _renderer.Render(RC);
-            HandleCameraAndPicking();
-            InteractionHandler();
+
+            //NOTE: Needs to be done after rendering the scene because the Projection, View, Model [...] matrices aren't up to date before this and therefore picking would fail.
+            if (_isPickRequested)
+            {
+                float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
+
+                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+
+                if (newPick?.Node != _currentPick?.Node)
+                {
+                    if (newPick != null)
+                    {
+                        SelectGeometry(newPick.Node);
+                    }
+                    _currentPick = newPick;
+                }
+                _isPickRequested = false;
+            }
+
             _uiRenderer.Render(RC);
             Present();
         }
@@ -176,7 +198,7 @@ namespace Fusee.Examples.GeometryEditing.Core
                 Geometry geometry = CreatePrimitiveGeometry.CreateSphereGeometry(1, 30, 15);
                 AddGeometryToSceneNode(geometry, new float3(0, 0.5f, 0));
             }
-            _keyTimeout -= DeltaTime;
+            _keyTimeout -= DeltaTimeUpdate;
 
             //following actions are only allowed if something is selected
             if (_selectedNode == null)
@@ -315,7 +337,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
         private void HandleCameraAndPicking()
         {
-            float curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+            float curDamp = (float)System.Math.Exp(-Damping * DeltaTimeUpdate);
 
             //Camera Rotation
             if (Mouse.MiddleButton && !Keyboard.GetKey(KeyCodes.LShift))
@@ -377,19 +399,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Mouse.RightButton)
             {
                 _pickPos = Mouse.Position;
-                Diagnostics.Debug(_pickPos);
-                float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-
-                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
-
-                if (newPick?.Node != _currentPick?.Node)
-                {
-                    if (newPick != null)
-                    {
-                        SelectGeometry(newPick.Node);
-                    }
-                    _currentPick = newPick;
-                }
+                _isPickRequested = true;
             }
         }
 
@@ -501,6 +511,5 @@ namespace Fusee.Examples.GeometryEditing.Core
                 }
             };
         }
-
     }
 }

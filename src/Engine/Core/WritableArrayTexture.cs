@@ -102,6 +102,8 @@ namespace Fusee.Engine.Core
             private set;
         }
 
+        public ITextureHandle TextureHandle { get; internal set; }
+
         /// <summary>
         /// Creates a new instance of type "WritableArrayTexture".
         /// </summary>
