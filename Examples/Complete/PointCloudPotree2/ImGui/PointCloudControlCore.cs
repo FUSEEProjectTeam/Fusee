@@ -120,7 +120,9 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 };
 
                 _sceneRenderer = new SceneRendererForward(_scene);
-                _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule());
+                _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
+
+                _pointCloud.Camera = _cam;
 
                 IsInitialized = true;
             }

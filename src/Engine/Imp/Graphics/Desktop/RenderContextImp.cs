@@ -2604,6 +2604,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="height">Height of the scissor box.</param>
         public void Scissor(int x, int y, int width, int height)
         {
+            //Should be enabled per default - but WPF seems to disable it...
+            if(!GL.IsEnabled(EnableCap.ScissorTest))
+                GL.Enable(EnableCap.ScissorTest);
             GL.Scissor(x, y, width, height);
         }
 
