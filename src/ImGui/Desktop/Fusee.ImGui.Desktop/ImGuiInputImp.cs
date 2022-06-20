@@ -3,10 +3,8 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Desktop;
 using ImGuiNET;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 
 namespace Fusee.ImGuiDesktop
 {

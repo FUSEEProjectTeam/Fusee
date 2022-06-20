@@ -2,7 +2,6 @@
 using Fusee.Engine.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
-using TextureWrapMode = OpenTK.Graphics.OpenGL.TextureWrapMode;
 
 namespace Fusee.ImGuiDesktop.Templates
 {

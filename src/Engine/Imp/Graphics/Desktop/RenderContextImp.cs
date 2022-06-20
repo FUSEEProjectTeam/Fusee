@@ -2605,7 +2605,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void Scissor(int x, int y, int width, int height)
         {
             //Should be enabled per default - but WPF seems to disable it...
-            if(!GL.IsEnabled(EnableCap.ScissorTest))
+            if (!GL.IsEnabled(EnableCap.ScissorTest))
                 GL.Enable(EnableCap.ScissorTest);
             GL.Scissor(x, y, width, height);
         }
