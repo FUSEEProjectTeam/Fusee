@@ -61,6 +61,7 @@ namespace Fusee.Engine.Core
             b = Mesh.Vertices[Mesh.Triangles[Triangle + 1]];
             c = Mesh.Vertices[Mesh.Triangles[Triangle + 2]];
         }
+
         /// <summary>
         /// Returns the center of the picked triangle.
         /// </summary>
@@ -148,7 +149,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public float2 UV
         {
@@ -315,8 +316,8 @@ namespace Fusee.Engine.Core
                 var frustumCorners = new float4[4];
 
                 frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
-                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr 
-                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
+                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr
+                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl
                 frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr
 
                 for (var i = 0; i < frustumCorners.Length; i++)
@@ -499,7 +500,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
         /// It additionally updates the view matrix of the RenderContext.
-        /// </summary> 
+        /// </summary>
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void RenderTransform(Transform transform)
@@ -521,6 +522,7 @@ namespace Fusee.Engine.Core
                 mesh.MeshType != PrimitiveType.TriangleStrip)) return;
 
             var mvp = Projection * View * State.Model;
+
             for (var i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // a, b c: current triangle's vertices in clip coordinates
@@ -536,6 +538,7 @@ namespace Fusee.Engine.Core
                 // Point-in-Triangle-Test
                 if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out var u, out var v))
                 {
+
                     var pickPos = float3.Barycentric(a.xyz, b.xyz, c.xyz, u, v);
 
                     if (pickPos.z >= -1 && pickPos.z <= 1)

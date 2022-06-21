@@ -452,7 +452,6 @@ namespace Fusee.Engine.Core.ShaderShards
 
         #endregion
 
-
         /// <summary>
         /// The var name for the uniform ClippingPlanes variable.
         /// </summary>
@@ -479,6 +478,15 @@ namespace Fusee.Engine.Core.ShaderShards
         /// Hash code for the <see cref="BackgroundColor"/> parameter.
         /// </summary>
         public static int BackgroundColorHash = BackgroundColor.GetHashCode();
+
+        /// <summary>
+        /// The var name for the uniform ColorMode.
+        /// </summary>
+        public const string ColorMode = "ColorMode";
+        /// <summary>
+        /// Hash code for the <see cref="ColorMode"/> parameter.
+        /// </summary>
+        public static int ColorModeHash = ColorMode.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform ScreenParams (width and height of the window).
