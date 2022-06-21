@@ -38,12 +38,13 @@ namespace Fusee.Engine.Core.Scene
         /// Adds the elements of the specified collection to the <see cref="ObservableArray{T}"/>, replaces all elements
         /// </summary>
         /// <param name="collection">The collection whose elements should be assigned to the <see cref="ObservableArray{T}"/>
-        ///     The collection itself cannot be null, but it can contain elements that are null,
+        ///     The collection itself can be null, and it can contain elements that are null,
         ///     if type T is a reference type.
         /// </param>
         public void Assign(IEnumerable<T> collection)
         {
             Clear();
+            if (collection == null) return;
             foreach (var item in collection)
             {
                 Add(item);
