@@ -28,7 +28,7 @@ namespace Fusee.Engine.Core.Scene
         /// </param>
         public void AddRange(IEnumerable<T> collection)
         {
-            foreach(var item in collection)
+            foreach (var item in collection)
             {
                 Add(item);
             }
