@@ -23,11 +23,12 @@ namespace Fusee.Engine.Core.Scene
         /// Adds the elements of the specified collection to the end of the <see cref="ObservableArray{T}"/>
         /// </summary>
         /// <param name="collection">The collection whose elements should be added to the end of the <see cref="ObservableArray{T}"/>
-        ///     The collection itself cannot be null, but it can contain elements that are null,
-        ///     if type T is a reference type.
+        ///     The collection itself can be null, it can also contain elements that are null,
+        ///     if type T is a reference type. If the collection itself is null, nothing happens.
         /// </param>
         public void AddRange(IEnumerable<T> collection)
         {
+            if (collection == null) return;
             foreach (var item in collection)
             {
                 Add(item);
