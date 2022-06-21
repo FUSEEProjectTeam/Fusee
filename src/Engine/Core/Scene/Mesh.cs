@@ -50,6 +50,8 @@ namespace Fusee.Engine.Core.Scene
             }
         }
 
+
+
         /// <summary>
         /// Convert any observable array to an <see cref="Array"/> array.
         /// </summary>
@@ -57,21 +59,6 @@ namespace Fusee.Engine.Core.Scene
         public static implicit operator T[](ObservableArray<T> o)
         {
             return o.ToArray();
-        }
-
-        /// <summary>
-        /// Convert any given array implicit to an observable array
-        /// </summary>
-        /// <param name="input"></param>
-        public static implicit operator ObservableArray<T>(T[] input)
-        {
-            if (input == null) return new ObservableArray<T>();
-            var res = new ObservableArray<T>();
-            for (var i = 0; i < input.Length; i++)
-            {
-                res.Add(input[i]);
-            }
-            return res;
         }
     }
 
