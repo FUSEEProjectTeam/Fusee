@@ -17,7 +17,8 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Uniform)]
-        public ColorMode ColorMode {
+        public ColorMode ColorMode
+        {
             get { return _colorMode; }
             set
             {

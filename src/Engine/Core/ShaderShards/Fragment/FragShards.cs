@@ -13,9 +13,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         private static List<string> ColorModeSwitch() => new()
         {
-                "vec4 resColor;",
-                $"switch({UniformNameDeclarations.ColorMode})",
-@"{
+            "vec4 resColor;",
+            $"switch({UniformNameDeclarations.ColorMode})",
+            @"{
       case 0:
          resColor = IN.Albedo;
          break;
