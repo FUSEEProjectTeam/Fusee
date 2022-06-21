@@ -80,8 +80,7 @@ namespace Fusee.Engine.Core.Primitives
                 UVs[i] =
                     new float2(0.5f + ((float)System.Math.Atan2(Vertices[i].z, Vertices[i].x) / (2 * M.Pi)),
                         0.5f - ((float)System.Math.Asin(Vertices[i].y) / M.Pi));
-                UVs[i] = new float2(UVs[i].x, UVs[i].y * -1);
-
+                UVs[i].y *= -1;
             }
         }
     }
@@ -170,8 +169,7 @@ namespace Fusee.Engine.Core.Primitives
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
                 mesh.UVs[i] = new float2(0.5f + ((float)System.Math.Atan2(mesh.Vertices[i].z, mesh.Vertices[i].x) / (2 * M.Pi)), 0.5f - ((float)System.Math.Asin(mesh.Vertices[i].y) / M.Pi));
-                mesh.UVs[i] = new float2(UVs[i].x, UVs[i].y * -1);
-
+                mesh.UVs[i].y *= -1;
             }
 
             return mesh;
