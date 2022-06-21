@@ -46,7 +46,7 @@ namespace Fusee.Engine.Core.Primitives
             vertices[^1] = float3.UnitY * -radius;
             #endregion
 
-            #region Normals		
+            #region Normals
             var normals = new float3[vertices.Length];
             for (var n = 0; n < vertices.Length; n++)
             {
@@ -113,10 +113,10 @@ namespace Fusee.Engine.Core.Primitives
             }
             #endregion
 
-            Vertices = vertices;
-            Triangles = triangles;
-            Normals = normals;
-            UVs = uvs;
+            Vertices.Assign(vertices);
+            Triangles.Assign(triangles);
+            Normals.Assign(normals);
+            UVs.Assign(uvs);
 
         }
 

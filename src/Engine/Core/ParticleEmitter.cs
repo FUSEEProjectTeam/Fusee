@@ -40,12 +40,12 @@ namespace Fusee.Engine.Core
             varying vec3 vNormal;
             varying vec2 vUv;
             varying float vTransparency;
-        
+
             uniform mat4 FUSEE_MVP;
             uniform mat4 FUSEE_MV;
             uniform mat4 FUSEE_P;
             uniform mat4 FUSEE_ITMV;
-            
+
             uniform float timer;
             attribute vec4 position;
             varying vec2 texcoord;
@@ -53,14 +53,14 @@ namespace Fusee.Engine.Core
 
             void main()
             {
-     
+
                 vec4 vPos = FUSEE_MV * vec4(fuVertex, 1.0);//umwandlung in Kamerakoordinaten
-               
+
                 //Offset rotieren um fuNormal.x
                 vec2 offset = fuUV;
                 offset.x  = fuUV.x*cos(fuNormal.x) - fuUV.y*sin(fuNormal.x);
                 offset.y =  fuUV.y*cos(fuNormal.x) + fuUV.x*sin(fuNormal.x);
-                vPos = vPos + vec4(100.0*offset, 0, 1.0);   //Offset  aus Partikelzentrum in Partikel-Eckpunkt          
+                vPos = vPos + vec4(100.0*offset, 0, 1.0);   //Offset  aus Partikelzentrum in Partikel-Eckpunkt
                 gl_Position = FUSEE_P * vPos; //Perspektive-Projektion
                 vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
                 vNormal = vec3(0, 0, 1);
@@ -89,10 +89,10 @@ namespace Fusee.Engine.Core
             varying vec2 vUv;
 
             void main()
-            {    
-              // The most basic texturing function, expecting the above mentioned parameters  
+            {
+              // The most basic texturing function, expecting the above mentioned parameters
              vec4 AlphaColor = vec4(1.0, 1.0, 1.0, vTransparency);
-             gl_FragColor = texture2D(texture1, vUv)*AlphaColor;        
+             gl_FragColor = texture2D(texture1, vUv)*AlphaColor;
             }";
 
         #endregion
@@ -374,10 +374,10 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            ParticleMesh.Vertices = vertices;
-            ParticleMesh.Triangles = triangles;
-            ParticleMesh.Normals = normals;
-            ParticleMesh.UVs = uVs;
+            ParticleMesh.Vertices.Assign(vertices);
+            ParticleMesh.Triangles.Assign(triangles);
+            ParticleMesh.Normals.Assign(normals);
+            ParticleMesh.UVs.Assign(uVs);
 
             //Updates information
             for (var i = 0; i < _particleList.Count; i++)
@@ -403,7 +403,7 @@ namespace Fusee.Engine.Core
                     changeParticle.Life -= 1;
                 }
                 _particleList[i] = changeParticle;
-                //Death 
+                //Death
                 if (changeParticle.Life == 0 || changeParticle.Life <= 0)
                 {
                     _particleList.Remove(changeParticle);

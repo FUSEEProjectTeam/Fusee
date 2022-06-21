@@ -555,18 +555,19 @@ namespace Fusee.Engine.Core
             {
                 MeshType = (PrimitiveType)m.MeshType,
                 Active = true,
-                BiTangents = m.BiTangents,
-                BoneIndices = m.BoneIndices,
-                BoundingBox = m.BoundingBox,
-                BoneWeights = m.BoneWeights,
-                Colors = m.Colors,
                 Name = m.Name,
-                Normals = m.Normals,
-                Tangents = m.Tangents,
-                Triangles = m.Triangles,
-                UVs = m.UVs,
-                Vertices = m.Vertices
+                BoundingBox = m.BoundingBox
             };
+            mesh.BiTangents.Assign(m.BiTangents);
+            mesh.BoneIndices.Assign(m.BoneIndices);
+
+            mesh.BoneWeights.Assign(m.BoneWeights);
+            mesh.Colors.Assign(m.Colors);
+            mesh.Normals.Assign(m.Normals);
+            mesh.Tangents.Assign(m.Tangents);
+            mesh.Triangles.Assign(m.Triangles);
+            mesh.UVs.Assign(m.UVs);
+            mesh.Vertices.Assign(m.Vertices);
 
             if (_currentNode.Components == null)
             {

@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
                 tangents[m.Triangles[i + 2]].Normalize();
                 tangents[m.Triangles[i + 2]].w = 1;
             }
-            m.Tangents = tangents;
+            m.Tangents.Assign(tangents);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < m.Tangents.Length; i++)
                 bitangents[i] = float3.Cross(m.Normals[i], m.Tangents[i].xyz) * m.Tangents[i].w;
 
-            m.BiTangents = bitangents;
+            m.BiTangents.Assign(bitangents);
         }
     }
 }

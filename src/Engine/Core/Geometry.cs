@@ -309,7 +309,7 @@ namespace Fusee.Engine.Core
                     normals.Add(CalcFaceNormal(_faces[i]));
                 }
                 // Quick and dirty solution: if the smoothing angle holds for all combinations we create a shared normal,
-                // otherwise we create individual normals for each face. 
+                // otherwise we create individual normals for each face.
                 // TODO: Build groups of shared normals where faces are connected by edges (need edges to do this)
                 bool smoothit = true;
                 for (int i = 0; i < normals.Count; i++)
@@ -372,7 +372,7 @@ namespace Fusee.Engine.Core
             /// Returns a hash code for this instance.
             /// </summary>
             /// <returns>
-            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
             /// </returns>
             public override int GetHashCode()
             {
@@ -434,16 +434,15 @@ namespace Fusee.Engine.Core
                 mTris.AddRange(Triangulate(f, mFace));
             }
 
-            Mesh m = new()
-            {
-                Vertices = mVerts.ToArray()
-            };
-            if (HasNormals)
-                m.Normals = mNormals.ToArray();
-            if (HasTexCoords)
-                m.UVs = mTexCoords.ToArray();
+            Mesh m = new();
+            m.Vertices.Assign(mVerts);
 
-            m.Triangles = mTris.ToArray();
+            if (HasNormals)
+                m.Normals.Assign(mNormals);
+            if (HasTexCoords)
+                m.UVs.Assign(mTexCoords);
+
+            m.Triangles.Assign(mTris);
             return m;
         }
 

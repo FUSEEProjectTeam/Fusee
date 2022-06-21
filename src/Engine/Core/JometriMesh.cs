@@ -20,9 +20,9 @@ namespace Fusee.Engine.Core
         {
             ConvertToMesh(geometry, out var vertices, out var triangles, out var normals);
 
-            Vertices = vertices;
-            Triangles = triangles;
-            Normals = normals.ToArray();
+            Vertices.Assign(vertices);
+            Triangles.Assign(triangles);
+            Normals.Assign(normals);
         }
 
         //Geometry has to be triangulated! Translates a Jometri.Geometry into a Fusee.Mesh.

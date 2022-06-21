@@ -45,9 +45,9 @@ namespace Fusee.Engine.Core.Primitives
                 verts[i] = vert;
             }
 
-            Vertices = verts.ToArray();
+            Vertices.Assign(verts.ToArray());
 
-            Triangles = new ushort[]
+            Triangles.Assign(new ushort[]
             {
                 5, 11, 0,
                 1, 5, 0,
@@ -69,12 +69,12 @@ namespace Fusee.Engine.Core.Primitives
                 10, 2, 6,
                 7, 6, 8,
                 1, 8, 9
-            };
+            });
 
-            Normals = Array.Empty<float3>();
+            Normals.Assign(Array.Empty<float3>());
             NormalAndUvHelper.CreateVertexNormals(this);
 
-            UVs = new float2[Vertices.Length];
+            UVs.Assign(new float2[Vertices.Length]);
             for (var i = 0; i < Vertices.Length; i++)
             {
                 UVs[i] =
@@ -111,10 +111,10 @@ namespace Fusee.Engine.Core.Primitives
             _middlePointIndexCache = new Dictionary<long, int>();
             var sphere = CreateIcosphere(subdivLevel);
 
-            Vertices = sphere.Vertices;
-            Triangles = sphere.Triangles;
-            Normals = sphere.Normals;
-            UVs = sphere.UVs;
+            Vertices.Assign(sphere.Vertices);
+            Triangles.Assign(sphere.Triangles);
+            Normals.Assign(sphere.Normals);
+            UVs.Assign(sphere.UVs);
         }
 
         private Mesh CreateIcosphere(int recursionLevel)
@@ -158,13 +158,13 @@ namespace Fusee.Engine.Core.Primitives
                     tri = new List<ushort>();
 
                 }
-                mesh.Triangles = faces2.ToArray();
+                mesh.Triangles.Assign(faces2);
             }
 
-            mesh.Vertices = _sphereVertices.ToArray();
+            mesh.Vertices.Assign(_sphereVertices);
             NormalAndUvHelper.CreateVertexNormals(mesh);
 
-            mesh.UVs = new float2[mesh.Vertices.Length];
+            mesh.UVs.Assign(new float2[mesh.Vertices.Length]);
 
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
@@ -225,7 +225,7 @@ namespace Fusee.Engine.Core.Primitives
         /// <param name="mesh">The mesh for which to calculate the normals.</param>
         internal static void CreateVertexNormals(Mesh mesh)
         {
-            mesh.Normals = new float3[mesh.Vertices.Length];
+            mesh.Normals.Assign(new float3[mesh.Vertices.Length]);
 
             var triVerts = new List<float3>();
             var triIndeices = new List<ushort>();

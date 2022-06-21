@@ -781,8 +781,8 @@ namespace Fusee.Engine.Core
                 boneWeights[iVert].Normalize1();
             }
 
-            mesh.BoneIndices = boneIndices;
-            mesh.BoneWeights = boneWeights;
+            mesh.BoneIndices.Assign(boneIndices);
+            mesh.BoneWeights.Assign(boneWeights);
         }
         #endregion
 

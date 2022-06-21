@@ -5,6 +5,73 @@ using System;
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
+    /// Drop in class for previously used arrays as properties
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class ObservableArray<T> : ObservableCollection<T>
+    {
+        /// <summary>
+        /// Get's the number of elements inside the collection
+        /// </summary>
+        public int Length => Count;
+
+        /// <summary>
+        /// Adds the elements of the specified collection to the end of the <see cref="ObservableArray{T}"/>
+        /// </summary>
+        /// <param name="collection">The collection whose elements should be added to the end of the <see cref="ObservableArray{T}"/>
+        ///     The collection itself cannot be null, but it can contain elements that are null,
+        ///     if type T is a reference type.
+        /// </param>
+        public void AddRange(IEnumerable<T> collection)
+        {
+            foreach(var item in collection)
+            {
+                Add(item);
+            }
+        }
+
+        /// <summary>
+        /// Adds the elements of the specified collection to the <see cref="ObservableArray{T}"/>, replaces all elements
+        /// </summary>
+        /// <param name="collection">The collection whose elements should be assigned to the <see cref="ObservableArray{T}"/>
+        ///     The collection itself cannot be null, but it can contain elements that are null,
+        ///     if type T is a reference type.
+        /// </param>
+        public void Assign(IEnumerable<T> collection)
+        {
+            Clear();
+            foreach (var item in collection)
+            {
+                Add(item);
+            }
+        }
+
+        /// <summary>
+        /// Convert any observable array to an <see cref="Array"/> array.
+        /// </summary>
+        /// <param name="o"></param>
+        public static implicit operator T[](ObservableArray<T> o)
+        {
+            return o.ToArray();
+        }
+
+        /// <summary>
+        /// Convert any given array implicit to an observable array
+        /// </summary>
+        /// <param name="input"></param>
+        public static implicit operator ObservableArray<T>(T[] input)
+        {
+            if (input == null) return new ObservableArray<T>();
+            var res = new ObservableArray<T>();
+            for (var i = 0; i < input.Length; i++)
+            {
+                res.Add(input[i]);
+            }
+            return res;
+        }
+    }
+
+    /// <summary>
     /// Provides the ability to create or interact directly with the point data.
     /// </summary>
     public class Mesh : SceneComponent, IManagedMesh, IDisposable
@@ -53,15 +120,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The vertices.
         /// </value>
-        public float3[] Vertices
-        {
-            get => _vertices;
-            set
-            {
-                _vertices = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertices));
-            }
-        }
+        public readonly ObservableArray<float3> Vertices = new();
 
         /// <summary>
         /// Gets a value indicating whether vertices are set.
@@ -94,15 +153,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The color.
         /// </value>
-        public uint[] Colors
-        {
-            get => _colors;
-            set
-            {
-                _colors = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors));
-            }
-        }
+        public readonly ObservableArray<uint> Colors = new();
 
         /// <summary>
         /// Gets a value indicating whether a color is set.
@@ -118,15 +169,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The color.
         /// </value>
-        public uint[] Colors1
-        {
-            get => _colors1;
-            set
-            {
-                _colors1 = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors1));
-            }
-        }
+        public readonly ObservableArray<uint> Colors1 = new();
 
         /// <summary>
         /// Gets a value indicating whether a color is set.
@@ -142,15 +185,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The color.
         /// </value>
-        public uint[] Colors2
-        {
-            get => _colors2;
-            set
-            {
-                _colors2 = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors2));
-            }
-        }
+        public readonly ObservableArray<uint> Colors2 = new();
 
         /// <summary>
         /// Gets a value indicating whether a color is set.
@@ -167,15 +202,8 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The normals..
         /// </value>
-        public float3[] Normals
-        {
-            get => _normals;
-            set
-            {
-                _normals = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Normals));
-            }
-        }
+        public readonly ObservableArray<float3> Normals = new();
+
         /// <summary>
         /// Gets a value indicating whether normals are set.
         /// </summary>
@@ -190,15 +218,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The UV-coordinates.
         /// </value>
-        public float2[] UVs
-        {
-            get => _uvs;
-            set
-            {
-                _uvs = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Uvs));
-            }
-        }
+        public readonly ObservableArray<float2> UVs = new();
 
         /// <summary>
         /// Gets a value indicating whether UVs are set.
@@ -214,15 +234,8 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The bone weights.
         /// </value>
-        public float4[] BoneWeights
-        {
-            get => _boneWeights;
-            set
-            {
-                _boneWeights = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneWeights));
-            }
-        }
+        public readonly ObservableArray<float4> BoneWeights = new();
+
         /// <summary>
         /// Gets a value indicating whether bone weights are set.
         /// </summary>
@@ -237,15 +250,8 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The bone indices.
         /// </value>
-        public float4[] BoneIndices
-        {
-            get => _boneIndices;
-            set
-            {
-                _boneIndices = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneIndices));
-            }
-        }
+        public readonly ObservableArray<float4> BoneIndices = new();
+
         /// <summary>
         /// Gets a value indicating whether bone indices are set.
         /// </summary>
@@ -260,12 +266,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The triangles.
         /// </value>
-        public ushort[] Triangles
-        {
-            get => _triangles;
-            set
-            {
-                _triangles = value;
+        public readonly ObservableArray<ushort> Triangles = new();
 
                 MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Triangles));
             }
@@ -288,12 +289,7 @@ namespace Fusee.Engine.Core.Scene
         /// The tangent of each triangle for normal mapping.
         /// w-component is handedness
         /// </summary>
-        public float4[] Tangents
-        {
-            get => _tangents;
-            set
-            {
-                _tangents = value;
+        public readonly ObservableArray<float4> Tangents = new();
 
                 MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Tangents));
             }
@@ -302,7 +298,12 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The bi tangent of each triangle for normal mapping.
         /// </summary>
-        public float3[] BiTangents
+        public readonly ObservableArray<float3> BiTangents = new();
+
+        /// <summary>
+        /// This is being called from the mesh manager to wire up all changes
+        /// </summary>
+        internal void InitMesh()
         {
             get => _biTangents;
             set

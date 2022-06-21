@@ -279,12 +279,11 @@ namespace Fusee.Examples.GeometryEditing.Core
                 currentSelectedGeometry.Triangulate();
 
                 JometriMesh geometryMesh = new(currentSelectedGeometry);
-                Mesh meshComponent = new()
-                {
-                    Vertices = geometryMesh.Vertices,
-                    Triangles = geometryMesh.Triangles,
-                    Normals = geometryMesh.Normals,
-                };
+                Mesh meshComponent = new();
+                meshComponent.Vertices.Assign(geometryMesh.Vertices);
+                meshComponent.Triangles.Assign(geometryMesh.Triangles);
+                meshComponent.Normals.Assign(geometryMesh.Normals);
+
                 currentSelection.Components[2] = meshComponent;
             }
 
@@ -302,12 +301,11 @@ namespace Fusee.Examples.GeometryEditing.Core
                 currentSelectedGeometry.Triangulate();
 
                 JometriMesh geometryMesh = new(currentSelectedGeometry);
-                Mesh meshComponent = new()
-                {
-                    Vertices = geometryMesh.Vertices,
-                    Triangles = geometryMesh.Triangles,
-                    Normals = geometryMesh.Normals,
-                };
+                Mesh meshComponent = new();
+                meshComponent.Vertices.Assign(geometryMesh.Vertices);
+                meshComponent.Triangles.Assign(geometryMesh.Triangles);
+                meshComponent.Normals.Assign(geometryMesh.Normals);
+
                 currentSelection.Components[2] = meshComponent;
             }
 
@@ -325,12 +323,10 @@ namespace Fusee.Examples.GeometryEditing.Core
                 currentSelectedGeometry.Triangulate();
 
                 JometriMesh geometryMesh = new(currentSelectedGeometry);
-                Mesh meshComponent = new()
-                {
-                    Vertices = geometryMesh.Vertices,
-                    Triangles = geometryMesh.Triangles,
-                    Normals = geometryMesh.Normals,
-                };
+                Mesh meshComponent = new();
+                meshComponent.Vertices.Assign(geometryMesh.Vertices);
+                meshComponent.Triangles.Assign(geometryMesh.Triangles);
+                meshComponent.Normals.Assign(geometryMesh.Normals);
                 currentSelection.Components[2] = meshComponent;
             }
         }
@@ -411,12 +407,12 @@ namespace Fusee.Examples.GeometryEditing.Core
 
             SceneNode sceneNodeContainer = new() { Components = new List<SceneComponent>() };
 
-            Mesh meshComponent = new()
-            {
-                Vertices = geometryMesh.Vertices,
-                Triangles = geometryMesh.Triangles,
-                Normals = geometryMesh.Normals,
-            };
+            Mesh meshComponent = new();
+
+            geometryMesh.Vertices.Assign(geometryMesh.Vertices);
+            geometryMesh.Triangles.Assign(geometryMesh.Triangles);
+            geometryMesh.Normals.Assign(geometryMesh.Normals);
+
             Transform translationComponent = new()
             {
                 Rotation = float3.Zero,

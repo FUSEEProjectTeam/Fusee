@@ -75,37 +75,48 @@ namespace Fusee.Engine.Core
             switch (meshDataEventArgs.ChangedEnum)
             {
                 case MeshChangedEnum.Vertices:
+                    if (mesh.Vertices == null || mesh.Vertices.Count == 0) return;
                     _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
                     mesh.BoundingBox = new AABBf(mesh.Vertices);
                     break;
                 case MeshChangedEnum.Triangles:
+                    if (mesh.Triangles == null || mesh.Triangles.Count == 0) return;
                     _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);
                     break;
                 case MeshChangedEnum.Colors:
+                    if (mesh.Colors == null || mesh.Colors.Count == 0) return;
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors);
                     break;
                 case MeshChangedEnum.Colors1:
+                    if (mesh.Colors1 == null || mesh.Colors1.Count == 0) return;
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors1);
                     break;
                 case MeshChangedEnum.Colors2:
+                    if (mesh.Colors2 == null || mesh.Colors2.Count == 0) return;
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors2);
                     break;
                 case MeshChangedEnum.Normals:
+                    if (mesh.Normals == null || mesh.Normals.Count == 0) return;
                     _renderContextImp.SetNormals(toBeUpdatedMeshImp, mesh.Normals);
                     break;
                 case MeshChangedEnum.Uvs:
+                    if (mesh.UVs == null || mesh.UVs.Count == 0) return;
                     _renderContextImp.SetUVs(toBeUpdatedMeshImp, mesh.UVs);
                     break;
                 case MeshChangedEnum.BoneIndices:
+                    if (mesh.BoneIndices == null || mesh.BoneIndices.Count == 0) return;
                     _renderContextImp.SetBoneIndices(toBeUpdatedMeshImp, mesh.BoneIndices);
                     break;
                 case MeshChangedEnum.BoneWeights:
+                    if (mesh.BoneWeights == null || mesh.BoneWeights.Count == 0) return;
                     _renderContextImp.SetBoneWeights(toBeUpdatedMeshImp, mesh.BoneWeights);
                     break;
                 case MeshChangedEnum.Tangents:
+                    if (mesh.Tangents == null || mesh.Tangents.Count == 0) return;
                     _renderContextImp.SetTangents(toBeUpdatedMeshImp, mesh.Tangents);
                     break;
                 case MeshChangedEnum.BiTangents:
+                    if (mesh.BiTangents == null || mesh.BiTangents.Count == 0) return;
                     _renderContextImp.SetBiTangents(toBeUpdatedMeshImp, mesh.BiTangents);
                     break;
             }
