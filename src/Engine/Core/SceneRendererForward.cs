@@ -317,7 +317,6 @@ namespace Fusee.Engine.Core
             {
                 var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Camera.Layer);
 
-                //Clear for all cameras
                 foreach (var cam in cams)
                 {
                     if (cam.Camera.Active)
@@ -329,6 +328,7 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Camera.Active)
                     {
+                        PerCamClear(cam);
                         NotifyCameraChanges(cam.Camera);
                         DoFrumstumCulling = cam.Camera.FrustumCullingOn;
                         PerCamRender(cam);
@@ -357,6 +357,7 @@ namespace Fusee.Engine.Core
                 : cam.Camera.GetViewportInPx(_rc.GetWindowWidth(), _rc.GetWindowHeight());
 
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+            _rc.SetRenderTarget(tex);
 
             _rc.ClearColor = cam.Camera.BackgroundColor;
             if (cam.Camera.ClearColor)
@@ -371,18 +372,13 @@ namespace Fusee.Engine.Core
             RenderLayer = cam.Camera.RenderLayer;
             _rc.View = cam.View;
 
-            float4 viewport;
             var tex = cam.Camera.RenderTexture;
-            if (tex != null)
-            {
-                _rc.SetRenderTarget(cam.Camera.RenderTexture);
-                _rc.Projection = cam.Camera.GetProjectionMat(tex.Width, tex.Height, out viewport);
-            }
-            else
-            {
-                _rc.SetRenderTarget();
-                _rc.Projection = cam.Camera.GetProjectionMat(_rc.GetWindowWidth(), _rc.GetWindowHeight(), out viewport);
-            }
+
+            _rc.SetRenderTarget(tex);
+
+            _rc.Projection = tex != null
+                ? cam.Camera.GetProjectionMat(cam.Camera.RenderTexture.Width, cam.Camera.RenderTexture.Height, out float4 viewport)
+                : cam.Camera.GetProjectionMat(_rc.GetWindowWidth(), _rc.GetWindowHeight(), out viewport);
 
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
@@ -727,7 +723,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a Mesh is visited the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
+        /// If a Mesh is visited the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.
         /// </summary>
         /// <param name="mesh">The Mesh.</param>
         [VisitMethod]

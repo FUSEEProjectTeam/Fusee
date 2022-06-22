@@ -160,7 +160,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public bool Focused => _gameWindow.IsFocused;
 
-        // Some tryptichon related Fields.
+        #region Tryptichon related Fields.
 
         /// <summary>
         /// Activates (true) or deactivates (false) the video wall feature.
@@ -188,6 +188,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             get => _videoWallMonitorsHor;
             set => _videoWallMonitorsHor = value;
         }
+
+        #endregion
 
         internal RenderCanvasGameWindow _gameWindow;
 
@@ -243,8 +245,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // convert icon to OpenTKImage
             if (icon != null)
             {
-                // convert Bgra to Rgba for OpenTK.WindowIcon
-
                 var res = new Span<Rgba32>(new Rgba32[width * height]);
                 var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(icon.PixelData, icon.Width, icon.Height);
                 pxData.Mutate(x => x.AutoOrient());
@@ -281,6 +281,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
 
             _gameWindow.IsVisible = false;
+
             if (_gameWindow.IsMultiThreaded)
                 _gameWindow.Context.MakeNoneCurrent();
         }

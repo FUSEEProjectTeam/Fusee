@@ -37,6 +37,8 @@ namespace Fusee.Examples.Deferred.Core
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
+        private bool _renderDeferred = true;
+
         private async Task Load()
         {
             VSync = false;
@@ -165,8 +167,6 @@ namespace Fusee.Examples.Deferred.Core
             await base.InitAsync();
         }
 
-        private bool _renderDeferred = true;
-
         public override void Update()
         {
             // Mouse and keyboard movement
@@ -192,8 +192,8 @@ namespace Fusee.Examples.Deferred.Core
             {
                 if (_keys)
                 {
-                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
             }
 
@@ -202,7 +202,7 @@ namespace Fusee.Examples.Deferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 200);
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 200);
 
             if (Keyboard.IsKeyDown(KeyCodes.F))
                 _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
@@ -243,8 +243,6 @@ namespace Fusee.Examples.Deferred.Core
             }
 
             _campComp.BackgroundColor = _backgroundColor;
-
-
 
             if (_renderDeferred)
                 _sceneRendererDeferred.Render(RC);

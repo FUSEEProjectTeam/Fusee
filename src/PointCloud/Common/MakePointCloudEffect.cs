@@ -81,7 +81,7 @@ namespace Fusee.PointCloud.Common
             var fx = new SurfaceEffectPointCloud
             {
                 PointSize = size,
-                ColorMode = (int)colorMode,
+                PointCloudColorMode = (int)colorMode,
                 PointShape = (int)shape,
                 DepthTex = null,
                 EDLStrength = edlStrength,
@@ -107,7 +107,7 @@ namespace Fusee.PointCloud.Common
             var fx = new SurfaceEffectPointCloud(null, true)
             {
                 PointSize = size,
-                ColorMode = (int)colorMode,
+                PointCloudColorMode = (int)colorMode,
                 PointShape = (int)shape,
                 DepthTex = null,
                 EDLStrength = edlStrength,

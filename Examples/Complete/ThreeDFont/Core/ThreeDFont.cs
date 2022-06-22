@@ -197,8 +197,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             _renderer = new SceneRendererForward(sc);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
             float2 speed = float2.Zero;
             if (Mouse.LeftButton)
@@ -209,8 +208,12 @@ namespace Fusee.Examples.ThreeDFont.Core
             _alpha += speed.x * 0.0001f;
             _beta += speed.y * 0.0001f;
 
-            _camPivot.RotationMatrix = float4x4.CreateRotationY(_alpha) * float4x4.CreateRotationX(_beta);
+            _camPivot.RotationQuaternion = QuaternionF.FromEuler(_beta, _alpha, 0);
+        }
 
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
             _renderer.Render(RC);
 
             Present();

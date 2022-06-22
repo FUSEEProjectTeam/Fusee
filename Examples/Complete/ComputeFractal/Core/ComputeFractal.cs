@@ -123,6 +123,7 @@ namespace Fusee.Examples.ComputeFractal.Core
             }
             Present();
         }
+
         private void MoveFractal()
         {
             // in this method we simply change size and position of the view rect in fractal dimension, but it is always projected to the texture
@@ -157,6 +158,7 @@ namespace Fusee.Examples.ComputeFractal.Core
                 _rect.SetData(_rectData);
             }
         }
+
         private float Sawtooth(float i, float m)
         {
             return m - System.Math.Abs(i % (2 * m) - m);

@@ -31,7 +31,7 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Used to flag which shader type a <see cref="ShaderEffect"/> property belongs to. 
+    /// Used to flag which shader type a <see cref="ShaderEffect"/> property belongs to.
     /// Supports vertex, pixel and geometry shaders.
     /// </summary>
     [Flags]

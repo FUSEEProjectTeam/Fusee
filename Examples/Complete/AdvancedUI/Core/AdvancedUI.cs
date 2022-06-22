@@ -12,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using static Fusee.Engine.Core.Input;
+using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -165,40 +167,39 @@ namespace Fusee.Examples.AdvancedUI.Core
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
-            #region Controls
+            _mainCamPivot.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
 
             // Mouse and keyboard movement
-            if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
+            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
             }
 
-            if (Input.Mouse.LeftButton)
+            if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
-                _angleVelVert = RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
-            else if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
-                float2 touchVel = Input.Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
-                _angleVelVert = RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
+                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
+                _angleVelHorz = RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
-                    _angleVelVert = RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
                 else
                 {
-                    float curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTimeUpdate);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -206,11 +207,11 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
+        }
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            _mainCamPivot.RotationMatrix = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            #endregion Controls
-
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
             _sceneRenderer.Render(RC);
 
             //Annotations will be updated according to circle positions.
@@ -331,16 +332,16 @@ namespace Fusee.Examples.AdvancedUI.Core
                 }
             }
 
-            // Constantly check for interactive objects.
             _guiRenderer.Render(RC);
-            if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
 
-            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
+            // Constantly check for interactive objects.
+            if (!Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
 
             Present();
         }
@@ -590,7 +591,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 List<KeyValuePair<int, float2>> orderedBy = intersectedAnnotations.OrderBy(item => item.Value.y).ToList();
 
                 intersectedAnnotations = new Dictionary<int, float2>();
-                foreach (KeyValuePair<int, float2> keyValue in orderedBy) //JSIL not implemented exception: ToDictionary
+                foreach (KeyValuePair<int, float2> keyValue in orderedBy)
                 {
                     intersectedAnnotations.Add(keyValue.Key, keyValue.Value);
                 }

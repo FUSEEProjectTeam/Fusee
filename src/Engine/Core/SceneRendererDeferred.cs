@@ -225,6 +225,8 @@ namespace Fusee.Engine.Core
                 else
                     _rc.SetEffect(_shadowCubeMapEffect);
             }
+
+            var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, _currentPass == RenderPasses.Shadow);
         }
 
@@ -456,20 +458,11 @@ namespace Fusee.Engine.Core
             {
                 var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Camera.Layer);
 
-                //Clear for all cameras
                 foreach (var cam in cams)
                 {
                     if (cam.Camera.Active)
                     {
                         PerCamClear(cam);
-                    }
-                }
-
-                //Render for all cameras
-                foreach (var cam in cams)
-                {
-                    if (cam.Camera.Active)
-                    {
                         NotifyCameraChanges(cam.Camera);
                         DoFrumstumCulling = cam.Camera.FrustumCullingOn;
                         PerCamRender(cam, cam.Camera.RenderTexture);
@@ -572,13 +565,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         private void RenderLightPasses(IWritableTexture renderTex = null)
         {
-            if (renderTex != null)
-                _rc.SetRenderTarget(renderTex);
-            else
-            {
-                _rc.SetRenderTarget();
-                _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
-            }
+            _rc.SetRenderTarget(renderTex);
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             var lightPassCnt = 0;
 
@@ -742,7 +730,7 @@ namespace Fusee.Engine.Core
                             _rc.SetEffect(_shadowCubeMapEffect);
 
                             _rc.SetRenderTarget((IWritableCubeMap)shadowParams.ShadowMap);
-
+                            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
                             //No culling here because much of the work is done in the geometry shader.
 
                             Traverse(_sc.Children);
@@ -756,6 +744,7 @@ namespace Fusee.Engine.Core
                                 _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                                 _rc.SetEffect(_shadowEffect);
                                 _rc.SetRenderTarget(shadowParams.ShadowMap);
+                                _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
                                 _lightFrustum = shadowParams.Frustums[0];
 
@@ -768,6 +757,7 @@ namespace Fusee.Engine.Core
                                     _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[i]);
                                     _rc.SetEffect(_shadowEffect);
                                     _rc.SetRenderTarget((IWritableArrayTexture)shadowParams.ShadowMap, i);
+                                    _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
                                     _lightFrustum = shadowParams.Frustums[i];
 
@@ -786,6 +776,7 @@ namespace Fusee.Engine.Core
                             _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                             _rc.SetEffect(_shadowEffect);
                             _rc.SetRenderTarget(shadowParams.ShadowMap);
+                            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
                             _lightFrustum = shadowParams.Frustums[0];
                             Traverse(_sc.Children);
@@ -804,6 +795,7 @@ namespace Fusee.Engine.Core
         {
             _currentPass = RenderPasses.Geometry;
             _rc.SetRenderTarget(_gBufferRenderTarget);
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
             Traverse(_sc.Children);
         }
 
@@ -818,6 +810,7 @@ namespace Fusee.Engine.Core
             }
             _rc.SetEffect(_ssaoTexEffect);
             _rc.SetRenderTarget(_ssaoRenderTexture);
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
             _rc.Render(_quad);
 
             //Pass 3: Blur SSAO Texture
@@ -829,6 +822,7 @@ namespace Fusee.Engine.Core
             }
             _rc.SetEffect(_blurEffect);
             _rc.SetRenderTarget(_blurRenderTex);
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
             _rc.Render(_quad);
 
             //Set blurred SSAO Texture as SSAO Texture in gBuffer
@@ -849,7 +843,7 @@ namespace Fusee.Engine.Core
                 _rc.SetRenderTarget();
             else
                 _rc.SetRenderTarget(renderTex);
-
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
             _rc.Render(_quad);
         }
 

@@ -659,6 +659,15 @@ namespace Fusee.Engine.Core.Effects
         public static readonly int BackgroundColorHash = BackgroundColor.GetHashCode();
 
         /// <summary>
+        /// The var name for the uniform ColorMode.
+        /// </summary>
+        public const string ColorMode = "ColorMode";
+        /// <summary>
+        /// Hash code for the <see cref="ColorMode"/> parameter.
+        /// </summary>
+        public static int ColorModeHash = ColorMode.GetHashCode();
+
+        /// <summary>
         /// Hash code for the <see cref="ViewportPx"/> parameter.
         /// </summary>
         public static readonly int ViewportPxHash = ViewportPx.GetHashCode();

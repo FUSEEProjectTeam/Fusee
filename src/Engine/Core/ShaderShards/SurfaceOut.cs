@@ -48,6 +48,29 @@ namespace Fusee.Engine.Core.ShaderShards
     }
 
     /// <summary>
+    /// Used to specify which color is used for lighting calculation.
+    /// /// </summary>
+    public enum ColorMode
+    {
+        /// <summary>
+        /// Use basic Albedo color (from uniform)
+        /// </summary>
+        BaseColor = 0,
+        /// <summary>
+        /// Use <see cref="VaryingNameDeclarations.Color"/>
+        /// </summary>
+        VertexColor0,
+        /// <summary>
+        /// Use <see cref="VaryingNameDeclarations.Color1"/>
+        /// </summary>
+        VertexColor1,
+        /// <summary>
+        /// Use <see cref="VaryingNameDeclarations.Color2"/>
+        /// </summary>
+        VertexColor2
+    }
+
+    /// <summary>
     /// Used to create the correct Surface Effect for a given lighting calculation.
     /// </summary>
     public enum ShadingModel

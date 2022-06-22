@@ -226,7 +226,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RayCasterState"/> is updated.
-        /// </summary> 
+        /// </summary>
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void RenderTransform(Transform transform)

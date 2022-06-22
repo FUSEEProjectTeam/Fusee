@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Imp.Blazor;
 using Fusee.Engine.Imp.SharedAll;
@@ -316,6 +317,21 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableTexture img)
+        {
+            if (img is not WritableTexture wt)
+            {
+                throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
+            }
+
+            return CreateTexture(wt);
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(WritableTexture img)
         {
             WebGLTexture id = gl2.CreateTexture();
             gl2.BindTexture(TEXTURE_2D, id);
@@ -2230,6 +2246,21 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle)
         {
+            if (tex is not WritableTexture wt)
+            {
+                throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
+            }
+
+            SetRenderTarget(wt, texHandle);
+        }
+
+        /// <summary>
+        /// Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        public void SetRenderTarget(WritableTexture tex, ITextureHandle texHandle)
+        {
             if (((TextureHandle)texHandle).FrameBufferHandle == null)
             {
                 WebGLFramebuffer fBuffer = gl2.CreateFramebuffer();
@@ -2351,8 +2382,59 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 throw new Exception($"Error creating frame buffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
                     $"DepthBuffer set? {renderTarget.DepthBufferHandle != null}");
             }
+        }
 
-            gl2.Clear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT);
+        /// <summary>
+        /// Sets an <see cref="IWritableArrayTexture"/> as render target
+        /// Not supported in WebGL2 ?
+        /// </summary>
+        /// <param name="tex"></param>
+        /// <param name="layer"></param>
+        /// <param name="texHandle"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
+        {
+            if (((TextureHandle)texHandle).FrameBufferHandle == null)
+            {
+                var fBuffer = gl2.CreateFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
+
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
+                {
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, COLOR_ATTACHMENT0, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
+                }
+                else
+                {
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    gl2.DrawBuffers(new uint[] { NONE });
+                    gl2.ReadBuffer(NONE);
+                }
+            }
+            else
+            {
+                gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
+                gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
+            }
+
+            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
+                throw new Exception($"Error creating RenderTarget IWritableArrayTexture: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
+        }
+
+        /// <summary>
+        /// Takes a <see cref="WritableMultisampleTexture"/> and blits the result of all samples into an
+        /// existing <see cref="WritableTexture"/> for further use (e. g. bind and use as Albedo texture)
+        /// </summary>
+        /// <param name="input">WritableMultisampleTexture</param>
+        /// <param name="output">WritableTexture</param>
+        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
+        {
+            throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
         }
 
         private WebGLRenderbuffer CreateDepthRenderBuffer(int width, int height)
@@ -2498,6 +2580,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 HardwareCapability.CanRenderDeferred => 1U,
                 HardwareCapability.CanUseGeometryShaders => 0U,
+                HardwareCapability.MaxSamples => 0U, // not supported
                 _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null),
             };
         }
@@ -2684,49 +2767,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         #endregion
 
-        /// <summary>
-        /// Sets an <see cref="IWritableArrayTexture"/> as render target
-        /// Not supported in WebGL2 ?
-        /// </summary>
-        /// <param name="tex"></param>
-        /// <param name="layer"></param>
-        /// <param name="texHandle"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
-        {
-            if (((TextureHandle)texHandle).FrameBufferHandle == null)
-            {
-                var fBuffer = gl2.CreateFramebuffer();
-                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
-                gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
-
-                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
-
-                if (tex.TextureType != RenderTargetTextureTypes.Depth)
-                {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height);
-                    gl2.FramebufferTextureLayer(FRAMEBUFFER, COLOR_ATTACHMENT0, ((TextureHandle)texHandle).TexHandle, 0, layer);
-                    gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
-                }
-                else
-                {
-                    gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
-                    gl2.DrawBuffers(new uint[] { NONE });
-                    gl2.ReadBuffer(NONE);
-                }
-            }
-            else
-            {
-                gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
-                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
-                gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
-            }
-
-            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
-                throw new Exception($"Error creating RenderTarget IWritableArrayTexture: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
-
-            gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
-        }
 
         /// <summary>
         /// Creates a compute shader program.

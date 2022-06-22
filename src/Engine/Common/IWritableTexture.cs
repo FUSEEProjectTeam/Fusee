@@ -34,10 +34,14 @@ namespace Fusee.Engine.Common
         /// </summary>
         TextureCompareMode CompareMode { get; }
 
-
         /// <summary>
         /// Specifies the texture's comparison function.
         /// </summary>
         Compare CompareFunc { get; }
+
+        /// <summary>
+        /// Raw TextureHandle after GPU texture creation
+        /// </summary>
+        ITextureHandle TextureHandle { get; }
     }
 }

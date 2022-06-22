@@ -66,13 +66,13 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Uniform)]
-        public int ColorMode
+        public int PointCloudColorMode
         {
             get { return _colorMode; }
             set
             {
                 _colorMode = value;
-                SetFxParam(nameof(ColorMode), _colorMode);
+                SetFxParam(nameof(PointCloudColorMode), _colorMode);
             }
         }
         private int _colorMode;
