@@ -469,20 +469,11 @@ namespace Fusee.Engine.Core
             {
                 var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Item2.Camera.Layer);
 
-                //Clear for all cameras
                 foreach (var cam in cams)
                 {
                     if (cam.Item2.Camera.Active)
                     {
                         PerCamClear(cam.Item2);
-                    }
-                }
-
-                //Render for all cameras
-                foreach (var cam in cams)
-                {
-                    if (cam.Item2.Camera.Active)
-                    {
                         NotifyCameraChanges(cam.Item2.Camera);
                         DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam.Item2, cam.Item2.Camera.RenderTexture);
