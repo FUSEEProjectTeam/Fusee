@@ -166,7 +166,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
         private void ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (app == null || !app.IsInitialized) return;
-            PtRenderingParams.Instance.ColorMode = (PointColorMode)e.AddedItems[0];
+            PtRenderingParams.Instance.PointCloudColorMode = (PointColorMode)e.AddedItems[0];
 
             //ColorPicker is unavailable right now
             //if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
@@ -346,7 +346,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
 
             PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
             PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;
-            ColorMode.SelectedValue = PtRenderingParams.Instance.ColorMode;
+            ColorMode.SelectedValue = PtRenderingParams.Instance.PointCloudColorMode;
 
             PtSize.Value = PtRenderingParams.Instance.Size;
             PtSizeVal.Content = PtRenderingParams.Instance.Size;

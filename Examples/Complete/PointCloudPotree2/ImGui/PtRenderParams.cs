@@ -53,7 +53,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             set
             {
                 _colorMode = value;
-                ColorPassEf.ColorMode = (int)_colorMode;
+                ColorPassEf.PointCloudColorMode = (int)_colorMode;
             }
         }
 
