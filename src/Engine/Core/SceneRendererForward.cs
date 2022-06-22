@@ -363,6 +363,7 @@ namespace Fusee.Engine.Core
                 : cam.Camera.GetViewportInPx(_rc.GetWindowWidth(), _rc.GetWindowHeight());
 
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+            _rc.SetRenderTarget(tex);
 
             _rc.ClearColor = cam.Camera.BackgroundColor;
             if (cam.Camera.ClearColor)
@@ -377,21 +378,15 @@ namespace Fusee.Engine.Core
             RenderLayer = cam.Camera.RenderLayer;
             _rc.View = cam.View;
 
-            float4 viewport;
             var tex = cam.Camera.RenderTexture;
-            if (tex != null)
-            {
-                _rc.SetRenderTarget(cam.Camera.RenderTexture);
-                _rc.Projection = cam.Camera.GetProjectionMat(cam.Camera.RenderTexture.Width, cam.Camera.RenderTexture.Height, out viewport);
-                _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
-            }
-            else
-            {
-                _rc.SetRenderTarget();
-                _rc.Projection = cam.Camera.GetProjectionMat(_rc.GetWindowWidth(), _rc.GetWindowHeight(), out viewport);
-            }
 
-            _rc.ClearColor = cam.Camera.BackgroundColor;
+            _rc.SetRenderTarget(tex);
+
+            _rc.Projection = tex != null
+                ? cam.Camera.GetProjectionMat(cam.Camera.RenderTexture.Width, cam.Camera.RenderTexture.Height, out float4 viewport)
+                : cam.Camera.GetProjectionMat(_rc.GetWindowWidth(), _rc.GetWindowHeight(), out viewport);
+
+            _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
             UpdateShaderParamsForAllLights();
 
