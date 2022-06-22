@@ -47,13 +47,13 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         private PointColorMode _colorMode = PointColorMode.VertexColor0;
 
-        public PointColorMode ColorMode
+        public PointColorMode PointCloudColorMode
         {
             get { return _colorMode; }
             set
             {
                 _colorMode = value;
-                ColorPassEf.ColorMode = (int)_colorMode;
+                ColorPassEf.PointCloudColorMode = (int)_colorMode;
             }
         }
 

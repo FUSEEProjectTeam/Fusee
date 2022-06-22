@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core;
+using Fusee.Base.Core;
+using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Xene;
 using System;
@@ -20,13 +21,20 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// The RenderLayer this renderer should render.
         /// </summary>
-        public RenderLayers RenderLayer { get; set; }
+        private RenderLayers _renderLayer;
+
+        /// <summary>
+        /// The RenderLayer this renderer should render.
+        /// </summary>
+        private Camera _camera;
+
+        private readonly bool _isForwardModule;
 
         /// <summary>
         /// Sets the render context for the given scene.
         /// </summary>
         /// <param name="rc"></param>
-        public void SetContext(RenderContext rc)
+        public void UpdateContext(RenderContext rc)
         {
             if (rc == null)
                 throw new ArgumentNullException(nameof(rc));
@@ -41,7 +49,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// Sets the render context for the given scene.
         /// </summary>
         /// <param name="state"></param>
-        public void SetState(RendererState state)
+        public void UpdateState(RendererState state)
         {
             if (state == null)
                 throw new ArgumentNullException(nameof(state));
@@ -52,6 +60,25 @@ namespace Fusee.PointCloud.Core.Scene
             }
         }
 
+        public void UpdateRenderLayer(RenderLayers renderLayer)
+        {
+            _renderLayer = renderLayer;
+        }
+
+        public void UpdateCamera(Camera cam)
+        {
+            _camera = cam;
+        }
+
+        /// <summary>
+        /// Creates a new instance of type <see cref="PointCloudRenderModule"/>.
+        /// </summary>
+        /// <param name="doRenderForward">Propagated the render type (forward or deferred) to the <see cref="RenderContext"/>.</param>
+        public PointCloudRenderModule(bool doRenderForward)
+        {
+            _isForwardModule = doRenderForward;
+        }
+
         /// <summary>
         /// Determines visible points of a point cloud (using the components <see cref="VisibilityTester"/>) and renders them.
         /// </summary>
@@ -60,19 +87,25 @@ namespace Fusee.PointCloud.Core.Scene
         public void RenderPointCloud(PointCloudComponent pointCloud)
         {
             if (!pointCloud.Active) return;
-            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
+            if (!_renderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(_renderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
-            //if (_rc.InvView == float4x4.Identity) return;
 
-            var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
-            pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
-
-            foreach (var mesh in pointCloud.PointCloudImp.MeshesToRender)
+            if (pointCloud.Camera == null)
             {
-                var renderStatesBefore = _rc.CurrentRenderState.Copy();
-                _rc.Render(mesh, true);
-                _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
+                Diagnostics.Warn("Point Cloud Render Camera is null!");
+                return;
             }
+            else if (pointCloud.Camera == _camera)
+            {
+                var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
+                pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
+            }
+
+            foreach (var mesh in (pointCloud.PointCloudImp).MeshesToRender)
+            {
+                _rc.Render(mesh, _isForwardModule);
+            }
+
         }
     }
 }

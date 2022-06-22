@@ -66,7 +66,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _spaceMouse = GetDevice<SixDOFDevice>();
 
             PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
-            PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.ColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
+            PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PointCloudColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
             PtRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
             PtRenderingParams.Instance.ProjectedSizeModifierHandler = OnProjectedSizeModifierChanged;
 
@@ -143,9 +143,9 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _sih = new SceneInteractionHandler(_gui);
 
             _sceneRenderer = new SceneRendererForward(_scene);
-            _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule());
+            _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
             _guiRenderer = new SceneRendererForward(_gui);
-
+            _pointCloud.Camera = _cam;
             IsInitialized = true;
         }
 

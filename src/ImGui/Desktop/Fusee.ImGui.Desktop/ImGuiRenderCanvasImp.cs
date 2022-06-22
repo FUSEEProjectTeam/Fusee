@@ -1,23 +1,9 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Imp.Graphics.Desktop;
-using Fusee.Math.Core;
-using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fusee.ImGuiDesktop
 {

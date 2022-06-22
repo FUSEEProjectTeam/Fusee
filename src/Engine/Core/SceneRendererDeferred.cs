@@ -227,7 +227,6 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            var renderStatesBefore = _rc.CurrentRenderState.Copy();
             if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
             {
                 if (mesh.MeshType == PrimitiveType.Points)
@@ -235,6 +234,8 @@ namespace Fusee.Engine.Core
                 else
                     _rc.SetEffect(_shadowCubeMapEffect, true);
             }
+
+            var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, _currentPass == RenderPasses.Shadow);
             _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
@@ -452,11 +453,10 @@ namespace Fusee.Engine.Core
         /// Renders the scene.
         /// </summary>
         /// <param name="rc">The <see cref="RenderContext"/>.</param>
-        /// <param name="renderTex">If the render texture isn't null, the last pass of the deferred pipeline will render into it, else it will render to the screen.</param>
-        public void Render(RenderContext rc, WritableTexture renderTex = null)
+        public override void Render(RenderContext rc)
         {
             SetContext(rc);
-            SetStateAndRenderLayerInModules();
+            NotifyStateChanges();
 
             PrePassVisitor.PrePassTraverse(_sc);
             AccumulateLight();
@@ -468,63 +468,52 @@ namespace Fusee.Engine.Core
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
                 var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Item2.Camera.Layer);
+
                 foreach (var cam in cams)
                 {
                     if (cam.Item2.Camera.Active)
                     {
+                        PerCamClear(cam.Item2);
+                        NotifyCameraChanges(cam.Item2.Camera);
                         DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
-                        PerCamRender(cam, renderTex);
-                        //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
-                        _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
-                        DoFrumstumCulling = true;
+                        PerCamRender(cam.Item2, cam.Item2.Camera.RenderTexture);
                     }
                 }
+
+                //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
+                _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
+                DoFrumstumCulling = true;
             }
             else
             {
-                RenderAllPasses(new float4(0, 0, _rc.ViewportWidth, _rc.ViewportHeight), renderTex);
+                RenderAllPasses(new float4(0, 0, _rc.ViewportWidth, _rc.ViewportHeight));
             }
 
             _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
-        private void PerCamRender(Tuple<SceneNode, CameraResult> cam, WritableTexture renderTex = null)
+        private void PerCamRender(CameraResult cam, IWritableTexture renderTex = null)
         {
-            var tex = cam.Item2.Camera.RenderTexture;
-
-            RenderLayer = cam.Item2.Camera.RenderLayer;
+            RenderLayer = cam.Camera.RenderLayer;
+            _rc.View = cam.View;
 
             float4 viewport;
 
-            if (tex != null)
+            if (renderTex != null)
             {
-                _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
-                _rc.Projection = cam.Item2.Camera.GetProjectionMat(cam.Item2.Camera.RenderTexture.Width, cam.Item2.Camera.RenderTexture.Height, out viewport);
-                _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+                _rc.Projection = cam.Camera.GetProjectionMat(renderTex.Width, renderTex.Height, out viewport);
             }
             else
             {
-                _rc.SetRenderTarget();
-                _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out viewport);
-                _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+                var w = renderTex == null ? _rc.GetWindowWidth() : renderTex.Width;
+                var h = renderTex == null ? _rc.GetWindowHeight() : renderTex.Height;
+                _rc.Projection = cam.Camera.GetProjectionMat(w, h, out viewport);
             }
-
-
-
-            _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
-
-            if (cam.Item2.Camera.ClearColor)
-                _rc.Clear(ClearFlags.Color);
-
-            if (cam.Item2.Camera.ClearDepth)
-                _rc.Clear(ClearFlags.Depth);
-
-            _rc.View = cam.Item2.View;
 
             RenderAllPasses(viewport, renderTex);
         }
 
-        private void RenderAllPasses(float4 lightingPassViewport, WritableTexture renderTex = null)
+        private void RenderAllPasses(float4 lightingPassViewport, IWritableTexture renderTex = null)
         {
             var preRenderStateSet = _rc.CurrentRenderState.Copy(); //"Snapshot" of the current render states as they came from the user code.
             var preRenderLockedStates = new Dictionary<RenderState, KeyValuePair<bool, uint>>(_rc.LockedStates);
@@ -557,12 +546,9 @@ namespace Fusee.Engine.Core
             //Pass 4 & 5: FXAA and Lighting
             _currentPass = RenderPasses.Lighting;
 
-            var width = renderTex == null ? (int)lightingPassViewport.z : renderTex.Width;
-            var height = renderTex == null ? (int)lightingPassViewport.w : renderTex.Height;
-
             if (!FxaaOn)
             {
-                _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, width, height);
+                _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, (int)lightingPassViewport.z, (int)lightingPassViewport.w);
                 RenderLightPasses(renderTex);
             }
             else
@@ -571,7 +557,7 @@ namespace Fusee.Engine.Core
                 RenderLightPasses(_lightedSceneTex);
 
                 //Post-Effect: FXAA
-                _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, width, height);
+                _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, (int)lightingPassViewport.z, (int)lightingPassViewport.w);
                 RenderFXAA(renderTex);
             }
 
@@ -590,14 +576,10 @@ namespace Fusee.Engine.Core
         /// Alternatively it would be possible to iterate the lights in the shader, but this would create a more complex shader. Additionally it would be more difficult to implement a dynamic number of lights.
         /// The iteration here should not prove critical, due to the scene only consisting of a single quad.
         /// </summary>
-        private void RenderLightPasses(WritableTexture renderTex = null)
+        private void RenderLightPasses(IWritableTexture renderTex = null)
         {
-            if (renderTex != null)
-                _rc.SetRenderTarget(renderTex);
-            else
-                _rc.SetRenderTarget();
-
-            _rc.Clear(ClearFlags.Depth | ClearFlags.Color);
+            _rc.SetRenderTarget(renderTex);
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             var lightPassCnt = 0;
 
@@ -762,7 +744,7 @@ namespace Fusee.Engine.Core
                             _rc.SetEffect(_shadowCubeMapEffect, true);
 
                             _rc.SetRenderTarget((IWritableCubeMap)shadowParams.ShadowMap);
-
+                            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
                             //No culling here because much of the work is done in the geometry shader.
 
                             Traverse(_sc.Children);
@@ -776,6 +758,7 @@ namespace Fusee.Engine.Core
                                 _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                                 _rc.SetEffect(_shadowEffect, true);
                                 _rc.SetRenderTarget(shadowParams.ShadowMap);
+                                _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
                                 _lightFrustum = shadowParams.Frustums[0];
 
@@ -788,6 +771,7 @@ namespace Fusee.Engine.Core
                                     _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[i]);
                                     _rc.SetEffect(_shadowEffect, true);
                                     _rc.SetRenderTarget((IWritableArrayTexture)shadowParams.ShadowMap, i);
+                                    _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
                                     _lightFrustum = shadowParams.Frustums[i];
 
@@ -806,6 +790,7 @@ namespace Fusee.Engine.Core
                             _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                             _rc.SetEffect(_shadowEffect, false);
                             _rc.SetRenderTarget(shadowParams.ShadowMap);
+                            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
                             _lightFrustum = shadowParams.Frustums[0];
                             Traverse(_sc.Children);
@@ -824,6 +809,7 @@ namespace Fusee.Engine.Core
         {
             _currentPass = RenderPasses.Geometry;
             _rc.SetRenderTarget(_gBufferRenderTarget);
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
             Traverse(_sc.Children);
         }
 
@@ -838,6 +824,7 @@ namespace Fusee.Engine.Core
             }
             _rc.SetEffect(_ssaoTexEffect);
             _rc.SetRenderTarget(_ssaoRenderTexture);
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
             _rc.Render(_quad);
 
             //Pass 3: Blur SSAO Texture
@@ -849,13 +836,14 @@ namespace Fusee.Engine.Core
             }
             _rc.SetEffect(_blurEffect);
             _rc.SetRenderTarget(_blurRenderTex);
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
             _rc.Render(_quad);
 
             //Set blurred SSAO Texture as SSAO Texture in gBuffer
             _gBufferRenderTarget.SetTexture(_blurRenderTex, RenderTargetTextureTypes.Ssao);
         }
 
-        private void RenderFXAA(WritableTexture renderTex = null)
+        private void RenderFXAA(IWritableTexture renderTex = null)
         {
             _currentPass = RenderPasses.Fxaa;
             if (_fxaaEffect == null)
@@ -869,7 +857,7 @@ namespace Fusee.Engine.Core
                 _rc.SetRenderTarget();
             else
                 _rc.SetRenderTarget(renderTex);
-
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
             _rc.Render(_quad);
         }
 
@@ -995,17 +983,13 @@ namespace Fusee.Engine.Core
             {
                 _rc = rc;
 
+                foreach (var module in VisitorModules)
+                {
+                    ((IRendererModule)module).UpdateContext(_rc);
+                }
+
                 InitRenderTextures();
                 InitState();
-            }
-        }
-
-        private void SetStateAndRenderLayerInModules()
-        {
-            foreach (var module in VisitorModules)
-            {
-                //((IRendererModule)module).RenderLayer = _renderLayer;
-                ((IRendererModule)module).SetState(_state);
             }
         }
 

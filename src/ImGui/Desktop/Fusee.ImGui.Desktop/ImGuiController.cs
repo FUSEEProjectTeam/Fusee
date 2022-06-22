@@ -1,5 +1,4 @@
-using Fusee.Base.Core;
-using Fusee.Engine.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;

@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core.Scene
         public RenderLayers RenderLayer;
 
         /// <summary>
-        /// Scales the orthograpic viewing frustum. Dosn't have an effect if <see cref="ProjectionMethod.Perspective"/> is used.
+        /// Scales the orthographic viewing frustum. Doesn't have an effect if <see cref="ProjectionMethod.Perspective"/> is used.
         /// </summary>
         public float Scale = 1;
 
@@ -131,6 +131,27 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
+        /// Returns the viewport in px as float4.
+        /// x: start pixel in x direction.
+        /// y: start pixel in y direction.
+        /// z: width of the viewport.
+        /// w: height of the viewport.
+        /// </summary>
+        /// <param name="canvasWidthPx"></param>
+        /// <param name="canvasHeightPx"></param>
+        /// <returns></returns>
+        public float4 GetViewportInPx(int canvasWidthPx, int canvasHeightPx)
+        {
+            var startX = (int)(canvasWidthPx * (Viewport.x / 100));
+            var startY = (int)(canvasHeightPx * (Viewport.y / 100));
+
+            var width = (int)(canvasWidthPx * (Viewport.z / 100));
+            var height = (int)(canvasHeightPx * (Viewport.w / 100));
+
+            return new float4(startX, startY, width, height);
+        }
+
+        /// <summary>
         /// Calculates and returns the projection matrix.
         /// </summary>
         /// <param name="canvasWidthPx">The width of the render canvas.</param>
@@ -145,18 +166,12 @@ namespace Fusee.Engine.Core.Scene
                 return proj;
             }
 
-            var startX = (int)(canvasWidthPx * (Viewport.x / 100));
-            var startY = (int)(canvasHeightPx * (Viewport.y / 100));
-
-            var width = (int)(canvasWidthPx * (Viewport.z / 100));
-            var height = (int)(canvasHeightPx * (Viewport.w / 100));
-
-            viewport = new float4(startX, startY, width, height);
+            viewport = GetViewportInPx(canvasWidthPx, canvasHeightPx);
 
             return ProjectionMethod switch
             {
-                ProjectionMethod.Orthographic => float4x4.CreateOrthographic(width * Scale, height * Scale, ClippingPlanes.x, ClippingPlanes.y),
-                _ => float4x4.CreatePerspectiveFieldOfView(Fov, System.Math.Abs((float)width / height), ClippingPlanes.x, ClippingPlanes.y),
+                ProjectionMethod.Orthographic => float4x4.CreateOrthographic(viewport.z * Scale, viewport.w * Scale, ClippingPlanes.x, ClippingPlanes.y),
+                _ => float4x4.CreatePerspectiveFieldOfView(Fov, System.Math.Abs((float)viewport.z / viewport.w), ClippingPlanes.x, ClippingPlanes.y),
             };
         }
 

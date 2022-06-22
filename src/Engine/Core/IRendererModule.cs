@@ -9,20 +9,27 @@ namespace Fusee.Engine.Core
     public interface IRendererModule : IVisitorModule
     {
         /// <summary>
-        /// The RenderLayer this renderer should render.
+        /// Sets the currently used <see cref="RenderLayer"/>.
         /// </summary>
-        public RenderLayers RenderLayer { get; set; }
+        /// <param name="renderLayer"></param>
+        public void UpdateRenderLayer(RenderLayers renderLayer);
+
+        /// <summary>
+        /// Sets the currently used <see cref="Camera"/>.
+        /// </summary>
+        /// <param name="cam"></param>
+        public void UpdateCamera(Camera cam);
 
         /// <summary>
         /// Sets the render context for the given scene.
         /// </summary>
         /// <param name="rc"></param>
-        public void SetContext(RenderContext rc);
+        public void UpdateContext(RenderContext rc);
 
         /// <summary>
         /// Sets the <see cref="RendererState"/> for this module. Pass the state from the base renderer.
         /// </summary>
         /// <param name="state">The state to set.</param>
-        public void SetState(RendererState state);
+        public void UpdateState(RendererState state);
     }
 }

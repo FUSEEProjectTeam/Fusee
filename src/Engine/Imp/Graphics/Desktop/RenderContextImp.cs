@@ -2294,8 +2294,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
 
@@ -2336,8 +2334,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
 
@@ -2374,9 +2370,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-
-
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
         /// <summary>
@@ -2417,8 +2410,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
         /// <summary>
@@ -2469,8 +2460,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
-
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
         private int CreateDepthRenderBuffer(int width, int height)
@@ -2604,6 +2593,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="height">Height of the scissor box.</param>
         public void Scissor(int x, int y, int width, int height)
         {
+            //Should be enabled per default - but WPF seems to disable it...
+            if (!GL.IsEnabled(EnableCap.ScissorTest))
+                GL.Enable(EnableCap.ScissorTest);
             GL.Scissor(x, y, width, height);
         }
 
