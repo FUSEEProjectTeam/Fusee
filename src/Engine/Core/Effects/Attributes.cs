@@ -31,7 +31,7 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Used to flag which shader type a <see cref="ShaderEffect"/> property belongs to. 
+    /// Used to flag which shader type a <see cref="ShaderEffect"/> property belongs to.
     /// Supports vertex, pixel and geometry shaders.
     /// </summary>
     [Flags]
@@ -102,7 +102,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         Main = 128,
 
-        /// <summary> 
+        /// <summary>
         /// Those are uniforms in the shader code but should not be properties of a <see cref="SurfaceEffectBase"/> because they will be updated by the SceneRenderer.
         /// </summary>
         InternalUniform = 256
