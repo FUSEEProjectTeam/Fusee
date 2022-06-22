@@ -1717,9 +1717,11 @@ namespace Fusee.Engine.Core
         /// <param name="tex">The render texture.</param>
         public void SetRenderTarget(IWritableTexture tex)
         {
-            if (tex is WritableTexture wt)
+            if(tex == null)
+                SetRenderTarget();
+            else if (tex is WritableTexture wt)
                 SetRenderTarget(wt);
-            if (tex is WritableMultisampleTexture wmst)
+            else if (tex is WritableMultisampleTexture wmst)
                 SetRenderTarget(wmst);
         }
 
@@ -1729,7 +1731,7 @@ namespace Fusee.Engine.Core
         /// <param name="tex">The render texture.</param>
         public void SetRenderTarget(WritableTexture tex)
         {
-            var texHandle = _textureManager.GetTextureHandle((WritableTexture)tex);
+            var texHandle = _textureManager.GetTextureHandle(tex);
             _rci.SetRenderTarget(tex, texHandle);
         }
 
