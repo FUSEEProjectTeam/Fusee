@@ -5,7 +5,7 @@
 		<FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">$(MSBuildThisFileDirectory)\</FuseeEngineRoot>
 		<BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
 		<OutputPath>$(BaseOutputPath)\Libraries\$(AssemblyName)</OutputPath>
-		
+
 		<Authors>FuseeProjectTeam</Authors>
 		<Company>Furtwangen University</Company>
 		<Product>FUSEE</Product>
@@ -61,6 +61,16 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
+		<PackageReference Include="ErrorProne.NET.CoreAnalyzers" Version="0.1.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="ErrorProne.NET.Structs" Version="0.1.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
-	
+
+
+
 </Project>
