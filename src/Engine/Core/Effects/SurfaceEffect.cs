@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Uniform)]
-        public ColorMode ColorMode
+        public int ColorMode
         {
             get { return _colorMode; }
             set
@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core.Effects
                 SetFxParam(nameof(ColorMode), _colorMode);
             }
         }
-        private ColorMode _colorMode;
+        private int _colorMode;
 
         #region Internal/Global Uniforms (set by the Engine)
 

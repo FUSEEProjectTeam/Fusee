@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.ImGuiDesktop;
 using Fusee.ImGuiDesktop.Templates;
 using Fusee.Math.Core;
@@ -31,7 +32,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         private static int _currentPtSizeMethod;
         private static int _ptSize = 1;
 
-        private static int _currentColorMode = 0;
+        private static int _currentColorMode = 1;
 
         private static Vector4 _ptColor = new(0, 0, 0, 1);
         private static bool _colorPickerOpen;
@@ -225,18 +226,18 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.BeginGroup();
             ImGui.Text("Color Mode");
 
-            ImGui.Combo("Color mode", ref _currentColorMode, new string[] { "VertexColor0", "VertexColor1", "VertexColor2", "Single" }, 4);
+            ImGui.Combo("Color mode", ref _currentColorMode, new string[] { "BaseColor", "VertexColor0", "VertexColor1", "VertexColor2" }, 4);
 
             PtRenderingParams.Instance.ColorMode = _currentColorMode switch
             {
-                0 => PointColorMode.VertexColor0,
-                1 => PointColorMode.VertexColor1,
-                2 => PointColorMode.VertexColor2,
-                3 => PointColorMode.Single,
-                _ => PointColorMode.VertexColor0
+                0 => ColorMode.BaseColor,
+                1 => ColorMode.VertexColor0,
+                2 => ColorMode.VertexColor1,
+                3 => ColorMode.VertexColor2,
+                _ => ColorMode.VertexColor0
             };
 
-            if (_currentColorMode == (int)PointColorMode.Single)
+            if (_currentColorMode == (int)ColorMode.BaseColor)
             {
                 ImGui.Spacing();
                 ImGui.BeginGroup();

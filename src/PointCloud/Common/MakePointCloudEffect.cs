@@ -55,16 +55,16 @@ namespace Fusee.PointCloud.Common
         /// <param name="size">The point size.</param>
         /// <param name="pointSizeMode">The <see cref="PointSizeMode"/>.</param>
         /// <param name="shape">The <see cref="PointShape"/>.</param>
-        /// <param name="colorMode">The <see cref="PointColorMode"/>.</param>
+        /// <param name="colorMode">The <see cref="ColorMode"/>.</param>
         /// <param name="edlStrength">The strength of the EDL lighting.</param>
         /// <param name="edlNeigbourPx">Number of pixels, used in the EDL lighting calculation.</param>
         /// <returns></returns>
-        public static PointCloudSurfaceEffect ForColorPass(int size, PointColorMode colorMode, PointSizeMode pointSizeMode, PointShape shape, float edlStrength, int edlNeigbourPx)
+        public static PointCloudSurfaceEffect ForColorPass(int size, ColorMode colorMode, PointSizeMode pointSizeMode, PointShape shape, float edlStrength, int edlNeigbourPx)
         {
             var fx = new PointCloudSurfaceEffect
             {
                 PointSize = size,
-                PointCloudColorMode = (int)colorMode,
+                ColorMode = (int)colorMode,
                 PointShape = (int)shape,
                 DepthTex = null,
                 EDLStrength = edlStrength,
