@@ -1548,27 +1548,27 @@ namespace Fusee.Engine.Core
                 }
                 else if (val is int intVal)
                 {
-                    _rci.SetShaderParam(param.Handle, in intVal);
+                    _rci.SetShaderParam(param.Handle, intVal);
                 }
                 else if (val is float floatVal)
                 {
-                    _rci.SetShaderParam(param.Handle, in floatVal);
+                    _rci.SetShaderParam(param.Handle, floatVal);
                 }
                 else if (val is double doubleVal)
                 {
-                    _rci.SetShaderParam(param.Handle, in doubleVal);
+                    _rci.SetShaderParam(param.Handle, doubleVal);
                 }
                 else if (val is float2 float2Val)
                 {
-                    _rci.SetShaderParam(param.Handle, in float2Val);
+                    _rci.SetShaderParam(param.Handle, float2Val);
                 }
                 else if (val is float3 float3Val)
                 {
-                    _rci.SetShaderParam(param.Handle, in float3Val);
+                    _rci.SetShaderParam(param.Handle, float3Val);
                 }
                 else if (val is float4 float4Val)
                 {
-                    _rci.SetShaderParam(param.Handle, in float4Val);
+                    _rci.SetShaderParam(param.Handle, float4Val);
                 }
                 else if (val is float4x4 float4x4Val)
                 {
@@ -1576,7 +1576,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (val is int2 int2Val)
                 {
-                    _rci.SetShaderParam(param.Handle, in int2Val);
+                    _rci.SetShaderParam(param.Handle, int2Val);
                 }
 
                 else if (val is IWritableArrayTexture writableArrayTex)

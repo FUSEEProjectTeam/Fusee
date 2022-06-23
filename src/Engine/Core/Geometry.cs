@@ -358,31 +358,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-
-
-        #region Structs
-
-        internal struct TripleInx
-        {
-            /// <summary>
-            /// The i V
-            /// </summary>
-            public int iV, iT, iN;
-            /// <summary>
-            /// Returns a hash code for this instance.
-            /// </summary>
-            /// <returns>
-            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-            /// </returns>
-            public override int GetHashCode()
-            {
-                return iV ^ iT ^ iN;
-            }
-        }
-
-        #endregion
-
-
         /// <summary>
         /// Converts the whole geometry to a <see cref="Mesh"/>.
         /// </summary>
@@ -391,7 +366,7 @@ namespace Fusee.Engine.Core
         {
             // TODO: make a big case decision based on HasTexCoords and HasNormals around the implementation and implement each case individually
 
-            Dictionary<TripleInx, int> _vDict = new();
+            Dictionary<int3, int> _vDict = new();
 
             List<ushort> mTris = new();
             List<float3> mVerts = new();
@@ -403,11 +378,11 @@ namespace Fusee.Engine.Core
                 int[] mFace = new int[f.InxVert.Length];
                 for (int i = 0; i < f.InxVert.Length; i++)
                 {
-                    TripleInx ti = new()
+                    int3 ti = new()
                     {
-                        iV = f.InxVert[i],
-                        iT = (HasTexCoords) ? f.InxTexCoord[i] : 0,
-                        iN = (HasNormals) ? f.InxNormal[i] : 0
+                        x = f.InxVert[i],
+                        y = (HasTexCoords) ? f.InxTexCoord[i] : 0,
+                        z = (HasNormals) ? f.InxNormal[i] : 0
                     };
                     if (!_vDict.TryGetValue(ti, out int inx))
                     {

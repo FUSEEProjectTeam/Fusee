@@ -56,7 +56,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         public Compare CompareFunc { get; private set; }
 
-        private readonly ITextureHandle _texHandle;
         private WritableTexture _internalResultTexture;
         private readonly RenderContext RC;
 

@@ -623,7 +623,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in float val)
+        public void SetShaderParam(IUniformHandle param, float val)
         {
             gl2.Uniform1f(((UniformHandle)param).handle, val);
         }
@@ -633,7 +633,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in float2 val)
+        public void SetShaderParam(IUniformHandle param, float2 val)
         {
             gl2.Uniform2f(((UniformHandle)param).handle, val.x, val.y);
         }
@@ -644,7 +644,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in float2[] val)
+        public void SetShaderParam(IUniformHandle param, float2[] val)
         {
             var res = new float[val.Length * 2];
 
@@ -663,7 +663,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in float3 val)
+        public void SetShaderParam(IUniformHandle param, float3 val)
         {
             gl2.Uniform3f(((UniformHandle)param).handle, val.x, val.y, val.z);
         }
@@ -673,7 +673,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in float3[] val)
+        public void SetShaderParam(IUniformHandle param, float3[] val)
         {
             var res = new float[val.Length * 3];
             for (var i = 0; i < val.Length; i++)
@@ -690,7 +690,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in float4 val)
+        public void SetShaderParam(IUniformHandle param, float4 val)
         {
             gl2.Uniform4f(((UniformHandle)param).handle, val.x, val.y, val.z, val.w);
         }
@@ -701,7 +701,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in float4x4 val)
+        public void SetShaderParam(IUniformHandle param, float4x4 val)
         {
             gl2.UniformMatrix4fv(((UniformHandle)param).handle, true, val.ToArray());
 
@@ -712,7 +712,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in float4[] val)
+        public void SetShaderParam(IUniformHandle param, float4[] val)
         {
             var res = new float[val.Length * 4];
 
@@ -732,7 +732,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in float4x4[] val)
+        public void SetShaderParam(IUniformHandle param, float4x4[] val)
         {
             float4[] tmpArray = new float4[val.Length * 4];
 
@@ -762,7 +762,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in int2 val)
+        public void SetShaderParam(IUniformHandle param, int2 val)
         {
             gl2.Uniform2i(((UniformHandle)param).handle, val.x, val.y);
         }
@@ -772,7 +772,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IUniformHandle param, in int val)
+        public void SetShaderParam(IUniformHandle param, int val)
         {
             gl2.Uniform1i(((UniformHandle)param).handle, val);
         }
@@ -2853,7 +2853,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="param"></param>
         /// <param name="val"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void SetShaderParam(IUniformHandle param, in double val)
+        public void SetShaderParam(IUniformHandle param, double val)
         {
             gl2.Uniform1f(((UniformHandle)param).handle, (float)val);
         }

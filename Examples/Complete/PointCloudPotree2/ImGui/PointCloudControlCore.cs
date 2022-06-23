@@ -45,8 +45,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         private Camera _cam;
         private float3 _initCameraPos;
 
-        private PointCloudComponent? _pointCloud;
-
+        private PointCloudComponent _pointCloud;
 
         public PointCloudControlCore(RenderContext rc) : base(rc)
         {
