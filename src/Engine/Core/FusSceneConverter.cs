@@ -555,11 +555,12 @@ namespace Fusee.Engine.Core
             {
                 MeshType = (PrimitiveType)m.MeshType,
                 Active = true,
-                Name = m.Name
+                Name = m.Name,
+                BoundingBox = m.BoundingBox
             };
 
             if(m.BiTangents != null)
-            mesh.SetBiTangents(m.BiTangents);
+                mesh.SetBiTangents(m.BiTangents);
             if (m.BoneIndices != null)
                 mesh.SetBoneIndices(m.BoneIndices);
             if (m.BoneWeights != null)

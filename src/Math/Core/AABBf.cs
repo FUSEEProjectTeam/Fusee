@@ -46,18 +46,6 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Create a new axis aligned bounding box.
-        /// </summary>
-        /// <param name="vertices">The list of vertices the bounding box is created for.</param>
-        public AABBf(ReadOnlySpan<float3> vertices)
-        {
-            min = vertices[0];
-            max = vertices[0];
-            foreach (float3 p in vertices)
-                this |= p;
-        }
-
-        /// <summary>
         /// Applies a transformation on the bounding box. After the transformation another
         /// axis aligned bounding box results. This is done by transforming all eight
         /// vertices of the box and re-aligning to the axes afterwards.

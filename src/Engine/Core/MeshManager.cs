@@ -76,7 +76,7 @@ namespace Fusee.Engine.Core
             {
                 case MeshChangedEnum.Vertices:
                     _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
-                    mesh.BoundingBox = new AABBf(mesh.Vertices);
+                    mesh.BoundingBox = new AABBf(mesh.Vertices.ToArray());
                     break;
                 case MeshChangedEnum.Triangles:
                     _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);

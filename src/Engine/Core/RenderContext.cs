@@ -1898,7 +1898,7 @@ namespace Fusee.Engine.Core
             var mesh = new GpuMesh
             {
                 MeshType = primitiveType,
-                BoundingBox = new AABBf(vertices.AsSpan())
+                BoundingBox = new AABBf(vertices)
             };
             _meshManager.RegisterNewMesh(mesh, vertices, triangles, uvs,
             normals, colors, colors1, colors2,
