@@ -36,6 +36,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private bool _isCullEnabled;
         private bool _isPtRenderingEnabled;
         private bool _isLineSmoothEnabled;
+        private bool _isMultisampleEnabled;
         private int _lastBoundFbo;
 
 #if DEBUG
@@ -296,14 +297,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(IWritableTexture img)
+        public ITextureHandle CreateTexture(IWritableTexture tex)
         {
-            if (img is WritableTexture wt)
+            if (tex is WritableTexture wt)
                 return CreateTexture(wt);
-            if (img is WritableMultisampleTexture mswt)
+            if (tex is WritableMultisampleTexture mswt)
                 return CreateTexture(mswt);
 
-            throw new NotImplementedException($"CreateTexture typeof({img}) not found!");
+            throw new NotImplementedException($"CreateTexture typeof({tex}) not found!");
         }
 
         /// <summary>
@@ -446,24 +447,30 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(WritableMultisampleTexture tex)
         {
-            GL.Enable(EnableCap.Multisample);
+            if (!_isMultisampleEnabled)
+            {
+                _isMultisampleEnabled = true;
+                GL.Enable(EnableCap.Multisample);
+            }
 
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2DMultisample, id);
+            GL.CreateTextures(TextureTarget.Texture2DMultisample, 1, out int id);
+            GL.TextureStorage2DMultisample(id, tex.MultisampleFactor, GetSizedInteralFormat(tex.PixelFormat), tex.Width, tex.Height, true);
 
-            var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
-            var minFilter = glMinMagFilter.Item1;
-            var magFilter = glMinMagFilter.Item2;
-            var glWrapMode = GetWrapMode(tex.WrapMode);
+            //var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
+            //var minFilter = (int)glMinMagFilter.Item1;
+            //var magFilter = (int)glMinMagFilter.Item2;
+            //var glWrapMode = (int)GetWrapMode(tex.WrapMode);
+            //var texCompareMode = (int)GetTexComapreMode(tex.CompareMode);
+            //var depthCompareFunc = (int)GetDepthCompareFunc(tex.CompareFunc);
 
-            GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, tex.MultisampleFactor, PixelInternalFormat.Rgba, tex.Width, tex.Height, true);
+            //Note: Multisample textures are not filtered and the calls below will generate a INVALID_ENUM error
 
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(tex.CompareMode));
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(tex.CompareFunc));
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)minFilter);
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)magFilter);
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapS, (int)glWrapMode);
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapT, (int)glWrapMode);
+            //GL.TextureParameterI(id, TextureParameterName.TextureCompareMode, ref texCompareMode);
+            //GL.TextureParameterI(id, TextureParameterName.TextureCompareFunc, ref depthCompareFunc);
+            //GL.TextureParameterI(id, TextureParameterName.TextureMinFilter, ref minFilter);
+            //GL.TextureParameterI(id, TextureParameterName.TextureMagFilter, ref magFilter);
+            //GL.TextureParameterI(id, TextureParameterName.TextureWrapS, ref glWrapMode);
+            //GL.TextureParameterI(id, TextureParameterName.TextureWrapT, ref glWrapMode);
 
             ITextureHandle texID = new TextureHandle { TexId = id };
 
@@ -2590,11 +2597,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             if (input == null || output == null) return;
 
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, ((TextureHandle)input).FrameBufferHandle);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, ((TextureHandle)output).FrameBufferHandle);
-            GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.BlitNamedFramebuffer(((TextureHandle)input).FrameBufferHandle, ((TextureHandle)output).FrameBufferHandle, 0, 0, width, height, 0, 0, width, height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
         }
 
         /// <summary>
@@ -2612,7 +2615,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height, fBuffer);
+                    if (tex.GetType() == typeof(WritableMultisampleTexture))
+                        CreateDepthRenderBufferMultisample(tex.Width, tex.Height, ((WritableMultisampleTexture)tex).MultisampleFactor, fBuffer);
+                    else
+                        CreateDepthRenderBuffer(tex.Width, tex.Height, fBuffer);
                     GL.NamedFramebufferTexture(fBuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexId, 0);
                 }
                 else
@@ -2638,7 +2644,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
                 _lastBoundFbo = fBuffer;
             }
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
 
@@ -2678,7 +2683,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
                 _lastBoundFbo = fBuffer;
             }
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
         /// <summary>
@@ -2721,7 +2725,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
                 _lastBoundFbo = fBuffer;
             }
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
         /// <summary>
@@ -2775,7 +2778,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckNamedFramebufferStatus(gBuffer, FramebufferTarget.Framebuffer)}");
             }
 #endif
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
         private int CreateDepthRenderBuffer(int width, int height, int framebufferHandle)
@@ -2789,15 +2791,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return gDepthRenderbufferHandle;
         }
 
-        private int CreateDepthRenderBufferMultisample(int width, int height, int samples)
+        private int CreateDepthRenderBufferMultisample(int width, int height, int samples, int framebufferHandle)
         {
             GL.Enable(EnableCap.DepthTest);
 
-            GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
-            //((FrameBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, samples, RenderbufferStorage.DepthComponent24, width, height);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
+            GL.CreateRenderbuffers(1, out int gDepthRenderbufferHandle);
+
+            GL.NamedRenderbufferStorageMultisample(gDepthRenderbufferHandle, samples, RenderbufferStorage.DepthComponent24, width, height);
+            GL.NamedFramebufferRenderbuffer(framebufferHandle, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             return gDepthRenderbufferHandle;
         }
 
@@ -2897,7 +2898,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void Scissor(int x, int y, int width, int height)
         {
             //Should be enabled per default - but WPF seems to disable it...
-            if(!GL.IsEnabled(EnableCap.ScissorTest))
+            if (!GL.IsEnabled(EnableCap.ScissorTest))
                 GL.Enable(EnableCap.ScissorTest);
             GL.Scissor(x, y, width, height);
         }
@@ -3068,8 +3069,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             return depth;
         }
-
-
 
         #endregion
     }
