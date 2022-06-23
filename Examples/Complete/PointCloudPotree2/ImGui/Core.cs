@@ -44,7 +44,6 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         #endregion
 
-
         public override async Task InitAsync()
         {
             SetImGuiDesign();
