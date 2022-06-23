@@ -13,7 +13,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         Description = "A very simple example how to use ImGui within a Fusee application.")]
     public class Core : RenderCanvas
     {
-
         #region StaticBindingVars
 
         private static bool _dockspaceOpen = true;
@@ -25,7 +24,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         private bool _colorPickerOpen;
 
         #endregion
-
 
         private void Load()
         {
@@ -45,7 +43,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         {
             Load();
             await base.InitAsync();
-
         }
 
         public override void Update()
@@ -56,7 +53,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         public override void Resize(ResizeEventArgs e)
         {
             _fuControl.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
-
         }
 
         public override void RenderAFrame()
@@ -125,7 +121,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
             DrawGUI();
         }
-
 
         internal void DrawGUI()
         {
