@@ -64,7 +64,7 @@ namespace Fusee.Engine.Core
         /// This is done after rendering by blitting the result into a new <see cref="WritableTexture"/> object.
         /// To use the <see cref="ITextureHandle"/> with any OpenGL Texture2d method one needs to use the <see cref="TextureHandle"/>!
         /// </summary>
-        public ITextureHandle InternalTextureHandle
+        public ITextureHandle TextureHandle
         {
             get; internal set;
         }
@@ -73,7 +73,7 @@ namespace Fusee.Engine.Core
         /// Resulting <see cref="ITextureHandle"/> after blitting and sampling is finished
         /// Can be used as any other <see cref="WritableTexture"/>, the content is sampled and ready to go.
         /// </summary>
-        public ITextureHandle TextureHandle
+        public ITextureHandle TextureHandleResult
         {
             get
             {
@@ -84,7 +84,7 @@ namespace Fusee.Engine.Core
                     RC.SetRenderTarget(_internalResultTexture);
                 }
 
-                RC.BlitMultisample2DTextureToTexture(InternalTextureHandle, _internalResultTexture.TextureHandle, Width, Height);
+                RC.BlitMultisample2DTextureToTexture(TextureHandle, _internalResultTexture.TextureHandle, Width, Height);
                 return _internalResultTexture.TextureHandle;
             }
         }

@@ -105,13 +105,10 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             var tex = ((Engine.Imp.Graphics.Desktop.TextureHandle)hndl).TexId;
 
             // Disable FB, reset size etc. to previous size
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            //GL.BindTexture(TextureTarget.Texture2D, 0);
+            _rc.SetRenderTarget();
             GL.Viewport(0, 0, _originalWidth, _originalHeight);
 
             // bind the render result and return ptr to texture
-            //GL.BindTexture(TextureTarget.Texture2D, tex);
-            //GL.BindTextureUnit(0, tex);
             return new IntPtr(tex);
         }
     }
