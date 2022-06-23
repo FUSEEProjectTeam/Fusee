@@ -317,12 +317,6 @@ namespace Fusee.Engine.Core
             {
                 var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Camera.Layer);
 
-                foreach (var cam in cams)
-                {
-                    if (cam.Camera.Active)
-                        PerCamClear(cam);
-                }
-
                 //Render for all cameras
                 foreach (var cam in cams)
                 {

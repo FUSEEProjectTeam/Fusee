@@ -110,7 +110,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             GL.Viewport(0, 0, _originalWidth, _originalHeight);
 
             // bind the render result and return ptr to texture
-            //GL.BindTexture(TextureTarget.Texture2D, tex);           
+            //GL.BindTexture(TextureTarget.Texture2D, tex);
             //GL.BindTextureUnit(0, tex);
             return new IntPtr(tex);
         }
