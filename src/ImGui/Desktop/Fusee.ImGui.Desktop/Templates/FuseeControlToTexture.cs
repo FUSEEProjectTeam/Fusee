@@ -3,7 +3,7 @@ using Fusee.Engine.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
 
-namespace Fusee.ImGuiDesktop.Templates
+namespace Fusee.ImGuiImp.Desktop.Templates
 {
     public abstract class FuseeControlToTexture
     {

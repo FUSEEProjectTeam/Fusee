@@ -3,6 +3,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
+using Fusee.ImGuiImp.Desktop.Templates;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         public string Value;
     }
 
-    internal class CoreControl : ImGuiDesktop.Templates.FuseeControlToTexture, IDisposable
+    internal class CoreControl : FuseeControlToTexture, IDisposable
     {
         private SceneContainer _rocketScene;
         private SceneRendererForward _renderer;

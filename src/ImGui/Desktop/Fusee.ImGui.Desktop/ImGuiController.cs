@@ -8,7 +8,7 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Fusee.ImGuiDesktop
+namespace Fusee.ImGuiImp.Desktop
 {
     public class ImGuiController
     {

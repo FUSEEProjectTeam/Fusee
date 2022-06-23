@@ -1,4 +1,4 @@
-﻿namespace Fusee.ImGuiDesktop
+﻿namespace Fusee.ImGuiImp.Desktop
 {
     internal class ImGuiRenderContextImp
     {

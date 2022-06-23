@@ -6,10 +6,8 @@ using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
 
-namespace Fusee.ImGuiDesktop
+namespace Fusee.ImGuiImp.Desktop
 {
-
-
     public class ImGuiInputImp : IInputDriverImp
     {
         private readonly GameWindow _gameWindow;

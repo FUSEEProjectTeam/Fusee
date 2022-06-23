@@ -298,7 +298,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PickingRayCa
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fusee.Engine.Imp.Graphics.SharedAll", "src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.shproj", "{7638E21E-193F-4AC7-8F01-B595FE8B3CAA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.ImGuiDesktop", "src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiDesktop.csproj", "{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.ImGuiImp.Desktop", "src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiImp.Desktop.csproj", "{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.FuseeImGui.Desktop", "Examples\Complete\ImGui\Desktop\Fusee.Examples.FuseeImGui.Desktop.csproj", "{A1E5AC7E-97B2-4BED-AB75-780416E422A5}"
 EndProject
