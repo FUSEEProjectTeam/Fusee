@@ -106,7 +106,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             // Disable FB, reset size etc. to previous size
             _rc.SetRenderTarget();
-            GL.Viewport(0, 0, _originalWidth, _originalHeight);
+            _rc.Viewport(0, 0, _originalWidth, _originalHeight);
 
             // bind the render result and return ptr to texture
             return new IntPtr(tex);

@@ -200,8 +200,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
                 {
                     _renderTexture.Dispose();
                 }
-
-
                 disposedValue = true;
             }
         }
