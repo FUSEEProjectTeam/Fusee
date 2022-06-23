@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
+using Microsoft.Toolkit.Diagnostics;
 using System;
 
 namespace Fusee.Engine.Core.Scene
@@ -48,19 +49,35 @@ namespace Fusee.Engine.Core.Scene
         #endregion
 
         /// <summary>
-        /// Gets and sets the vertices.
+        /// Gets the vertices.
         /// </summary>
         /// <value>
         /// The vertices.
         /// </value>
-        public float3[] Vertices
+        public ReadOnlySpan<float3> Vertices => _vertices;
+
+        /// <summary>
+        /// Set all vertices of the mesh.
+        /// </summary>
+        /// <param name="vertices"></param>
+        public void SetVertices(float3[] vertices)
         {
-            get => _vertices;
-            set
-            {
-                _vertices = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertices));
-            }
+            Guard.IsNotNull(vertices, nameof(vertices));
+            _vertices = vertices;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertices));
+        }
+
+        /// <summary>
+        /// Set/alter one vertex of given mesh.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="vertex"></param>
+        public void SetVertex(int idx, float3 vertex)
+        {
+            Guard.IsNotNull(_vertices, nameof(_vertices));
+            Guard.IsInRange(idx, 0, _vertices.Length, nameof(idx));
+            _vertices[idx] = vertex;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertices));
         }
 
         /// <summary>
@@ -71,22 +88,6 @@ namespace Fusee.Engine.Core.Scene
         /// </value>
         public bool VerticesSet => _vertices?.Length > 0;
 
-        /// <summary>
-        /// Gets a value indicating whether tangents are set.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if tangents are set; otherwise, <c>false</c>.
-        /// </value>
-        public bool TangentsSet => _tangents?.Length > 0;
-
-        /// <summary>
-        /// Gets a value indicating whether bi tangents are set.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if bi tangents are set; otherwise, <c>false</c>.
-        /// </value>
-        public bool BiTangentsSet => _biTangents?.Length > 0;
-
 
         /// <summary>
         /// Gets and sets the color of a single vertex.
@@ -94,14 +95,31 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The color.
         /// </value>
-        public uint[] Colors
+        public ReadOnlySpan<uint> Colors => _colors;
+
+
+        /// <summary>
+        /// Set all colors of the mesh.
+        /// </summary>
+        /// <param name="colors"></param>
+        public void SetColors(uint[] colors)
         {
-            get => _colors;
-            set
-            {
-                _colors = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors));
-            }
+            Guard.IsNotNull(colors, nameof(colors));
+            _colors = colors;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors));
+        }
+
+        /// <summary>
+        /// Set/alter one color of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="color"></param>
+        public void SetColor(int idx, uint color)
+        {
+            Guard.IsNotNull(_colors, nameof(_colors));
+            Guard.IsInRange(idx, 0, _colors.Length, nameof(idx));
+            _colors[idx] = color;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors));
         }
 
         /// <summary>
@@ -118,14 +136,30 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The color.
         /// </value>
-        public uint[] Colors1
+        public ReadOnlySpan<uint> Colors1 => _colors1;
+
+        /// <summary>
+        /// Set all colors1 of the mesh.
+        /// </summary>
+        /// <param name="colors1"></param>
+        public void SetColors1(uint[] colors1)
         {
-            get => _colors1;
-            set
-            {
-                _colors1 = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors1));
-            }
+            Guard.IsNotNull(colors1, nameof(colors1));
+            _colors1 = colors1;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors1));
+        }
+
+        /// <summary>
+        /// Set/alter one color1 of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="color1"></param>
+        public void SetColor1(int idx, uint color1)
+        {
+            Guard.IsNotNull(_colors1, nameof(_colors1));
+            Guard.IsInRange(idx, 0, _colors1.Length, nameof(idx));
+            _colors1[idx] = color1;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors1));
         }
 
         /// <summary>
@@ -142,14 +176,30 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The color.
         /// </value>
-        public uint[] Colors2
+        public ReadOnlySpan<uint> Colors2 => _colors2;
+
+        /// <summary>
+        /// Set all colors2 of the mesh.
+        /// </summary>
+        /// <param name="colors2"></param>
+        public void SetColors2(uint[] colors2)
         {
-            get => _colors2;
-            set
-            {
-                _colors2 = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors2));
-            }
+            Guard.IsNotNull(colors2, nameof(colors2));
+            _colors2 = colors2;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors2));
+        }
+
+        /// <summary>
+        /// Set/alter one color2 of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="color2"></param>
+        public void SetColor2(int idx, uint color2)
+        {
+            Guard.IsNotNull(_colors2, nameof(_colors2));
+            Guard.IsInRange(idx, 0, _colors2.Length, nameof(idx));
+            _colors2[idx] = color2;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors2));
         }
 
         /// <summary>
@@ -167,15 +217,32 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The normals..
         /// </value>
-        public float3[] Normals
+        public ReadOnlySpan<float3> Normals => _normals;
+
+        /// <summary>
+        /// Set all normals of the mesh.
+        /// </summary>
+        /// <param name="normals"></param>
+        public void SetNormals(float3[] normals)
         {
-            get => _normals;
-            set
-            {
-                _normals = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Normals));
-            }
+            Guard.IsNotNull(normals, nameof(normals));
+            _normals = normals;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Normals));
         }
+
+        /// <summary>
+        /// Set/alter one normal of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="normal"></param>
+        public void SetNormal(int idx, float3 normal)
+        {
+            Guard.IsNotNull(_normals, nameof(_normals));
+            Guard.IsInRange(idx, 0, _normals.Length, nameof(idx));
+            _normals[idx] = normal;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Normals));
+        }
+
         /// <summary>
         /// Gets a value indicating whether normals are set.
         /// </summary>
@@ -190,14 +257,30 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The UV-coordinates.
         /// </value>
-        public float2[] UVs
+        public ReadOnlySpan<float2> UVs => _uvs;
+
+        /// <summary>
+        /// Set all uvs of the mesh.
+        /// </summary>
+        /// <param name="uv"></param>
+        public void SetUVs(float2[] uv)
         {
-            get => _uvs;
-            set
-            {
-                _uvs = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Uvs));
-            }
+            Guard.IsNotNull(uv, nameof(uv));
+            _uvs = uv;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Uvs));
+        }
+
+        /// <summary>
+        /// Set/alter one uv of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="uv"></param>
+        public void SetUV(int idx, float2 uv)
+        {
+            Guard.IsNotNull(_uvs, nameof(_uvs));
+            Guard.IsInRange(idx, 0, _uvs.Length, nameof(idx));
+            _uvs[idx] = uv;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Uvs));
         }
 
         /// <summary>
@@ -214,15 +297,32 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The bone weights.
         /// </value>
-        public float4[] BoneWeights
+        public ReadOnlySpan<float4> BoneWeights => _boneWeights;
+
+        /// <summary>
+        /// Set all bone weights of the mesh.
+        /// </summary>
+        /// <param name="boneWeights"></param>
+        public void SetBoneWeights(float4[] boneWeights)
         {
-            get => _boneWeights;
-            set
-            {
-                _boneWeights = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneWeights));
-            }
+            Guard.IsNotNull(boneWeights, nameof(boneWeights));
+            _boneWeights = boneWeights;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneWeights));
         }
+
+        /// <summary>
+        /// Set/alter one bone weight of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="boneWeight"></param>
+        public void SetBoneWeight(int idx, float4 boneWeight)
+        {
+            Guard.IsNotNull(_boneWeights, nameof(_boneWeights));
+            Guard.IsInRange(idx, 0, _boneWeights.Length, nameof(idx));
+            _boneWeights[idx] = boneWeight;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneWeights));
+        }
+
         /// <summary>
         /// Gets a value indicating whether bone weights are set.
         /// </summary>
@@ -237,15 +337,32 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The bone indices.
         /// </value>
-        public float4[] BoneIndices
+        public ReadOnlySpan<float4> BoneIndices => _boneIndices;
+
+        /// <summary>
+        /// Set all bone indices of the mesh.
+        /// </summary>
+        /// <param name="boneIndices"></param>
+        public void SetBoneIndices(float4[] boneIndices)
         {
-            get => _boneIndices;
-            set
-            {
-                _boneIndices = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneIndices));
-            }
+            Guard.IsNotNull(boneIndices, nameof(boneIndices));
+            _boneIndices = boneIndices;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneIndices));
         }
+
+        /// <summary>
+        /// Set/alter one bone index of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="boneIndex"></param>
+        public void SetBoneIndex(int idx, float4 boneIndex)
+        {
+            Guard.IsNotNull(_boneIndices, nameof(_boneIndices));
+            Guard.IsInRange(idx, 0, _boneIndices.Length, nameof(idx));
+            _boneIndices[idx] = boneIndex;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneIndices));
+        }
+
         /// <summary>
         /// Gets a value indicating whether bone indices are set.
         /// </summary>
@@ -260,15 +377,30 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         /// The triangles.
         /// </value>
-        public ushort[] Triangles
-        {
-            get => _triangles;
-            set
-            {
-                _triangles = value;
+        public ReadOnlySpan<ushort> Triangles => _triangles;
 
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Triangles));
-            }
+        /// <summary>
+        /// Set all triangles of the mesh.
+        /// </summary>
+        /// <param name="triangles"></param>
+        public void SetTriangles(ushort[] triangles)
+        {
+            Guard.IsNotNull(triangles, nameof(triangles));
+            _triangles = triangles;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Triangles));
+        }
+
+        /// <summary>
+        /// Set/alter one triangle of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="triangle"></param>
+        public void SetBoneIndex(int idx, ushort triangle)
+        {
+            Guard.IsNotNull(_triangles, nameof(_triangles));
+            Guard.IsInRange(idx, 0, _triangles.Length, nameof(idx));
+            _triangles[idx] = triangle;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Triangles));
         }
 
         /// <summary>
@@ -280,38 +412,84 @@ namespace Fusee.Engine.Core.Scene
         public bool TrianglesSet => _triangles?.Length > 0;
 
         /// <summary>
-        /// The bounding box of this geometry chunk.
-        /// </summary>
-        public AABBf BoundingBox;
-
-        /// <summary>
         /// The tangent of each triangle for normal mapping.
         /// w-component is handedness
         /// </summary>
-        public float4[] Tangents
-        {
-            get => _tangents;
-            set
-            {
-                _tangents = value;
+        public ReadOnlySpan<float4> Tangents => _tangents;
 
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Tangents));
-            }
+        /// <summary>
+        /// Set all tangents of the mesh.
+        /// </summary>
+        /// <param name="tangents"></param>
+        public void SetTangents(float4[] tangents)
+        {
+            Guard.IsNotNull(tangents, nameof(tangents));
+            _tangents = tangents;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Tangents));
         }
+
+        /// <summary>
+        /// Set/alter one tangent of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="tangents"></param>
+        public void SetTangent(int idx, float4 tangents)
+        {
+            Guard.IsNotNull(_tangents, nameof(_tangents));
+            Guard.IsInRange(idx, 0, _tangents.Length, nameof(idx));
+            _tangents[idx] = tangents;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Tangents));
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether tangents are set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if tangents are set; otherwise, <c>false</c>.
+        /// </value>
+        public bool TangentsSet => _tangents?.Length > 0;
 
         /// <summary>
         /// The bi tangent of each triangle for normal mapping.
         /// </summary>
-        public float3[] BiTangents
-        {
-            get => _biTangents;
-            set
-            {
-                _biTangents = value;
+        public ReadOnlySpan<float3> BiTangents => _biTangents;
 
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BiTangents));
-            }
+        /// <summary>
+        /// Set all bitangents of the mesh.
+        /// </summary>
+        /// <param name="biTangents"></param>
+        public void SetBiTangents(float3[] biTangents)
+        {
+            Guard.IsNotNull(biTangents, nameof(biTangents));
+            _biTangents = biTangents;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BiTangents));
         }
+
+        /// <summary>
+        /// Set/alter one bitangent of a single vertex.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="biTangent"></param>
+        public void SetBiTangent(int idx, float3 biTangent)
+        {
+            Guard.IsNotNull(_biTangents, nameof(_biTangents));
+            Guard.IsInRange(idx, 0, _biTangents.Length, nameof(idx));
+            _biTangents[idx] = biTangent;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BiTangents));
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether bi tangents are set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if bi tangents are set; otherwise, <c>false</c>.
+        /// </value>
+        public bool BiTangentsSet => _biTangents?.Length > 0;
+
+        /// <summary>
+        /// The bounding box of this geometry chunk.
+        /// </summary>
+        public AABBf BoundingBox;
 
         /// <summary>
         /// The type of mesh which is represented by this instance (e. g. triangle mesh, point, line, etc...)
@@ -328,7 +506,6 @@ namespace Fusee.Engine.Core.Scene
         public void Dispose()
         {
             Dispose(true);
-
             GC.SuppressFinalize(this);
         }
 

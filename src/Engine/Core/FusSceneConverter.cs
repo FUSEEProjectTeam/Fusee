@@ -555,18 +555,27 @@ namespace Fusee.Engine.Core
             {
                 MeshType = (PrimitiveType)m.MeshType,
                 Active = true,
-                BiTangents = m.BiTangents,
-                BoneIndices = m.BoneIndices,
-                BoundingBox = m.BoundingBox,
-                BoneWeights = m.BoneWeights,
-                Colors = m.Colors,
-                Name = m.Name,
-                Normals = m.Normals,
-                Tangents = m.Tangents,
-                Triangles = m.Triangles,
-                UVs = m.UVs,
-                Vertices = m.Vertices
+                Name = m.Name
             };
+
+            if(m.BiTangents != null)
+            mesh.SetBiTangents(m.BiTangents);
+            if (m.BoneIndices != null)
+                mesh.SetBoneIndices(m.BoneIndices);
+            if (m.BoneWeights != null)
+                mesh.SetBoneWeights(m.BoneWeights);
+            if (m.Colors != null)
+                mesh.SetColors(m.Colors);
+            if (m.Normals != null)
+                mesh.SetNormals(m.Normals);
+            if (m.Tangents != null)
+                mesh.SetTangents(m.Tangents);
+            if (m.Triangles != null)
+                mesh.SetTriangles(m.Triangles);
+            if (m.UVs != null)
+                mesh.SetUVs(m.UVs);
+            if (m.Vertices != null)
+                mesh.SetVertices(m.Vertices);
 
             if (_currentNode.Components == null)
             {
@@ -1257,17 +1266,17 @@ namespace Fusee.Engine.Core
             var mesh = new FusMesh
             {
                 MeshType = (int)m.MeshType,
-                BiTangents = m.BiTangents,
-                BoneIndices = m.BoneIndices,
-                BoundingBox = m.BoundingBox,
-                BoneWeights = m.BoneWeights,
-                Colors = m.Colors,
                 Name = m.Name,
-                Normals = m.Normals,
-                Tangents = m.Tangents,
-                Triangles = m.Triangles,
-                UVs = m.UVs,
-                Vertices = m.Vertices
+                BoundingBox = m.BoundingBox,
+                BiTangents = m.BiTangents.ToArray(),
+                BoneIndices = m.BoneIndices.ToArray(),
+                BoneWeights = m.BoneWeights.ToArray(),
+                Colors = m.Colors.ToArray(),
+                Normals = m.Normals.ToArray(),
+                Tangents = m.Tangents.ToArray(),
+                Triangles = m.Triangles.ToArray(),
+                UVs = m.UVs.ToArray(),
+                Vertices = m.Vertices.ToArray()
             };
 
             _currentNode.AddComponent(mesh);

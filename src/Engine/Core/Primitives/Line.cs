@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core.Primitives
         /// <param name="points">The vertices, the line should connect.</param>
         /// <param name="lineThickness">The thickness of the line.</param>
         /// <param name="rectWidth"></param>
-        /// <param name="rectHeight"></param>       
+        /// <param name="rectHeight"></param>
         public Line(List<float3> points, float lineThickness, float rectWidth = 1, float rectHeight = 1)
         {
             var segmentCache = new float3[4];
@@ -45,11 +45,11 @@ namespace Fusee.Engine.Core.Primitives
                 }
 
                 var dirVec = end - start;
-                dirVec.Normalize();
+                _ = dirVec.Normalize();
                 var angleToXAxis = (float)System.Math.Atan2(end.y - start.y, end.x - start.x);
 
                 var perpendicularVec = RotateVectorInXYPlane(float3.UnitY, angleToXAxis);
-                perpendicularVec.Normalize();
+                _ = perpendicularVec.Normalize();
 
                 var v0 = start + -perpendicularVec * lineThickness / 2;
                 var v1 = start + perpendicularVec * lineThickness / 2;
@@ -89,26 +89,26 @@ namespace Fusee.Engine.Core.Primitives
                     {
                         var vec03Cache = segmentCache[3] - segmentCache[0];
                         var vec03CacheLength = vec03Cache.Length;
-                        vec03Cache.Normalize();
+                        _ = vec03Cache.Normalize();
 
                         var vec30 = v0 - v3;
                         var vec30Length = vec30.Length;
-                        vec30.Normalize();
+                        _ = vec30.Normalize();
 
                         var vec12Cache = segmentCache[2] - segmentCache[1];
                         var vec12CacheLength = vec12Cache.Length;
-                        vec12Cache.Normalize();
+                        _ = vec12Cache.Normalize();
 
                         var vec21 = v1 - v2;
                         var vec21Length = vec21.Length;
-                        vec21.Normalize();
+                        _ = vec21.Normalize();
 
                         //calculate inter-segment vertices
-                        Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[0],
+                        _ = Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[0],
                             segmentCache[3] + (vec03CacheLength * vec03Cache), v0 + (vec30Length * vec30), v3,
                             out var intersectionPoint1);
 
-                        Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[1],
+                        _ = Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[1],
                             segmentCache[2] + (vec12CacheLength * vec12Cache), v1 + (vec21Length * vec21), v2,
                             out var intersectionPoint2);
 
@@ -137,26 +137,26 @@ namespace Fusee.Engine.Core.Primitives
                     {
                         var vec03Cache = segmentCache[3] - segmentCache[0];
                         var vec03CacheLength = vec03Cache.Length;
-                        vec03Cache.Normalize();
+                        _ = vec03Cache.Normalize();
 
                         var vec30 = v0 - v3;
                         var vec30Length = vec30.Length;
-                        vec30.Normalize();
+                        _ = vec30.Normalize();
 
                         var vec12Cache = segmentCache[2] - segmentCache[1];
                         var vec12CacheLength = vec12Cache.Length;
-                        vec12Cache.Normalize();
+                        _ = vec12Cache.Normalize();
 
                         var vec21 = v1 - v2;
                         var vec21Length = vec21.Length;
-                        vec21.Normalize();
+                        _ = vec21.Normalize();
 
                         //calculate inter-segment vertices
-                        Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[0],
+                        _ = Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[0],
                             segmentCache[3] + (vec03CacheLength * vec03Cache), v0 + (vec30Length * vec30), v3,
                             out var intersectionPoint1);
 
-                        Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[1],
+                        _ = Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[1],
                             segmentCache[2] + (vec12CacheLength * vec12Cache), v1 + (vec21Length * vec21), v2,
                             out var intersectionPoint2);
 
@@ -214,10 +214,10 @@ namespace Fusee.Engine.Core.Primitives
 
             }
 
-            Vertices = verts.ToArray();
-            Normals = normals.ToArray();
-            Triangles = tris.ToArray();
-            UVs = uvs.ToArray();
+            SetVertices(verts.ToArray());
+            SetNormals(normals.ToArray());
+            SetTriangles(tris.ToArray());
+            SetUVs(uvs.ToArray());
         }
 
         private float3 RotateVectorInXYPlane(float3 vec, float angle)

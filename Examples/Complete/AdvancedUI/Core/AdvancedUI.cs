@@ -539,10 +539,10 @@ namespace Fusee.Examples.AdvancedUI.Core
                 if (mesh != null)
                 {
                     Line newLine = new(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
-                    mesh.Vertices = newLine.Vertices;
-                    mesh.Normals = newLine.Normals;
-                    mesh.Triangles = newLine.Triangles;
-                    mesh.UVs = newLine.UVs;
+                    mesh.SetVertices(newLine.Vertices.ToArray());
+                    mesh.SetNormals(newLine.Normals.ToArray());
+                    mesh.SetTriangles(newLine.Triangles.ToArray());
+                    mesh.SetUVs(newLine.UVs.ToArray());
                 }
                 else
                 {

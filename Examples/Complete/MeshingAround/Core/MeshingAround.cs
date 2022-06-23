@@ -103,6 +103,11 @@ namespace Fusee.Examples.MeshingAround.Core
                 Children = new ChildList()
             };
 
+            var sceneNodeOneMesh = new Mesh();
+            sceneNodeOneMesh.SetVertices(meshOne.Vertices.ToArray());
+            sceneNodeOneMesh.SetTriangles(meshOne.Triangles.ToArray());
+            sceneNodeOneMesh.SetNormals(meshOne.Normals.ToArray());
+
             SceneNode sceneNodeOne = new()
             {
                 Components = new List<SceneComponent>()
@@ -113,15 +118,15 @@ namespace Fusee.Examples.MeshingAround.Core
                         Scale = float3.One,
                         Translation = new float3(0, 0, 0)
                     },
-                    new Mesh()
-                    {
-                        Vertices = meshOne.Vertices,
-                        Triangles = meshOne.Triangles,
-                        Normals = meshOne.Normals,
-                    }
+                    sceneNodeOneMesh
                 }
             };
             ///////////////////////////////////////////////////////////
+            var sncMesh = new Mesh();
+            sncMesh.SetVertices(cube.Vertices.ToArray());
+            sncMesh.SetTriangles(cube.Triangles.ToArray());
+            sncMesh.SetNormals(cube.Normals.ToArray());
+
             SceneNode sceneNodeCube = new()
             {
                 Components = new List<SceneComponent>()
@@ -132,16 +137,14 @@ namespace Fusee.Examples.MeshingAround.Core
                         Scale = float3.One,
                         Translation = new float3(-2, -1, 0)
                     },
-                     new Mesh()
-                    {
-                        Vertices = cube.Vertices,
-                        Triangles = cube.Triangles,
-                        Normals = cube.Normals,
-                    }
-
+                    sncMesh
                 }
             };
             //////////////////////////////////////////////////////////////////
+            var sceneNodeCTriMesh = new Mesh();
+            sceneNodeCTriMesh.SetVertices(triangle.Vertices.ToArray());
+            sceneNodeCTriMesh.SetTriangles(triangle.Triangles.ToArray());
+            sceneNodeCTriMesh.SetNormals(triangle.Normals.ToArray());
             SceneNode sceneNodeCTri = new()
             {
                 Components = new List<SceneComponent>()
@@ -152,12 +155,7 @@ namespace Fusee.Examples.MeshingAround.Core
                         Scale = float3.One,
                         Translation = new float3(1.5f, -1, 0)
                     },
-                    new Mesh()
-                    {
-                        Vertices = triangle.Vertices,
-                        Triangles = triangle.Triangles,
-                        Normals = triangle.Normals,
-                    }
+                    sceneNodeCTriMesh
                 }
             };
             //////////////////////////////////////////////////////////////////

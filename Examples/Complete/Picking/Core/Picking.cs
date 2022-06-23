@@ -276,9 +276,8 @@ namespace Fusee.Examples.Picking.Core
 
         public static Mesh CreateCuboid(float3 size)
         {
-            return new Mesh
-            {
-                Vertices = new[]
+            var m = new Mesh();
+            m.SetVertices(new[]
                 {
                     new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
                     new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
@@ -304,10 +303,10 @@ namespace Fusee.Examples.Picking.Core
                     new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
                     new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
                     new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z}
-                },
+                });
 
-                Triangles = new ushort[]
-                {
+            m.SetTriangles(new ushort[]
+                 {
                     // front face
                     0, 2, 1, 0, 3, 2,
 
@@ -325,10 +324,10 @@ namespace Fusee.Examples.Picking.Core
 
                     // bottom face
                     20, 22, 21, 20, 23, 22
-                },
+                 });
 
-                Normals = new[]
-                {
+            m.SetNormals(new[]
+            {
                     new float3(0, 0, 1),
                     new float3(0, 0, 1),
                     new float3(0, 0, 1),
@@ -353,10 +352,10 @@ namespace Fusee.Examples.Picking.Core
                     new float3(0, -1, 0),
                     new float3(0, -1, 0),
                     new float3(0, -1, 0)
-                },
+                });
 
-                UVs = new[]
-                {
+            m.SetUVs(new[]
+            {
                     new float2(1, 0),
                     new float2(1, 1),
                     new float2(0, 1),
@@ -381,9 +380,9 @@ namespace Fusee.Examples.Picking.Core
                     new float2(1, 1),
                     new float2(0, 1),
                     new float2(0, 0)
-                },
-                BoundingBox = new AABBf(-0.5f * size, 0.5f * size)
-            };
+                });
+            m.BoundingBox = new AABBf(-0.5f * size, 0.5f * size);
+            return m;
         }
     }
 }

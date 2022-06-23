@@ -131,13 +131,13 @@ namespace Fusee.Tests.Serialization.V1
                 {
                     Assert.Equal(mesh.Name, ((FusMesh)fusFileComp).Name);
                     Assert.Equal(mesh.BoundingBox, ((FusMesh)fusFileComp).BoundingBox);
-                    Assert.Equal(mesh.Colors, ((FusMesh)fusFileComp).Colors);
-                    Assert.Equal(mesh.Vertices, ((FusMesh)fusFileComp).Vertices);
-                    Assert.Equal(mesh.Triangles, ((FusMesh)fusFileComp).Triangles);
-                    Assert.Equal(mesh.UVs, ((FusMesh)fusFileComp).UVs);
+                    Assert.Equal(mesh.Colors.ToArray(), ((FusMesh)fusFileComp).Colors);
+                    Assert.Equal(mesh.Vertices.ToArray(), ((FusMesh)fusFileComp).Vertices);
+                    Assert.Equal(mesh.Triangles.ToArray(), ((FusMesh)fusFileComp).Triangles);
+                    Assert.Equal(mesh.UVs.ToArray(), ((FusMesh)fusFileComp).UVs);
                     Assert.Equal((int)mesh.MeshType, ((FusMesh)fusFileComp).MeshType);
-                    Assert.Equal(mesh.Tangents, ((FusMesh)fusFileComp).Tangents);
-                    Assert.Equal(mesh.BiTangents, ((FusMesh)fusFileComp).BiTangents);
+                    Assert.Equal(mesh.Tangents.ToArray(), ((FusMesh)fusFileComp).Tangents);
+                    Assert.Equal(mesh.BiTangents.ToArray(), ((FusMesh)fusFileComp).BiTangents);
                 }
 
                 if (gtComp is Weight weight)
@@ -216,7 +216,7 @@ namespace Fusee.Tests.Serialization.V1
             //Assert.Equal(t.Name, ((Transform)sceneFileComp).Name);
             //Assert.Equal(t.Rotation, ((Transform)sceneFileComp).Rotation);
             //Assert.Equal(t.Scale, ((Transform)sceneFileComp).Scale);
-            //Assert.Equal(t.Translation, ((Transform)sceneFileComp).Translation);                   
+            //Assert.Equal(t.Translation, ((Transform)sceneFileComp).Translation);
             //}
 
             //if (gtComp is Bone bone)

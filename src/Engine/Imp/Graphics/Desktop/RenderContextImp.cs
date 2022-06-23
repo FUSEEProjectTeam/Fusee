@@ -5,10 +5,12 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Imp.Shared;
 using Fusee.Math.Core;
+using Microsoft.Toolkit.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -1304,12 +1306,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="vertices">The vertices.</param>
         /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetVertices(IMeshImp mr, float3[] vertices)
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices)
         {
-            if (vertices == null || vertices.Length == 0)
-            {
-                throw new ArgumentException("Vertices must not be null or empty");
-            }
+            Guard.IsGreaterThan(vertices.Length, 0, nameof(vertices));
 
             int vertsBytes = vertices.Length * 3 * sizeof(float);
             if (((MeshImp)mr).VertexBufferObject == 0)
@@ -1319,7 +1318,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertsBytes, ref MemoryMarshal.GetReference(vertices), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
@@ -1332,12 +1331,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTangents(IMeshImp mr, float4[] tangents)
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents)
         {
-            if (tangents == null || tangents.Length == 0)
-            {
-                throw new ArgumentException("Tangents must not be null or empty");
-            }
+            Guard.IsGreaterThan(tangents.Length, 0, nameof(tangents));
 
             int tangentBytes = tangents.Length * 4 * sizeof(float);
             if (((MeshImp)mr).TangentBufferObject == 0)
@@ -1347,7 +1343,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(tangentBytes), tangents, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, tangentBytes, ref MemoryMarshal.GetReference(tangents), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != tangentBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
@@ -1360,12 +1356,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="bitangents">The BiTangents.</param>
         /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents)
         {
-            if (bitangents == null || bitangents.Length == 0)
-            {
-                throw new ArgumentException("BiTangents must not be null or empty");
-            }
+            Guard.IsGreaterThan(bitangents.Length, 0, nameof(bitangents));
 
             int bitangentBytes = bitangents.Length * 3 * sizeof(float);
             if (((MeshImp)mr).BitangentBufferObject == 0)
@@ -1375,7 +1368,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(bitangentBytes), bitangents, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, bitangentBytes, ref MemoryMarshal.GetReference(bitangents), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != bitangentBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
@@ -1388,12 +1381,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="normals">The normals.</param>
         /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetNormals(IMeshImp mr, float3[] normals)
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals)
         {
-            if (normals == null || normals.Length == 0)
-            {
-                throw new ArgumentException("Normals must not be null or empty");
-            }
+            Guard.IsGreaterThan(normals.Length, 0, nameof(normals));
 
             int normsBytes = normals.Length * 3 * sizeof(float);
             if (((MeshImp)mr).NormalBufferObject == 0)
@@ -1403,7 +1393,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, normsBytes, ref MemoryMarshal.GetReference(normals), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != normsBytes)
                 throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
@@ -1416,12 +1406,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="ArgumentException">BoneIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices)
         {
-            if (boneIndices == null || boneIndices.Length == 0)
-            {
-                throw new ArgumentException("BoneIndices must not be null or empty");
-            }
+            Guard.IsGreaterThan(boneIndices.Length, 0, nameof(boneIndices));
 
             int indicesBytes = boneIndices.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneIndexBufferObject == 0)
@@ -1431,7 +1418,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, indicesBytes, ref MemoryMarshal.GetReference(boneIndices), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != indicesBytes)
                 throw new ApplicationException(string.Format("Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.", indicesBytes, vboBytes));
@@ -1444,12 +1431,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="ArgumentException">BoneWeights must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights)
         {
-            if (boneWeights == null || boneWeights.Length == 0)
-            {
-                throw new ArgumentException("BoneWeights must not be null or empty");
-            }
+            Guard.IsGreaterThan(boneWeights.Length, 0, nameof(boneWeights));
 
             int weightsBytes = boneWeights.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneWeightBufferObject == 0)
@@ -1459,7 +1443,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, weightsBytes, ref MemoryMarshal.GetReference(boneWeights), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != weightsBytes)
                 throw new ApplicationException(string.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
@@ -1472,12 +1456,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="ArgumentException">UVs must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetUVs(IMeshImp mr, float2[] uvs)
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs)
         {
-            if (uvs == null || uvs.Length == 0)
-            {
-                throw new ArgumentException("UVs must not be null or empty");
-            }
+            Guard.IsGreaterThan(uvs.Length, 0, nameof(uvs));
 
             int uvsBytes = uvs.Length * 2 * sizeof(float);
             if (((MeshImp)mr).UVBufferObject == 0)
@@ -1487,7 +1468,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, uvsBytes, ref MemoryMarshal.GetReference(uvs), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != uvsBytes)
                 throw new ApplicationException(string.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
@@ -1500,12 +1481,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
-            if (colors == null || colors.Length == 0)
-            {
-                throw new ArgumentException("colors must not be null or empty");
-            }
+            Guard.IsGreaterThan(colors.Length, 0, nameof(colors));
 
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject == 0)
@@ -1515,7 +1493,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, colsBytes, ref MemoryMarshal.GetReference(colors), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1528,12 +1506,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors1(IMeshImp mr, uint[] colors)
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
-            if (colors == null || colors.Length == 0)
-            {
-                throw new ArgumentException("colors must not be null or empty");
-            }
+            Guard.IsGreaterThan(colors.Length, 0, nameof(colors));
 
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject1 == 0)
@@ -1543,7 +1518,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, colsBytes, ref MemoryMarshal.GetReference(colors), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1556,12 +1531,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors2(IMeshImp mr, uint[] colors)
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
-            if (colors == null || colors.Length == 0)
-            {
-                throw new ArgumentException("colors must not be null or empty");
-            }
+            Guard.IsGreaterThan(colors.Length, 0, nameof(colors));
 
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject2 == 0)
@@ -1571,7 +1543,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, colsBytes, ref MemoryMarshal.GetReference(colors), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1584,12 +1556,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<ushort> triangleIndices)
         {
-            if (triangleIndices == null || triangleIndices.Length == 0)
-            {
-                throw new ArgumentException("triangleIndices must not be null or empty");
-            }
+            Guard.IsGreaterThan(triangleIndices.Length, 0, nameof(triangleIndices));
+
             ((MeshImp)mr).NElements = triangleIndices.Length;
             int trisBytes = triangleIndices.Length * sizeof(short);
 
@@ -1600,7 +1570,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, trisBytes, ref MemoryMarshal.GetReference(triangleIndices), BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ElementArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));

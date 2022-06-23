@@ -95,6 +95,10 @@ namespace Fusee.Examples.ThreeDFont.Core
             };
 
             //Vladimir
+            var vladMesh = new Mesh();
+            vladMesh.SetVertices(_textMeshVlad.Vertices.ToArray());
+            vladMesh.SetTriangles(_textMeshVlad.Triangles.ToArray());
+            vladMesh.SetNormals(_textMeshVlad.Normals.ToArray());
             var sceneNodeCVlad = new SceneNode
             {
                 Components = new List<SceneComponent>()
@@ -106,16 +110,15 @@ namespace Fusee.Examples.ThreeDFont.Core
                         Translation = new float3(0, 2000, 0)
                     },
                     MakeEffect.FromDiffuseSpecular(new float4(26/255f,232/255f,148/255f,1)),
-                    new Mesh
-                    {
-                        Vertices = _textMeshVlad.Vertices,
-                        Triangles = _textMeshVlad.Triangles,
-                        Normals = _textMeshVlad.Normals,
-                    }
+                   vladMesh
                 }
             };
 
             //Lato
+            var latoMesh = new Mesh();
+            latoMesh.SetVertices(_textMeshLato.Vertices.ToArray());
+            latoMesh.SetTriangles(_textMeshLato.Triangles.ToArray());
+            latoMesh.SetNormals(_textMeshLato.Normals.ToArray());
             var sceneNodeCLato = new SceneNode
             {
                 Components = new List<SceneComponent>()
@@ -127,16 +130,15 @@ namespace Fusee.Examples.ThreeDFont.Core
                         Translation = new float3(0, 0, 0)
                     },
                     MakeEffect.FromDiffuseSpecular(new float4(27/255f,242/255f,216/255f,1)),
-                    new Mesh
-                    {
-                        Vertices = _textMeshLato.Vertices,
-                        Triangles = _textMeshLato.Triangles,
-                        Normals = _textMeshLato.Normals,
-                    }
+                   latoMesh
                 }
             };
 
             //GNU
+            var gnuMesh = new Mesh();
+            gnuMesh.SetVertices(_textMeshGnu.Vertices.ToArray());
+            gnuMesh.SetTriangles(_textMeshGnu.Triangles.ToArray());
+            gnuMesh.SetNormals(_textMeshGnu.Normals.ToArray());
             var sceneNodeCGnu = new SceneNode
             {
                 Components = new List<SceneComponent>()
@@ -148,12 +150,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                         Translation = new float3(0, -2000, 0)
                     },
                     MakeEffect.FromDiffuseSpecular(new float4(34/255f,190/255f,219/255f,1)),
-                    new Mesh
-                    {
-                        Vertices = _textMeshGnu.Vertices,
-                        Triangles = _textMeshGnu.Triangles,
-                        Normals = _textMeshGnu.Normals,
-                    }
+                    gnuMesh
                 }
             };
 

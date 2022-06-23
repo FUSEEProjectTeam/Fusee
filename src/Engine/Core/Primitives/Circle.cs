@@ -107,10 +107,10 @@ namespace Fusee.Engine.Core.Primitives
                 currentAngle += angleByStep;
             }
 
-            Vertices = verts.ToArray();
-            Normals = normals.ToArray();
-            Triangles = triangles.ToArray();
-            UVs = uvs.ToArray();
+            SetVertices(verts.ToArray());
+            SetNormals( normals.ToArray());
+            SetTriangles( triangles.ToArray());
+            SetUVs( uvs.ToArray());
         }
 
         private float Normalize(float input, float max, float min)
