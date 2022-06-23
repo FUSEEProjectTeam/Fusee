@@ -167,27 +167,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
             else
             {
-                if (shadingModel != ShadingModel.Edl)
-                    res.Add("OUT.albedo = resColor;");
-                else
-                {
-                    res.Add("if(ColorMode == 0)");
-                    res.Add("{");
-                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color};");
-                    res.Add("}");
-                    res.Add("else if(ColorMode == 1)");
-                    res.Add("{");
-                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color1};");
-                    res.Add("}");
-                    res.Add("else if(ColorMode == 2)");
-                    res.Add("{");
-                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color2};");
-                    res.Add("}");
-                    res.Add("else if(ColorMode == 3)");
-                    res.Add("{");
-                    res.Add("   OUT.albedo = resColor;");
-                    res.Add("}");
-                }
+                res.Add("OUT.albedo = resColor;");
             }
 
             if (texSetup.HasFlag(TextureSetup.NormalMap))

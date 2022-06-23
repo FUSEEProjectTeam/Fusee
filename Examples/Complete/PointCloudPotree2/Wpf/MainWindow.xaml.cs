@@ -3,6 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Examples.PointCloudPotree2.Core;
 using Fusee.PointCloud.Common;
 using Fusee.Serialization;
@@ -166,7 +167,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
         private void ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (app == null || !app.IsInitialized) return;
-            PtRenderingParams.Instance.PointCloudColorMode = (PointColorMode)e.AddedItems[0];
+            PtRenderingParams.Instance.PointCloudColorMode = (ColorMode)e.AddedItems[0];
 
             //ColorPicker is unavailable right now
             //if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)

@@ -45,15 +45,15 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             }
         }
 
-        private PointColorMode _colorMode = PointColorMode.VertexColor0;
+        private ColorMode _colorMode = ColorMode.VertexColor0;
 
-        public PointColorMode ColorMode
+        public ColorMode ColorMode
         {
             get { return _colorMode; }
             set
             {
                 _colorMode = value;
-                ColorPassEf.PointCloudColorMode = (int)_colorMode;
+                ColorPassEf.ColorMode = (int)_colorMode;
             }
         }
 

@@ -62,22 +62,6 @@ namespace Fusee.Engine.Core.Effects
         private int _edlNeighbourPixels;
 
         /// <summary>
-        /// The shader shard containing the Color Mode.
-        /// </summary>
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Uniform)]
-        public int PointCloudColorMode
-        {
-            get { return _colorMode; }
-            set
-            {
-                _colorMode = value;
-                SetFxParam(nameof(PointCloudColorMode), _colorMode);
-            }
-        }
-        private int _colorMode;
-
-        /// <summary>
         /// Shape of the points.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
