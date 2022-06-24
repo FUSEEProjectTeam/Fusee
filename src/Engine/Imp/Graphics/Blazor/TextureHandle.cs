@@ -7,7 +7,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
     /// </summary>
     internal class TextureHandle : ITextureHandle
     {
-        internal WebGLTexture TexHandle = null;
+        internal WebGLTexture TexId = null;
         internal WebGLFramebuffer FrameBufferHandle = null;
         internal WebGLRenderbuffer DepthRenderBufferHandle = null;
     }

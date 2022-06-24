@@ -40,6 +40,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         private uint _blendDstAlpha;
 
         private bool _isCullEnabled;
+        private WebGLFramebuffer _lastBoundFbo;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
@@ -267,7 +268,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 throw new ArgumentException($"Create Texture gl2 error {err}, Format {img.PixelFormat.ColorFormat}, BPP {img.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
 
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             return texID;
         }
@@ -307,7 +308,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {img.ImageData.PixelFormat.ColorFormat}, BPP {img.ImageData.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
 
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
             return texID;
         }
 
@@ -358,7 +359,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, glWrapMode);
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             uint err = gl2.GetError();
             if (err != 0)
@@ -400,7 +401,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             } while (scanlines.MoveNext());
 
-            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexId);
             gl2.TexSubImage2D(TEXTURE_2D, 0, startX, startY, width, height, format, pxType, bytes);
 
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
@@ -445,9 +446,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 gl2.DeleteRenderbuffer(texHandle.DepthRenderBufferHandle);
             }
 
-            if (texHandle.TexHandle != null)
+            if (texHandle.TexId != null)
             {
-                gl2.DeleteTexture(texHandle.TexHandle);
+                gl2.DeleteTexture(texHandle.TexId);
             }
         }
 
@@ -785,17 +786,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     Diagnostics.Error("OpenTK ES31 does not support Texture1D.");
                     break;
                 case TextureType.Texture2D:
-                    gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.Texture3D:
-                    gl2.BindTexture(TEXTURE_3D, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_3D, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.TextureCubeMap:
-                    gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.ArrayTexture:
                     //Console.WriteLine("Binding array tex");
-                    gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.Image2D:
                 default:
@@ -1890,7 +1891,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texId">The texture identifier.</param>
         public void GetBufferContent(Rectangle quad, ITextureHandle texId)
         {
-            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexId);
             gl2.CopyTexImage2D(TEXTURE_2D, 0, RGBA, quad.Left, quad.Top, quad.Width, quad.Height, 0);
         }
 
@@ -2267,17 +2268,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
 
-                gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texHandle).TexHandle);
+                gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texHandle).TexId);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
                 }
                 else
                 {
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { NONE });
                     gl2.ReadBuffer(NONE);
                 }
@@ -2306,17 +2307,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
 
-                gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle);
+                gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexId);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
                 }
                 else
                 {
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { NONE });
                     gl2.ReadBuffer(NONE);
                 }
@@ -2376,12 +2377,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     gl2.BindRenderbuffer(RENDERBUFFER, gDepthRenderbufferHandle);
                 }
             }
-
+#if DEBUG
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
             {
                 throw new Exception($"Error creating frame buffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
                     $"DepthBuffer set? {renderTarget.DepthBufferHandle != null}");
             }
+#endif
         }
 
         /// <summary>
@@ -2400,17 +2402,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
 
-                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexId);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
-                    gl2.FramebufferTextureLayer(FRAMEBUFFER, COLOR_ATTACHMENT0, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, COLOR_ATTACHMENT0, ((TextureHandle)texHandle).TexId, 0, layer);
                     gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
                 }
                 else
                 {
-                    gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexId, 0, layer);
                     gl2.DrawBuffers(new uint[] { NONE });
                     gl2.ReadBuffer(NONE);
                 }
@@ -2418,8 +2420,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             else
             {
                 gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
-                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
-                gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexId);
+                gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexId, 0, layer);
             }
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
@@ -2473,12 +2475,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
                     if (i == depthTexPos)
                     {
-                        gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT + (uint)depthCnt, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                        gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT + (uint)depthCnt, TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                         depthCnt++;
                     }
                     else
                     {
-                        gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                        gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                     }
                 }
 
@@ -2490,7 +2492,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ITextureHandle texHandle = texHandles[depthTexPos];
 
                 if (texHandle != null)
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                 else
                     throw new NullReferenceException("Texture handle is null!");
 
@@ -2522,7 +2524,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texHandle">The gpu handle of the texture.</param>
         public void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0)
         {
-            ChangeFramebufferTexture2D(renderTarget, attachment, ((TextureHandle)texHandle).TexHandle, isDepthTex);
+            ChangeFramebufferTexture2D(renderTarget, attachment, ((TextureHandle)texHandle).TexId, isDepthTex);
         }
 
         private void ChangeFramebufferTexture2D(IRenderTarget renderTarget, int attachment, WebGLTexture handle, bool isDepth)
@@ -2697,7 +2699,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="filterMode"></param>
         public void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode)
         {
-            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexId);
             Tuple<int, int> glMinMagFilter = GetMinMagFilter(filterMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, glMinMagFilter.Item1);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, glMinMagFilter.Item2);
@@ -2710,7 +2712,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="wrapMode"></param>
         public void SetTextureWrapMode(ITextureHandle tex, TextureWrapMode wrapMode)
         {
-            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexId);
             int glWrapMode = GetWrapMode(wrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
@@ -2747,7 +2749,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_WRAP_T, glWrapMode);
 
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             return texID;
 
