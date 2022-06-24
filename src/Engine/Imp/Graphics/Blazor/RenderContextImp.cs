@@ -2247,27 +2247,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle)
         {
-            if (tex is not WritableTexture wt)
+            WebGLFramebuffer fBuffer;
+            if (tex is not WritableTexture)
             {
                 throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
             }
 
-            SetRenderTarget(wt, texHandle);
-        }
-
-        /// <summary>
-        /// Renders into the given texture.
-        /// </summary>
-        /// <param name="tex">The texture.</param>
-        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
-        public void SetRenderTarget(WritableTexture tex, ITextureHandle texHandle)
-        {
             if (((TextureHandle)texHandle).FrameBufferHandle == null)
             {
-                WebGLFramebuffer fBuffer = gl2.CreateFramebuffer();
+                fBuffer = gl2.CreateFramebuffer();
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
-
                 gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texHandle).TexId);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
