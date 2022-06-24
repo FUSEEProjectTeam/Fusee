@@ -78,35 +78,69 @@ namespace Fusee.Engine.Core
                     _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
                     mesh.BoundingBox = new AABBf(mesh.Vertices.ToArray());
                     break;
+                case MeshChangedEnum.Vertex:
+                    _renderContextImp.SetVertex(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (float3)meshDataEventArgs.Data.Value);
+                    mesh.BoundingBox = new AABBf(mesh.Vertices.ToArray());
+                    break;
                 case MeshChangedEnum.Triangles:
                     _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);
+                    break;
+                case MeshChangedEnum.Triangle:
+                    _renderContextImp.SetTriangle(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (ushort)meshDataEventArgs.Data.Value);
                     break;
                 case MeshChangedEnum.Colors:
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors);
                     break;
+                case MeshChangedEnum.Color:
+                    _renderContextImp.SetColor(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (uint)meshDataEventArgs.Data.Value);
+                    break;
                 case MeshChangedEnum.Colors1:
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors1);
+                    break;
+                case MeshChangedEnum.Color1:
+                    _renderContextImp.SetColor1(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (uint)meshDataEventArgs.Data.Value);
                     break;
                 case MeshChangedEnum.Colors2:
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors2);
                     break;
+                case MeshChangedEnum.Color2:
+                    _renderContextImp.SetColor2(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (uint)meshDataEventArgs.Data.Value);
+                    break;
                 case MeshChangedEnum.Normals:
                     _renderContextImp.SetNormals(toBeUpdatedMeshImp, mesh.Normals);
+                    break;
+                case MeshChangedEnum.Normal:
+                    _renderContextImp.SetNormal(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (float3)meshDataEventArgs.Data.Value);
                     break;
                 case MeshChangedEnum.Uvs:
                     _renderContextImp.SetUVs(toBeUpdatedMeshImp, mesh.UVs);
                     break;
+                case MeshChangedEnum.Uv:
+                    _renderContextImp.SetUV(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (float2)meshDataEventArgs.Data.Value);
+                    break;
                 case MeshChangedEnum.BoneIndices:
                     _renderContextImp.SetBoneIndices(toBeUpdatedMeshImp, mesh.BoneIndices);
+                    break;
+                case MeshChangedEnum.BondeIndex:
+                    _renderContextImp.SetBoneIndex(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (float4)meshDataEventArgs.Data.Value);
                     break;
                 case MeshChangedEnum.BoneWeights:
                     _renderContextImp.SetBoneWeights(toBeUpdatedMeshImp, mesh.BoneWeights);
                     break;
+                case MeshChangedEnum.BoneWeight:
+                    _renderContextImp.SetBoneWeight(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (float4)meshDataEventArgs.Data.Value);
+                    break;
                 case MeshChangedEnum.Tangents:
                     _renderContextImp.SetTangents(toBeUpdatedMeshImp, mesh.Tangents);
                     break;
+                case MeshChangedEnum.Tangent:
+                    _renderContextImp.SetTangent(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (float4)meshDataEventArgs.Data.Value);
+                    break;
                 case MeshChangedEnum.BiTangents:
                     _renderContextImp.SetBiTangents(toBeUpdatedMeshImp, mesh.BiTangents);
+                    break;
+                case MeshChangedEnum.BiTangent:
+                    _renderContextImp.SetBiTangent(toBeUpdatedMeshImp, meshDataEventArgs.Data.Index, (float3)meshDataEventArgs.Data.Value);
                     break;
             }
         }

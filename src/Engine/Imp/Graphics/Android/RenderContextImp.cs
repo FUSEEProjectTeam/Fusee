@@ -10,6 +10,7 @@ using OpenTK.Graphics.ES31;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Fusee.Engine.Imp.Graphics.Android
@@ -1226,7 +1227,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="vertices">The vertices.</param>
         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetVertices(IMeshImp mr, float3[] vertices)
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices)
         {
             if (vertices == null || vertices.Length == 0)
             {
@@ -1240,7 +1241,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 ((MeshImp)mr).VertexBufferObject = bufferIdx;
             }
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), ref MemoryMarshal.GetReference(vertices), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(string.Format(
@@ -1256,7 +1257,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="System.ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetTangents(IMeshImp mr, float4[] tangents)
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents)
         {
             if (tangents == null || tangents.Length == 0)
             {
@@ -1271,7 +1272,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), tangents, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), ref MemoryMarshal.GetReference(tangents), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format(
@@ -1286,7 +1287,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name = "bitangents">The bitangents.</param>
         /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents)
         {
             if (bitangents == null || bitangents.Length == 0)
             {
@@ -1301,7 +1302,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), bitangents, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), ref MemoryMarshal.GetReference(bitangents), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format(
@@ -1317,7 +1318,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="normals">The normals.</param>
         /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetNormals(IMeshImp mr, float3[] normals)
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals)
         {
             if (normals == null || normals.Length == 0)
             {
@@ -1332,7 +1333,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), ref MemoryMarshal.GetReference(normals), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != normsBytes)
                 throw new ApplicationException(String.Format(
@@ -1347,7 +1348,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="System.ArgumentException">BoneIndices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices)
         {
             if (boneIndices == null || boneIndices.Length == 0)
             {
@@ -1362,7 +1363,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), ref MemoryMarshal.GetReference(boneIndices), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != indicesBytes)
                 throw new ApplicationException(String.Format(
@@ -1377,7 +1378,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="System.ArgumentException">BoneWeights must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights)
         {
             if (boneWeights == null || boneWeights.Length == 0)
             {
@@ -1392,7 +1393,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), ref MemoryMarshal.GetReference(boneWeights), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != weightsBytes)
                 throw new ApplicationException(String.Format(
@@ -1407,7 +1408,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetUVs(IMeshImp mr, float2[] uvs)
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs)
         {
             if (uvs == null || uvs.Length == 0)
             {
@@ -1422,7 +1423,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), ref MemoryMarshal.GetReference(uvs), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != uvsBytes)
                 throw new ApplicationException(String.Format(
@@ -1437,7 +1438,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1452,7 +1453,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), ref MemoryMarshal.GetReference(colors), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format(
@@ -1467,7 +1468,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetColors1(IMeshImp mr, uint[] colors)
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1482,7 +1483,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), ref MemoryMarshal.GetReference(colors), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format(
@@ -1497,7 +1498,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetColors2(IMeshImp mr, uint[] colors)
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1512,7 +1513,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), ref MemoryMarshal.GetReference(colors), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format(
@@ -1527,7 +1528,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<ushort> triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
             {
@@ -1543,13 +1544,236 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices,
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), ref MemoryMarshal.GetReference(triangleIndices),
                 BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ElementArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.",
                     trisBytes, vboBytes));
+        }
+
+        /// <summary>
+        /// Binds the vertices onto the GL render context and assigns one vertex to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="vertex">The vertex.</param>
+        public void SetVertex(IMeshImp mr, int idx, float3 vertex)
+        {
+            int vertsBytes = 3 * sizeof(float);
+            int offsetInBytes = idx * sizeof(float) * 3;
+            if (((MeshImp)mr).VertexBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).VertexBufferObject = bufferObj;
+            }
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)vertsBytes, ref vertex);
+        }
+
+        /// <summary>
+        /// Binds the tangents onto the GL render context and assigns one tangent index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="tangents">The tangents.</param>
+        public void SetTangent(IMeshImp mr, int idx, float4 tangents)
+        {
+            int tangentBytes = 4 * sizeof(float);
+            int offsetInBytes = idx * sizeof(float) * 4;
+
+            if (((MeshImp)mr).TangentBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).TangentBufferObject = bufferObj;
+            }
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)tangentBytes, ref tangents);
+        }
+
+        /// <summary>
+        /// Binds the bitangents onto the GL render context and assigns one BiTangent index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name = "bitangent">The bitangent.</param>
+        public void SetBiTangent(IMeshImp mr, int idx, float3 bitangent)
+        {
+            int bitangentBytes = sizeof(float) * 3;
+            int offsetInBytes = idx * sizeof(float) * 3;
+
+            if (((MeshImp)mr).BitangentBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).BitangentBufferObject = bufferObj;
+            }
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)bitangentBytes, ref bitangent);
+        }
+
+        /// <summary>
+        /// Binds the normals onto the GL render context and assigns one NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="normal">The normal.</param>
+        public void SetNormal(IMeshImp mr, int idx, float3 normal)
+        {
+            int normalBytes = sizeof(float) * 3;
+            int offsetInBytes = idx * sizeof(float) * 3;
+
+            if (((MeshImp)mr).NormalBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).NormalBufferObject = bufferObj;
+            }
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)normalBytes, ref normal);
+        }
+
+        /// <summary>
+        /// Binds the UV coordinates onto the GL render context and assigns one UVBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="uv">The UV.</param>
+        public void SetUV(IMeshImp mr, int idx, float2 uv)
+        {
+            int uvBytes = sizeof(float) * 2;
+            int offsetInBytes = idx * sizeof(float) * 2;
+
+            if (((MeshImp)mr).UVBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).UVBufferObject = bufferObj;
+            }
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)uvBytes, ref uv);
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The colors.</param>
+        public void SetColor(IMeshImp mr, int idx, uint color)
+        {
+            int colorBytes = sizeof(uint);
+            int offsetInBytes = idx * sizeof(uint);
+
+            if (((MeshImp)mr).ColorBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ColorBufferObject = bufferObj;
+            }
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)colorBytes, ref color);
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The color.</param>
+        public void SetColor1(IMeshImp mr, int idx, uint color)
+        {
+            int colorBytes = sizeof(uint);
+            int offsetInBytes = idx * sizeof(uint);
+
+            if (((MeshImp)mr).ColorBufferObject1 == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ColorBufferObject1 = bufferObj;
+            }
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)colorBytes, ref color);
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The color.</param>
+        public void SetColor2(IMeshImp mr, int idx, uint color)
+        {
+            int colorBytes = sizeof(uint);
+            int offsetInBytes = idx * sizeof(uint);
+
+            if (((MeshImp)mr).ColorBufferObject2 == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ColorBufferObject2 = bufferObj;
+            }
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)colorBytes, ref color);
+        }
+
+        /// <summary>
+        /// Binds the triangles onto the GL render context and assigns one ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="triangleIndex">The triangle index.</param>
+        public void SetTriangle(IMeshImp mr, int idx, ushort triangleIndex)
+        {
+            int triangleBytes = sizeof(ushort);
+            int offsetInBytes = idx * sizeof(ushort);
+
+            if (((MeshImp)mr).ElementBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ElementBufferObject = bufferObj;
+            }
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
+            GL.BufferSubData(BufferTarget.ElementArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)triangleBytes, ref triangleIndex);
+        }
+
+        /// <summary>
+        /// Binds the bone indices onto the GL render context and assigns one BoneBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="boneIndex">The bone index.</param>
+        public void SetBoneIndex(IMeshImp mr, int idx, float4 boneIndex)
+        {
+            int boneBytes = sizeof(float) * 4;
+            int offsetInBytes = idx * sizeof(float) * 4;
+
+            if (((MeshImp)mr).BoneIndexBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).BoneIndexBufferObject = bufferObj;
+            }
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)boneBytes, ref boneIndex);
+        }
+
+        /// <summary>
+        /// Binds the bone weights onto the GL render context and assigns one BoneWeight index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="boneWeight">The bone weight.</param>
+        public void SetBoneWeight(IMeshImp mr, int idx, float4 boneWeight)
+        {
+            int boneWeightBytes = sizeof(float) * 4;
+            int offsetInBytes = idx * sizeof(float) * 4;
+
+            if (((MeshImp)mr).BoneWeightBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).BoneWeightBufferObject = bufferObj;
+            }
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offsetInBytes, (IntPtr)boneWeightBytes, ref boneWeight);
         }
 
         /// <summary>

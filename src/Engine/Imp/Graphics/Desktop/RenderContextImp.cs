@@ -1576,6 +1576,218 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
         }
 
+
+        /// <summary>
+        /// Binds the vertices onto the GL render context and assigns one vertex to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mesh">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="vertex">The vertex.</param>
+        public void SetVertex(IMeshImp mesh, int idx, float3 vertex)
+        {
+            int vertsBytes = 3 * sizeof(float);
+            int offsetInBytes = idx * sizeof(float) * 3;
+            if (((MeshImp)mesh).VertexBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mesh).VertexBufferObject = bufferObj;
+            }
+
+            GL.NamedBufferSubData(((MeshImp)mesh).VertexBufferObject, (IntPtr)offsetInBytes, vertsBytes, ref vertex);
+        }
+
+        /// <summary>
+        /// Binds the tangents onto the GL render context and assigns one tangent index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="tangents">The tangents.</param>
+        public void SetTangent(IMeshImp mr, int idx, float4 tangents)
+        {
+            int tangentBytes = 4 * sizeof(float);
+            int offsetInBytes = idx * sizeof(float) * 4;
+
+            if (((MeshImp)mr).TangentBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).TangentBufferObject = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).TangentBufferObject, (IntPtr)offsetInBytes, tangentBytes, ref tangents);
+        }
+
+        /// <summary>
+        /// Binds the bitangents onto the GL render context and assigns one BiTangent index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name = "bitangent">The bitangent.</param>
+        public void SetBiTangent(IMeshImp mr, int idx, float3 bitangent)
+        {
+            int bitangentBytes = sizeof(float) * 3;
+            int offsetInBytes = idx * sizeof(float) * 3;
+
+            if (((MeshImp)mr).BitangentBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).BitangentBufferObject = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).BitangentBufferObject, (IntPtr)offsetInBytes, bitangentBytes, ref bitangent);
+        }
+
+        /// <summary>
+        /// Binds the normals onto the GL render context and assigns one NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="normal">The normal.</param>
+        public void SetNormal(IMeshImp mr, int idx, float3 normal)
+        {
+            int normalBytes = sizeof(float) * 3;
+            int offsetInBytes = idx * sizeof(float) * 3;
+
+            if (((MeshImp)mr).NormalBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).NormalBufferObject = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).NormalBufferObject, (IntPtr)offsetInBytes, normalBytes, ref normal);
+        }
+
+        /// <summary>
+        /// Binds the UV coordinates onto the GL render context and assigns one UVBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="uv">The UV.</param>
+        public void SetUV(IMeshImp mr, int idx, float2 uv)
+        {
+            int uvBytes = sizeof(float) * 2;
+            int offsetInBytes = idx * sizeof(float) * 2;
+
+            if (((MeshImp)mr).UVBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).UVBufferObject = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).UVBufferObject, (IntPtr)offsetInBytes, uvBytes, ref uv);
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The colors.</param>
+        public void SetColor(IMeshImp mr, int idx, uint color)
+        {
+            int colorBytes = sizeof(uint);
+            int offsetInBytes = idx * sizeof(uint);
+
+            if (((MeshImp)mr).ColorBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ColorBufferObject = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).ColorBufferObject, (IntPtr)offsetInBytes, colorBytes, ref color);
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The color.</param>
+        public void SetColor1(IMeshImp mr, int idx, uint color)
+        {
+            int colorBytes = sizeof(uint);
+            int offsetInBytes = idx * sizeof(uint);
+
+            if (((MeshImp)mr).ColorBufferObject1 == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ColorBufferObject1 = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).ColorBufferObject1, (IntPtr)offsetInBytes, colorBytes, ref color);
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The color.</param>
+        public void SetColor2(IMeshImp mr, int idx, uint color)
+        {
+            int colorBytes = sizeof(uint);
+            int offsetInBytes = idx * sizeof(uint);
+
+            if (((MeshImp)mr).ColorBufferObject2 == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ColorBufferObject2 = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).ColorBufferObject2, (IntPtr)offsetInBytes, colorBytes, ref color);
+        }
+
+        /// <summary>
+        /// Binds the triangles onto the GL render context and assigns one ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="triangleIndex">The triangle index.</param>
+        public void SetTriangle(IMeshImp mr, int idx, ushort triangleIndex)
+        {
+            int triangleBytes = sizeof(ushort);
+            int offsetInBytes = idx * sizeof(ushort);
+
+            if (((MeshImp)mr).ElementBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).ElementBufferObject = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).ElementBufferObject, (IntPtr)offsetInBytes, triangleBytes, ref triangleIndex);
+
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
+        }
+
+        /// <summary>
+        /// Binds the bone indices onto the GL render context and assigns one BoneBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="boneIndex">The bone index.</param>
+        public void SetBoneIndex(IMeshImp mr, int idx, float4 boneIndex)
+        {
+            int boneBytes = sizeof(float) * 4;
+            int offsetInBytes = idx * sizeof(float) * 4;
+
+            if (((MeshImp)mr).BoneIndexBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).BoneIndexBufferObject = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).BoneIndexBufferObject, (IntPtr)offsetInBytes, boneBytes, ref boneIndex);
+        }
+
+        /// <summary>
+        /// Binds the bone weights onto the GL render context and assigns one BoneWeight index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="boneWeight">The bone weight.</param>
+        public void SetBoneWeight(IMeshImp mr, int idx, float4 boneWeight)
+        {
+            int boneWeightBytes = sizeof(float) * 4;
+            int offsetInBytes = idx * sizeof(float) * 4;
+
+            if (((MeshImp)mr).BoneWeightBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferObj);
+                ((MeshImp)mr).BoneWeightBufferObject = bufferObj;
+            }
+            GL.NamedBufferSubData(((MeshImp)mr).BoneWeightBufferObject, (IntPtr)offsetInBytes, boneWeightBytes, ref boneWeight);
+        }
+
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>

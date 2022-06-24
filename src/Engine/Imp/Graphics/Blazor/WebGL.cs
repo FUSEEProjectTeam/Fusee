@@ -817,7 +817,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         public void BufferSubData(uint target, uint offset, Array data)
         {
-            Invoke("bufferSubData", target, offset, data);
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customSubBufferData", target, data, offset);
         }
 
         public uint CheckFramebufferStatus(uint target)
@@ -2048,20 +2048,15 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("bufferData", target, srcData, usage);
         }
 
-        public void BufferSubData(uint target, uint dstByteOffset, Memory<byte> srcData)
-        {
-            Invoke("bufferSubData", target, dstByteOffset, srcData);
-        }
-
         public void BufferData(uint target, Memory<byte> srcData, uint usage, uint srcOffset, uint length)
         {
             Invoke("bufferData", target, srcData, usage, srcOffset, length);
         }
 
-        public void BufferSubData(uint target, uint dstByteOffset, Memory<byte> srcData, uint srcOffset, uint length)
-        {
-            Invoke("bufferSubData", target, dstByteOffset, srcData, srcOffset, length);
-        }
+        //public void BufferSubData(uint target, uint dstByteOffset, Memory<byte> srcData, uint srcOffset, uint length)
+        //{
+        //    Invoke("bufferSubData", target, dstByteOffset, srcData, srcOffset, length);
+        //}
 
         public void CopyBufferSubData(uint readTarget, uint writeTarget, uint readOffset, uint writeOffset, double size)
         {

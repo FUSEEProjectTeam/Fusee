@@ -8,6 +8,7 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using static Fusee.Engine.Imp.Graphics.Blazor.WebGL2RenderingContextBase;
 using static Fusee.Engine.Imp.Graphics.Blazor.WebGLRenderingContextBase;
 
@@ -67,7 +68,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             };
         }
 
-        private Tuple<int, int> GetMinMagFilter(TextureFilterMode filterMode)
+        private static Tuple<int, int> GetMinMagFilter(TextureFilterMode filterMode)
         {
             int minFilter;
             int magFilter;
@@ -1061,7 +1062,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="vertices">The vertices.</param>
         /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetVertices(IMeshImp mr, float3[] vertices)
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices)
         {
             if (vertices == null || vertices.Length == 0)
             {
@@ -1107,7 +1108,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTangents(IMeshImp mr, float4[] tangents)
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents)
         {
             if (tangents == null || tangents.Length == 0)
             {
@@ -1148,7 +1149,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="bitangents">The BiTangents.</param>
         /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents)
         {
             if (bitangents == null || bitangents.Length == 0)
             {
@@ -1193,7 +1194,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="normals">The normals.</param>
         /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetNormals(IMeshImp mr, float3[] normals)
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals)
         {
             if (normals == null || normals.Length == 0)
             {
@@ -1239,7 +1240,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="ArgumentException">BoneIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices)
         {
             if (boneIndices == null || boneIndices.Length == 0)
             {
@@ -1285,7 +1286,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="ArgumentException">BoneWeights must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights)
         {
             if (boneWeights == null || boneWeights.Length == 0)
             {
@@ -1332,7 +1333,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="ArgumentException">UVs must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetUVs(IMeshImp mr, float2[] uvs)
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs)
         {
             if (uvs == null || uvs.Length == 0)
             {
@@ -1347,13 +1348,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
 
             float[] uvsFlat = new float[uvs.Length * 2];
-
-            //{
-            ////fixed(float2* pBytes = &uvs[0])
-            //{
-            //Marshal.Copy((IntPtr)(pBytes), uvsFlat, 0, uvsFlat.Length);
-            //}
-            //}
 
             int i = 0;
             foreach (float2 v in uvs)
@@ -1377,7 +1371,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1390,7 +1384,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).ColorBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
-            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, colors.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1403,7 +1397,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<ushort> triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
             {
@@ -1417,12 +1411,217 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).ElementBufferObject = gl2.CreateBuffer();
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
-            gl2.BufferData(ELEMENT_ARRAY_BUFFER, triangleIndices, STATIC_DRAW);
+            gl2.BufferData(ELEMENT_ARRAY_BUFFER, triangleIndices.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ELEMENT_ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
 
         }
+
+
+        /// <summary>
+        /// Binds the vertices onto the GL render context and assigns one vertex to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="vertex">The vertex.</param>
+        public void SetVertex(IMeshImp mr, int idx, float3 vertex)
+        {
+            int offsetInBytes = idx * sizeof(float) * 3;
+            if (((MeshImp)mr).VertexBufferObject == null)
+            {
+                var bufferObj = gl2.CreateBuffer();
+                ((MeshImp)mr).VertexBufferObject = bufferObj;
+            }
+
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
+            gl2.BufferSubData(ARRAY_BUFFER, (uint)offsetInBytes, vertex.ToArray());
+        }
+
+        /// <summary>
+        /// Binds the tangents onto the GL render context and assigns one tangent index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="tangents">The tangents.</param>
+        public void SetTangent(IMeshImp mr, int idx, float4 tangents)
+        {
+            int offsetInBytes = idx * sizeof(float) * 4;
+
+            if (((MeshImp)mr).TangentBufferObject == null)
+            {
+                var bufferObj = gl2.CreateBuffer();
+                ((MeshImp)mr).TangentBufferObject = bufferObj;
+            }
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
+            gl2.BufferSubData(ARRAY_BUFFER, (uint)offsetInBytes, tangents.ToArray());
+
+        }
+
+        /// <summary>
+        /// Binds the bitangents onto the GL render context and assigns one BiTangent index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name = "bitangent">The bitangent.</param>
+        public void SetBiTangent(IMeshImp mr, int idx, float3 bitangent)
+        {
+            int offsetInBytes = idx * sizeof(float) * 3;
+
+            if (((MeshImp)mr).BitangentBufferObject == null)
+            {
+                var bufferObj = gl2.CreateBuffer();
+                ((MeshImp)mr).BitangentBufferObject = bufferObj;
+            }
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
+            gl2.BufferSubData(ARRAY_BUFFER, (uint)offsetInBytes, bitangent.ToArray());
+
+        }
+
+        /// <summary>
+        /// Binds the normals onto the GL render context and assigns one NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="normal">The normal.</param>
+        public void SetNormal(IMeshImp mr, int idx, float3 normal)
+        {
+            int offsetInBytes = idx * sizeof(float) * 3;
+
+            if (((MeshImp)mr).NormalBufferObject == null)
+            {
+                var bufferObj = gl2.CreateBuffer();
+                ((MeshImp)mr).NormalBufferObject = bufferObj;
+            }
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).NormalBufferObject);
+            gl2.BufferSubData(ARRAY_BUFFER, (uint)offsetInBytes, normal.ToArray());
+
+        }
+
+        /// <summary>
+        /// Binds the UV coordinates onto the GL render context and assigns one UVBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="uv">The UV.</param>
+        public void SetUV(IMeshImp mr, int idx, float2 uv)
+        {
+            int offsetInBytes = idx * sizeof(float) * 2;
+
+            if (((MeshImp)mr).UVBufferObject == null)
+            {
+                var bufferObj = gl2.CreateBuffer();
+                ((MeshImp)mr).UVBufferObject = bufferObj;
+            }
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
+            gl2.BufferSubData(ARRAY_BUFFER, (uint)offsetInBytes, uv.ToArray());
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The colors.</param>
+        public void SetColor(IMeshImp mr, int idx, uint color)
+        {
+            int offsetInBytes = idx * sizeof(uint);
+            if (((MeshImp)mr).ColorBufferObject == null)
+            {
+
+                var bufferObj = gl2.CreateBuffer();
+                ((MeshImp)mr).ColorBufferObject = bufferObj;
+            }
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
+            gl2.BufferSubData(ARRAY_BUFFER, (uint)offsetInBytes, new uint[] { color });
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The color.</param>
+        public void SetColor1(IMeshImp mr, int idx, uint color)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The color.</param>
+        public void SetColor2(IMeshImp mr, int idx, uint color)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Binds the triangles onto the GL render context and assigns one ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="triangleIndex">The triangle index.</param>
+        public void SetTriangle(IMeshImp mr, int idx, ushort triangleIndex)
+        {
+            int offsetInBytes = idx * sizeof(ushort);
+
+            if (((MeshImp)mr).ElementBufferObject == null)
+            {
+                var bufferObj = gl2.CreateBuffer();
+                ((MeshImp)mr).ElementBufferObject = bufferObj;
+            }
+            gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
+            gl2.BufferSubData(ELEMENT_ARRAY_BUFFER, (uint)offsetInBytes, new ushort[] { triangleIndex });
+        }
+
+        /// <summary>
+        /// Binds the bone indices onto the GL render context and assigns one BoneBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="boneIndex">The bone index.</param>
+        public void SetBoneIndex(IMeshImp mr, int idx, float4 boneIndex)
+        {
+            int offsetInBytes = idx * sizeof(float) * 4;
+            if (((MeshImp)mr).BoneIndexBufferObject == null)
+            {
+                var bufferObj = gl2.CreateBuffer();
+                ((MeshImp)mr).BoneIndexBufferObject = bufferObj;
+            }
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneIndexBufferObject);
+            gl2.BufferSubData(ARRAY_BUFFER, (uint)offsetInBytes, boneIndex.ToArray());
+        }
+
+        /// <summary>
+        /// Binds the bone weights onto the GL render context and assigns one BoneWeight index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="boneWeight">The bone weight.</param>
+        public void SetBoneWeight(IMeshImp mr, int idx, float4 boneWeight)
+        {
+            int offsetInBytes = idx * sizeof(float) * 4;
+
+            if (((MeshImp)mr).BoneWeightBufferObject == null)
+            {
+                var bufferObj = gl2.CreateBuffer();
+                ((MeshImp)mr).BoneWeightBufferObject = bufferObj;
+            }
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
+            gl2.BufferSubData(ARRAY_BUFFER, (uint)offsetInBytes, boneWeight.ToArray());
+        }
+
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
@@ -2656,12 +2855,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             throw new NotImplementedException();
         }
 
-        public void SetColors1(IMeshImp mr, uint[] colors)
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             throw new NotImplementedException();
         }
 
-        public void SetColors2(IMeshImp mr, uint[] colors)
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             throw new NotImplementedException();
         }

@@ -526,6 +526,94 @@ namespace Fusee.Engine.Common
         void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights);
 
         /// <summary>
+        /// Binds the vertices onto the GL render context and assigns one vertex to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mesh">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="vertex">The vertex.</param>
+        void SetVertex(IMeshImp mesh, int idx, float3 vertex);
+
+        /// <summary>
+        /// Binds the tangents onto the GL render context and assigns one tangent index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="tangents">The tangents.</param>
+        void SetTangent(IMeshImp mr, int idx, float4 tangents);
+
+        /// <summary>
+        /// Binds the bitangents onto the GL render context and assigns one BiTangent index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name = "bitangent">The bitangent.</param>
+        void SetBiTangent(IMeshImp mr, int idx, float3 bitangent);
+
+        /// <summary>
+        /// Binds the normals onto the GL render context and assigns one NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="normal">The normal.</param>
+        void SetNormal(IMeshImp mr, int idx, float3 normal);
+
+        /// <summary>
+        /// Binds the UV coordinates onto the GL render context and assigns one UVBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="uv">The UV.</param>
+        void SetUV(IMeshImp mr, int idx, float2 uv);
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The colors.</param>
+        void SetColor(IMeshImp mr, int idx, uint color);
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The color.</param>
+        void SetColor1(IMeshImp mr, int idx, uint color);
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns one ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="color">The color.</param>
+        void SetColor2(IMeshImp mr, int idx, uint color);
+
+        /// <summary>
+        /// Binds the triangles onto the GL render context and assigns one ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="triangleIndex">The triangle index.</param>
+        void SetTriangle(IMeshImp mr, int idx, ushort triangleIndex);
+
+        /// <summary>
+        /// Binds the bone indices onto the GL render context and assigns one BoneBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="boneIndex">The bone index.</param>
+        void SetBoneIndex(IMeshImp mr, int idx, float4 boneIndex);
+
+        /// <summary>
+        /// Binds the bone weights onto the GL render context and assigns one BoneWeight index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="idx">The index position</param>
+        /// <param name="boneWeight">The bone weight.</param>
+        void SetBoneWeight(IMeshImp mr, int idx, float4 boneWeight);
+
+        /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="shaderProgramImp">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>

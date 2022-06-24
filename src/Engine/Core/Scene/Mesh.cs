@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_vertices, nameof(_vertices));
             Guard.IsInRange(idx, 0, _vertices.Length, nameof(idx));
             _vertices[idx] = vertex;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertices));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertex, new MeshChangedEventAdditionalData { Index = idx, Value = vertex}));
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_colors, nameof(_colors));
             Guard.IsInRange(idx, 0, _colors.Length, nameof(idx));
             _colors[idx] = color;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Color, new MeshChangedEventAdditionalData { Index = idx, Value = color }));
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_colors1, nameof(_colors1));
             Guard.IsInRange(idx, 0, _colors1.Length, nameof(idx));
             _colors1[idx] = color1;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors1));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Color1, new MeshChangedEventAdditionalData { Index = idx, Value = color1 }));
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_colors2, nameof(_colors2));
             Guard.IsInRange(idx, 0, _colors2.Length, nameof(idx));
             _colors2[idx] = color2;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors2));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Color2, new MeshChangedEventAdditionalData { Index = idx, Value = color2 }));
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_normals, nameof(_normals));
             Guard.IsInRange(idx, 0, _normals.Length, nameof(idx));
             _normals[idx] = normal;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Normals));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Normal, new MeshChangedEventAdditionalData { Index = idx, Value = normal }));
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_uvs, nameof(_uvs));
             Guard.IsInRange(idx, 0, _uvs.Length, nameof(idx));
             _uvs[idx] = uv;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Uvs));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Uv, new MeshChangedEventAdditionalData { Index = idx, Value = uv }));
         }
 
         /// <summary>
@@ -320,7 +320,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_boneWeights, nameof(_boneWeights));
             Guard.IsInRange(idx, 0, _boneWeights.Length, nameof(idx));
             _boneWeights[idx] = boneWeight;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneWeights));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneWeight, new MeshChangedEventAdditionalData { Index = idx, Value = boneWeight }));
         }
 
         /// <summary>
@@ -360,7 +360,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_boneIndices, nameof(_boneIndices));
             Guard.IsInRange(idx, 0, _boneIndices.Length, nameof(idx));
             _boneIndices[idx] = boneIndex;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneIndices));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BondeIndex, new MeshChangedEventAdditionalData { Index = idx, Value = boneIndex }));
         }
 
         /// <summary>
@@ -395,12 +395,12 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="idx"></param>
         /// <param name="triangle"></param>
-        public void SetBoneIndex(int idx, ushort triangle)
+        public void SetTriangle(int idx, ushort triangle)
         {
             Guard.IsNotNull(_triangles, nameof(_triangles));
             Guard.IsInRange(idx, 0, _triangles.Length, nameof(idx));
             _triangles[idx] = triangle;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Triangles));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Triangle, new MeshChangedEventAdditionalData { Index = idx, Value = triangle }));
         }
 
         /// <summary>
@@ -432,13 +432,13 @@ namespace Fusee.Engine.Core.Scene
         /// Set/alter one tangent of a single vertex.
         /// </summary>
         /// <param name="idx"></param>
-        /// <param name="tangents"></param>
-        public void SetTangent(int idx, float4 tangents)
+        /// <param name="tangent"></param>
+        public void SetTangent(int idx, float4 tangent)
         {
             Guard.IsNotNull(_tangents, nameof(_tangents));
             Guard.IsInRange(idx, 0, _tangents.Length, nameof(idx));
-            _tangents[idx] = tangents;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Tangents));
+            _tangents[idx] = tangent;
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Tangent, new MeshChangedEventAdditionalData { Index = idx, Value = tangent }));
         }
 
         /// <summary>
@@ -475,7 +475,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_biTangents, nameof(_biTangents));
             Guard.IsInRange(idx, 0, _biTangents.Length, nameof(idx));
             _biTangents[idx] = biTangent;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BiTangents));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BiTangent, new MeshChangedEventAdditionalData { Index = idx, Value = biTangent }));
         }
 
         /// <summary>

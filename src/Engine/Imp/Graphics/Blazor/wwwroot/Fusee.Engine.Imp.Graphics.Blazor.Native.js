@@ -238,6 +238,26 @@ function customBufferData(target, data, usage) {
     }
 }
 
+function customSubBufferData(target, data, offset) {
+
+    const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
+
+    if (target == gl2.ARRAY_BUFFER) {
+        const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 8);
+        const length = Blazor.platform.getArrayLength(data);
+        const floats = new Float32Array(Module.HEAPU8.buffer, dataPtr, length);
+        gl2.bufferSubData(target, offset, floats);
+    }
+    else if (target == gl2.ELEMENT_ARRAY_BUFFER) {
+        const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 2);
+        const length = Blazor.platform.getArrayLength(data);
+        const ints = new Uint16Array(Module.HEAPU16.buffer, dataPtr, length);
+        gl2.bufferSubData(target, offset, ints);
+    } else {
+        console.error("Error: Buffer type not found:", target);
+    }
+}
+
 function generateCtx(contextAttributes) {
     const canvas = document.getElementsByTagName("canvas")[0];
     const gl = canvas.getContext('webgl2', contextAttributes);
