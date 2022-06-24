@@ -8,9 +8,12 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fusee.Tests.Render.Desktop
 {
+
     public class Program
     {
         private const int height = 512;
@@ -20,29 +23,40 @@ namespace Fusee.Tests.Render.Desktop
 
         public static RenderCanvas Example { get => example; set => example = value; }
 
-        public static void Init(string arg)
+        public async static void Init(string arg)
         {
             if (!string.IsNullOrEmpty(arg))
             {
                 // Inject Fusee.Engine.Base InjectMe dependencies
                 IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
-
+                AssetStorage.UnRegisterAllAssetProviders();
                 var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
                         ReturnedType = typeof(Font),
+                        DecoderAsync = async (string id, object storage) =>
+                        {
+                            if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                            return await Task.Run(() => new Font { _fontImp = new FontImp((Stream)storage) });
+                        },
                         Decoder = (string id, object storage) =>
                         {
                             if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                             return new Font { _fontImp = new FontImp((Stream)storage) };
                         },
+
                         Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                     });
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
                         ReturnedType = typeof(SceneContainer),
+                        DecoderAsync = async (string id, object storage) =>
+                        {
+                            if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                            return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
+                        },
                         Decoder = (string id, object storage) =>
                         {
                             if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
@@ -55,7 +69,7 @@ namespace Fusee.Tests.Render.Desktop
                 var app = Example;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(width, height)
+                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp()
                 {
                     EnableBlending = true
                 };
@@ -66,16 +80,19 @@ namespace Fusee.Tests.Render.Desktop
 
                 // Initialize canvas/app and canvas implementor
                 app.InitApp();
-                app.Init();
+                cimp.Height = height;
+                cimp.Width = width;
 
-                var renderTex = new WritableTexture(Engine.Common.RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA), width, height);
-                app.RC.SetRenderTarget(renderTex);
+                app.RC.SetRenderStateSet(RenderStateSet.Default);
+
                 // Render a single frame and save it
                 using var img = cimp.ShootCurrentFrame(width, height) as Image<Rgba32>;
                 img.SaveAsPng(arg);
 
                 // Done
                 Console.Error.WriteLine($"SUCCESS: Image {arg} generated.");
+
+                app.CloseGameWindow();
             }
         }
     }

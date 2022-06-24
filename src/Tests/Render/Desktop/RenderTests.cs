@@ -1,111 +1,117 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Xunit;
-using Xunit.Abstractions;
+using NUnit;
+using NUnit.Framework;
+using System.Threading;
+using System.Diagnostics;
+using NUnitLite;
 
 namespace Fusee.Tests.Render.Desktop
 {
-    public class RenderTests
-    {
-        private readonly ITestOutputHelper output;
 
-        public RenderTests(ITestOutputHelper output)
+    [SetUpFixture]
+    public class SetupTrace
+    {
+        [OneTimeSetUp]
+        [Apartment(ApartmentState.STA)]
+        public void StartTest()
         {
-            this.output = output;
+            Trace.Listeners.Add(new ConsoleTraceListener());
         }
 
-        [Fact]
+        [OneTimeTearDown]
+        public void EndTest()
+        {
+            Trace.Flush();
+        }
+    }
+
+    public class RenderTests
+    {
+
+        [Test]
+
         public void AdvancedUITest()
         {
-            Program.Example = new Fusee.Examples.AdvancedUI.Core.AdvancedUI() { rnd = new System.Random(12345) };
-            Program.Init("AdvancedUITest.png");
-
             var referenceIm = Image.Load(@"References\AdvancedUI.png");
             //var referenceIm = Image.Load(@"References\AdvancedUI.png");
             var testIm = Image.Load("AdvancedUITest.png");
-            //var testIm = Image.Load("AdvancedUITest.png");            
+            //var testIm = Image.Load("AdvancedUITest.png");
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
-
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            Assert.GreaterOrEqual(percent, 0.99f);
+            TestContext.WriteLine(percent.ToString());
         }
 
-        //[Fact]
+        //[Test]
         //public void BoneAnimationTest()
         //{
-        //    Program.Example = new Fusee.Examples.Bone.Core.Bone();
-        //    Program.Init("BoneAnimationTest.png");
-
+        //
+        //
+        //
         //    var referenceIm = Image.Load(@"References\BoneAnimation.png");
         //    var testIm = Image.Load("BoneAnimationTest.png");
-
+        //
         //    var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
-
-        //    Assert.InRange(percent, 0.99f, 1f);
-        //    output.WriteLine(percent.ToString());
+        //
+        //    Assert.GreaterOrEqual(percent, 0.99f);
+        //    TestContext.WriteLine(percent.ToString());
         //}
 
-        [Fact]
+        [Test]
         public void GeometryEditingTest()
         {
-            Program.Example = new Fusee.Examples.GeometryEditing.Core.GeometryEditing();
-            Program.Init("GeometryEditingTest.png");
+
 
             var referenceIm = Image.Load(@"References\GeometryEditing.png");
             var testIm = Image.Load("GeometryEditingTest.png");
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            Assert.GreaterOrEqual(percent, 0.99f);
+            TestContext.WriteLine(percent.ToString());
         }
 
-        [Fact]
+        [Test]
         public void MeshingAroundTest()
         {
-            Program.Example = new Fusee.Examples.MeshingAround.Core.MeshingAround();
-            Program.Init("MeshingAroundTest.png");
 
             var referenceIm = Image.Load(@"References\MeshingAround.png");
             var testIm = Image.Load("MeshingAroundTest.png");
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            Assert.GreaterOrEqual(percent, 0.99f);
+            TestContext.WriteLine(percent.ToString());
         }
 
-        [Fact]
+        [Test]
         public void PickingTest()
         {
-            Program.Example = new Fusee.Examples.Picking.Core.Picking();
-            Program.Init("PickingTest.png");
+
 
             var referenceIm = Image.Load(@"References\Picking.png");
             var testIm = Image.Load("PickingTest.png");
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            Assert.GreaterOrEqual(percent, 0.99f);
+            TestContext.WriteLine(percent.ToString());
         }
 
-        [Fact]
+        [Test]
         public void SimpleTest()
         {
-            Program.Example = new Fusee.Examples.Simple.Core.Simple();
-            Program.Init("SimpleTest.png");
 
             var referenceIm = Image.Load(@"References\Simple.png");
             var testIm = Image.Load("SimpleTest.png");
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.InRange(percent, 0.98f, 1f);
-            output.WriteLine(percent.ToString());
+            Assert.GreaterOrEqual(percent, 0.98f);
+            TestContext.WriteLine(percent.ToString());
         }
 
-        //[Fact]
+        //[Test]
         //public void SimpleDeferredTest()
         //{
         //    Program.Example = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
@@ -117,37 +123,33 @@ namespace Fusee.Tests.Render.Desktop
         //    var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
         //    Assert.InRange(percent, 0.01f, 1f);
-        //    output.WriteLine(percent.ToString());
+        //    TestContext.WriteLine(percent.ToString());
         //}
 
-        [Fact]
+        [Test]
         public void ThreeDFontTest()
         {
-            Program.Example = new Fusee.Examples.ThreeDFont.Core.ThreeDFont();
-            Program.Init("ThreeDFontTest.png");
 
             var referenceIm = Image.Load(@"References\ThreeDFont.png");
             var testIm = Image.Load("ThreeDFontTest.png");
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            Assert.GreaterOrEqual(percent, 0.99f);
+            TestContext.WriteLine(percent.ToString());
         }
 
-        [Fact]
+        [Test]
         public void UITest()
         {
-            Program.Example = new Fusee.Examples.UI.Core.UI();
-            Program.Init("UITest.png");
 
             var referenceIm = Image.Load(@"References\UI.png");
             var testIm = Image.Load("UITest.png");
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            Assert.GreaterOrEqual(percent, 0.99f);
+            TestContext.WriteLine(percent.ToString());
         }
 
         /// <summary>

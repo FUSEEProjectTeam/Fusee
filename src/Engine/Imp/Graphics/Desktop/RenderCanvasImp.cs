@@ -8,6 +8,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Image = OpenTK.Windowing.Common.Input.Image;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
@@ -257,6 +258,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
@@ -439,18 +442,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public SixLabors.ImageSharp.Image ShootCurrentFrame(int width, int height)
         {
             DoInit();
-            DoRender();
             DoResize(width, height);
 
             var mem = new byte[width * height * 4];
-            GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
-            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+            var loopCounter = 0;
 
-            var img = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(mem, Width, Height);
+            while (!mem.ToList().Any(x => x != 0) || loopCounter++ > 10000)
+            {
+                DoRender();
+                GL.Flush();
+                GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
+                GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+                //GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+
+            }
+            var img = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(mem, width, height);
 
             img.Mutate(x => x.AutoOrient());
             img.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
-
             return img;
         }
 

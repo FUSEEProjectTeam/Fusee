@@ -2,13 +2,9 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Tests\Render\Desktop\</OutputPath>
+		<OutputType>Exe</OutputType>
+		<StartupObject>Fusee.Tests.Render.Desktop.Run</StartupObject>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Content Include="References\**\*">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
@@ -32,12 +28,46 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Deferred\Core\Fusee.Examples.Deferred.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\ThreeDFont\Core\Fusee.Examples.ThreeDFont.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\UI\Core\Fusee.Examples.UI.Core.csproj" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+		<PackageReference Include="NUnit" Version="3.13.3" />
+		<PackageReference Include="NUnit.Console" Version="3.15.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+		<PackageReference Include="NUnitLite" Version="3.13.3" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
-		<PackageReference Include="xunit" Version="2.4.1" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="References\AdvancedUI.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\BoneAnimation.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\GeometryEditing.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\MeshingAround.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\NormalMapping.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\Picking.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\Simple.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\SimpleDeferred.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\ThreeDFont.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\UI.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>
+
