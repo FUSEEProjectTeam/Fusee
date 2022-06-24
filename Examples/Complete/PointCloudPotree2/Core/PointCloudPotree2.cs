@@ -102,8 +102,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 Viewport = new float4(0, 0, 50, 100)
             };
 
-            
-
             var cam1 = new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
             {
                 BackgroundColor = float4.One,

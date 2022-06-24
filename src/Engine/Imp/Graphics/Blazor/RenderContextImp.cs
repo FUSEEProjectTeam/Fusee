@@ -1187,7 +1187,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
                 gl2.BufferSubData(ARRAY_BUFFER, IntPtr.Zero, posBufferData);
             }
-            
+
             var instancedPosBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (instancedPosBytes != matBytes)
                 throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedPosBytes, matBytes));
@@ -1243,7 +1243,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
                 gl2.BufferSubData(ARRAY_BUFFER, IntPtr.Zero, colorsFlat);
             }
-            
+
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));

@@ -1,5 +1,4 @@
 using Fusee.Base.Imp.Blazor;
-using Fusee.Math.Core;
 using Microsoft.JSInterop;
 using System;
 
