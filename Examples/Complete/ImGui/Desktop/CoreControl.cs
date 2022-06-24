@@ -176,7 +176,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
             _renderer.Render(_rc);
 
-            return _renderTexture.TextureHandle;
+            return _renderTexture.TextureHandleResult;
         }
 
         protected override void Resize(int width, int height)
@@ -200,8 +200,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
                 {
                     _renderTexture.Dispose();
                 }
-
-
                 disposedValue = true;
             }
         }

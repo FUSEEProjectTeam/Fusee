@@ -160,7 +160,7 @@ namespace Fusee.ImGuiImp.Desktop
             //GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
             //GL.BufferData(BufferTarget.ArrayBuffer, _vertexBufferSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
             GL.NamedBufferStorage(_vertexBuffer, _vertexBufferSize, IntPtr.Zero, BufferStorageFlags.DynamicStorageBit);
-            
+
             //GL.BindBuffer(BufferTarget.ArrayBuffer, _indexBuffer);
             //GL.BufferData(BufferTarget.ArrayBuffer, _indexBufferSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
             //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -198,7 +198,7 @@ namespace Fusee.ImGuiImp.Desktop
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
-                        
+
             //int id = GL.GenTexture();
             //GL.BindTexture(TextureTarget.Texture2D, id);
             GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
