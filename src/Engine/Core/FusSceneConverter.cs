@@ -559,7 +559,7 @@ namespace Fusee.Engine.Core
                 BoundingBox = m.BoundingBox
             };
 
-            if(m.BiTangents != null)
+            if (m.BiTangents != null)
                 mesh.SetBiTangents(m.BiTangents);
             if (m.BoneIndices != null)
                 mesh.SetBoneIndices(m.BoneIndices);

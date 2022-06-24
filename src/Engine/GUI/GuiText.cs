@@ -159,10 +159,10 @@ namespace Fusee.Engine.Gui
                 allUvs.AddRange(LineUVs[i]);
             }
 
-            SetVertices ( allVerts.ToArray());
-            SetTriangles( allTriangles.ToArray());
-            SetNormals (allNormals.ToArray());
-            SetUVs (allUvs.ToArray());
+            SetVertices(allVerts.ToArray());
+            SetTriangles(allTriangles.ToArray());
+            SetNormals(allNormals.ToArray());
+            SetUVs(allUvs.ToArray());
 
         }
 

@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(_vertices, nameof(_vertices));
             Guard.IsInRange(idx, 0, _vertices.Length, nameof(idx));
             _vertices[idx] = vertex;
-            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertex, new MeshChangedEventAdditionalData { Index = idx, Value = vertex}));
+            MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertex, new MeshChangedEventAdditionalData { Index = idx, Value = vertex }));
         }
 
         /// <summary>

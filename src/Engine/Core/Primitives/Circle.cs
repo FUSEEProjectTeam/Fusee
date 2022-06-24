@@ -108,9 +108,9 @@ namespace Fusee.Engine.Core.Primitives
             }
 
             SetVertices(verts.ToArray());
-            SetNormals( normals.ToArray());
-            SetTriangles( triangles.ToArray());
-            SetUVs( uvs.ToArray());
+            SetNormals(normals.ToArray());
+            SetTriangles(triangles.ToArray());
+            SetUVs(uvs.ToArray());
         }
 
         private float Normalize(float input, float max, float min)
