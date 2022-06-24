@@ -2616,19 +2616,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     if (tex.GetType() == typeof(WritableMultisampleTexture))
-                        CreateDepthRenderBufferMultisample(tex.Width, tex.Height, ((WritableMultisampleTexture)tex).MultisampleFactor, fBuffer);
+                        ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBufferMultisample(tex.Width, tex.Height, ((WritableMultisampleTexture)tex).MultisampleFactor, fBuffer);
                     else
-                        CreateDepthRenderBuffer(tex.Width, tex.Height, fBuffer);
+                        ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height, fBuffer);
                     GL.NamedFramebufferTexture(fBuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexId, 0);
                 }
                 else
                 {
                     GL.NamedFramebufferTexture(fBuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexId, 0);
                 }
-
-                ((TextureHandle)tex.TextureHandle).TexId = ((TextureHandle)texHandle).TexId;
-                ((TextureHandle)tex.TextureHandle).FrameBufferHandle = ((TextureHandle)texHandle).FrameBufferHandle;
-                ((TextureHandle)tex.TextureHandle).DepthRenderBufferHandle = ((TextureHandle)texHandle).DepthRenderBufferHandle;
             }
             else
             {
@@ -2646,7 +2642,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
-
         /// <summary>
         /// Renders into the given cube map.
         /// </summary>
@@ -2662,7 +2657,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height, fBuffer);
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height, fBuffer);
                     GL.NamedFramebufferTexture(fBuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexId, 0);
                 }
                 else
@@ -2701,7 +2696,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height, fBuffer);
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height, fBuffer);
                     GL.NamedFramebufferTextureLayer(fBuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexId, 0, layer);
                 }
                 else
@@ -2780,7 +2775,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 #endif
         }
 
-        private int CreateDepthRenderBuffer(int width, int height, int framebufferHandle)
+        private static int CreateDepthRenderBuffer(int width, int height, int framebufferHandle)
         {
             GL.Enable(EnableCap.DepthTest);
 
@@ -2791,7 +2786,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return gDepthRenderbufferHandle;
         }
 
-        private int CreateDepthRenderBufferMultisample(int width, int height, int samples, int framebufferHandle)
+        private static int CreateDepthRenderBufferMultisample(int width, int height, int samples, int framebufferHandle)
         {
             GL.Enable(EnableCap.DepthTest);
 
@@ -2802,7 +2797,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return gDepthRenderbufferHandle;
         }
 
-        private int CreateFrameBuffer(IRenderTarget renderTarget, ITextureHandle[] texHandles)
+        private static int CreateFrameBuffer(IRenderTarget renderTarget, ITextureHandle[] texHandles)
         {
             GL.CreateFramebuffers(1, out int gBuffer);
 
