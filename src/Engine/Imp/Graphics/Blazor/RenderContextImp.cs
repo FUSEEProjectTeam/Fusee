@@ -2262,7 +2262,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height);
                     gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
                 }
@@ -2299,7 +2299,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height);
                     gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
                 }
@@ -2339,7 +2339,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height);
                     gl2.FramebufferTextureLayer(FRAMEBUFFER, COLOR_ATTACHMENT0, ((TextureHandle)texHandle).TexId, 0, layer);
                     gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
                 }
