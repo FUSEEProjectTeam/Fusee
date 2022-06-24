@@ -93,10 +93,6 @@
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.Gui.csproj">
-      <Project>{e327fc67-1306-429d-9180-01bcd68a21a0}</Project>
-      <Name>Fusee.Engine.Gui</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Fusee.Examples.AdvancedUI.Core.csproj">
       <Project>{ac71d89c-a7d4-4b2d-b402-e5c6586a5dc9}</Project>
       <Name>Fusee.Examples.AdvancedUI.Core</Name>
