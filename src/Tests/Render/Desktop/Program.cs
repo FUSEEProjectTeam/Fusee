@@ -88,7 +88,7 @@ namespace Fusee.Tests.Render.Desktop
 
                 SpinWait.SpinUntil(() => app.IsLoaded);
 
-                for(var i = 0; i < 2; i++)
+                for (var i = 0; i < 2; i++)
                     ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoRender();
 
                 // Render a single frame and save it
