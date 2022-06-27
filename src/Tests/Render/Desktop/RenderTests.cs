@@ -1,10 +1,10 @@
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using NUnit;
 using NUnit.Framework;
-using System.Threading;
-using System.Diagnostics;
 using NUnitLite;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Fusee.Tests.Render.Desktop
 {
