@@ -21,6 +21,15 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\AdvancedUI\Core\Fusee.Examples.AdvancedUI.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Camera\Core\Fusee.Examples.Camera.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\ComputeFractal\Core\Fusee.Examples.ComputeFractal.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Labyrinth\Core\Fusee.Examples.Labyrinth.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Materials\Core\Fusee.Examples.Materials.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\PointCloudPotree2\Core\Fusee.Examples.PointCloudPotree2.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\RenderContextonly\Core\Fusee.Examples.RenderContextonly.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\RenderLayer\Core\Fusee.Examples.RenderLayer.Core.csproj" />
+
+
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\GeometryEditing\Core\Fusee.Examples.GeometryEditing.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\MeshingAround\Core\Fusee.Examples.MeshingAround.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Picking\Core\Fusee.Examples.Picking.Core.csproj" />
@@ -46,7 +55,22 @@
 	  <None Update="References\BoneAnimation.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	  <None Update="References\Camera.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\Deferred.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\Fractal.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="References\GeometryEditing.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\Labyrinth.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\Materials.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="References\MeshingAround.png">
@@ -56,6 +80,12 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="References\Picking.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\RenderContextOnly.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="References\RenderLayer.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="References\Simple.png">
