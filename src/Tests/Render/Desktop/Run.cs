@@ -12,14 +12,8 @@ namespace Fusee.Tests.Render.Desktop
 
         public static int Main(string[] args)
         {
-            Program.Example = new Fusee.Examples.Simple.Core.Simple();
-            Program.Init("SimpleTest.png");
-
             Program.Example = new Fusee.Examples.AdvancedUI.Core.AdvancedUI() { rnd = new System.Random(12345) };
             Program.Init("AdvancedUITest.png");
-
-            //Program.Example = new Fusee.Examples.Bone.Core.Bone();
-            //Program.Init("BoneAnimationTest.png");
 
             Program.Example = new Fusee.Examples.GeometryEditing.Core.GeometryEditing();
             Program.Init("GeometryEditingTest.png");
@@ -29,6 +23,10 @@ namespace Fusee.Tests.Render.Desktop
 
             Program.Example = new Fusee.Examples.Picking.Core.Picking();
             Program.Init("PickingTest.png");
+
+
+            Program.Example = new Fusee.Examples.Simple.Core.Simple();
+            Program.Init("SimpleTest.png");
 
             Program.Example = new Fusee.Examples.ThreeDFont.Core.ThreeDFont();
             Program.Init("ThreeDFontTest.png");

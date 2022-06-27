@@ -23,14 +23,20 @@ namespace Fusee.Tests.Render.Desktop
 
         public static RenderCanvas Example { get => example; set => example = value; }
 
-        public async static void Init(string arg)
+        public static string FilePath;
+
+        public static void Init(string arg)
         {
             if (!string.IsNullOrEmpty(arg))
             {
                 // Inject Fusee.Engine.Base InjectMe dependencies
                 IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
                 AssetStorage.UnRegisterAllAssetProviders();
-                var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+
+                var baseDirOfExample = new Uri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
+                FilePath = baseDirOfExample.LocalPath;
+
+                var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(Path.Combine(baseDirOfExample.LocalPath, "Assets"));
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
@@ -88,12 +94,13 @@ namespace Fusee.Tests.Render.Desktop
 
                 SpinWait.SpinUntil(() => app.IsLoaded);
 
+                // skip the first frame, empty
                 for (var i = 0; i < 2; i++)
                     ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoRender();
 
                 // Render a single frame and save it
                 using var img = cimp.ShootCurrentFrame(width, height) as Image<Bgra32>;
-                img.SaveAsPng(arg);
+                img.SaveAsPng(Path.Combine(FilePath, arg));
 
                 // Done
                 Console.Error.WriteLine($"SUCCESS: Image {arg} generated.");

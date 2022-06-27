@@ -4,6 +4,7 @@ using NUnitLite;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 
 namespace Fusee.Tests.Render.Desktop
@@ -13,7 +14,6 @@ namespace Fusee.Tests.Render.Desktop
     public class SetupTrace
     {
         [OneTimeSetUp]
-        [Apartment(ApartmentState.STA)]
         public void StartTest()
         {
             Trace.Listeners.Add(new ConsoleTraceListener());
@@ -33,9 +33,8 @@ namespace Fusee.Tests.Render.Desktop
 
         public void AdvancedUITest()
         {
-            var referenceIm = Image.Load(@"References\AdvancedUI.png");
-            //var referenceIm = Image.Load(@"References\AdvancedUI.png");
-            var testIm = Image.Load("AdvancedUITest.png");
+            var referenceIm = Image.Load(Path.Combine(Program.FilePath, "References", "AdvancedUI.png"));
+            var testIm = Image.Load(Path.Combine(Program.FilePath, "AdvancedUITest.png"));
             //var testIm = Image.Load("AdvancedUITest.png");
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
             Assert.GreaterOrEqual(percent, 0.98f);
@@ -60,10 +59,8 @@ namespace Fusee.Tests.Render.Desktop
         [Test]
         public void GeometryEditingTest()
         {
-
-
-            var referenceIm = Image.Load(@"References\GeometryEditing.png");
-            var testIm = Image.Load("GeometryEditingTest.png");
+            var referenceIm = Image.Load(Path.Combine(Program.FilePath, "References", "GeometryEditing.png"));
+            var testIm = Image.Load(Path.Combine(Program.FilePath, "GeometryEditingTest.png"));
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
@@ -74,9 +71,8 @@ namespace Fusee.Tests.Render.Desktop
         [Test]
         public void MeshingAroundTest()
         {
-
-            var referenceIm = Image.Load(@"References\MeshingAround.png");
-            var testIm = Image.Load("MeshingAroundTest.png");
+            var referenceIm = Image.Load(Path.Combine(Program.FilePath, "References", "MeshingAround.png"));
+            var testIm = Image.Load(Path.Combine(Program.FilePath, "MeshingAroundTest.png"));
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
@@ -87,10 +83,8 @@ namespace Fusee.Tests.Render.Desktop
         [Test]
         public void PickingTest()
         {
-
-
-            var referenceIm = Image.Load(@"References\Picking.png");
-            var testIm = Image.Load("PickingTest.png");
+            var referenceIm = Image.Load(Path.Combine(Program.FilePath, "References", "Picking.png"));
+            var testIm = Image.Load(Path.Combine(Program.FilePath, "PickingTest.png"));
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
@@ -101,9 +95,8 @@ namespace Fusee.Tests.Render.Desktop
         [Test]
         public void SimpleTest()
         {
-
-            var referenceIm = Image.Load(@"References\Simple.png");
-            var testIm = Image.Load("SimpleTest.png");
+            var referenceIm = Image.Load(Path.Combine(Program.FilePath, "References", "Simple.png"));
+            var testIm = Image.Load(Path.Combine(Program.FilePath, "SimpleTest.png"));
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
@@ -129,9 +122,8 @@ namespace Fusee.Tests.Render.Desktop
         [Test]
         public void ThreeDFontTest()
         {
-
-            var referenceIm = Image.Load(@"References\ThreeDFont.png");
-            var testIm = Image.Load("ThreeDFontTest.png");
+            var referenceIm = Image.Load(Path.Combine(Program.FilePath, "References", "ThreeDFont.png"));
+            var testIm = Image.Load(Path.Combine(Program.FilePath, "ThreeDFontTest.png"));
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
@@ -142,9 +134,8 @@ namespace Fusee.Tests.Render.Desktop
         [Test]
         public void UITest()
         {
-
-            var referenceIm = Image.Load(@"References\UI.png");
-            var testIm = Image.Load("UITest.png");
+            var referenceIm = Image.Load(Path.Combine(Program.FilePath, "References", "UI.png"));
+            var testIm = Image.Load(Path.Combine(Program.FilePath, "UITest.png"));
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
