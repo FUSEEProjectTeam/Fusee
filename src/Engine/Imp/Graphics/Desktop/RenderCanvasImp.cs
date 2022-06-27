@@ -215,7 +215,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <param name="icon">The window icon to use</param>
-        public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false)
+        /// <param name="startVisible">Define if window is visible from the start, default: true.</param>
+        public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false, bool startVisible = true)
         {
             //TODO: Select correct monitor
             MonitorInfo mon = Monitors.GetMonitors()[0];
@@ -231,11 +232,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible);
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible);
             }
 
             WindowHandle = new WindowHandle()
@@ -623,8 +624,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="height">The height.</param>
         /// <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false)
-            : base(new GameWindowSettings { IsMultiThreaded = isMultithreaded }, new NativeWindowSettings { Size = new OpenTK.Mathematics.Vector2i(width, height), Profile = OpenTK.Windowing.Common.ContextProfile.Core, Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible })
+        /// <param name="startVisible">Should the window be visible from the start, default: true.</param>
+        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false, bool startVisible = true)
+            : base(new GameWindowSettings { IsMultiThreaded = isMultithreaded }, new NativeWindowSettings
+            {
+                Size = new OpenTK.Mathematics.Vector2i(width, height),
+                Profile = OpenTK.Windowing.Common.ContextProfile.Core,
+                Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible,
+                StartVisible = startVisible
+            })
         {
             _renderCanvasImp = renderCanvasImp;
             _renderCanvasImp.BaseWidth = width;
