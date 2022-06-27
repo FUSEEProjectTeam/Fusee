@@ -373,8 +373,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             if (_gameWindow != null)
             {
+                NativeWindow.ProcessWindowEvents(true);
                 _gameWindow.Close();
-                _gameWindow.ProcessEvents();
                 _gameWindow.Dispose();
             }
         }
