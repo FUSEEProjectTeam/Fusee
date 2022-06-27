@@ -38,7 +38,7 @@ namespace Fusee.Tests.Render.Desktop
             var testIm = Image.Load("AdvancedUITest.png");
             //var testIm = Image.Load("AdvancedUITest.png");
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
-            Assert.GreaterOrEqual(percent, 0.99f);
+            Assert.GreaterOrEqual(percent, 0.98f);
             TestContext.WriteLine(percent.ToString());
         }
 
@@ -53,7 +53,7 @@ namespace Fusee.Tests.Render.Desktop
         //
         //    var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
         //
-        //    Assert.GreaterOrEqual(percent, 0.99f);
+        //    Assert.GreaterOrEqual(percent, 0.98f);
         //    TestContext.WriteLine(percent.ToString());
         //}
 
@@ -67,7 +67,7 @@ namespace Fusee.Tests.Render.Desktop
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.GreaterOrEqual(percent, 0.99f);
+            Assert.GreaterOrEqual(percent, 0.98f);
             TestContext.WriteLine(percent.ToString());
         }
 
@@ -80,7 +80,7 @@ namespace Fusee.Tests.Render.Desktop
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.GreaterOrEqual(percent, 0.99f);
+            Assert.GreaterOrEqual(percent, 0.98f);
             TestContext.WriteLine(percent.ToString());
         }
 
@@ -94,7 +94,7 @@ namespace Fusee.Tests.Render.Desktop
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.GreaterOrEqual(percent, 0.99f);
+            Assert.GreaterOrEqual(percent, 0.98f);
             TestContext.WriteLine(percent.ToString());
         }
 
@@ -135,7 +135,7 @@ namespace Fusee.Tests.Render.Desktop
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.GreaterOrEqual(percent, 0.99f);
+            Assert.GreaterOrEqual(percent, 0.98f);
             TestContext.WriteLine(percent.ToString());
         }
 
@@ -148,7 +148,7 @@ namespace Fusee.Tests.Render.Desktop
 
             var percent = CompareImage(referenceIm as Image<Rgba32>, testIm as Image<Rgba32>);
 
-            Assert.GreaterOrEqual(percent, 0.99f);
+            Assert.GreaterOrEqual(percent, 0.98f);
             TestContext.WriteLine(percent.ToString());
         }
 

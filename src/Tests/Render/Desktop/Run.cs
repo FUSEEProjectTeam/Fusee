@@ -9,7 +9,7 @@ namespace Fusee.Tests.Render.Desktop
 {
     internal static class Run
     {
-        [STAThread]
+
         public static int Main(string[] args)
         {
             Program.Example = new Fusee.Examples.Simple.Core.Simple();
@@ -37,6 +37,7 @@ namespace Fusee.Tests.Render.Desktop
             Program.Init("UITest.png");
 
             return new AutoRun().Execute(args);
+
         }
 
     }

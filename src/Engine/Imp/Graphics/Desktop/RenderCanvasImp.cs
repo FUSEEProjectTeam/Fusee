@@ -9,12 +9,17 @@ using SixLabors.ImageSharp.Processing;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Image = OpenTK.Windowing.Common.Input.Image;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
+// friend: Fusee.Tests.Render.Desktop
+[assembly: InternalsVisibleTo("Fusee.Tests.Render.Desktop")]
+
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
+
     /// <summary>
     /// This is a default render canvas implementation creating its own rendering window.
     /// </summary>
@@ -441,21 +446,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns></returns>
         public SixLabors.ImageSharp.Image ShootCurrentFrame(int width, int height)
         {
-            DoInit();
-            DoResize(width, height);
-
             var mem = new byte[width * height * 4];
-            var loopCounter = 0;
 
-            while (!mem.ToList().Any(x => x != 0) || loopCounter++ > 10000)
-            {
-                DoRender();
-                GL.Flush();
-                GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
-                GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
-                //GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+            //_gameWindow.Context.MakeCurrent();
 
-            }
+            GL.Flush();
+            //GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
+            GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+            //GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+
             var img = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(mem, width, height);
 
             img.Mutate(x => x.AutoOrient());
@@ -648,11 +647,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
             }
-
-            GL.ClearColor(25, 25, 112, byte.MaxValue);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.CullFace);
 
             // Use VSync!
             VSync = OpenTK.Windowing.Common.VSyncMode.On;

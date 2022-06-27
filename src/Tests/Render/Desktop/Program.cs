@@ -83,10 +83,16 @@ namespace Fusee.Tests.Render.Desktop
                 cimp.Height = height;
                 cimp.Width = width;
 
-                app.RC.SetRenderStateSet(RenderStateSet.Default);
+                ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoInit();
+                ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoResize(width, height);
+
+                SpinWait.SpinUntil(() => app.IsLoaded);
+
+                for(var i = 0; i < 2; i++)
+                    ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoRender();
 
                 // Render a single frame and save it
-                using var img = cimp.ShootCurrentFrame(width, height) as Image<Rgba32>;
+                using var img = cimp.ShootCurrentFrame(width, height) as Image<Bgra32>;
                 img.SaveAsPng(arg);
 
                 // Done

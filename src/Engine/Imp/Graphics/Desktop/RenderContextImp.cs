@@ -59,6 +59,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DebugSeverityNotification, 0, Array.Empty<int>(), false);
 #endif
 
+
+            GL.ClearColor(25, 25, 112, byte.MaxValue);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+
+            // Use VSync!
+
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
             // TODO - implement this in render states!!!
