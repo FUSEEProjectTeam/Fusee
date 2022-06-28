@@ -94,8 +94,8 @@ namespace Fusee.Tests.Render.Desktop
 
                 SpinWait.SpinUntil(() => app.IsLoaded);
 
-                // skip the first frame, empty
-                for (var i = 0; i < 2; i++)
+                // skip the first frame, empty, skip the second as deferred needs three, second pass has an empty frame, too
+                for (var i = 0; i < 3; i++)
                     ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoRender();
 
                 // Render a single frame and save it
