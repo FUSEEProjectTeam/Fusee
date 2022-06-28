@@ -146,5 +146,10 @@ namespace Fusee.Engine.Common
         /// Defines how to map texels to uv coordinates.
         /// </summary>
         TextureFilterMode FilterMode { get; }
+
+        /// <summary>
+        /// Opaque handle to texture
+        /// </summary>
+        public ITextureHandle TextureHandle { get; }
     }
 }

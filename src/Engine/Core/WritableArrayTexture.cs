@@ -102,6 +102,9 @@ namespace Fusee.Engine.Core
             private set;
         }
 
+        /// <summary>
+        /// Opaque handle to texture
+        /// </summary>
         public ITextureHandle TextureHandle { get; internal set; }
 
         /// <summary>
