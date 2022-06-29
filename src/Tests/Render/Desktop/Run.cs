@@ -18,8 +18,8 @@ namespace Fusee.Tests.Render.Desktop
             Program.Example = new Fusee.Examples.Camera.Core.CameraExample() { };
             Program.Init("Camera.png");
 
-            Program.Example = new Fusee.Examples.ComputeFractal.Core.ComputeFractal() { };
-            Program.Init("Fractal.png");
+            //Program.Example = new Fusee.Examples.ComputeFractal.Core.ComputeFractal() { };
+            //Program.Init("Fractal.png");
 
             Program.Example = new Fusee.Examples.Deferred.Core.Deferred() { };
             Program.Init("Deferred.png");
