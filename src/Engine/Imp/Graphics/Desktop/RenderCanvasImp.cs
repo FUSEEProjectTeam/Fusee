@@ -382,8 +382,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             if (_gameWindow != null)
             {
+                NativeWindow.ProcessWindowEvents(true);
                 _gameWindow.Close();
-                _gameWindow.ProcessEvents();
                 _gameWindow.Dispose();
             }
         }
@@ -571,6 +571,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private readonly RenderCanvasImp _renderCanvasImp;
 
         /// <summary>
+        /// True if the GameWindow/ the application uses multiple threads.
+        /// With OpenTK 4.7 we need to use the "new" modifier to hide the GameWindow.IsMultithreaded property, which became obsolete in this version.
+        /// </summary>
+        public new bool IsMultiThreaded { get; private set; } = false;
+
+        /// <summary>
         /// Gets the delta time.
         /// The delta time is the time that was required to render the last frame in milliseconds.
         /// This value can be used to determine the frames per second of the application.
@@ -634,6 +640,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 StartVisible = startVisible
             })
         {
+            IsMultiThreaded = isMultithreaded;
             _renderCanvasImp = renderCanvasImp;
             _renderCanvasImp.BaseWidth = width;
             _renderCanvasImp.BaseHeight = height;
