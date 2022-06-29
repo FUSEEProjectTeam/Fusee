@@ -99,6 +99,14 @@ jobs:
       run: ./ext/install-opengl.ps1 uninstall
       shell: pwsh
       if: always()
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        # Artifact name
+        name: Rendertests
+        # Directory containing files to upload
+        path: bin/**/*.png
 
   builddesktop:
     needs: [tests, rendertests]
