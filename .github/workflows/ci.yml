@@ -90,8 +90,15 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
+    - name: Install OpenGL
+      run: ./ext/install-opengl.ps1
+      shell: pwsh
     - name: Render image compare
       run: dotnet run -c Release --project src/Tests/Render/Desktop/Fusee.Tests.Render.Desktop.csproj
+    - name: Uninstall OpenGL
+      run: ./ext/install-opengl.ps1 uninstall
+      shell: pwsh
+      if: always()
 
   builddesktop:
     needs: [tests, rendertests]
