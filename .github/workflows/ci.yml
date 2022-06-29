@@ -106,7 +106,9 @@ jobs:
         # Artifact name
         name: Rendertests
         # Directory containing files to upload
-        path: bin/**/*.png
+        path: |
+            bin/Release/Tests/Render/Desktop/net6.0/*.png
+            bin/Release/Tests/Render/Desktop/net6.0/References/*.png
 
   builddesktop:
     needs: [tests, rendertests]
