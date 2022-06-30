@@ -1,4 +1,5 @@
 ﻿using Fusee.Base.Core;
+
 using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
@@ -46,7 +47,7 @@ namespace Fusee.ImGuiDesktop
                                                     outputColor = color * texture(in_fontTexture, texCoord);
                                                 }";
 
-        private static int _shaderProgram;
+        internal static int ShaderProgram;
         private static readonly Dictionary<string, UniformFieldInfo> _uniformVarToLocation = new();
 
         public ImGuiController(int width, int height) => WindowResized(width, height);
@@ -92,7 +93,7 @@ namespace Fusee.ImGuiDesktop
 
         private static void CreateDeviceResources()
         {
-            _shaderProgram = GL.CreateProgram();
+            ShaderProgram = GL.CreateProgram();
 
             var vertexShader = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexShader, _vertexSource);
@@ -116,32 +117,32 @@ namespace Fusee.ImGuiDesktop
                 Diagnostics.Error($"GL.CompileShader for shader '{pixelShader}' had info log:\n{Info}");
             }
 
-            GL.AttachShader(_shaderProgram, vertexShader);
-            GL.AttachShader(_shaderProgram, pixelShader);
+            GL.AttachShader(ShaderProgram, vertexShader);
+            GL.AttachShader(ShaderProgram, pixelShader);
 
-            GL.LinkProgram(_shaderProgram);
+            GL.LinkProgram(ShaderProgram);
 
-            GL.GetProgram(_shaderProgram, GetProgramParameterName.LinkStatus, out success);
+            GL.GetProgram(ShaderProgram, GetProgramParameterName.LinkStatus, out success);
 
             if (success == 0)
             {
-                string Info = GL.GetProgramInfoLog(_shaderProgram);
+                string Info = GL.GetProgramInfoLog(ShaderProgram);
                 Diagnostics.Error($"GL.LinkProgram had info log:\n{Info}");
             }
 
-            GL.DetachShader(_shaderProgram, vertexShader);
-            GL.DetachShader(_shaderProgram, pixelShader);
+            GL.DetachShader(ShaderProgram, vertexShader);
+            GL.DetachShader(ShaderProgram, pixelShader);
             GL.DeleteShader(vertexShader);
             GL.DeleteShader(pixelShader);
 
-            GL.GetProgram(_shaderProgram, GetProgramParameterName.ActiveUniforms, out int cnt);
+            GL.GetProgram(ShaderProgram, GetProgramParameterName.ActiveUniforms, out int cnt);
 
             for (var i = 0; i < cnt; i++)
             {
-                var name = GL.GetActiveUniform(_shaderProgram, i, out int Size, out ActiveUniformType Type);
+                var name = GL.GetActiveUniform(ShaderProgram, i, out int Size, out ActiveUniformType Type);
 
                 UniformFieldInfo FieldInfo;
-                FieldInfo.Location = GL.GetUniformLocation(_shaderProgram, name);
+                FieldInfo.Location = GL.GetUniformLocation(ShaderProgram, name);
                 FieldInfo.Name = name;
                 FieldInfo.Size = Size;
                 FieldInfo.Type = Type;
@@ -227,8 +228,6 @@ namespace Fusee.ImGuiDesktop
             ImGui.NewFrame();
         }
 
-
-
         public void RenderImGui()
         {
             ImGui.Render();
@@ -302,7 +301,7 @@ namespace Fusee.ImGuiDesktop
                -1.0f,
                1.0f);
 
-            GL.UseProgram(_shaderProgram);
+            GL.UseProgram(ShaderProgram);
 
             // Column order notation
             GL.UniformMatrix4(_uniformVarToLocation["projection_matrix"].Location, false, ref mvp);
