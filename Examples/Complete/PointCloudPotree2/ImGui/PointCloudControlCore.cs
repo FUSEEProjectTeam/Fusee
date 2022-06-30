@@ -161,122 +161,122 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
             _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
 
-                _sceneRenderer.Render(_rc);
-                _cam.RenderTexture = RenderTexture;
-
-                PtRenderingParams.Instance.DepthPassEf.Active = false;
-                PtRenderingParams.Instance.ColorPassEf.Active = true;
-            }
             _sceneRenderer.Render(_rc);
+            _cam.RenderTexture = RenderTexture;
+
+            PtRenderingParams.Instance.DepthPassEf.Active = false;
+            PtRenderingParams.Instance.ColorPassEf.Active = true;
+        }
+        _sceneRenderer.Render(_rc);
 
             ReadyToLoadNewFile = true;
 
             return RenderTexture.TextureHandle;
         }
 
-        public override void Update(bool allowInput)
-        {
-            if (!allowInput) return;
+    public override void Update(bool allowInput)
+    {
+        if (!allowInput) return;
 
-            if (_closingRequested)
+        if (_closingRequested)
+        {
+            ReadyToLoadNewFile = true;
+            return;
+        }
+
+        // ------------ Enable to update the Scene only when the user isn't moving ------------------
+        /*if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0 || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint) || isSpaceMouseMoving)
+            OocLoader.IsUserMoving = true;
+        else
+            OocLoader.IsUserMoving = false;*/
+        //--------------------------------------------------------------------------------------------
+
+        // Mouse and keyboard movement
+        if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
+            _keys = true;
+
+        // UpDown / LeftRight rotation
+        if (Input.Mouse.LeftButton)
+        {
+            _keys = false;
+
+            _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTimeUpdate * 0.0005f;
+            _angleVelVert = RotationSpeed * Input.Mouse.YVel * Time.DeltaTimeUpdate * 0.0005f;
+        }
+
+        else
+        {
+            if (_keys)
             {
-                ReadyToLoadNewFile = true;
-                return;
-            }
-
-            // ------------ Enable to update the Scene only when the user isn't moving ------------------
-            /*if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0 || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint) || isSpaceMouseMoving)
-                OocLoader.IsUserMoving = true;
-            else
-                OocLoader.IsUserMoving = false;*/
-            //--------------------------------------------------------------------------------------------
-
-            // Mouse and keyboard movement
-            if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
-                _keys = true;
-
-            // UpDown / LeftRight rotation
-            if (Input.Mouse.LeftButton)
-            {
-                _keys = false;
-
-                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTimeUpdate * 0.0005f;
-                _angleVelVert = RotationSpeed * Input.Mouse.YVel * Time.DeltaTimeUpdate * 0.0005f;
-            }
-
-            else
-            {
-                if (_keys)
-                {
-                    _angleVelHorz = RotationSpeed * Input.Keyboard.LeftRightAxis;
-                    _angleVelVert = RotationSpeed * Input.Keyboard.UpDownAxis;
-                }
-            }
-
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
-            _angleVelHorz = 0;
-            _angleVelVert = 0;
-
-            _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
-
-        }
-
-        private void OnThresholdChanged(int newValue)
-        {
-            if (_pointCloud != null)
-                _pointCloud.PointCloudImp.PointThreshold = newValue;
-        }
-
-        private void OnProjectedSizeModifierChanged(float newValue)
-        {
-            if (_pointCloud != null)
-                _pointCloud.PointCloudImp.MinProjSizeModifier = newValue;
-        }
-
-        // Is called when the window was resized
-        protected override void Resize(int width, int height)
-        {
-            if (width <= 0 || height <= 0)
-                return;
-
-            // delete old texture, generate new
-            RenderTexture?.Dispose();
-            // RenderTexture = WritableMultisampleTexture.CreateAlbedoTex(_rc, width, height, 8);
-            RenderTexture = WritableTexture.CreateAlbedoTex(width, height, new ImagePixelFormat(ColorFormat.RGBA));
-
-            if (PtRenderingParams.Instance.EdlStrength == 0f) return;
-            PtRenderingParams.Instance.ColorPassEf.DepthTex?.Dispose();
-            PtRenderingParams.Instance.ColorPassEf.DepthTex = WritableTexture.CreateDepthTex(width, height, new ImagePixelFormat(ColorFormat.Depth24));
-        }
-
-        public void ResetCamera()
-        {
-            _camTransform.Translation = _initCameraPos;
-            _angleHorz = _angleVert = 0;
-            _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    RenderTexture?.Dispose();
-                    PtRenderingParams.Instance.ColorPassEf.DepthTex?.Dispose();
-                }
-
-                disposedValue = true;
+                _angleVelHorz = RotationSpeed * Input.Keyboard.LeftRightAxis;
+                _angleVelVert = RotationSpeed * Input.Keyboard.UpDownAxis;
             }
         }
 
-        public void Dispose()
+        _angleHorz += _angleVelHorz;
+        _angleVert += _angleVelVert;
+        _angleVelHorz = 0;
+        _angleVelVert = 0;
+
+        _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
+
+    }
+
+    private void OnThresholdChanged(int newValue)
+    {
+        if (_pointCloud != null)
+            _pointCloud.PointCloudImp.PointThreshold = newValue;
+    }
+
+    private void OnProjectedSizeModifierChanged(float newValue)
+    {
+        if (_pointCloud != null)
+            _pointCloud.PointCloudImp.MinProjSizeModifier = newValue;
+    }
+
+    // Is called when the window was resized
+    protected override void Resize(int width, int height)
+    {
+        if (width <= 0 || height <= 0)
+            return;
+
+        // delete old texture, generate new
+        RenderTexture?.Dispose();
+        // RenderTexture = WritableMultisampleTexture.CreateAlbedoTex(_rc, width, height, 8);
+        RenderTexture = WritableTexture.CreateAlbedoTex(width, height, new ImagePixelFormat(ColorFormat.RGBA));
+
+        if (PtRenderingParams.Instance.EdlStrength == 0f) return;
+        PtRenderingParams.Instance.ColorPassEf.DepthTex?.Dispose();
+        PtRenderingParams.Instance.ColorPassEf.DepthTex = WritableTexture.CreateDepthTex(width, height, new ImagePixelFormat(ColorFormat.Depth24));
+    }
+
+    public void ResetCamera()
+    {
+        _camTransform.Translation = _initCameraPos;
+        _angleHorz = _angleVert = 0;
+        _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            if (disposing)
+            {
+                RenderTexture?.Dispose();
+                PtRenderingParams.Instance.ColorPassEf.DepthTex?.Dispose();
+            }
+
+            disposedValue = true;
         }
     }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+}
 
 }
