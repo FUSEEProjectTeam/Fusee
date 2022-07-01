@@ -119,7 +119,6 @@ namespace Fusee.Engine.Core
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
             ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
-            texture.TextureHandle = textureHandle;
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
