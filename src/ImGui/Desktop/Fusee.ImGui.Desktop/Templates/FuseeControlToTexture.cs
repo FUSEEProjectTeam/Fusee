@@ -115,7 +115,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             // Warning: wolves ahead
             if (prgmHndl == null)
-                prgmHndl = new ShaderHandleImp() { Handle = ImGuiController.ShaderProgram };
+                prgmHndl = new ShaderHandle() { Handle = ImGuiController.ShaderProgram };
             _rc.CurrentShaderProgram = prgmHndl;
 
             return new IntPtr(tex);
