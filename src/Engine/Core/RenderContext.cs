@@ -6,7 +6,9 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Fusee.ImGuiDesktop")]
 namespace Fusee.Engine.Core
 {
     internal struct GlobalUniform
@@ -155,7 +157,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The currently bound shader program.
         /// </summary>
-        private IShaderHandle _currentShaderProgram;
+        internal IShaderHandle CurrentShaderProgram;
 
         #endregion
 
@@ -1260,7 +1262,7 @@ namespace Fusee.Engine.Core
 
         private void ConnectBufferToShaderStorage(IStorageBuffer buffer, string ssboName)
         {
-            _rci.ConnectBufferToShaderStorage(_currentShaderProgram, buffer, ssboName);
+            _rci.ConnectBufferToShaderStorage(CurrentShaderProgram, buffer, ssboName);
         }
 
         #endregion
@@ -1523,9 +1525,9 @@ namespace Fusee.Engine.Core
         /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
         private void SetCompiledFx(IShaderHandle program)
         {
-            if (_currentShaderProgram != program)
+            if (CurrentShaderProgram != program)
             {
-                _currentShaderProgram = program;
+                CurrentShaderProgram = program;
                 _rci.SetShader(program);
             }
         }

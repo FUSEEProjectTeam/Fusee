@@ -76,6 +76,8 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                     BackgroundColor = float4.One
                 };
 
+                _cam.RenderTexture = RenderTexture;
+
                 var mainCam = new SceneNode()
                 {
                     Name = "MainCam",
@@ -153,22 +155,18 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 };
             }
 
-            if (PtRenderingParams.Instance.EdlStrength != 0f)
-            {
-                //Render Depth-only pass
-                PtRenderingParams.Instance.DepthPassEf.Active = true;
-                PtRenderingParams.Instance.ColorPassEf.Active = false;
+            //Render Depth-only pass
+            PtRenderingParams.Instance.DepthPassEf.Active = true;
+            PtRenderingParams.Instance.ColorPassEf.Active = false;
 
-                _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
+            _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
 
-                _sceneRenderer.Render(_rc);
-                _cam.RenderTexture = null;
-
-                PtRenderingParams.Instance.DepthPassEf.Active = false;
-                PtRenderingParams.Instance.ColorPassEf.Active = true;
-            }
-
+            _sceneRenderer.Render(_rc);
             _cam.RenderTexture = RenderTexture;
+
+            PtRenderingParams.Instance.DepthPassEf.Active = false;
+            PtRenderingParams.Instance.ColorPassEf.Active = true;
+
             _sceneRenderer.Render(_rc);
 
             ReadyToLoadNewFile = true;
