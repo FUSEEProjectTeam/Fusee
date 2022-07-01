@@ -559,8 +559,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     {
         #region Fields
 
-        public new bool IsMultiThreaded { get; private set; }
-
         private readonly RenderCanvasImp _renderCanvasImp;
 
         /// <summary>
