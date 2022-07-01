@@ -7,7 +7,7 @@ namespace Fusee.Engine.Common
     /// Use writable textures if you want to render into a texture.
     /// Does NOT offer access to the pixel data.
     /// </summary>
-    public interface IWritableTexture : ITextureBase
+    public interface IWritableTexture : ITextureBase, IExposedTexture
     {
         /// <summary>
         /// Width in pixels.
@@ -38,10 +38,5 @@ namespace Fusee.Engine.Common
         /// Specifies the texture's comparison function.
         /// </summary>
         Compare CompareFunc { get; }
-
-        /// <summary>
-        /// Raw TextureHandle after GPU texture creation
-        /// </summary>
-        ITextureHandle TextureHandle { get; }
     }
 }

@@ -29,7 +29,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         #endregion
 
 
-        private Texture _imageTexture;
+        private ExposedTexture _imageTexture;
 
         private async void Load()
         {
@@ -45,7 +45,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             }
 
             var img = await AssetStorage.GetAsync<ImageData>("FuseeIconTop32.png");
-            _imageTexture = new Texture(img);
+            _imageTexture = new ExposedTexture(img);
 
             // register texture to the RenderContext
             RC.RegisterTexture(_imageTexture);

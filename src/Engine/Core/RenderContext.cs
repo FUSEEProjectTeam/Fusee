@@ -885,7 +885,7 @@ namespace Fusee.Engine.Core
         /// without the need to be rendered first. This procedure is needed for image rendering with ImGui
         /// </summary>
         /// <param name="tex">Texture to register</param>
-        public void RegisterTexture(Texture tex)
+        public void RegisterTexture(ExposedTexture tex)
         {
             _ = _textureManager.GetTextureHandle(tex);
         }
