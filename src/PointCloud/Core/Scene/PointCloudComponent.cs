@@ -27,7 +27,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// Determines whether this point cloud should be rendered using gpu instancing.
         /// </summary>
-        public readonly bool DoRenderInstanced;
+        public readonly RenderMode RenderMode;
 
         /// <summary>
         /// Reference to the Camera whose properties are used to control the visibility of point cloud chunks (octants).
@@ -37,9 +37,9 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// Instantiates the <see cref="IPointCloudImp{TGpuData}"/>.
         /// </summary>
-        public PointCloudComponent(IPointCloudImpBase imp, bool doRenderInstanced = false)
+        public PointCloudComponent(IPointCloudImpBase imp, RenderMode renderMode = RenderMode.PointSize)
         {
-            DoRenderInstanced = doRenderInstanced;
+            RenderMode = renderMode;
             PointCloudImp = imp;
         }
     }

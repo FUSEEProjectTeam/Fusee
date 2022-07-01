@@ -105,19 +105,20 @@ namespace Fusee.PointCloud.Core.Scene
                 pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
             }
 
-            if (!pointCloud.DoRenderInstanced)
+            switch (pointCloud.RenderMode)
             {
-                foreach (var mesh in ((IPointCloudImp<GpuMesh>)pointCloud.PointCloudImp).GpuDataToRender)
-                {
-                    _rc.Render(mesh, _isForwardModule);
-                }
-            }
-            else
-            {
-                foreach (var instanceData in ((IPointCloudImp<InstanceData>)pointCloud.PointCloudImp).GpuDataToRender)
-                {
-                    _rc.Render(quad, instanceData, _isForwardModule);
-                }
+                case RenderMode.PointSize:
+                    foreach (var mesh in ((IPointCloudImp<GpuMesh>)pointCloud.PointCloudImp).GpuDataToRender)
+                    {
+                        _rc.Render(mesh, _isForwardModule);
+                    }
+                    break;
+                case RenderMode.Instanced:
+                    foreach (var instanceData in ((IPointCloudImp<InstanceData>)pointCloud.PointCloudImp).GpuDataToRender)
+                    {
+                        _rc.Render(quad, instanceData, _isForwardModule);
+                    }
+                    break;
             }
         }
     }

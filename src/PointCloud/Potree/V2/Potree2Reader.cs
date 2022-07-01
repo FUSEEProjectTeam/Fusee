@@ -72,9 +72,9 @@ namespace Fusee.PointCloud.Potree.V2
         /// <summary>
         /// Returns a renderable point cloud component.
         /// </summary>
-        /// <param name="doRenderInstanced">Determines whether instanced rendering is used to display the returned point cloud."/></param>
+        /// <param name="renderMode">Determines which <see cref="RenderMode"/> is used to display the returned point cloud."/></param>
         /// <param name="fileFolderPath">Path to the file.</param>
-        public IPointCloud GetPointCloudComponent(string fileFolderPath, bool doRenderInstanced)
+        public IPointCloud GetPointCloudComponent(string fileFolderPath, RenderMode renderMode = RenderMode.PointSize)
         {
             _fileFolderPath = fileFolderPath;
 
@@ -96,18 +96,23 @@ namespace Fusee.PointCloud.Potree.V2
                 case PointType.PosD3ColF3LblB:
                     PointAccessor = new PosD3ColF3LblBAccessor();
 
-                    if (!doRenderInstanced)
+                    switch (renderMode)
                     {
-                        var dataHandler = new PointCloudDataHandler<GpuMesh, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
-                        var imp = new Potree2Cloud(dataHandler, GetOctree());
-                        return new PointCloudComponent(imp, doRenderInstanced);
+                        default:
+                        case RenderMode.PointSize:
+                            {
+                                var dataHandler = new PointCloudDataHandler<GpuMesh, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
+                                var imp = new Potree2Cloud(dataHandler, GetOctree());
+                                return new PointCloudComponent(imp, renderMode);
+                            }
 
-                    }
-                    else
-                    {
-                        var dataHandlerInstanced = new PointCloudDataHandler<InstanceData, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateInstanceDataPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>, true);
-                        var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
-                        return new PointCloudComponent(imp, doRenderInstanced);
+                        case RenderMode.Instanced:
+                            {
+                                var dataHandlerInstanced = new PointCloudDataHandler<InstanceData, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateInstanceDataPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>, true);
+                                var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
+                                return new PointCloudComponent(imp, renderMode);
+                            }
+
                     }
             }
         }

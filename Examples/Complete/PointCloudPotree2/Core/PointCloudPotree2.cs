@@ -90,8 +90,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _cam = new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
             {
-                BackgroundColor = float4.One,
-                Viewport = new float4(0, 0, 50, 100)
+                BackgroundColor = float4.One
             };
 
             var mainCam = new SceneNode()
@@ -105,7 +104,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             };
 
             var potreeReader = new Potree2Reader();
-            _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(PtRenderingParams.Instance.PathToOocFile, true);
+            _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(PtRenderingParams.Instance.PathToOocFile, RenderMode.Instanced);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PtRenderingParams.Instance.PointThreshold;
 

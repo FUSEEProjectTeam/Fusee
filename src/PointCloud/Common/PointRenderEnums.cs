@@ -1,6 +1,21 @@
 ﻿namespace Fusee.PointCloud.Common
 {
     /// <summary>
+    /// Available render modes.
+    /// </summary>
+    public enum RenderMode
+    {
+        /// <summary>
+        /// Points are rendered by using gl_PointSize.
+        /// </summary>
+        PointSize = 0,
+        /// <summary>
+        /// Points are rendered by instanced rendering.
+        /// </summary>
+        Instanced = 1
+    }
+
+    /// <summary>
     /// Available point shapes.
     /// </summary>
     public enum PointShape
