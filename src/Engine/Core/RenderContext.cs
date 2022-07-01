@@ -883,6 +883,16 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// This method enables an external <see cref="Texture"/> to be registered to the current <see cref="RenderContext"/>
+        /// without the need to be rendered first. This procedure is needed for image rendering with ImGui
+        /// </summary>
+        /// <param name="tex">Texture to register</param>
+        public void RegisterTexture(ExposedTexture tex)
+        {
+            _ = _textureManager.GetTextureHandle(tex);
+        }
+
+        /// <summary>
         /// Free all allocated gpu memory that belongs to a frame-buffer object.
         /// </summary>
         /// <param name="bufferHandle">The platform dependent abstraction of the gpu buffer handle.</param>
