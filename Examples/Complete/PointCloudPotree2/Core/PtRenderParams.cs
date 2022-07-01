@@ -80,7 +80,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             }
         }
 
-        private float _edlStrength = 0.3f;
+        private float _edlStrength = 0;
         public float EdlStrength
         {
             get { return _edlStrength; }

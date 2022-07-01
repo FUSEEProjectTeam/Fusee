@@ -184,6 +184,10 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             //    PtRenderingParams.Instance.ColorPassEf.Active = true;
             //}
 
+            PtRenderingParams.Instance.DepthPassEf.Active = false;
+            PtRenderingParams.Instance.ColorPassEf.Active = true;
+
+
             _sceneRenderer.Render(RC);
 
             //Render GUI

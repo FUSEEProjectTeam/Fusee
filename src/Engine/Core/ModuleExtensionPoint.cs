@@ -8,7 +8,7 @@ namespace Fusee.Engine.Core
     /// </summary>
     public sealed class ModuleExtensionPoint : IDisposable
     {
-        #region Singleton 
+        #region Singleton
         private static readonly ModuleExtensionPoint _instance = new();
 
         // Explicit static constructor to tell C# compiler
@@ -93,4 +93,5 @@ namespace Fusee.Engine.Core
         }
         #endregion
     }
+
 }
