@@ -61,6 +61,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.DebugMessageCallback(_openGlDebugDelegate, IntPtr.Zero);
             GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DebugSeverityNotification, 0, Array.Empty<int>(), false);
 #endif
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
 
             //Needed for rendering more than one viewport.

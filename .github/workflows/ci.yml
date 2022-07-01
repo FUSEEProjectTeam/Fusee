@@ -72,8 +72,46 @@ jobs:
     - name: Xirkit Nested Access
       run: dotnet test -c Release src/Tests/Xirkit/NestedAccess/Fusee.Tests.Xirkit.NestedAccess.csproj
 
+  rendertests:
+    name: Render Tests
+    needs: [lint]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'windows-2022' ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Install OpenGL
+      run: ./ext/install-opengl.ps1
+      shell: pwsh
+    - name: Render image compare
+      run: dotnet run -c Release --project src/Tests/Render/Desktop/Fusee.Tests.Render.Desktop.csproj
+    - name: Uninstall OpenGL
+      run: ./ext/install-opengl.ps1 uninstall
+      shell: pwsh
+      if: always()
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        # Artifact name
+        name: Rendertests
+        # Directory containing files to upload
+        path: |
+            bin/Release/Tests/Render/Desktop/net6.0/*.png
+            bin/Release/Tests/Render/Desktop/net6.0/References/*.png
+
   builddesktop:
-    needs: [tests]
+    needs: [tests, rendertests]
     name: Build Desktop
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -109,7 +147,7 @@ jobs:
 #        path: bin/Release/Examples/**/Desktop/
 
   buildnuget:
-    needs: [tests]
+    needs: [tests, rendertests]
     name: Build NuGet
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -173,7 +211,7 @@ jobs:
           dis/VSTemplate/VSIX/bin/Release/Fusee.Template.VS.vsix
 
   buildblazor:
-    needs: [tests]
+    needs: [tests, rendertests]
     name: Build Blazor
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -210,7 +248,7 @@ jobs:
 
   buildandroid:
     name: Build Android
-    needs: [tests]
+    needs: [tests, rendertests]
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
