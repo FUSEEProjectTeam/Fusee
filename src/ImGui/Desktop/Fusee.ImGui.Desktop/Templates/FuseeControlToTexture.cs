@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Imp.Graphics.Desktop;
 using OpenTK.Graphics.OpenGL;
 using System;
 
@@ -12,6 +13,8 @@ namespace Fusee.ImGuiDesktop.Templates
 
         private int _lastWidth;
         private int _lastHeight;
+
+        private IShaderHandle prgmHndl;
 
         protected RenderContext _rc;
 
@@ -104,13 +107,15 @@ namespace Fusee.ImGuiDesktop.Templates
             if (hndl == null) return IntPtr.Zero;
             var tex = ((Engine.Imp.Graphics.Desktop.TextureHandle)hndl).TexHandle;
 
-            // Disable FB, reset size etc. to previous size
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            GL.Viewport(0, 0, _originalWidth, _originalHeight);
 
-            // bind the render result and return ptr to texture
-            GL.BindTexture(TextureTarget.Texture2D, tex);
+            _rc.SetRenderTarget();
+            _rc.Viewport(0, 0, _originalWidth, _originalHeight);
+
+            // Warning: wolves ahead
+            if (prgmHndl == null)
+                prgmHndl = new ShaderHandleImp() { Handle = ImGuiController.ShaderProgram };
+            _rc.CurrentShaderProgram = prgmHndl;
+
             return new IntPtr(tex);
         }
 

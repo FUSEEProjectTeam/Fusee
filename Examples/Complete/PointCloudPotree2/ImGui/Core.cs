@@ -181,7 +181,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.BeginGroup();
             ImGui.Text("Lighting");
             ImGui.SliderInt("EDL Neighbor Px", ref _edlNeighbour, 0, 5);
-            ImGui.SliderFloat("EDL Strength", ref _edlStrength, 0f, 5f);
+            ImGui.SliderFloat("EDL Strength", ref _edlStrength, 0.0f, 5f);
 
             PtRenderingParams.Instance.EdlStrength = _edlStrength;
             PtRenderingParams.Instance.EdlNoOfNeighbourPx = _edlNeighbour;

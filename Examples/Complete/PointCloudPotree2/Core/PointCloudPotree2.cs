@@ -160,19 +160,18 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 return;
             }
 
-            if (PtRenderingParams.Instance.EdlStrength != 0f)
-            {
-                //Render Depth-only pass
-                PtRenderingParams.Instance.DepthPassEf.Active = true;
-                PtRenderingParams.Instance.ColorPassEf.Active = false;
 
-                _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
-                _sceneRenderer.Render(RC);
-                _cam.RenderTexture = null;
+            //Render Depth-only pass
+            PtRenderingParams.Instance.DepthPassEf.Active = true;
+            PtRenderingParams.Instance.ColorPassEf.Active = false;
 
-                PtRenderingParams.Instance.DepthPassEf.Active = false;
-                PtRenderingParams.Instance.ColorPassEf.Active = true;
-            }
+            _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
+            _sceneRenderer.Render(RC);
+            _cam.RenderTexture = null;
+
+            PtRenderingParams.Instance.DepthPassEf.Active = false;
+            PtRenderingParams.Instance.ColorPassEf.Active = true;
+
 
             _sceneRenderer.Render(RC);
 
