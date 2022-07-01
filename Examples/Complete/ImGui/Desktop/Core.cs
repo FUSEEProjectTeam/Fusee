@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.ImGuiImp.Desktop;
 using ImGuiNET;
@@ -25,7 +26,10 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         #endregion
 
-        private void Load()
+
+        private ExposedTexture _imageTexture;
+
+        private async void Load()
         {
             SetImGuiDesign();
 
@@ -37,6 +41,12 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             {
                 ImGui.LoadIniSettingsFromDisk(Path.Combine("Assets/MyImGuiSettings.ini"));
             }
+
+            var img = await AssetStorage.GetAsync<ImageData>("FuseeIconTop32.png");
+            _imageTexture = new ExposedTexture(img);
+
+            // register texture to the RenderContext
+            RC.RegisterTexture(_imageTexture);
         }
 
         public override async Task InitAsync()
@@ -55,7 +65,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             _fuControl.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
         }
 
-        public override void RenderAFrame()
+        public override async void RenderAFrame()
         {
             // Set Window flags for Dockspace
             var wndDockspaceFlags =
@@ -117,6 +127,13 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             _isMouseInsideFuControl = ImGui.IsItemHovered();
 
             ImGui.EndChild();
+            ImGui.End();
+
+            ImGui.Begin("ImageWnd");
+
+            var hndl = ((TextureHandle)_imageTexture.TextureHandle).TexHandle;
+            ImGui.Image(new IntPtr(hndl), new Vector2(_imageTexture.Width, _imageTexture.Height));
+
             ImGui.End();
 
             DrawGUI();

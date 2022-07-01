@@ -58,6 +58,20 @@ namespace Fusee.Engine.Core
             }
         }
 
+        private ITextureHandle RegisterNewTexture(ExposedTexture texture)
+        {
+            // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
+            // Generate the multi-sample texture, as well as the result texture where the final image is being blit to
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
+            texture.TextureHandle = textureHandle;
+
+            // Setup handler to observe changes of the texture data and dispose event (deallocation)
+            texture.TextureChanged += TextureChanged;
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(texture.TextureHandle, texture));
+
+            return textureHandle;
+        }
+
         private ITextureHandle RegisterNewTexture(WritableMultisampleTexture texture)
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
@@ -138,6 +152,15 @@ namespace Fusee.Engine.Core
         }
 
         public ITextureHandle GetTextureHandle(Texture texture)
+        {
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureTouple))
+            {
+                return RegisterNewTexture(texture);
+            }
+            return foundTextureTouple.Item1;
+        }
+
+        public ITextureHandle GetTextureHandle(ExposedTexture texture)
         {
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureTouple))
             {
