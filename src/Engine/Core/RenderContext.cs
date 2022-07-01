@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Fusee.ImGuiDesktop")]
+[assembly: InternalsVisibleTo("Fusee.ImGuiImp.Desktop")]
 namespace Fusee.Engine.Core
 {
     internal struct GlobalUniform

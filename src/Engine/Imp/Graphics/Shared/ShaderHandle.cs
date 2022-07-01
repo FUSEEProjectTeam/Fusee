@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 
 #if PLATFORM_DESKTOP
-[assembly: InternalsVisibleTo("Fusee.ImGuiDesktop")]
+[assembly: InternalsVisibleTo("Fusee.ImGuiImp.Desktop")]
 namespace Fusee.Engine.Imp.Graphics.Desktop
 #elif PLATFORM_ANDROID
 namespace Fusee.Engine.Imp.Graphics.Android

@@ -105,13 +105,13 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             // Do the actual rendering
             var hndl = RenderAFrame();
             if (hndl == null) return IntPtr.Zero;
-            var tex = ((Engine.Imp.Graphics.Desktop.TextureHandle)hndl).TexId;
+            var tex = ((TextureHandle)hndl).TexId;
             _rc.SetRenderTarget();
             _rc.Viewport(0, 0, _originalWidth, _originalHeight);
 
             // Warning: wolves ahead
             if (prgmHndl == null)
-                prgmHndl = new ShaderHandleImp() { Handle = ImGuiController.ShaderProgram };
+                prgmHndl = new ShaderHandle() { Handle = ImGuiController.ShaderProgram };
             _rc.CurrentShaderProgram = prgmHndl;
 
             return new IntPtr(tex);
