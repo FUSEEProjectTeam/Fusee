@@ -62,11 +62,19 @@ namespace Fusee.PointCloud.Core.Scene
             }
         }
 
+        /// <summary>
+        /// Sets the currently used <see cref="RenderLayer"/>.
+        /// </summary>
+        /// <param name="renderLayer"></param>
         public void UpdateRenderLayer(RenderLayers renderLayer)
         {
             _renderLayer = renderLayer;
         }
 
+        /// <summary>
+        /// Sets the currently used <see cref="Camera"/>.
+        /// </summary>
+        /// <param name="cam"></param>
         public void UpdateCamera(Camera cam)
         {
             _camera = cam;

@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Imp.Graphics.Desktop;
 using Fusee.ImGuiImp.Desktop;
 using ImGuiNET;
 using System;
@@ -131,7 +132,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
             ImGui.Begin("ImageWnd");
 
-            var hndl = ((TextureHandle)_imageTexture.TextureHandle).TexHandle;
+            var hndl = ((TextureHandle)_imageTexture.TextureHandle).TexId;
             ImGui.Image(new IntPtr(hndl), new Vector2(_imageTexture.Width, _imageTexture.Height));
 
             ImGui.End();
