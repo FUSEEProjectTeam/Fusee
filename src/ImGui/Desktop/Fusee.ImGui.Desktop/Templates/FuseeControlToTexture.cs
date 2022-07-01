@@ -116,7 +116,6 @@ namespace Fusee.ImGuiDesktop.Templates
                 prgmHndl = new ShaderHandleImp() { Handle = ImGuiController.ShaderProgram };
             _rc.CurrentShaderProgram = prgmHndl;
 
-
             return new IntPtr(tex);
         }
 
