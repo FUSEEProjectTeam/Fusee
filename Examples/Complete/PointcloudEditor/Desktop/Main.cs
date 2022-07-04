@@ -7,9 +7,9 @@ using Fusee.Serialization;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Fusee.Examples.Simple.Desktop
+namespace Fusee.Examples.PointcloudEditor.Desktop
 {
-    public class Simple
+    public class PointcloudEditor
     {
         public static void Main()
         {
@@ -52,8 +52,7 @@ namespace Fusee.Examples.Simple.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-
-            var app = new Core.Simple();
+            var app = new Core.PointcloudEditor();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
