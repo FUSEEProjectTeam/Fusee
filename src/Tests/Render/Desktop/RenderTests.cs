@@ -1,11 +1,8 @@
-using NUnit;
 using NUnit.Framework;
-using NUnitLite;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 
 namespace Fusee.Tests.Render.Desktop
 {
@@ -29,18 +26,17 @@ namespace Fusee.Tests.Render.Desktop
     public class RenderTests
     {
 
-        [Test]
+        //[Test]
+        //public void AdvancedUITest()
+        //{
+        //    var referenceImagePath = Path.Combine(Program.FilePath, "References", "AdvancedUI.png");
+        //    var testImagePath = Path.Combine(Program.FilePath, "AdvancedUI.png");
 
-        public void AdvancedUITest()
-        {
-            var referenceImagePath = Path.Combine(Program.FilePath, "References", "AdvancedUI.png");
-            var testImagePath = Path.Combine(Program.FilePath, "AdvancedUI.png");
+        //    var percent = CompareImage(referenceImagePath, testImagePath);
 
-            var percent = CompareImage(referenceImagePath, testImagePath);
-
-            Assert.GreaterOrEqual(percent, 0.98f);
-            TestContext.WriteLine(percent.ToString());
-        }
+        //    Assert.GreaterOrEqual(percent, 0.98f);
+        //    TestContext.WriteLine(percent.ToString());
+        //}
 
         [Test]
         public void CameraTest()

@@ -1,9 +1,4 @@
 ﻿using NUnitLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fusee.Tests.Render.Desktop
 {
@@ -12,8 +7,8 @@ namespace Fusee.Tests.Render.Desktop
 
         public static int Main(string[] args)
         {
-            Program.Example = new Fusee.Examples.AdvancedUI.Core.AdvancedUI() { rnd = new System.Random(12345) };
-            Program.Init("AdvancedUI.png");
+            //Program.Example = new Fusee.Examples.AdvancedUI.Core.AdvancedUI() { rnd = new System.Random(12345) };
+            //Program.Init("AdvancedUI.png");
 
             Program.Example = new Fusee.Examples.Camera.Core.CameraExample() { };
             Program.Init("Camera.png");
