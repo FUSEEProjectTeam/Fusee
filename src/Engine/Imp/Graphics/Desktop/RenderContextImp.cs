@@ -458,18 +458,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindTexture(TextureTarget.Texture2DMultisample, id);
 
             var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
-            var minFilter = glMinMagFilter.Item1;
-            var magFilter = glMinMagFilter.Item2;
-            var glWrapMode = GetWrapMode(tex.WrapMode);
 
             GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, tex.MultisampleFactor, PixelInternalFormat.Rgba, tex.Width, tex.Height, true);
-
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(tex.CompareMode));
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(tex.CompareFunc));
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)minFilter);
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)magFilter);
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapS, (int)glWrapMode);
-            GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapT, (int)glWrapMode);
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 

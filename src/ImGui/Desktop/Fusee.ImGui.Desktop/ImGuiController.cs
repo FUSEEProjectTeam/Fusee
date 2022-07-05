@@ -89,6 +89,7 @@ namespace Fusee.ImGuiDesktop
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
             io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
 
+            io.ConfigInputTrickleEventQueue = false;
 
             CreateDeviceResources();
             SetPerFrameImGuiData(1f / 60f);
@@ -98,7 +99,7 @@ namespace Fusee.ImGuiDesktop
             if (File.Exists("Assets/ImGuiSettings.ini"))
                 ImGui.LoadIniSettingsFromDisk("Assets/ImGuiSettings.ini");
 
-            io.MouseDrawCursor = true;
+            //io.MouseDrawCursor = true;
         }
 
         private static void CreateDeviceResources()
@@ -236,7 +237,7 @@ namespace Fusee.ImGuiDesktop
         public void UpdateImGui(float DeltaTimeUpdate)
         {
             SetPerFrameImGuiData(DeltaTimeUpdate);
-            ImGuiInputImp.UpdateImGuiInput();
+            ImGuiInputImp.UpdateImGuiInput(_scaleFactor);
 
             ImGui.NewFrame();
         }

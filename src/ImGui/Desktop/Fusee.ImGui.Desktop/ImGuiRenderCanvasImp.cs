@@ -78,10 +78,6 @@ namespace Fusee.ImGuiDesktop
 
             _gameWindow.CenterWindow();
 
-            _gameWindow.CursorState = OpenTK.Windowing.Common.CursorState.Hidden; // let ImGui Render the cursor
-
-
-
             _controller = new ImGuiController(_gameWindow);
         }
 
