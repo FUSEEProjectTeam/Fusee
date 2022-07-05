@@ -1,10 +1,12 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Fusee.Examples.PointcloudEditor.Desktop
@@ -14,9 +16,9 @@ namespace Fusee.Examples.PointcloudEditor.Desktop
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
-            IO.IOImp = new IOImp();
+            IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-            var fap = new FileAssetProvider("Assets");
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
@@ -52,17 +54,14 @@ namespace Fusee.Examples.PointcloudEditor.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.PointcloudEditor();
+            // no injection or shared base project, as we are currently limited to desktop only with ImGui.NET
+            var app = new Gui();
 
-            // Inject Fusee.Engine InjectMe dependencies (hard coded)
+           
             var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
-            app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(icon);
+            app.CanvasImplementor = new Fusee.ImGuiDesktop.ImGuiRenderCanvasImp(icon);
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
-            Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
-            Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
-            // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-            // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
-            // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+            Input.AddDriverImp(new Fusee.ImGuiDesktop.ImGuiInputImp(app.CanvasImplementor));
 
             app.InitApp();
 
