@@ -86,7 +86,6 @@ namespace Fusee.ImGuiDesktop
             }
 
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
-            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
             io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
 
             io.ConfigInputTrickleEventQueue = false;

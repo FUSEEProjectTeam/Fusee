@@ -68,6 +68,9 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         public override void RenderAFrame()
         {
+            // Enable Dockspace
+            ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+
             // Set Window flags for Dockspace
             var wndDockspaceFlags =
                     ImGuiWindowFlags.NoDocking
