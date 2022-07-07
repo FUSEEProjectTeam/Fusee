@@ -11,7 +11,6 @@ uniform sampler2D AlbedoTexture;
 uniform vec2 AlbedoTextureTiles;
 uniform vec4 Albedo;
 uniform float AlbedoMix;
-uniform int FUSEE_PLATFORM_ID;
 
 out vec4 outColor;
 
@@ -33,14 +32,7 @@ void main()
     vec4 texCol = texture(AlbedoTexture, vUv * AlbedoTextureTiles);
     vec3 mixCol = mix(Albedo.xyz, texCol.xyz, AlbedoMix);    
 
-    if (FUSEE_PLATFORM_ID == 1 || FUSEE_PLATFORM_ID == 3)
-    {
-        objCol = vec4(mixCol.rgb, texCol.r);
-    }
-    else
-    {
-	    objCol = vec4(mixCol, texCol.a);
-    }
+    objCol = vec4(mixCol.rgb, texCol.r);
         
     vec4 Idif = vec4(max(dot(N, L), 0.0) * lightColor, 1.0);
 
