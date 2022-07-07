@@ -6,8 +6,8 @@ namespace Fusee.Tests.Render.Desktop
     {
         public static int Main(string[] args)
         {
-            //Program.Example = new Fusee.Examples.AdvancedUI.Core.AdvancedUI() { rnd = new System.Random(12345) };
-            //Program.Init("AdvancedUI.png");
+            Program.Example = new Fusee.Examples.AdvancedUI.Core.AdvancedUI() { rnd = new System.Random(12345) };
+            Program.Init("AdvancedUI.png");
 
             Program.Example = new Fusee.Examples.Camera.Core.CameraExample() { };
             Program.Init("Camera.png");
@@ -15,8 +15,8 @@ namespace Fusee.Tests.Render.Desktop
             Program.Example = new Fusee.Examples.ComputeFractal.Core.ComputeFractal() { };
             Program.Init("Fractal.png");
 
-            //Program.Example = new Fusee.Examples.Deferred.Core.Deferred() { };
-            //Program.Init("Deferred.png");
+            Program.Example = new Fusee.Examples.Deferred.Core.Deferred() { };
+            Program.Init("Deferred.png");
 
             Program.Example = new Fusee.Examples.GeometryEditing.Core.GeometryEditing();
             Program.Init("GeometryEditing.png");
