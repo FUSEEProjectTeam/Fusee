@@ -777,6 +777,8 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+            ModuleExtensionPoint.CreateGpuMesh = CreateGpuMesh;
+            ModuleExtensionPoint.PlatformId = _rci.FuseePlatformId;
             DefaultState = new RenderContextDefaultState();
             DefaultEffect = MakeEffect.Default();
 
@@ -1009,8 +1011,7 @@ namespace Fusee.Engine.Core
                 AddForwardLightGetter(i);
             }
 
-            ModuleExtensionPoint.CreateGpuMesh = CreateGpuMesh;
-            ModuleExtensionPoint.PlatformId = _rci.FuseePlatformId;
+            
         }
 
         private void AddForwardLightGetter(int arrayPos)

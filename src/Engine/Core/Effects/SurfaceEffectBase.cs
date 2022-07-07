@@ -180,8 +180,10 @@ namespace Fusee.Engine.Core.Effects
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
             UniformParameters = new Dictionary<int, IFxParamDeclaration>();
 
-            if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+            if (ModuleExtensionPoint.PlatformId == FuseePlatformId.Desktop)
                 Version = Header.Version460Core;
+            else if (ModuleExtensionPoint.PlatformId == FuseePlatformId.Mesa)
+                Version = Header.Version450Core;
             else
                 Version = Header.Version300Es;
             Pi = Header.DefinePi;

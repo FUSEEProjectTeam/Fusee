@@ -546,6 +546,8 @@ namespace Fusee.Engine.Core
             var frag = new StringBuilder();
             if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
                 frag.AppendLine(Header.Version460Core);
+            else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                frag.AppendLine(Header.Version450Core);
             else
                 frag.AppendLine(Header.Version300Es);
             frag.Append(Header.DefinePi);

@@ -17,6 +17,8 @@ namespace Fusee.Engine.Core.Effects
                 var sb = new StringBuilder();
                 if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
                     sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
                 else
                     sb.AppendLine(Header.Version300Es);
                 sb.AppendLine("#define ITERATIONS 14");
@@ -295,6 +297,8 @@ namespace Fusee.Engine.Core.Effects
                 var sb = new StringBuilder();
                 if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
                     sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
                 else
                     sb.AppendLine(Header.Version300Es);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
@@ -320,7 +324,12 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version460Core);
+                
+                 if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                 else
+                    sb.AppendLine(Header.Version460Core);
+
                 sb.AppendLine("layout (triangles) in;");
                 sb.AppendLine("layout(triangle_strip, max_vertices = 18) out; ");
 
@@ -355,7 +364,10 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version460Core);
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version460Core);
                 sb.AppendLine("layout (points) in;");
                 sb.AppendLine("layout (points, max_vertices=6) out;");
 
@@ -388,6 +400,8 @@ namespace Fusee.Engine.Core.Effects
                 var sb = new StringBuilder();
                 if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
                     sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
                 else
                     sb.AppendLine(Header.Version300Es);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
@@ -412,6 +426,8 @@ namespace Fusee.Engine.Core.Effects
                 var sb = new StringBuilder();
                 if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
                     sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
                 else
                     sb.AppendLine(Header.Version300Es);
                 sb.AppendLine("#extension GL_ARB_explicit_uniform_location : enable");
@@ -438,6 +454,8 @@ namespace Fusee.Engine.Core.Effects
                 var sb = new StringBuilder();
                 if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
                     sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
                 else
                     sb.AppendLine(Header.Version300Es);
 
@@ -463,6 +481,8 @@ namespace Fusee.Engine.Core.Effects
                 var sb = new StringBuilder();
                 if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
                     sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
                 else
                     sb.AppendLine(Header.Version300Es);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
@@ -494,11 +514,11 @@ namespace Fusee.Engine.Core.Effects
         {
             get
             {
-                // TODO(MR,SBu): check for naming!
-
                 var sb = new StringBuilder();
                 if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
                     sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
                 else
                     sb.AppendLine(Header.Version300Es);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
@@ -541,10 +561,14 @@ namespace Fusee.Engine.Core.Effects
         {
             get
             {
-                // TODO(MR,SBu): check for naming!
-
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                    sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version300Es);
                 sb.AppendLine("#define KERNEL_LENGTH 64");
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
