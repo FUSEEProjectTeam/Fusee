@@ -43,6 +43,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private static DebugProc _openGlDebugDelegate;
 #endif
 
+
+        public RenderContextImp(IRenderCanvasImp renderCanvas, FuseePlatformId platformID) : this(renderCanvas)
+        {
+            FuseePlatformId = platformID;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
