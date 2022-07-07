@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Tests\Render\Desktop\</OutputPath>
@@ -7,19 +7,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.Gui.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Player\Core\Fusee.Engine.Player.Core.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Jometri\Fusee.Jometri.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
+		
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\AdvancedUI\Core\Fusee.Examples.AdvancedUI.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Camera\Core\Fusee.Examples.Camera.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\ComputeFractal\Core\Fusee.Examples.ComputeFractal.Core.csproj" />
@@ -28,8 +18,6 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\PointCloudPotree2\Core\Fusee.Examples.PointCloudPotree2.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\RenderContextonly\Core\Fusee.Examples.RenderContextonly.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\RenderLayer\Core\Fusee.Examples.RenderLayer.Core.csproj" />
-
-
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\GeometryEditing\Core\Fusee.Examples.GeometryEditing.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\MeshingAround\Core\Fusee.Examples.MeshingAround.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Picking\Core\Fusee.Examples.Picking.Core.csproj" />
@@ -40,12 +28,9 @@
 		
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
 		<PackageReference Include="NUnit" Version="3.13.3" />
-		<PackageReference Include="NUnit.Console" Version="3.15.0" />
-		<PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
 		<PackageReference Include="NUnitLite" Version="3.13.3" />
 		<PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
-
 	</ItemGroup>
 
 	<ItemGroup>
