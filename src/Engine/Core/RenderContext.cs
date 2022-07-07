@@ -1011,7 +1011,7 @@ namespace Fusee.Engine.Core
                 AddForwardLightGetter(i);
             }
 
-            
+
         }
 
         private void AddForwardLightGetter(int arrayPos)

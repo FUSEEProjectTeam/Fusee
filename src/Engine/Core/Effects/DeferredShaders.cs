@@ -324,10 +324,10 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                
-                 if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
                     sb.AppendLine(Header.Version450Core);
-                 else
+                else
                     sb.AppendLine(Header.Version460Core);
 
                 sb.AppendLine("layout (triangles) in;");
