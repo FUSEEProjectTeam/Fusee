@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Tests\Render\Desktop\</OutputPath>
@@ -40,10 +40,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="opengl32.dll">
+	  <None Include="$(FuseeEngineRoot)\ext\MesaOpenGL\opengl32.dll" Link="opengl32.dll">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
-
 </Project>
-
