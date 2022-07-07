@@ -91,12 +91,15 @@ namespace Fusee.Tests.Render.Desktop
 
                 ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoInit();
                 ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoResize(width, height);
+                ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoUpdate();
 
                 SpinWait.SpinUntil(() => app.IsLoaded);
 
                 // skip the first frame, empty, skip the second as deferred needs three, second pass has an empty frame, too
-                for (var i = 0; i < 3; i++)
+                for (var i = 0; i < 60; i++)
+                {
                     ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoRender();
+                }
 
                 // Render a single frame and save it
                 using var img = cimp.ShootCurrentFrame(width, height) as Image<Bgra32>;

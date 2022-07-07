@@ -1112,7 +1112,7 @@ namespace Fusee.Engine.Core
                     if (activeUniforms.Count == 0)
                     {
                         var ex = new Exception();
-                        Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { vert, geom, frag }); ;
+                        Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters from the gpu!", ex, new string[] { vert, geom, frag }); ;
                         throw new Exception("Error while compiling shader for pass.", ex);
                     }
 
