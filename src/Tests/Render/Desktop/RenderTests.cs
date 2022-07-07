@@ -136,10 +136,10 @@ namespace Fusee.Tests.Render.Desktop
         [Test]
         public void PointCloudPotree2Test()
         {
-           var referenceImagePath = Path.Combine(Program.FilePath, "References", "PointCloudPotree2.png");
-           var testImagePath = Path.Combine(Program.FilePath, "PointCloudPotree2.png");
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "PointCloudPotree2.png");
+            var testImagePath = Path.Combine(Program.FilePath, "PointCloudPotree2.png");
 
-           var result = CompareImage(referenceImagePath, testImagePath);
+            var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
             Assert.LessOrEqual(result.averageDifference, 0.01f);
