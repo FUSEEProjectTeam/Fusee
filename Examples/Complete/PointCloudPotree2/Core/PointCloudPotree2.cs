@@ -9,6 +9,7 @@ using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -60,7 +61,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private SixDOFDevice _spaceMouse;
         private PointCloudComponent _pointCloud;
 
-        private WritableTexture rt = WritableTexture.CreateAlbedoTex(1280, 720, new ImagePixelFormat(ColorFormat.RGBA));
+        public string AssetsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         public override void Init()
         {
