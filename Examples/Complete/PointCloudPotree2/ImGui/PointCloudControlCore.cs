@@ -171,7 +171,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
             ReadyToLoadNewFile = true;
 
-            return RenderTexture.TextureHandle;
+            return RenderTexture?.TextureHandle;
         }
 
         public override void Update(bool allowInput)
