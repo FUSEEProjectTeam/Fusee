@@ -465,23 +465,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.CreateTextures(TextureTarget.Texture2DMultisample, 1, out int id);
             GL.TextureStorage2DMultisample(id, tex.MultisampleFactor, GetSizedInteralFormat(tex.PixelFormat), tex.Width, tex.Height, true);
 
-            //var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
-            //var minFilter = (int)glMinMagFilter.Item1;
-            //var magFilter = (int)glMinMagFilter.Item2;
-            //var glWrapMode = (int)GetWrapMode(tex.WrapMode);
-            //var texCompareMode = (int)GetTexComapreMode(tex.CompareMode);
-            //var depthCompareFunc = (int)GetDepthCompareFunc(tex.CompareFunc);
+            var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
 
             //Note: Multisample textures are not filtered and the calls below will generate a INVALID_ENUM error
 
-            //GL.TextureParameterI(id, TextureParameterName.TextureCompareMode, ref texCompareMode);
-            //GL.TextureParameterI(id, TextureParameterName.TextureCompareFunc, ref depthCompareFunc);
-            //GL.TextureParameterI(id, TextureParameterName.TextureMinFilter, ref minFilter);
-            //GL.TextureParameterI(id, TextureParameterName.TextureMagFilter, ref magFilter);
-            //GL.TextureParameterI(id, TextureParameterName.TextureWrapS, ref glWrapMode);
-            //GL.TextureParameterI(id, TextureParameterName.TextureWrapT, ref glWrapMode);
-
-            ITextureHandle texID = new TextureHandle { TexId = id };
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
 
             return texID;
         }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Fusee.ImGuiImp.Desktop
 {
@@ -49,8 +50,14 @@ namespace Fusee.ImGuiImp.Desktop
 
         internal static int ShaderProgram;
         private static readonly Dictionary<string, UniformFieldInfo> _uniformVarToLocation = new();
+        private readonly RenderCanvasGameWindow _gw;
 
-        public ImGuiController(int width, int height) => WindowResized(width, height);
+        public ImGuiController(RenderCanvasGameWindow gw)
+        {
+            WindowResized(gw.Size.X, gw.Size.Y);
+            _gw = gw;
+
+        }
 
         public void WindowResized(int width, int height)
         {
@@ -79,8 +86,9 @@ namespace Fusee.ImGuiImp.Desktop
             }
 
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
-            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
             io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
+
+            io.ConfigInputTrickleEventQueue = false;
 
             CreateDeviceResources();
             SetPerFrameImGuiData(1f / 60f);
@@ -89,6 +97,8 @@ namespace Fusee.ImGuiImp.Desktop
             // TODO(mr): Let user decide
             if (File.Exists("Assets/ImGuiSettings.ini"))
                 ImGui.LoadIniSettingsFromDisk("Assets/ImGuiSettings.ini");
+
+            //io.MouseDrawCursor = true;
         }
 
         private static void CreateDeviceResources()
@@ -225,12 +235,16 @@ namespace Fusee.ImGuiImp.Desktop
             io.Fonts.ClearTexData();
         }
 
+
         private void SetPerFrameImGuiData(float deltaSeconds)
         {
+            _gw.TryGetCurrentMonitorScale(out var hScale, out var vScale);
+            _scaleFactor = new Vector2(hScale, vScale);
+            var displaySizeX = GameWindowWidth / _scaleFactor.X;
+            var displaySizeY = GameWindowHeight / _scaleFactor.Y;
+
             ImGuiIOPtr io = ImGui.GetIO();
-            io.DisplaySize = new System.Numerics.Vector2(
-                GameWindowWidth / _scaleFactor.X,
-                GameWindowHeight / _scaleFactor.Y);
+            io.DisplaySize = new System.Numerics.Vector2(displaySizeX, displaySizeY);
             io.DisplayFramebufferScale = _scaleFactor;
             io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
         }
@@ -238,7 +252,7 @@ namespace Fusee.ImGuiImp.Desktop
         public void UpdateImGui(float DeltaTimeUpdate)
         {
             SetPerFrameImGuiData(DeltaTimeUpdate);
-            ImGuiInputImp.UpdateImGuiInput();
+            ImGuiInputImp.UpdateImGuiInput(_scaleFactor);
 
             ImGui.NewFrame();
         }

@@ -68,6 +68,9 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         public override async void RenderAFrame()
         {
+            // Enable Dockspace
+            ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+
             // Set Window flags for Dockspace
             var wndDockspaceFlags =
                     ImGuiWindowFlags.NoDocking

@@ -58,6 +58,7 @@ namespace Fusee.ImGuiImp.Desktop
 
         public ImGuiRenderCanvasImp(ImageData? icon = null, bool isMultithreaded = false)
         {
+
             int width = 1280;
             int height = 720;
 
@@ -76,28 +77,8 @@ namespace Fusee.ImGuiImp.Desktop
             };
 
             _gameWindow.CenterWindow();
-            if (_gameWindow.IsMultiThreaded)
-                _gameWindow.Context.MakeNoneCurrent();
 
-            // convert icon to OpenTKImage
-            //if (icon != null)
-            //{
-            //    // convert Bgra to Rgba for OpenTK.WindowIcon
-            //    var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(icon.PixelData, icon.Width, icon.Height);
-            //    var bgra = pxData.CloneAs<Rgba32>();
-            //    bgra.Mutate(x => x.AutoOrient());
-            //    bgra.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
-            //
-            //    if (!bgra.DangerousTryGetSinglePixelMemory(out var res))
-            //    {
-            //        Diagnostics.Warn("Couldn't convert icon image to Rgba32!");
-            //        return;
-            //    }
-            //    var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
-            //    _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, resBytes.ToArray()) });
-            //}
-
-            _controller = new ImGuiController(_gameWindow.Size.X, _gameWindow.Size.Y);
+            _controller = new ImGuiController(_gameWindow);
         }
 
         public void Run()
@@ -106,6 +87,7 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 _gameWindow.UpdateFrequency = 0;
                 _gameWindow.RenderFrequency = 0;
+                _gameWindow.VSync = OpenTK.Windowing.Common.VSyncMode.Adaptive;
 
                 _gameWindow.Run();
             }
@@ -169,7 +151,7 @@ namespace Fusee.ImGuiImp.Desktop
         protected internal void DoResize(int width, int height)
         {
             Resize?.Invoke(this, new ResizeEventArgs(width, height));
-            _controller.WindowResized(width, height);
+            _controller?.WindowResized(width, height);
         }
 
         public void SetCursor(CursorType cursorType)
