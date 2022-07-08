@@ -469,7 +469,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             //Note: Multisample textures are not filtered and the calls below will generate a INVALID_ENUM error
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             return texID;
         }
