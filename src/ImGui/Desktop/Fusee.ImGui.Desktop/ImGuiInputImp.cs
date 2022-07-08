@@ -5,6 +5,7 @@ using ImGuiNET;
 using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace Fusee.ImGuiDesktop
 {
@@ -297,17 +298,18 @@ namespace Fusee.ImGuiDesktop
             };
         }
 
-        public static void UpdateImGuiInput()
+        public static void UpdateImGuiInput(Vector2 scaleFactor)
         {
             var io = ImGui.GetIO();
             io.ClearInputCharacters();
 
-            io.AddMousePosEvent(Input.Mouse.X, Input.Mouse.Y);
+
+            io.AddMousePosEvent(Input.Mouse.X / scaleFactor.X, Input.Mouse.Y / scaleFactor.Y);
             io.AddMouseButtonEvent(0, Input.Mouse.LeftButton);
             io.AddMouseButtonEvent(1, Input.Mouse.MiddleButton);
             io.AddMouseButtonEvent(2, Input.Mouse.RightButton);
 
-            io.AddMouseWheelEvent(0, Input.Mouse.Wheel);
+            io.AddMouseWheelEvent(0, Input.Mouse.WheelVel * 0.01f);
 
 
             io.KeyShift = Input.Keyboard.IsKeyDown(KeyCodes.LShift) || Input.Keyboard.IsKeyDown(KeyCodes.RShift);
