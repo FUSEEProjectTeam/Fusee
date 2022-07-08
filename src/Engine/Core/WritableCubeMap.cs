@@ -98,6 +98,9 @@ namespace Fusee.Engine.Core
             private set;
         }
 
+        /// <summary>
+        /// Opaque handle to the texture object on the gpu.
+        /// </summary>
         public ITextureHandle TextureHandle { get; internal set; }
 
         /// <summary>
