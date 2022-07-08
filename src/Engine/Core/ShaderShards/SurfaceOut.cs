@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core.ShaderShards
     public enum TextureSetup
     {
         /// <summary>
-        /// The effect dosn't have any textures
+        /// The effect doesn't have any textures
         /// </summary>
         NoTextures = 0,
 
@@ -45,6 +45,29 @@ namespace Fusee.Engine.Core.ShaderShards
         /// </summary>
         ThicknessMap = 4
 
+    }
+
+    /// <summary>
+    /// Used to specify which color is used for lighting calculation.
+    /// </summary>
+    public enum ColorMode
+    {
+        /// <summary>
+        /// Use basic Albedo color (from uniform)
+        /// </summary>
+        BaseColor = 0,
+        /// <summary>
+        /// Use <see cref="VaryingNameDeclarations.Color"/>
+        /// </summary>
+        VertexColor0,
+        /// <summary>
+        /// Use <see cref="VaryingNameDeclarations.Color1"/>
+        /// </summary>
+        VertexColor1,
+        /// <summary>
+        /// Use <see cref="VaryingNameDeclarations.Color2"/>
+        /// </summary>
+        VertexColor2
     }
 
     /// <summary>

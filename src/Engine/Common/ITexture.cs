@@ -12,4 +12,15 @@ namespace Fusee.Engine.Common
         /// </summary>
         IImageData ImageData { get; }
     }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public interface IExposedTexture : ITextureBase
+    {
+        /// <summary>
+        /// Raw TextureHandle after GPU texture creation
+        /// </summary>
+        ITextureHandle TextureHandle { get; }
+    }
 }

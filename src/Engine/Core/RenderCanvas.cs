@@ -180,6 +180,8 @@ namespace Fusee.Engine.Core
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
             RC.SetRenderStateSet(RenderStateSet.Default);
+            RC.GetWindowHeight = () => CanvasImplementor.Height;
+            RC.GetWindowWidth = () => CanvasImplementor.Width;
 
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 

@@ -12,6 +12,22 @@ namespace Fusee.Engine.Core.Effects
     /// </summary>
     public class SurfaceEffect : SurfaceEffectBase
     {
+        /// <summary>
+        /// Specify <see cref="ShaderShards.ColorMode"/> for lighting calculation.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Uniform)]
+        public int ColorMode
+        {
+            get { return _colorMode; }
+            set
+            {
+                _colorMode = value;
+                SetFxParam(nameof(ColorMode), _colorMode);
+            }
+        }
+        private int _colorMode;
+
         #region Internal/Global Uniforms (set by the Engine)
 
         /// <summary>

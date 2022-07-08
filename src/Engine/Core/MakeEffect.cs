@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default <see cref="Effect"/>, that is used if a <see cref="SceneNode"/> has a mesh but no effect.
         /// </summary>
-        public static SurfaceEffectBase Default() => FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), 0f, 22, 1.0f);
+        public static SurfaceEffect Default() => FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), 0f, 22, 1.0f);
 
         #region Deferred
 
@@ -142,11 +142,11 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary> 
+        /// </summary>
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The shadow map.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
         {
@@ -187,7 +187,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// [Parallel light only] ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass. Shadow is calculated with cascaded shadow maps.
-        /// </summary> 
+        /// </summary>
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The cascaded shadow maps.</param>
@@ -580,7 +580,7 @@ namespace Fusee.Engine.Core
             frag.Append(FragProperties.ColorOut());
 
             //Shadow calculation methods
-            //-------------------------------------- 
+            //--------------------------------------
             if (isCascaded)
                 frag.Append(Lighting.ShadowCalculationCascaded());
             else if (lc.Type == LightType.Point)

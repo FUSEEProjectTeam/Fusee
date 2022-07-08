@@ -5,8 +5,8 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
     /// <summary>
-    /// Contains pre-defined Shader Shards. 
-    /// Those are the content of the Vertex Shader's method that lets us change values of the "out"-struct that is used for the position calculation.    
+    /// Contains pre-defined Shader Shards.
+    /// Those are the content of the Vertex Shader's method that lets us change values of the "out"-struct that is used for the position calculation.
     /// </summary>
     public static class VertShards
     {

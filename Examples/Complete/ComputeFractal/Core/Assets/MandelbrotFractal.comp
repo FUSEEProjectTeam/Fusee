@@ -1,4 +1,4 @@
-﻿#version 460 core
+﻿#version 450 core
 
 //src: https://www.reddit.com/r/Unity3D/comments/7pa6bq/drawing_mandelbrot_fractal_using_gpu_compute/
 

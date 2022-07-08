@@ -1,4 +1,4 @@
-﻿#version 460 core
+﻿#version 450 core
 precision highp float; 
 
 in vec2 vUv;
@@ -8,5 +8,5 @@ uniform sampler2D srcTex;
 
 void main()
 {
-    oColor = texture2D(srcTex, vUv);
+    oColor = texture(srcTex, vUv);
 }

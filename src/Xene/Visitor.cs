@@ -6,7 +6,7 @@ using System.Reflection;
 namespace Fusee.Xene
 {
     /// <summary>
-    /// Use this attribute to identify visitor methods. Visitor methods are called during traversal on 
+    /// Use this attribute to identify visitor methods. Visitor methods are called during traversal on
     /// nodes or components with the specified type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
@@ -82,13 +82,13 @@ namespace Fusee.Xene
     /// <item>As building block for enumerators. Visitor methods can yield an enumeration.</item>
     /// <item>As a tool set to implement transformations on scenes. Transformations operate on scenes and alter their structure.</item>
     /// </list>
-    /// 
+    ///
     /// Visitors derived from this class may implement
     /// their own Visit methods for all kinds of scene graph elements. Visitor methods can be defined for scene nodes (although many implementations
     /// will most likely NOT have a very big inheritance tree for nodes) as well as for scene components.
     /// A Visitor method can be any instance method (not static) taking one parameter either derived from <see cref="INode"/> or derived from
-    /// <see cref="IComponent"/>. To mark such a method as a Visitor method it needs to be decorated with the <see cref="VisitMethodAttribute"/> 
-    /// attribute. Visitor methods can have arbitrary names and don't necessarily need to be virtual. 
+    /// <see cref="IComponent"/>. To mark such a method as a Visitor method it needs to be decorated with the <see cref="VisitMethodAttribute"/>
+    /// attribute. Visitor methods can have arbitrary names and don't necessarily need to be virtual.
     /// </summary>
     public class Visitor<TNode, TComponent> where TNode : class, INode where TComponent : class, IComponent
     {
@@ -117,7 +117,7 @@ namespace Fusee.Xene
 
         #region Public Traversal Methods
         /// <summary>
-        /// Start traversing a scene graph starting with the given root node. Performs a recursive depth-first 
+        /// Start traversing a scene graph starting with the given root node. Performs a recursive depth-first
         /// traversal from the specified root.
         /// </summary>
         /// <param name="rootNode">The root node where to start the traversal.</param>
@@ -136,7 +136,7 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Start traversing a list of nodes. Performs a recursive depth-first traversal 
+        /// Start traversing a list of nodes. Performs a recursive depth-first traversal
         /// over the list starting with the first node in the list.
         /// </summary>
         /// <param name="children">The list of nodes to traverse over.</param>
@@ -165,7 +165,7 @@ namespace Fusee.Xene
         }
         #endregion
 
-        #region Useful Stuff within Traversal  
+        #region Useful Stuff within Traversal
 
         /// <summary>
         /// Method is called when traversal starts to initialize the traversal state. Override this method in derived classes to initialize any state.
@@ -239,7 +239,7 @@ namespace Fusee.Xene
 
 
         /// <summary>
-        /// Enumerator Building Block to be called in derived Visitors acting as enumerators. Use this to 
+        /// Enumerator Building Block to be called in derived Visitors acting as enumerators. Use this to
         /// initialize the traversing enumeration on a list of (root) nodes.
         /// </summary>
         /// <param name="nodes">The list of nodes.</param>
@@ -262,7 +262,7 @@ namespace Fusee.Xene
             // ===============================================================================================
             // no need to Reset() IEnumerators on start. In Fact, compiler-generated enumerators using yield
             // will throw a NotSupportedException."
-            // See https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerator.reset?view=netcore-3.1:            
+            // See https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerator.reset?view=netcore-3.1:
             // nodes.Reset(); // TODO (MR) -> This is needed for the picking.cs? => CMl??
 
             _curNodeEnumerator = nodes;
@@ -283,13 +283,13 @@ namespace Fusee.Xene
                 // Precondition: We are BEFORE the next node or the next component
                 if (_curCompEnumerator != null)
                 {
-                    // Traverse components   
+                    // Traverse components
                     if (!_curCompEnumerator.MoveNext())
                     {
                         _curCompEnumerator = null;
                         CurrentComponent = null;
 
-                        // At the end of a Component List: If this node hasn't any children, PopState right now. 
+                        // At the end of a Component List: If this node hasn't any children, PopState right now.
                         // Otherwise PopState will be called after traversing the children list (see below).
                         if (CurrentNode.EnumChildren == null)
                             PopState();
@@ -399,7 +399,7 @@ namespace Fusee.Xene
                 // Traverse nodes
                 DoVisitNode(CurrentNode);
 
-                // If this node hasn't any children, PopState right now. 
+                // If this node hasn't any children, PopState right now.
                 // Otherwise PopState will be called after traversing the children list (see while statement above).
                 if (CurrentNode.EnumChildren == null)
                     PopState();

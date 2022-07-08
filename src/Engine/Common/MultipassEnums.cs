@@ -1,7 +1,7 @@
 ﻿namespace Fusee.Engine.Common
 {
     /// <summary>
-    /// Enum, that defines all available render texture types. 
+    /// Enum, that defines all available render texture types.
     /// </summary>
     public enum RenderTargetTextureTypes
     {

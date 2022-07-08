@@ -20,29 +20,6 @@
     }
 
     /// <summary>
-    /// Available color modes.
-    /// </summary>
-    public enum PointColorMode
-    {
-        /// <summary>
-        /// RGB value of the point.
-        /// </summary>
-        VertexColor0,
-        /// <summary>
-        /// RGB value of the point.
-        /// </summary>
-        VertexColor1,
-        /// <summary>
-        /// RGB value of the point.
-        /// </summary>
-        VertexColor2,
-        /// <summary>
-        /// RGB value of the point.
-        /// </summary>
-        Single,
-    }
-
-    /// <summary>
     /// Available point size modes.
     /// </summary>
     public enum PointSizeMode
