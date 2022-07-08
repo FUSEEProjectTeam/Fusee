@@ -78,11 +78,11 @@ namespace Fusee.Engine.Core
             // Generate the multi-sample texture, as well as the result texture where the final image is being blit to
             ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
 
-            texture.TextureHandle = textureHandle;
+            texture.InternalTextureHandle = textureHandle;
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(texture.TextureHandle, texture));
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(texture.InternalTextureHandle, texture));
 
             return textureHandle;
         }
