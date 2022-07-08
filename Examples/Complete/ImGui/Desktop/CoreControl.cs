@@ -22,7 +22,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
     {
         private SceneContainer _rocketScene;
         private SceneRendererForward _renderer;
-        private WritableExposedMultisampleTexture _renderTexture;
+        private WritableMultisampleTexture _renderTexture;
 
         private Transform _camPivotTransform;
 
@@ -188,7 +188,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             Height = height;
 
             _renderTexture?.Dispose();
-            _renderTexture = WritableExposedMultisampleTexture.CreateAlbedoTex(_rc, Width, Height, 8);
+            _renderTexture = WritableMultisampleTexture.CreateAlbedoTex(_rc, Width, Height, 8);
             _cam.RenderTexture = _renderTexture;
         }
 

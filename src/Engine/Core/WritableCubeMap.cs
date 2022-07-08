@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using System;
 
@@ -97,6 +97,8 @@ namespace Fusee.Engine.Core
             get;
             private set;
         }
+
+        public ITextureHandle TextureHandle { get; internal set; }
 
         /// <summary>
         /// Creates a new instance of type "WritableTexture".
