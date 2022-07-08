@@ -109,10 +109,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             _rc.SetRenderTarget();
             _rc.Viewport(0, 0, _originalWidth, _originalHeight);
 
-
-            _rc.SetRenderTarget();
-            _rc.Viewport(0, 0, _originalWidth, _originalHeight);
-
             // Warning: wolves ahead
             if (prgmHndl == null)
                 prgmHndl = new ShaderHandle() { Handle = ImGuiController.ShaderProgram };
