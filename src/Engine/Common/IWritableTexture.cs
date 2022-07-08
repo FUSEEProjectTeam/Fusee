@@ -5,7 +5,8 @@ namespace Fusee.Engine.Common
     /// <summary>
     /// Cross platform abstraction for a WritableTexture.
     /// Use writable textures if you want to render into a texture.
-    /// Does NOT offer access to the pixel data.
+    /// Does NOT offer access to the pixel data. 
+    /// Every WritableTextures is a <see cref="IExposedTexture"/>.
     /// </summary>
     public interface IWritableTexture : ITextureBase, IExposedTexture
     {
