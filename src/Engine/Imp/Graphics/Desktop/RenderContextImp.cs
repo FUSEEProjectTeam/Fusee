@@ -445,7 +445,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             ITextureHandle texID = new TextureHandle { TexId = id };
 
-
             return texID;
         }
 
@@ -2590,11 +2589,27 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="output">WritableTexture</param>
         /// <param name="height">Texture height</param>
         /// <param name="width">Texture width</param>
-        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
+        public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
         {
             if (input == null || output == null) return;
 
-            GL.BlitNamedFramebuffer(((TextureHandle)input).FrameBufferHandle, ((TextureHandle)output).FrameBufferHandle, 0, 0, width, height, 0, 0, width, height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+            if (((TextureHandle)output.TextureHandle).FrameBufferHandle == -1)
+            {
+                var texHandle = output.TextureHandle;
+                GL.CreateFramebuffers(1, out int fBuffer);
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+
+                ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(output.Width, output.Height, fBuffer);
+                GL.NamedFramebufferTexture(fBuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexId, 0);
+
+#if DEBUG
+                if (GL.CheckNamedFramebufferStatus(fBuffer, FramebufferTarget.Framebuffer) != FramebufferStatus.FramebufferComplete)
+                    throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckNamedFramebufferStatus(fBuffer, FramebufferTarget.Framebuffer)}");
+#endif
+
+                //throw new ArgumentOutOfRangeException("Output Framebuffer is uninitialized");
+            }
+            GL.BlitNamedFramebuffer(((TextureHandle)((WritableMultisampleTexture)input).InternalTextureHandle).FrameBufferHandle, ((TextureHandle)output.TextureHandle).FrameBufferHandle, 0, 0, input.Width, input.Height, 0, 0, input.Width, input.Height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
         }
 
         /// <summary>

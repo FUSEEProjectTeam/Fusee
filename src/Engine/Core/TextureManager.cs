@@ -77,8 +77,10 @@ namespace Fusee.Engine.Core
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
             // Generate the multi-sample texture, as well as the result texture where the final image is being blit to
             ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
-
             texture.InternalTextureHandle = textureHandle;
+
+            ITextureHandle internalTexHandle = _renderContextImp.CreateTexture(texture.InternalResultTexture);
+            texture.InternalResultTexture.TextureHandle = internalTexHandle;
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
