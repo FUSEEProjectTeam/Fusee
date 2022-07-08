@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Common;
+using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,12 +72,11 @@ namespace Fusee.Engine.Core
             return textureHandle;
         }
 
-        private ITextureHandle RegisterNewTexture(WritableMultisampleTexture texture)
+        private ITextureHandle RegisterNewTexture(WritableExposedMultisampleTexture texture)
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
             // Generate the multi-sample texture, as well as the result texture where the final image is being blit to
             ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
-
             texture.TextureHandle = textureHandle;
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
@@ -91,7 +90,6 @@ namespace Fusee.Engine.Core
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
             ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
-            texture.TextureHandle = textureHandle;
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
@@ -105,7 +103,6 @@ namespace Fusee.Engine.Core
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
             ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
-            texture.TextureHandle = textureHandle;
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
@@ -119,7 +116,6 @@ namespace Fusee.Engine.Core
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
             ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
-            texture.TextureHandle = textureHandle;
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
@@ -169,7 +165,7 @@ namespace Fusee.Engine.Core
             return foundTextureTouple.Item1;
         }
 
-        public ITextureHandle GetTextureHandle(WritableMultisampleTexture texture)
+        public ITextureHandle GetTextureHandle(WritableExposedMultisampleTexture texture)
         {
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureTouple))
             {

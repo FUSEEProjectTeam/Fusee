@@ -8,9 +8,8 @@ namespace Fusee.Engine.Core
     /// Use writable textures if you want to render into a texture.
     /// Does NOT offer access to the pixel data.
     /// </summary>
-    public class WritableMultisampleTexture : IWritableTexture, IDisposable
+    public class WritableExposedMultisampleTexture : IWritableTexture, IExposedTexture, IDisposable
     {
-
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
         /// </summary>
@@ -126,7 +125,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
         /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
-        public WritableMultisampleTexture(RenderContext rc, RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, int multisampleFactor = 4, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
+        public WritableExposedMultisampleTexture(RenderContext rc, RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, int multisampleFactor = 4, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
             //var maxSamples = rc.GetHardwareCapabilities(HardwareCapability.MaxSamples);
             //if(maxSamples == 0)
@@ -159,9 +158,9 @@ namespace Fusee.Engine.Core
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
         /// <param name="multisampleFactor">Define how many samples are being used to sample this texture, default: 4</param>
-        public static WritableMultisampleTexture CreateAlbedoTex(RenderContext rc, int width, int height, int multisampleFactor = 4)
+        public static WritableExposedMultisampleTexture CreateAlbedoTex(RenderContext rc, int width, int height, int multisampleFactor = 4)
         {
-            return new WritableMultisampleTexture(rc, RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA),
+            return new WritableExposedMultisampleTexture(rc, RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA),
                 width, height, multisampleFactor);
         }
 
@@ -185,7 +184,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Destructor calls <see cref="Dispose()"/> in order to fire TextureChanged event.
         /// </summary>
-        ~WritableMultisampleTexture()
+        ~WritableExposedMultisampleTexture()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);

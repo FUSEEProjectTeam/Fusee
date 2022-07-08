@@ -2326,11 +2326,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Takes a <see cref="WritableMultisampleTexture"/> and blits the result of all samples into an
+        /// Takes a <see cref="WritableExposedMultisampleTexture"/> and blits the result of all samples into an
         /// existing <see cref="WritableTexture"/> for further use (e. g. bind and use as Albedo texture)
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
         {
             throw new NotSupportedException("Android has no MultisampleWritableTexture support!");

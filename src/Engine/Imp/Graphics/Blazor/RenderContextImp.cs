@@ -2414,7 +2414,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
-        /// Takes a <see cref="WritableMultisampleTexture"/> and blits the result of all samples into an
+        /// Takes a <see cref="WritableExposedMultisampleTexture"/> and blits the result of all samples into an
         /// existing <see cref="WritableTexture"/> for further use (e. g. bind and use as Albedo texture)
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>

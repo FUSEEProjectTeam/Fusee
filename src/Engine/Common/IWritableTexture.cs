@@ -7,7 +7,7 @@ namespace Fusee.Engine.Common
     /// Use writable textures if you want to render into a texture.
     /// Does NOT offer access to the pixel data.
     /// </summary>
-    public interface IWritableTexture : ITextureBase, IExposedTexture
+    public interface IWritableTexture : ITextureBase
     {
         /// <summary>
         /// Width in pixels.

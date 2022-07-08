@@ -310,7 +310,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             if (tex is WritableTexture wt)
                 return CreateTexture(wt);
-            if (tex is WritableMultisampleTexture mswt)
+            if (tex is WritableExposedMultisampleTexture mswt)
                 return CreateTexture(mswt);
 
             throw new NotImplementedException($"CreateTexture typeof({tex}) not found!");
@@ -454,7 +454,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(WritableMultisampleTexture tex)
+        public ITextureHandle CreateTexture(WritableExposedMultisampleTexture tex)
         {
             if (!_isMultisampleEnabled)
             {
@@ -2595,7 +2595,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Takes a <see cref="WritableMultisampleTexture"/> and blits the result of all samples into an
+        /// Takes a <see cref="WritableExposedMultisampleTexture"/> and blits the result of all samples into an
         /// existing <see cref="WritableTexture"/> for further use (e. g. bind and use as Albedo texture)
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
@@ -2624,8 +2624,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    if (tex.GetType() == typeof(WritableMultisampleTexture))
-                        ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBufferMultisample(tex.Width, tex.Height, ((WritableMultisampleTexture)tex).MultisampleFactor, fBuffer);
+                    if (tex.GetType() == typeof(WritableExposedMultisampleTexture))
+                        ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBufferMultisample(tex.Width, tex.Height, ((WritableExposedMultisampleTexture)tex).MultisampleFactor, fBuffer);
                     else
                         ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height, fBuffer);
                     GL.NamedFramebufferTexture(fBuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexId, 0);

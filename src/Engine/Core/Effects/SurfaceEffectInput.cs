@@ -48,7 +48,7 @@ namespace Fusee.Engine.Core.Effects
 
         /// <summary>
         /// This method needs to be called by the setter of each property.
-        /// A <see cref="SurfaceEffectBase"/> can register <see cref="Effect.SetFxParam(int, object)"/> to the <see cref="PropertyChanged"/> event.
+        /// A <see cref="SurfaceEffectBase"/> can register <see cref="Effect.SetFxParam{T}(string, T)"/> to the <see cref="PropertyChanged"/> event.
         /// </summary>
         /// <param name="type">The type of the property.</param>
         /// <param name="name">The name of the property.</param>
