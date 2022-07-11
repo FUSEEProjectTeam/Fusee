@@ -191,17 +191,17 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _sceneRenderer.Render(RC);
 
             //Render GUI
-            //_guiRenderer.Render(RC);
-            //// Constantly check for interactive objects.
-            //if (Mouse != null) //Mouse is null when the pointer is outside the GameWindow?
-            //{
-            //    _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            _guiRenderer.Render(RC);
+            // Constantly check for interactive objects.
+            if (Mouse != null) //Mouse is null when the pointer is outside the GameWindow?
+            {
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
-            //    if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            //    {
-            //        _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            //    }
-            //}            
+                if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+                {
+                    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                }
+            }
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
