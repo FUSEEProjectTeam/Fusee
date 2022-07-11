@@ -173,9 +173,11 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         protected override ITextureHandle RenderAFrame()
         {
-            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
-            _renderer.Render(_rc);
-
+            if (_renderTexture != null)
+            {
+                _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
+                _renderer.Render(_rc);
+            }
             return _renderTexture?.TextureHandle;
         }
 
@@ -188,7 +190,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             Height = height;
 
             _renderTexture?.Dispose();
-            _renderTexture = WritableMultisampleTexture.CreateAlbedoTex(_rc, Width, Height, 8);
+            _renderTexture = WritableMultisampleTexture.CreateAlbedoTex(Width, Height, 8);
             _cam.RenderTexture = _renderTexture;
         }
 

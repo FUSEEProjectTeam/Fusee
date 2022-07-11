@@ -2332,7 +2332,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
+        public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
         {
             throw new NotSupportedException("Android has no MultisampleWritableTexture support!");
         }

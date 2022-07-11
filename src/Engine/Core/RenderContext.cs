@@ -1844,11 +1844,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        /// <param name="width">Texture width</param>
-        /// <param name="height">Texture height</param>
-        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
+        public void BlitMultisample2DTextureToTexture(WritableMultisampleTexture input, WritableTexture output)
         {
-            _rci.BlitMultisample2DTextureToTexture(input, output, width, height);
+            _rci.BlitMultisample2DTextureToTexture(input, output);
         }
 
         /// <summary>

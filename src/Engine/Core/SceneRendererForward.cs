@@ -380,6 +380,12 @@ namespace Fusee.Engine.Core
 
             Traverse(_sc.Children);
 
+            // if we have a multisample texture we need to blt the result of our rendering to the result texture
+            if(tex is WritableMultisampleTexture wmt)
+            {
+                _rc.BlitMultisample2DTextureToTexture(wmt, wmt.InternalResultTexture);
+            }
+
         }
 
         /// <summary>
