@@ -204,7 +204,11 @@ namespace Fusee.ImGuiImp.Desktop
             GL.VertexArrayAttribFormat(vertexArray, 2, 4, VertexAttribType.UnsignedByte, true, 16);
         }
 
-        private static unsafe void RecreateFontDeviceTexture()
+        /// <summary>
+        /// Call this method after calling <see cref="ImFontAtlasPtr.AddFontFromFileTTF(string, float)"/>
+        /// to re-create and bind the font texture
+        /// </summary>
+        public static unsafe void RecreateFontDeviceTexture()
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
