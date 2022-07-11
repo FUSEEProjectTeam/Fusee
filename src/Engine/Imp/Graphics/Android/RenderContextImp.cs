@@ -477,11 +477,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            PixelFormat format = GetTexturePixelInfo(img.ImageData.PixelFormat).Format;
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexId);
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
-                format, PixelType.UnsignedByte, img.ImageData.PixelData);
+                pxInfo.Format, PixelType.UnsignedByte, img.ImageData.PixelData);
         }
 
         /// <summary>

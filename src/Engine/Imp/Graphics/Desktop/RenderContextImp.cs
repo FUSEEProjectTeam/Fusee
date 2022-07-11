@@ -398,6 +398,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
             GL.TextureStorage2D(id, 1, GetSizedInteralFormat(img.ImageData.PixelFormat), img.ImageData.Width, img.ImageData.Height);
             GL.TextureSubImage2D(id, 0, 0, 0, img.ImageData.Width, img.ImageData.Height, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
@@ -505,6 +506,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             } while (scanlines.MoveNext());
 
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
             GL.TextureSubImage2D(((TextureHandle)tex).TexId, 0, startX, startY, width, height, format, PixelType.UnsignedByte, bytes);
         }
 

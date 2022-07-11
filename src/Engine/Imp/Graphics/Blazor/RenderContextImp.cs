@@ -401,6 +401,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             } while (scanlines.MoveNext());
 
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
+            gl2.PixelStorei(UNPACK_ALIGNMENT, pxInfo.RowAlignment);
             gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexId);
             gl2.TexSubImage2D(TEXTURE_2D, 0, startX, startY, width, height, format, pxType, bytes);
 
