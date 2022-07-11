@@ -1,5 +1,4 @@
 ﻿using Fusee.Base.Core;
-
 using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
@@ -204,7 +203,10 @@ namespace Fusee.ImGuiImp.Desktop
             GL.VertexArrayAttribFormat(vertexArray, 2, 4, VertexAttribType.UnsignedByte, true, 16);
         }
 
-        private static unsafe void RecreateFontDeviceTexture()
+        /// Call this method after calling <see cref="ImFontAtlasPtr.AddFontFromFileTTF(string, float)"/>
+        /// to re-create and bind the font texture
+        /// </summary>
+        public static unsafe void RecreateFontDeviceTexture()
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
@@ -222,7 +224,6 @@ namespace Fusee.ImGuiImp.Desktop
             var clampS = (int)TextureWrapMode.ClampToEdge;
             var clampT = (int)TextureWrapMode.ClampToEdge;
             var clampR = (int)TextureWrapMode.ClampToEdge;
-
             GL.TextureParameterI(id, TextureParameterName.TextureMinFilter, ref minFilter);
             GL.TextureParameterI(id, TextureParameterName.TextureMagFilter, ref magFilter);
             GL.TextureParameterI(id, TextureParameterName.TextureWrapS, ref clampS);
