@@ -177,7 +177,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             {
                 _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
                 _renderer.Render(_rc);
-                _rc.BlitMultisample2DTextureToTexture(_renderTexture, _renderTexture.InternalResultTexture);
             }
             return _renderTexture?.TextureHandle;
         }

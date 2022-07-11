@@ -498,6 +498,13 @@ namespace Fusee.Engine.Core
             }
 
             RenderAllPasses(viewport, renderTex);
+
+
+            // if we have a multisample texture we need to blt the result of our rendering to the result texture
+            if (cam.Camera.RenderTexture is WritableMultisampleTexture wmt)
+            {
+                _rc.BlitMultisample2DTextureToTexture(wmt, wmt.InternalResultTexture);
+            }
         }
 
         private void RenderAllPasses(float4 lightingPassViewport, IWritableTexture renderTex = null)
