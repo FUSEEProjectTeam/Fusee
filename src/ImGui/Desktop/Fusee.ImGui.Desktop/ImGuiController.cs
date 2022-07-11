@@ -1,5 +1,4 @@
 ﻿using Fusee.Base.Core;
-
 using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
@@ -9,7 +8,7 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Fusee.ImGuiImp.Desktop
+namespace Fusee.ImGuiDesktop
 {
     public class ImGuiController
     {
