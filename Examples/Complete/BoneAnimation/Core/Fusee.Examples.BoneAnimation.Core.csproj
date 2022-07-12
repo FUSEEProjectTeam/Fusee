@@ -11,9 +11,7 @@
 
 	<ItemGroup>
 	  <None Remove="Assets\parent test.fus" />
-	  <None Remove="Assets\test.fus" />
-	  <None Remove="Assets\test1.fus" />
-	  <None Remove="Assets\test4.fus" />
+	  <None Remove="Assets\Snake zum testen.fus" />
 	</ItemGroup>
 
 	<ItemGroup>

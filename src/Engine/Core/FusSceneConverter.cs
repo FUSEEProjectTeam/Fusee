@@ -295,7 +295,21 @@ namespace Fusee.Engine.Core
                     case Serialization.V1.TypeId.Int:
                         {
                             var channel = new Channel<int>(Lerp.IntLerp);
-                            var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                            var test = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusTransform;
+                            var testBone = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusBoneTransform;
+                            var sceneComponent = new Transform();
+                            if (test != null)
+                            {
+                                sceneComponent = LookupTransform(test);
+                            }
+                            else if(testBone != null)
+                            {
+                                sceneComponent = LookupTransform(testBone);
+                            }
+                            else
+                            {
+                                sceneComponent = null;
+                            }
                             foreach (Serialization.V1.FusAnimationKeyInt key in animChnannelContainer.KeyFrames)
                             {
                                 channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
@@ -308,7 +322,21 @@ namespace Fusee.Engine.Core
                     case Serialization.V1.TypeId.Float:
                         {
                             var channel = new Channel<float>(Lerp.FloatLerp);
-                            var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                            var test = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusTransform;
+                            var testBone = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusBoneTransform;
+                            var sceneComponent = new Transform();
+                            if (test != null)
+                            {
+                                sceneComponent = LookupTransform(test);
+                            }
+                            else if (testBone != null)
+                            {
+                                sceneComponent = LookupTransform(testBone);
+                            }
+                            else
+                            {
+                                sceneComponent = null;
+                            }
                             foreach (Serialization.V1.FusAnimationKeyFloat key in animChnannelContainer.KeyFrames)
                             {
                                 channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
@@ -322,7 +350,21 @@ namespace Fusee.Engine.Core
                     case Serialization.V1.TypeId.Float2:
                         {
                             var channel = new Channel<float2>(Lerp.Float2Lerp);
-                            var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                            var test = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusTransform;
+                            var testBone = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusBoneTransform;
+                            var sceneComponent = new Transform();
+                            if (test != null)
+                            {
+                                sceneComponent = LookupTransform(test);
+                            }
+                            else if (testBone != null)
+                            {
+                                sceneComponent = LookupTransform(testBone);
+                            }
+                            else
+                            {
+                                sceneComponent = null;
+                            }
                             foreach (Serialization.V1.FusAnimationKeyFloat2 key in animChnannelContainer.KeyFrames)
                             {
                                 channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
@@ -344,7 +386,21 @@ namespace Fusee.Engine.Core
                                          // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
                             };
                             var channel = new Channel<float3>(lerpFunc);
-                            var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                            var test = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusTransform;
+                            var testBone = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusBoneTransform;
+                            var sceneComponent = new Transform();
+                            if (test != null)
+                            {
+                                sceneComponent = LookupTransform(test);
+                            }
+                            else if (testBone != null)
+                            {
+                                sceneComponent = LookupTransform(testBone);
+                            }
+                            else
+                            {
+                                sceneComponent = null;
+                            }
                             foreach (Serialization.V1.FusAnimationKeyFloat3 key in animChnannelContainer.KeyFrames)
                             {
                                 channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
@@ -356,8 +412,31 @@ namespace Fusee.Engine.Core
                     // else if (typeof(float4).IsAssignableFrom(t))
                     case Serialization.V1.TypeId.Float4:
                         {
-                            var channel = new Channel<float4>(Lerp.Float4Lerp);
-                            var sceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                            Channel<float4>.LerpFunc lerpFunc = animChnannelContainer.LerpType switch
+                            {
+                                Serialization.V1.LerpType.Lerp => Lerp.Float4Lerp,
+                                Serialization.V1.LerpType.Slerp => Lerp.Float4QuaternionSlerp,
+                                _ => throw new System.InvalidOperationException(
+    "Unknown lerp type: animTrackContainer.LerpType: " +
+    (int)animChnannelContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+                                         // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
+                            };
+                            var channel = new Channel<float4>(lerpFunc);
+                            var test = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusTransform;
+                            var testBone = _fusScene.ComponentList[a.AnimationChannel[i].SceneComponent] as FusBoneTransform;
+                            var sceneComponent = new Transform();
+                            if (test != null)
+                            {
+                                sceneComponent = LookupTransform(test);
+                            }
+                            else if (testBone != null)
+                            {
+                                sceneComponent = LookupTransform(testBone);
+                            }
+                            else
+                            {
+                                sceneComponent = null;
+                            }
                             foreach (Serialization.V1.FusAnimationKeyFloat4 key in animChnannelContainer.KeyFrames)
                             {
                                 channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
@@ -477,6 +556,16 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(LookupTransform(t));
         }
+        [VisitMethod]
+        public void ConvBoneTransform(FusBoneTransform t)
+        {
+            if (_currentNode.Components == null)
+            {
+                _currentNode.Components = new List<SceneComponent>();
+            }
+
+            _currentNode.Components.Add(LookupTransform(t));
+        }
 
 
 
@@ -498,7 +587,23 @@ namespace Fusee.Engine.Core
             return nt;
 
         }
+        private Transform LookupTransform(FusBoneTransform t)
+        {
+            SceneComponent sc;
+            if (_componentMap.TryGetValue(t, out sc))
+                return (Transform)sc;
+            Quaternion q = new Quaternion(t.RotationQuaternion.xyz, t.RotationQuaternion.w);
+            Transform nt = new Transform
+            {
+                Translation = t.Translation,
+                Name = t.Name,
+                Active = t.Active,
+                RotationQuaternion = q
+            };
+            _componentMap[t] = nt;
+            return nt;
 
+        }
 
         /// <summary>
         /// Converts the material.
@@ -674,7 +779,10 @@ namespace Fusee.Engine.Core
             {
                 _currentNode.Components = new List<SceneComponent>();
             }
-
+            if(_currentNode.Parent.GetWeights() != null)
+            {
+            AddWeightToMesh(mesh, _currentNode.Parent.GetWeights());
+            }
             _currentNode.Components.Add(mesh);
 
             _meshMap.Add(m, mesh);
@@ -841,6 +949,64 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        /// <summary>
+        /// Adds bone indices and bone weights from a <see cref="Weight"/> to a mesh.
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="wc"></param>
+        protected void AddWeightToMesh(Mesh mesh, Weight wc)
+        {
+            var boneWeights = new float4[wc.WeightMap.Count];
+            var boneIndices = new float4[wc.WeightMap.Count];
+
+            // Iterate over the vertices
+            for (var iVert = 0; iVert < wc.WeightMap.Count; iVert++)
+            {
+                var vwl = wc.WeightMap[iVert];
+
+                // Security guard. Sometimes a vertex has no weight. This should be fixed in the model. But
+                // let's just not crash here. Instead of having a completely unweighted vertex, bind it to
+                // the root bone (index 0).
+                if (vwl == null)
+                    vwl = new Scene.VertexWeightList();
+                if (vwl.VertexWeights == null)
+                {
+                    vwl.VertexWeights =
+                        new List<Scene.VertexWeight>(new[] { new Scene.VertexWeight { BoneIndex = 0, Weight = 1.0f } });
+                }
+
+                var nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
+                for (var iJoint = 0; iJoint < nJoints; iJoint++)
+                {
+                    // boneWeights[iVert][iJoint] = vwl.VertexWeights[iJoint].Weight;
+                    // boneIndices[iVert][iJoint] = vwl.VertexWeights[iJoint].JointIndex;
+                    // JSIL cannot handle float4 indexer. Map [0..3] to [x..z] by hand
+                    switch (iJoint)
+                    {
+                        case 0:
+                            boneWeights[iVert].x = vwl.VertexWeights[iJoint].Weight;
+                            boneIndices[iVert].x = vwl.VertexWeights[iJoint].BoneIndex;
+                            break;
+                        case 1:
+                            boneWeights[iVert].y = vwl.VertexWeights[iJoint].Weight;
+                            boneIndices[iVert].y = vwl.VertexWeights[iJoint].BoneIndex;
+                            break;
+                        case 2:
+                            boneWeights[iVert].z = vwl.VertexWeights[iJoint].Weight;
+                            boneIndices[iVert].z = vwl.VertexWeights[iJoint].BoneIndex;
+                            break;
+                        case 3:
+                            boneWeights[iVert].w = vwl.VertexWeights[iJoint].Weight;
+                            boneIndices[iVert].w = vwl.VertexWeights[iJoint].BoneIndex;
+                            break;
+                    }
+                }
+                boneWeights[iVert].Normalize1();
+            }
+
+            mesh.BoneIndices = boneIndices;
+            mesh.BoneWeights = boneWeights;
+        }
         #region Make Effect
 
         private async Task<Effect> LookupMaterial(FusMaterialStandard m)

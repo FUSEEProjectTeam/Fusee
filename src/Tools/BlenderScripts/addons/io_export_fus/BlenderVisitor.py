@@ -61,10 +61,10 @@ class BlenderVisitor:
         self.__fusWriter = FusSceneWriter()
         self.__textures = []
         self.__visitors = {
+            'ARMATURE': self.VisitArmature,
             'MESH':     self.VisitMesh,
             'LIGHT':    self.VisitLight,
             'CAMERA':   self.VisitCamera,
-            'ARMATURE': self.VisitArmature,
         }
 
     def XFormPush(self, ob):
@@ -220,13 +220,13 @@ class BlenderVisitor:
                 keyframe = []
                 for fc in _fcurve:
                     keyframe.append(-(fc.keyframe_points[i].co[1]))
-                self.__fusWriter.AddKeyframe(_fcurve[0].keyframe_points[i].co[0] / self.fps, keyframe)
+                self.__fusWriter.AddKeyframe(_fcurve[0].keyframe_points[i].co[0] / self.fps, (keyframe.x, keyframe.z, keyframe.y))
         else:
             for i in range(len(_fcurve[0].keyframe_points)):
                 keyframe = []
                 for fc in _fcurve:
                     keyframe.append(fc.keyframe_points[i].co[1])
-                self.__fusWriter.AddKeyframe(_fcurve[0].keyframe_points[i].co[0] / self.fps, keyframe)
+                self.__fusWriter.AddKeyframe(_fcurve[0].keyframe_points[i].co[0] / self.fps, (keyframe.x, keyframe.z, keyframe.y))
 
 
     def DeleteCreatedKPFC(self, _action, _newKP, _newFC):
@@ -769,19 +769,22 @@ class BlenderVisitor:
 
     def VisitArmature(self, armature):
         self.__fusWriter.AddChild(armature.name)
-        self.__fusWriter.AddTransform(armature.location, armature.rotation_euler, armature.scale)
+        self.__AddTransform()
         for bone in armature.pose.bones:
             if(bone.parent == None):
                 self.TraverseBones(bone)
         print('Armature: ' + armature.name)
         for mesh in armature.children:
-            self.WeightGen(mesh);    
+            self.WeightGen(mesh, armature);    
         self.__AddBoneAnimationIfPresent(armature)   
 
     def TraverseBones(self, bones):
         self.__fusWriter.Push()
         self.__fusWriter.AddChild(bones.name)
         self.AddBoneTransform(bones, bones.parent)
+        self.__fusWriter.Push()
+        self.CreateBoneMesh(bones)
+        self.__fusWriter.Pop()
         if(len(bones.children) > 0):
             self.TraverseBonesChildren(bones)
         self.__fusWriter.Pop()
@@ -791,6 +794,9 @@ class BlenderVisitor:
                 self.__fusWriter.Push()
                 self.__fusWriter.AddChild(bone.name)
                 self.AddBoneTransform(bone, bone.parent)
+                self.__fusWriter.Push()
+                self.CreateBoneMesh(bone)
+                self.__fusWriter.Pop()
                 if(len(bone.children) > 0):
                     self.TraverseBonesChildren(bone)
                 self.__fusWriter.Pop()
@@ -798,19 +804,50 @@ class BlenderVisitor:
     def AddBoneTransform(self, bone, boneparent):
         bone_quaternion = bone.matrix.to_quaternion()
         if(boneparent is None):
-            bone_parent_quaternion = bone_quaternion
+            bone_quaternion = bone_quaternion.inverted()
+            self.__fusWriter.AddBoneTransform(
+            
+                (bone.bone.head_local.x, bone.bone.head_local.z, bone.bone.head_local.y),
+            
+            ((bone_quaternion.x , bone_quaternion.z, bone_quaternion.y, bone_quaternion.w)),
+            bone.name
+        )
         else:
             bone_parent_quaternion = boneparent.matrix.to_quaternion()
-        self.__fusWriter.AddBoneTransform(
-            (bone.bone.head_local.x, bone.bone.head_local.z, bone.bone.head_local.y),
-            
-            (bone_parent_quaternion.rotation_difference(bone_quaternion))
-        )
+            bone_parent_quaternion_dif = bone_parent_quaternion.rotation_difference(bone_quaternion).inverted()
+            if(bone.bone.use_connect is False):
+                boneloc = mathutils.Vector((0 + bone.bone.head.x,0 + bone.bone.head.z,boneparent.length + bone.bone.head.y))
+            else:
+                
+                boneloc = mathutils.Vector((0,0,boneparent.length))
+            if(boneparent.parent is None):
+                self.__fusWriter.AddBoneTransform(
+                    
+                    (boneloc.x, boneloc.y, boneloc.z),
+                
+                    ((bone_parent_quaternion_dif.x , bone_parent_quaternion_dif.z, bone_parent_quaternion_dif.y, bone_parent_quaternion_dif.w)),
+                    bone.name
+                )
+            else:
+                self.__fusWriter.AddBoneTransform(
+                    
+                        (boneloc.x, boneloc.y, boneloc.z),
+                    
+                    ((bone_parent_quaternion_dif.x , bone_parent_quaternion_dif.z, bone_parent_quaternion_dif.y, bone_parent_quaternion_dif.w)),
+                    bone.name
+                )
 
 
 
-    def WeightGen(self, ob):
+    def WeightGen(self, ob, armature):
         self.__fusWriter.Weight()
+        armature.select_set(True)
+        bpy.context.view_layer.objects.active = armature
+        bpy.ops.object.mode_set(mode='EDIT')
+        for bone in armature.data.edit_bones:
+            bM = self.__fusWriter.BindingMatrices(bone.matrix)
+        bpy.ops.object.mode_set(mode='OBJECT')
+        armature.select_set(False)
         for v in ob.data.vertices:
             self.__fusWriter.VertexWeightList()
             for grp in ob.vertex_groups:
@@ -830,33 +867,37 @@ class BlenderVisitor:
                     self.__fusWriter.BeginAnimation()
                     action = nla_strip.action
                     frames = self.OrderKeyframes(nla_strip)
-                    bpy.data.scenes['Scene'].frame_set(frames[0])
+                    bpy.data.scenes['Scene'].frame_set(int(frames[0]))
                     old_data_path = ""                 
                     for af in action.fcurves:
                         if(old_data_path != af.data_path):
                             old_data_path = af.data_path
+                            bone_name = af.data_path.rpartition('"')[0].rpartition('"')[2]
                             data_path = af.data_path.rpartition('.')[2]
                             if(data_path == "location"):
-                                self.__fusWriter.BeginAnimationChannel("Translation", FusSer.Float3, FusSer.Lerp)
+                                self.__fusWriter.BeginAnimationChannel(bone_name, "Translation", FusSer.Float3, FusSer.Lerp)
                                 for frame in frames:
+                                    frame = int(frame)
                                     bpy.data.scenes['Scene'].frame_set(frame)
-                                    bone = af.group.name
+                                    bone = bone_name
                                     bone = ob.pose.bones[bone]
-                                    self.__fusWriter.AddKeyframe(frame, bone.bone.head_local)
+                                    bone_positon =  (bone.head.x, bone.head.z, bone.head.y)
+                                    self.__fusWriter.AddKeyframe(frame / self.fps,  bone_positon)
                                 self.__fusWriter.EndAnimationChannel()
                             elif(data_path == "rotation_quaternion"):
-                                self.__fusWriter.BeginAnimationChannel("Rotation", FusSer.Float4, FusSer.Lerp)
+                                self.__fusWriter.BeginAnimationChannel(bone_name, "RotationQuaternion", FusSer.Float4, FusSer.Slerp)
                                 for frame in frames:
+                                    frame = int(frame)
                                     bpy.data.scenes['Scene'].frame_set(frame)
-                                    bone = af.group.name
+                                    bone = bone_name
                                     bone = ob.pose.bones[bone]
                                     bone_quaternion = bone.matrix.to_quaternion()
                                     if(bone.parent is not None):
-                                        bone_parent_quaternion = bone.parent.matrix.to_quaternion()
+                                        bone_parent_quaternion = bone.parent.matrix.to_quaternion().rotation_difference(bone.matrix.to_quaternion())
                                     elif(bone.parent is None):
                                         bone_parent_quaternion = bone_quaternion
-                                    rot = bone_parent_quaternion.rotation_difference(bone_quaternion)
-                                    self.__fusWriter.AddKeyframe(frame, rot)
+                                    rot = bone_parent_quaternion.inverted()
+                                    self.__fusWriter.AddKeyframe(frame / self.fps, (rot.x, rot.z, rot.y, rot. w))
                                 self.__fusWriter.EndAnimationChannel()
                     self.__fusWriter.EndAnimation()
         except Exception:       
@@ -873,3 +914,32 @@ class BlenderVisitor:
         kps = list(set(kps))
         kps.sort()
         return kps
+
+    def CreateBoneMesh(self, bone):
+        mat = mathutils.Matrix([(1.0, 0.0, 0.0, 0.0),
+                (0.0, 0.0, 1.0, bone.length / 2),
+                (0.0, -1.0, 0, 0),
+                (0.0, 0.0, 0.0, 1.0)])
+        bm = bmesh.new()
+        bmesh.ops.create_cone(
+        bm,
+        cap_ends = True,
+        cap_tris = False,
+        segments = 4,
+        radius1 = 0.05,
+        radius2 = 0.02,
+        depth = bone.length,
+        matrix = mat,
+        calc_uvs = True
+        )
+        mesh_name="mesh_" + bone.name
+        mesh_data= bpy.data.meshes.new(mesh_name)
+        bm.to_mesh(mesh_data)
+        bm.free
+        del bm
+        mesh_obj = bpy.data.objects.new(mesh_data.name, mesh_data)
+        bpy.context.collection.objects.link(mesh_obj)
+        mesh = bpy.context.collection.objects[mesh_obj.name]
+        armature = bone.id_data
+        mesh.matrix_world = armature.matrix_world 
+        self.TraverseOb(mesh)

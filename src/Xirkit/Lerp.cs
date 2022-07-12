@@ -74,6 +74,19 @@ namespace Fusee.Xirkit
         }
 
         /// <summary>
+        /// Slerp Function for Quaternions. Useful if the given float3 values contain euler angles in Pitch(x)/Yaw(y)/Roll(z) order.
+        /// The euler angle set returned by this method is on the shortest spherical path between the two parameter euler angle sets.
+        /// Note that using linear interpolation <see cref="Float3Lerp"/> of angle values will NOT yield in a path lying on a great circle between the two parameters. Instead, using
+        /// linear interpolation, the interpolated values will describe a curve called loxodrome which spirals around the poles (due to gimbal lock). 
+        /// </summary>
+        public static float4 Float4QuaternionSlerp(float4 val1, float4 val2, float time1, float time2)
+        {
+            
+            Quaternion res = Quaternion.Slerp(new Quaternion(val1), new Quaternion(val2), time2 / time1);
+            return res.ToFloat4();
+        }
+
+        /// <summary>
         /// Lerp Function for Float4s.
         /// </summary>
         public static float4 Float4Lerp(float4 val1, float4 val2, float time1, float time2)

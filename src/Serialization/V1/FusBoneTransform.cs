@@ -21,7 +21,7 @@ namespace Fusee.Serialization.V1
         /// The rotation (orientation) of the node.
         /// </summary>
         [ProtoMember(2)]
-        public float4 Rotation;
+        public float4 RotationQuaternion;
         #endregion
     }
 }

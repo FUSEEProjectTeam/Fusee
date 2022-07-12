@@ -579,64 +579,6 @@ namespace Fusee.Engine.Core
             anim.animation.Animate(Time.DeltaTime);
         }
 
-        /// <summary>
-        /// Adds bone indices and bone weights from a <see cref="Weight"/> to a mesh.
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="wc"></param>
-        protected void AddWeightToMesh(Mesh mesh, Weight wc)
-        {
-            var boneWeights = new float4[wc.WeightMap.Count];
-            var boneIndices = new float4[wc.WeightMap.Count];
-
-            // Iterate over the vertices
-            for (var iVert = 0; iVert < wc.WeightMap.Count; iVert++)
-            {
-                var vwl = wc.WeightMap[iVert];
-
-                // Security guard. Sometimes a vertex has no weight. This should be fixed in the model. But
-                // let's just not crash here. Instead of having a completely unweighted vertex, bind it to
-                // the root bone (index 0).
-                if (vwl == null)
-                    vwl = new VertexWeightList();
-                if (vwl.VertexWeights == null)
-                {
-                    vwl.VertexWeights =
-                        new List<VertexWeight>(new[] { new VertexWeight { BoneIndex = 0, Weight = 1.0f } });
-                }
-
-                var nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
-                for (var iJoint = 0; iJoint < nJoints; iJoint++)
-                {
-                    // boneWeights[iVert][iJoint] = vwl.VertexWeights[iJoint].Weight;
-                    // boneIndices[iVert][iJoint] = vwl.VertexWeights[iJoint].JointIndex;
-                    // JSIL cannot handle float4 indexer. Map [0..3] to [x..z] by hand
-                    switch (iJoint)
-                    {
-                        case 0:
-                            boneWeights[iVert].x = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].x = vwl.VertexWeights[iJoint].BoneIndex;
-                            break;
-                        case 1:
-                            boneWeights[iVert].y = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].y = vwl.VertexWeights[iJoint].BoneIndex;
-                            break;
-                        case 2:
-                            boneWeights[iVert].z = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].z = vwl.VertexWeights[iJoint].BoneIndex;
-                            break;
-                        case 3:
-                            boneWeights[iVert].w = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].w = vwl.VertexWeights[iJoint].BoneIndex;
-                            break;
-                    }
-                }
-                boneWeights[iVert].Normalize1();
-            }
-
-            mesh.BoneIndices = boneIndices;
-            mesh.BoneWeights = boneWeights;
-        }
 
         #endregion
 

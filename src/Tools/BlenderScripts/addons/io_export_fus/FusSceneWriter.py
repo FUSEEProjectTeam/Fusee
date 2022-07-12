@@ -43,6 +43,7 @@ class FusSceneWriter:
         self.__curVertexWeightList = None
         self.__typeId = None
         self.__inx = 0
+        self.__boneDict = {}
 
     def CurrentNode(self):
         """Returns the current node (or None if AddChild was not yet called on the current child list)."""
@@ -110,7 +111,7 @@ class FusSceneWriter:
         xform.Scale.z = scale[2] 
         self.__inx = inx
 
-    def AddBoneTransform(self, translation, rotation,name = ""):
+    def AddBoneTransform(self, translation, rotation, boneName, name = ""):
         """Adds a transform component to the current child node."""
         comp, inx = self.AddComponent(name)        
         comp.Name = name
@@ -118,11 +119,11 @@ class FusSceneWriter:
         xform.Translation.x = translation[0]
         xform.Translation.y = translation[1]
         xform.Translation.z = translation[2]
-        xform.Rotation.x = rotation[0]
-        xform.Rotation.y = rotation[1]
-        xform.Rotation.z = rotation[2]
-        xform.Rotation.w = rotation[3]
-        self.__inx = inx
+        xform.RotationQuaternion.x = rotation[0]
+        xform.RotationQuaternion.y = rotation[1]
+        xform.RotationQuaternion.z = rotation[2]
+        xform.RotationQuaternion.w = rotation[3]
+        self.__boneDict[boneName] = inx
 #### ANIMATION COMPONENT ####
     def BeginAnimation(self, name = ""):
         if self.__curComponent == None:
@@ -134,6 +135,15 @@ class FusSceneWriter:
             if self.__curAnimationChannel == None:
                 self.__curAnimationChannel = self.__curAnimation.AnimationChannel.add()
                 self.__curAnimationChannel.SceneComponent = self.__inx
+                self.__curAnimationChannel.Property = property
+                self.__curAnimationChannel.TypeId = typeId
+                self.__typeId = typeId
+                self.__curAnimationChannel.LerpType = lerpType
+    def BeginAnimationChannel(self, boneName, property, typeId, lerpType):
+        if self.__curAnimation != None:
+            if self.__curAnimationChannel == None:
+                self.__curAnimationChannel = self.__curAnimation.AnimationChannel.add()
+                self.__curAnimationChannel.SceneComponent = self.__boneDict[boneName]
                 self.__curAnimationChannel.Property = property
                 self.__curAnimationChannel.TypeId = typeId
                 self.__typeId = typeId
@@ -154,8 +164,8 @@ class FusSceneWriter:
                 keyFrame.FusAnimationKeyFloat2.Value.y = keyValue[1]
             elif(self.__typeId == FusSer.Float3):
                 keyFrame.FusAnimationKeyFloat3.Value.x = keyValue[0]
-                keyFrame.FusAnimationKeyFloat3.Value.y = keyValue[2]
-                keyFrame.FusAnimationKeyFloat3.Value.z = keyValue[1]
+                keyFrame.FusAnimationKeyFloat3.Value.y = keyValue[1]
+                keyFrame.FusAnimationKeyFloat3.Value.z = keyValue[2]
             elif(self.__typeId == FusSer.Float4):
                 keyFrame.FusAnimationKeyFloat4.Value.x = keyValue[0]
                 keyFrame.FusAnimationKeyFloat4.Value.y = keyValue[1]
@@ -177,6 +187,30 @@ class FusSceneWriter:
         if self.__curComponent == None:
             self.__curComponent,inx = self.AddComponent(name)
             self.__curWeightMap = self.__curComponent.FusWeight
+            self.__curComponent = None
+    
+    def BindingMatrices(self, matrix):
+        if self.__curWeightMap != None:
+            bM = self.__curWeightMap.BindingMatrices.add()
+            bM.Row1.x = matrix[0][0]
+            bM.Row1.y = matrix[0][1]
+            bM.Row1.z = matrix[0][2]
+            bM.Row1.w = matrix[0][3]
+
+            bM.Row2.x = matrix[1][0]
+            bM.Row2.y = matrix[1][1]
+            bM.Row2.z = matrix[1][2]
+            bM.Row2.w = matrix[1][3]
+
+            bM.Row3.x = matrix[2][0]
+            bM.Row3.y = matrix[2][1]
+            bM.Row3.z = matrix[2][2]
+            bM.Row3.w = matrix[2][3]
+
+            bM.Row4.x = matrix[3][0]
+            bM.Row4.y = matrix[3][1]
+            bM.Row4.z = matrix[3][2]
+            bM.Row4.w = matrix[3][3]
 
     def VertexWeightList(self):
         if self.__curWeightMap != None:

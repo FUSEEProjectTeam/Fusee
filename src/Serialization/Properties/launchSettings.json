@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Fusee.Serialization": {
+      "commandName": "Project",
+      "commandLineArgs": "fusee help\r\n"
+    }
+  }
+}
