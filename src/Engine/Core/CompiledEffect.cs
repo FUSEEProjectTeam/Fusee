@@ -23,10 +23,9 @@ namespace Fusee.Engine.Core
         internal IShaderHandle GpuHandle;
 
         /// <summary>
-        /// The shader parameters of all passes. See <see cref="FxParam"/> on the parameter infos that are saved.
+        /// The shader parameters of all passes. See <see cref="IActiveUniform"/> on the parameter infos that are saved.
         /// </summary>
-        internal Dictionary<int, FxParam> ActiveUniforms = new();
-
+        internal Dictionary<int, IActiveUniform> ActiveUniforms = new();
 
         #region equals
 

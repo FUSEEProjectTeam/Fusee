@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Engine.Core.Effects;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
@@ -25,7 +26,10 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.VertexColor2),
 
                 GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneIndex),
-                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneWeight)
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneWeight),
+
+                GLSL.CreateIn(GLSL.Type.Mat4, UniformNameDeclarations.InstanceModelMat),
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.InstanceColor),
 
             };
 

@@ -10,6 +10,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Assets\checkerboard.jpg" />
+	  <None Remove="Assets\FuseeText.png" />
+	  <None Remove="Assets\Lato-Black.ttf" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />

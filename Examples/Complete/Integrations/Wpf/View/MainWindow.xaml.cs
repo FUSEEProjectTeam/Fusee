@@ -7,7 +7,6 @@ using Fusee.Examples.Integrations.Wpf.Model;
 using Fusee.Examples.Integrations.Wpf.ViewModel;
 using Fusee.Serialization;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -18,112 +17,111 @@ namespace Fusee.Examples.Integrations.Wpf.View
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly MainViewModel mainViewModel;
-        private Core.Main fuseeApp;
+        private readonly MainViewModel _mainViewModel;
+        private Core.Main _fuseeApp;
 
         public MainWindow()
         {
-            mainViewModel = new MainViewModel();
-            DataContext = mainViewModel;
+            _mainViewModel = new MainViewModel();
+            DataContext = _mainViewModel;
 
-            mainViewModel.Position.PropertyChanged += Position_PropertyChanged;
+            _mainViewModel.Position.PropertyChanged += Position_PropertyChanged;
 
             InitializeComponent();
 
-            OpenFusee();
-        }
+            //Needs to be done on the main thread  - else glfw will throw an error.
+            CreateFuseeApp();
 
+            Task.Run(() =>
+            {
+                _fuseeApp.Run();
+            });
+        }
         private void Position_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (sender is PositionModel p)
             {
                 if (e.PropertyName == "X")
                 {
-                    fuseeApp?.ChangeRocketX(p.X);
+                    _fuseeApp?.ChangeRocketX(p.X);
                 }
                 else if (e.PropertyName == "Y")
                 {
-                    fuseeApp?.ChangeRocketY(p.Y);
+                    _fuseeApp?.ChangeRocketY(p.Y);
                 }
                 else if (e.PropertyName == "Z")
                 {
-                    fuseeApp?.ChangeRocketZ(p.Z);
+                    _fuseeApp?.ChangeRocketZ(p.Z);
                 }
             }
         }
 
-        private void OpenFusee()
+        private void CreateFuseeApp()
         {
-            Task.Run(() =>
-            {
-                IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+            IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-                var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
-                fap.RegisterTypeHandler(
-                    new AssetHandler
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            fap.RegisterTypeHandler(
+                new AssetHandler
+                {
+                    ReturnedType = typeof(Font),
+                    DecoderAsync = async (string id, object storage) =>
                     {
-                        ReturnedType = typeof(Font),
-                        DecoderAsync = async (string id, object storage) =>
-                        {
-                            if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
-                            return await Task.FromResult(new Font { _fontImp = new FontImp((Stream)storage) });
-                        },
-                        Decoder = (string id, object storage) =>
-                        {
-                            if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
-                            return new Font { _fontImp = new FontImp((Stream)storage) };
-                        },
-                        Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
-                    });
-                fap.RegisterTypeHandler(
-                    new AssetHandler
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await Task.FromResult(new Font { _fontImp = new FontImp((Stream)storage) });
+                    },
+                    Decoder = (string id, object storage) =>
                     {
-                        ReturnedType = typeof(SceneContainer),
-                        DecoderAsync = async (string id, object storage) =>
-                        {
-                            if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
-                            return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
-                        },
-                        Decoder = (string id, object storage) =>
-                        {
-                            if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
-                            return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
-                        },
-                        Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
-                    });
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return new Font { _fontImp = new FontImp((Stream)storage) };
+                    },
+                    Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
+                });
+            fap.RegisterTypeHandler(
+                new AssetHandler
+                {
+                    ReturnedType = typeof(SceneContainer),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
+                    },
+                    Decoder = (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
+                    },
+                    Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
+                });
 
-                AssetStorage.RegisterProvider(fap);
+            AssetStorage.RegisterProvider(fap);
 
-                fuseeApp = new Core.Main();
+            _fuseeApp = new Core.Main();
 
-                fuseeApp.FusToWpfEvents += FusToWpfEvents;
+            _fuseeApp.FusToWpfEvents += FusToWpfEvents;
 
-                // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-                fuseeApp.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
-                fuseeApp.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(fuseeApp.CanvasImplementor);
-                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(fuseeApp.CanvasImplementor));
-                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(fuseeApp.CanvasImplementor));
-                // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-                // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
-                // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+            //Inject Fusee.Engine InjectMe dependencies(hard coded)
+            var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
+            _fuseeApp.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(icon, true);
+            _fuseeApp.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(_fuseeApp.CanvasImplementor);
+            Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(_fuseeApp.CanvasImplementor));
+            Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(_fuseeApp.CanvasImplementor));
+            // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
+            // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
+            // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 
-                fuseeApp.InitApp();
-
-                // Start the app
-                fuseeApp.Run();
-            });
+            _fuseeApp.InitApp();
         }
 
         private void FusToWpfEvents(object sender, Core.FusEvent e)
         {
             if (e is Core.FpsEvent f)
             {
-                mainViewModel.Fps.Fps = f.Fps;
+                _mainViewModel.Fps.Fps = f.Fps;
             }
             else if (e is Core.StartupInfoEvent si)
             {
-                mainViewModel.VSync.VSync = si.VSync;
+                _mainViewModel.VSync.VSync = si.VSync;
             }
         }
     }

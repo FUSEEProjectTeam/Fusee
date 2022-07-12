@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fusee.Engine.Common
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Session unique Id.
     /// </summary>
-    public struct Suid
+    public readonly struct Suid
     {
         private static readonly object LockObject = new();
         private static ulong _idCounter = 0;

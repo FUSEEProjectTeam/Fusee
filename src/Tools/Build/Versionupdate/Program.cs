@@ -10,10 +10,10 @@ namespace Fusee.Tools.Build.Versionupdate
         public class Options
         {
             [Option('f', "file", Required = true, HelpText = "Path to file.")]
-            public string FilePath { get; set; }
+            public string FilePath { get; set; } = string.Empty;
 
             [Option('v', "version", Required = true, HelpText = "Version string to set (can be a filename). Format: major.minor.patch-note")]
-            public string VersionStringOrFilePath { get; set; }
+            public string VersionStringOrFilePath { get; set; } = string.Empty;
 
             [Option('t', "type", Required = true, HelpText = "Type of replace operation. Valid options: Blender, Csproj, ...")]
             public ReplaceType ReplaceType { get; set; }

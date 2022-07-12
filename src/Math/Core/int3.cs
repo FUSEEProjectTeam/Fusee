@@ -517,6 +517,8 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static float3 Normalize(int3 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return float3.Zero;
+
             float scale = 1.0f / vec.Length;
 
             return new float3()
@@ -537,6 +539,8 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static float3 NormalizeFast(int3 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return float3.Zero;
+
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
             return new float3()
             {
@@ -615,7 +619,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float3 Lerp(int3 a, int3 b, float blend)
         {
             return new float3()
@@ -632,7 +636,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float3 Lerp(int3 a, int3 b, float3 blend)
         {
             return new float3()
@@ -643,7 +647,7 @@ namespace Fusee.Math.Core
             };
         }
 
-        #endregion Lerp        
+        #endregion Lerp
 
         #region CalculateAngle
 
@@ -713,7 +717,7 @@ namespace Fusee.Math.Core
         /// <param name="quat">The quaternion used for the rotation.</param>
         /// <param name="vec">The vector to rotate.</param>
         /// <returns>The rotated vector.</returns>
-        public static float3 Rotate(Quaternion quat, int3 vec)
+        public static float3 Rotate(QuaternionF quat, int3 vec)
         {
             float3 temp, result;
             var tempfloat3 = new float3(vec.x, vec.y, vec.z);

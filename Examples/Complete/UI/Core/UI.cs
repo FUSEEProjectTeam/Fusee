@@ -36,16 +36,39 @@ namespace Fusee.Examples.UI.Core
         private GuiButton _btnCat;
 
         private FontMap _fontMap;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.World;
+
+        private readonly Camera _uiCam = new(ProjectionMethod.Perspective, 0.1f, 1000, M.PiOver4)
+        {
+            BackgroundColor = float4.One
+        };
+        public CanvasRenderMode CanvasRenderMode
+        {
+            get
+            {
+                return _canvasRenderMode;
+            }
+            set
+            {
+                _canvasRenderMode = value;
+                if (_canvasRenderMode == CanvasRenderMode.World)
+                {
+                    _uiCam.ProjectionMethod = ProjectionMethod.Perspective;
+                }
+                else
+                {
+                    _uiCam.ProjectionMethod = ProjectionMethod.Orthographic;
+                }
+            }
+        }
+        private CanvasRenderMode _canvasRenderMode;
+
         private float _initWindowWidth;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
         private float _canvasHeight = 9;
 
-        private readonly float zNear = 1f;
-        private readonly float zFar = 1000;
-        private readonly float fov = M.PiOver4;
+        private Transform _camPivot;
 
         private readonly float4 _canvasDefaultColor = (float4)ColorUint.Red;
         private readonly float4 _canvasHoverColor = (float4)ColorUint.OrangeRed;
@@ -151,7 +174,7 @@ namespace Fusee.Examples.UI.Core
 
             var nineSliceTextureNode = TextureNode.Create(
                 "testImage",
-                new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
 
@@ -227,12 +250,41 @@ namespace Fusee.Examples.UI.Core
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
+            _camPivot = new Transform()
+            {
+                Translation = new float3(0, 0, 0),
+                Rotation = float3.Zero
+            };
+
             return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {
+                    new SceneNode()
+                    {
+                        Name = "CamPivot",
+                        Components = new List<SceneComponent>()
+                        {
+                            _camPivot
+                        },
+                        Children = new ChildList()
+                        {
+                            new SceneNode()
+                            {
+                                Name = "MainCam",
+                                Components = new List<SceneComponent>()
+                                {
+                                    new Transform()
+                                    {
+                                        Translation = new float3(0, 0, -15),
+                                        Rotation = float3.Zero
+                                    },
+                                    _uiCam
+                                }
+                            },
+                        }
+                    },
                     //Add canvas.
-
                     new SceneNode()
                     {
                         Components = new List<SceneComponent>()
@@ -312,6 +364,8 @@ namespace Fusee.Examples.UI.Core
         // Init is called on startup.
         public override void Init()
         {
+            CanvasRenderMode = CanvasRenderMode.World;
+
             _initWindowWidth = Width;
             if (_canvasRenderMode == CanvasRenderMode.Screen)
             {
@@ -330,12 +384,9 @@ namespace Fusee.Examples.UI.Core
 
             _fontMap = new FontMap(fontLato, 24);
 
-            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
-
-            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians.jpg"));
-            var bltScrTex = new Texture(AssetStorage.Get<ImageData>("censored_79_16.png"));
-            _bltDestinationTex.Blt(180, 225, bltScrTex);
+            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians_297x500.jpg"));
+            var bltScrImgData = AssetStorage.Get<ImageData>("censored_rgba.png");
+            _bltDestinationTex.Blt(210, 225, bltScrImgData);
 
             _btnCanvas = new GuiButton
             {
@@ -367,16 +418,8 @@ namespace Fusee.Examples.UI.Core
             _sceneRenderer = new SceneRendererForward(_scene);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            RC.Viewport(0, 0, Width, Height);
-
-            _fpsText.Text = "FPS: " + Time.FramesPerSecond.ToString("0.00");
-
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
             {
@@ -386,26 +429,26 @@ namespace Fusee.Examples.UI.Core
             if (Input.Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * Input.Mouse.YVel * Time.DeltaTimeUpdate * 0.0005f;
             }
             else if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Input.Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * touchVel.x * Time.DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * Time.DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
-                    _angleVelVert = -RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
+                    _angleVelHorz = RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTimeUpdate;
                 }
                 else
                 {
-                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTimeUpdate);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -414,13 +457,14 @@ namespace Fusee.Examples.UI.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 1, 0, 1, 0);
-            var view = mtxCam * mtxRot;
-            var projection = _canvasRenderMode == CanvasRenderMode.Screen ? float4x4.CreateOrthographic(Width, Height, zNear, zFar) : float4x4.CreatePerspectiveFieldOfView(fov, (float)Width / Height, zNear, zFar);
+            _camPivot.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
+        }
 
-            RC.Projection = projection;
-            RC.View = view;
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
+            _fpsText.Text = "FPS: " + Time.FramesPerSecond.ToString("0.00");
+
             _sceneRenderer.Render(RC);
 
             // Constantly check for interactive objects.

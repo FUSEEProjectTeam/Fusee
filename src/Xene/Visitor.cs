@@ -1,12 +1,12 @@
+using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Fusee.Xene
 {
     /// <summary>
-    /// Use this attribute to identify visitor methods. Visitor methods are called during traversal on 
+    /// Use this attribute to identify visitor methods. Visitor methods are called during traversal on
     /// nodes or components with the specified type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
@@ -14,8 +14,11 @@ namespace Fusee.Xene
     {
     }
 
-    internal delegate void VisitNodeMethod<TNode, TComponent>(Visitor<TNode, TComponent> visitor, TNode node) where TNode : class, INode where TComponent : class, IComponent;
-    internal delegate void VisitComponentMethod<TNode, TComponent>(Visitor<TNode, TComponent> visitor, TComponent component) where TNode : class, INode where TComponent : class, IComponent;
+    public delegate void VisitNodeMethod<TNode, TComponent>(Visitor<TNode, TComponent> visitor, TNode node) where TNode : class, INode where TComponent : class, IComponent;
+    public delegate void VisitComponentMethod<TNode, TComponent>(Visitor<TNode, TComponent> visitor, TComponent component) where TNode : class, INode where TComponent : class, IComponent;
+
+    public delegate void VisitNodeMethodOfModule<TNode, TComponent>(IVisitorModule visitor, TNode node) where TNode : class, INode where TComponent : class, IComponent;
+    public delegate void VisitComponentMethodOfModule<TNode, TComponent>(IVisitorModule visitor, TComponent component) where TNode : class, INode where TComponent : class, IComponent;
 
     /// <summary>
     /// Static class containing helper methods around the Visitor
@@ -55,9 +58,19 @@ namespace Fusee.Xene
             return (Visitor<TNode, TComponent> visitor, TComponent component) => { info.Invoke(visitor, new object[] { component }); };
         }
 
+        public static VisitComponentMethodOfModule<TNode, TComponent> MakeComponentVisitorForModule<TNode, TComponent>(MethodInfo info) where TNode : class, INode where TComponent : class, IComponent
+        {
+            return (IVisitorModule module, TComponent component) => { info.Invoke(module, new object[] { component }); };
+        }
+
         public static VisitNodeMethod<TNode, TComponent> MakeNodeVistor<TNode, TComponent>(MethodInfo info) where TNode : class, INode where TComponent : class, IComponent
         {
             return (Visitor<TNode, TComponent> visitor, TNode node) => { info.Invoke(visitor, new object[] { node }); };
+        }
+
+        public static VisitNodeMethodOfModule<TNode, TComponent> MakeNodeVistorForModule<TNode, TComponent>(MethodInfo info) where TNode : class, INode where TComponent : class, IComponent
+        {
+            return (IVisitorModule module, TNode node) => { info.Invoke(module, new object[] { node }); };
         }
 
     }
@@ -69,13 +82,13 @@ namespace Fusee.Xene
     /// <item>As building block for enumerators. Visitor methods can yield an enumeration.</item>
     /// <item>As a tool set to implement transformations on scenes. Transformations operate on scenes and alter their structure.</item>
     /// </list>
-    /// 
+    ///
     /// Visitors derived from this class may implement
     /// their own Visit methods for all kinds of scene graph elements. Visitor methods can be defined for scene nodes (although many implementations
     /// will most likely NOT have a very big inheritance tree for nodes) as well as for scene components.
     /// A Visitor method can be any instance method (not static) taking one parameter either derived from <see cref="INode"/> or derived from
-    /// <see cref="IComponent"/>. To mark such a method as a Visitor method it needs to be decorated with the <see cref="VisitMethodAttribute"/> 
-    /// attribute. Visitor methods can have arbitrary names and don't necessarily need to be virtual. 
+    /// <see cref="IComponent"/>. To mark such a method as a Visitor method it needs to be decorated with the <see cref="VisitMethodAttribute"/>
+    /// attribute. Visitor methods can have arbitrary names and don't necessarily need to be virtual.
     /// </summary>
     public class Visitor<TNode, TComponent> where TNode : class, INode where TComponent : class, IComponent
     {
@@ -89,6 +102,8 @@ namespace Fusee.Xene
         {
             public Dictionary<Type, VisitNodeMethod<TNode, TComponent>> Nodes = new();
             public Dictionary<Type, VisitComponentMethod<TNode, TComponent>> Components = new();
+            public Dictionary<Type, VisitNodeMethodOfModule<TNode, TComponent>> ModuleNodes = new();
+            public Dictionary<Type, VisitComponentMethodOfModule<TNode, TComponent>> ModuleComponents = new();
         }
 
 
@@ -102,7 +117,7 @@ namespace Fusee.Xene
 
         #region Public Traversal Methods
         /// <summary>
-        /// Start traversing a scene graph starting with the given root node. Performs a recursive depth-first 
+        /// Start traversing a scene graph starting with the given root node. Performs a recursive depth-first
         /// traversal from the specified root.
         /// </summary>
         /// <param name="rootNode">The root node where to start the traversal.</param>
@@ -121,7 +136,7 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Start traversing a list of nodes. Performs a recursive depth-first traversal 
+        /// Start traversing a list of nodes. Performs a recursive depth-first traversal
         /// over the list starting with the first node in the list.
         /// </summary>
         /// <param name="children">The list of nodes to traverse over.</param>
@@ -150,7 +165,7 @@ namespace Fusee.Xene
         }
         #endregion
 
-        #region Useful Stuff within Traversal  
+        #region Useful Stuff within Traversal
 
         /// <summary>
         /// Method is called when traversal starts to initialize the traversal state. Override this method in derived classes to initialize any state.
@@ -224,7 +239,7 @@ namespace Fusee.Xene
 
 
         /// <summary>
-        /// Enumerator Building Block to be called in derived Visitors acting as enumerators. Use this to 
+        /// Enumerator Building Block to be called in derived Visitors acting as enumerators. Use this to
         /// initialize the traversing enumeration on a list of (root) nodes.
         /// </summary>
         /// <param name="nodes">The list of nodes.</param>
@@ -247,7 +262,7 @@ namespace Fusee.Xene
             // ===============================================================================================
             // no need to Reset() IEnumerators on start. In Fact, compiler-generated enumerators using yield
             // will throw a NotSupportedException."
-            // See https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerator.reset?view=netcore-3.1:            
+            // See https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerator.reset?view=netcore-3.1:
             // nodes.Reset(); // TODO (MR) -> This is needed for the picking.cs? => CMl??
 
             _curNodeEnumerator = nodes;
@@ -268,13 +283,13 @@ namespace Fusee.Xene
                 // Precondition: We are BEFORE the next node or the next component
                 if (_curCompEnumerator != null)
                 {
-                    // Traverse components   
+                    // Traverse components
                     if (!_curCompEnumerator.MoveNext())
                     {
                         _curCompEnumerator = null;
                         CurrentComponent = null;
 
-                        // At the end of a Component List: If this node hasn't any children, PopState right now. 
+                        // At the end of a Component List: If this node hasn't any children, PopState right now.
                         // Otherwise PopState will be called after traversing the children list (see below).
                         if (CurrentNode.EnumChildren == null)
                             PopState();
@@ -384,7 +399,7 @@ namespace Fusee.Xene
                 // Traverse nodes
                 DoVisitNode(CurrentNode);
 
-                // If this node hasn't any children, PopState right now. 
+                // If this node hasn't any children, PopState right now.
                 // Otherwise PopState will be called after traversing the children list (see while statement above).
                 if (CurrentNode.EnumChildren == null)
                     PopState();
@@ -396,6 +411,7 @@ namespace Fusee.Xene
 
         #endregion
 
+        public List<IVisitorModule> VisitorModules = new();
 
         /// <summary>
         /// Scans the Visitor class (which typically is derived from Visitor) for any methods marked as VisitorMethods.
@@ -413,7 +429,49 @@ namespace Fusee.Xene
                 return;
 
             _visitors = new VisitorSet();
-            foreach (var methodInfo in myType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            AddVisitMethods();
+            foreach (var module in VisitorModules)
+            {
+                AddVisitMethodsFromModule(module.GetType());
+            }
+        }
+
+        /// <summary>
+        /// Use this method in initialization code to add Visit
+        /// </summary>
+        private void AddVisitMethodsFromModule(Type moduleType)
+        {
+            foreach (var methodInfo in moduleType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (!IsVisitor(methodInfo))
+                    continue;
+
+                var parameters = methodInfo.GetParameters();
+                if (parameters.Length != 1)
+                    continue;
+
+                var paramType = parameters[0].ParameterType;
+                if (typeof(IComponent).IsAssignableFrom(paramType))
+                {
+                    if (_visitors.Components.ContainsKey(paramType)) continue;
+                    _visitors.ModuleComponents.Add(paramType, VisitorCallerFactory.MakeComponentVisitorForModule<TNode, TComponent>(methodInfo));
+                }
+                else if (typeof(TNode).IsAssignableFrom(paramType))
+                {
+                    if (_visitors.Nodes.ContainsKey(paramType)) continue;
+                    _visitors.ModuleNodes.Add(paramType, VisitorCallerFactory.MakeNodeVistorForModule<TNode, TComponent>(methodInfo));
+                }
+            }
+            _visitorMap.Add(moduleType, _visitors);
+        }
+
+        /// <summary>
+        /// Use this method in initialization code to add Visit
+        /// </summary>
+        private void AddVisitMethods()
+        {
+            var type = GetType();
+            foreach (var methodInfo in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (!IsVisitor(methodInfo))
                     continue;
@@ -434,25 +492,8 @@ namespace Fusee.Xene
                     _visitors.Nodes.Add(paramType, VisitorCallerFactory.MakeNodeVistor<TNode, TComponent>(methodInfo));
                 }
             }
-            _visitorMap.Add(myType, _visitors);
+            _visitorMap.Add(type, _visitors);
         }
-
-        /* Maybe later (CMl)
-        /// <summary>
-        /// Use this method in initialization code to add Visit
-        /// </summary>
-        /// <param name="paramType">The concrete component subtype to register the given method for.</param>
-        /// <param name="visitComponentMethod">The method to call when a component of the specified type is traversed.</param>
-        protected void AddComponentVisitor(Type paramType, VisitComponentMethod visitComponentMethod)
-        {
-            _visitors.Components.Add(paramType, visitComponentMethod);
-        }
-
-        protected void AddNodeVisitor(Type paramType, VisitNodeMethod visitNodeMethod)
-        {
-            _visitors.Nodes.Add(paramType, visitNodeMethod);
-        }
-        */
 
         private static bool IsVisitor(MethodInfo methodInfo)
         {
@@ -537,8 +578,9 @@ namespace Fusee.Xene
             }
             else
             {
-                // See if we find a matching Visitor up the inheritance hierarchy of the component's type
                 var ancestorType = compType.BaseType;
+
+                // See if we find a matching Visitor up the inheritance hierarchy of the component's type
                 while (ancestorType != null)
                 {
                     if (_visitors.Components.TryGetValue(ancestorType, out visitComponent))
@@ -551,6 +593,30 @@ namespace Fusee.Xene
                     // one step up the inheritance hierarchy
                     ancestorType = ancestorType.BaseType;
                 }
+
+                //Can we find a match in a module?
+                foreach (var module in VisitorModules)
+                {
+                    if (_visitors.ModuleComponents.TryGetValue(compType, out var visitModuleComponent))
+                    {
+                        visitModuleComponent(module, component);
+                        return;
+                    }
+                    else
+                    {
+                        while (ancestorType != null)
+                        {
+                            if (_visitors.ModuleComponents.TryGetValue(ancestorType, out visitModuleComponent))
+                            {
+                                _visitors.ModuleComponents[compType] = visitModuleComponent;
+                                visitModuleComponent(module, component);
+                                return;
+                            }
+                            ancestorType = ancestorType.BaseType;
+                        }
+                    }
+                }
+
                 // No matching Visitor among the ancestors. Add a dummy
                 _visitors.Components[compType] = (th, comp) => { };
             }
@@ -581,6 +647,30 @@ namespace Fusee.Xene
                     // one step up the inheritance hierarchy
                     ancestorType = ancestorType.BaseType;
                 }
+
+                //Can we find a match in a module?
+                foreach (var module in VisitorModules)
+                {
+                    if (_visitors.ModuleNodes.TryGetValue(nodeType, out var visitModuleNode))
+                    {
+                        visitModuleNode(module, node);
+                        return;
+                    }
+                    else
+                    {
+                        while (ancestorType != null)
+                        {
+                            if (_visitors.ModuleNodes.TryGetValue(ancestorType, out visitModuleNode))
+                            {
+                                _visitors.ModuleNodes[nodeType] = visitModuleNode;
+                                visitModuleNode(module, node);
+                                return;
+                            }
+                            ancestorType = ancestorType.BaseType;
+                        }
+                    }
+                }
+
                 // No matching Visitor among the ancestors. Add a dummy
                 _visitors.Nodes[nodeType] = (_, __) => { };
             }

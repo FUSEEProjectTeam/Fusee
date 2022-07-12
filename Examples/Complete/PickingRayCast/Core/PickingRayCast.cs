@@ -1,13 +1,10 @@
 using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
-using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,8 +125,7 @@ namespace Fusee.Examples.PickingRayCast.Core
             Load();
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
             if (!_loaded) return;
 
@@ -141,7 +137,7 @@ namespace Fusee.Examples.PickingRayCast.Core
             }
             if (Input.Mouse.RightButton)
             {
-                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * Damping;
+                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTimeUpdate * Damping;
             }
 
             _camTransform.RotateAround(float3.Zero, new float3(0, _angleVelHorz, 0));
@@ -158,6 +154,12 @@ namespace Fusee.Examples.PickingRayCast.Core
 
                 _pick = false;
             }
+        }
+
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
+            if (!_loaded) return;
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);

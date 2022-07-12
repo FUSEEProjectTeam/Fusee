@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -539,36 +539,34 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 Normalize(float3 vec)
         {
-            if (vec.Length > M.EpsilonFloat)
-            {
-                var scale = 1.0f / vec.Length;
+            if (vec.Length <= M.EpsilonFloat) return Zero;
+            var scale = 1.0f / vec.Length;
+            vec.x *= scale;
+            vec.y *= scale;
+            vec.z *= scale;
 
-                vec.x *= scale;
-                vec.y *= scale;
-                vec.z *= scale;
-            }
 
             return vec;
         }
 
         /// <summary>
-        /// Orthoes the normalize.
+        /// Normalizes the given vectors and makes sure they are orthogonal to each other.
         /// </summary>
-        /// <param name="normal">The normal.</param>
-        /// <param name="tangent">The tangent.</param>
-        /// <returns>An float3 Array of size 2 with orthonormalized normal and tangent. </returns>
-        public static float3[] OrthoNormalize(float3 normal, float3 tangent)
+        /// <param name="vecOne">The first vector.</param>
+        /// <param name="vecTwo">The second vector.</param>
+        /// <returns>An float3 Array of size 2 with orthonormalized vectors. </returns>
+        public static float3[] OrthoNormalize(float3 vecOne, float3 vecTwo)
         {
             var ret = new float3[2];
 
-            normal = Normalize(normal);
-            var proj = normal * Dot(tangent, normal);
+            vecOne = Normalize(vecOne);
+            var proj = vecOne * Dot(vecTwo, vecOne);
 
-            tangent -= proj;
-            tangent = Normalize(tangent);
+            vecTwo -= proj;
+            vecTwo = Normalize(vecTwo);
 
-            ret[0] = normal;
-            ret[1] = tangent;
+            ret[0] = vecOne;
+            ret[1] = vecTwo;
 
             return ret;
         }
@@ -586,6 +584,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 NormalizeFast(float3 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return Zero;
             var scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
             vec.x *= scale;
             vec.y *= scale;
@@ -679,7 +678,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float3 Lerp(float3 a, float3 b, float3 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;
@@ -820,7 +819,7 @@ namespace Fusee.Math.Core
         /// <param name="quat">The quaternion used for the rotation.</param>
         /// <param name="vec">The vector to rotate.</param>
         /// <returns>The rotated vector.</returns>
-        public static float3 Rotate(Quaternion quat, float3 vec)
+        public static float3 Rotate(QuaternionF quat, float3 vec)
         {
             float3 temp, result;
 

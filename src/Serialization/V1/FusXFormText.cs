@@ -1,7 +1,4 @@
-﻿
-using Fusee.Math.Core;
-
-namespace Fusee.Serialization.V1
+﻿namespace Fusee.Serialization.V1
 {
     /// <summary>
     /// Defines the alignment in y direction.

@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace Fusee.Engine.Core.Scene
+﻿namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Use this component to add Code to Objects in the scene graph. Will not serialize/deserialize

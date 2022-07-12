@@ -23,9 +23,14 @@ namespace Fusee.Engine.Core.ShaderShards
         public static string Version300Es = "#version 300 es\n";
 
         /// <summary>
-        /// Sets the version to  440core.
+        /// Sets the version to  450core.
         /// </summary>
-        public static string Version440Core = "#version 440 core\n";
+        public static string Version450Core = "#version 450 core\n";
+
+        /// <summary>
+        /// Sets the version to  460core.
+        /// </summary>
+        public static string Version460Core = "#version 460 core\n";
 
         /// <summary>
         /// Adds PI as preprocessor directive (#define).

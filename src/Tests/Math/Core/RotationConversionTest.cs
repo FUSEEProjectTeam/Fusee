@@ -22,11 +22,11 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void EulerToQuaternion(string text, float3 euler, Quaternion quaternion, float4x4 _1, float3 _2)
+        public void EulerToQuaternion(string text, float3 euler, QuaternionF quaternion, float4x4 _1, float3 _2)
         {
             var valid = false;
             var expected = quaternion;
-            var actual = Quaternion.FromEuler(euler);
+            var actual = QuaternionF.FromEuler(euler);
 
             if (MathF.Abs(expected.x - actual.x) < precision &&
                 MathF.Abs(expected.y - actual.y) < precision &&
@@ -45,7 +45,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void EulerToMatrix(string text, float3 euler, Quaternion _1, float4x4 matrix, float3 _2)
+        public void EulerToMatrix(string text, float3 euler, QuaternionF _1, float4x4 matrix, float3 _2)
         {
             var valid = false;
             var expected = matrix;
@@ -75,15 +75,15 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void QuaternionToEuler(string text, float3 euler, Quaternion quaternion, float4x4 _1, float3 _2)
+        public void QuaternionToEuler(string text, float3 euler, QuaternionF quaternion, float4x4 _1, float3 _2)
         {
             var valid = false;
             var expected = euler;
-            var actual = Quaternion.ToEuler(quaternion);
+            var actual = QuaternionF.ToEuler(quaternion);
 
             //Since we test quaternions seperately, we can use them to compare here
-            var expectedQ = Quaternion.FromEuler(expected);
-            var actualQ = Quaternion.FromEuler(actual);
+            var expectedQ = QuaternionF.FromEuler(expected);
+            var actualQ = QuaternionF.FromEuler(actual);
 
             if (MathF.Abs(expectedQ.x - actualQ.x) < precision &&
                 MathF.Abs(expectedQ.y - actualQ.y) < precision &&
@@ -102,11 +102,11 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void QuaternionToMatrix(string text, float3 _1, Quaternion quaternion, float4x4 matrix, float3 _2)
+        public void QuaternionToMatrix(string text, float3 _1, QuaternionF quaternion, float4x4 matrix, float3 _2)
         {
             var valid = false;
             var expected = matrix;
-            var actual = Quaternion.ToRotationMatrixFast(quaternion);
+            var actual = QuaternionF.ToRotationMatrixFast(quaternion);
 
             if (MathF.Abs(expected.M11 - actual.M11) < precision &&
                 MathF.Abs(expected.M12 - actual.M12) < precision &&
@@ -132,7 +132,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void MatrixToEuler(string text, float3 euler, Quaternion _1, float4x4 matrix, float3 _2)
+        public void MatrixToEuler(string text, float3 euler, QuaternionF _1, float4x4 matrix, float3 _2)
         {
             var valid = false;
 
@@ -140,8 +140,8 @@ namespace Fusee.Tests.Math.Core
             var actual = float4x4.RotMatToEuler(matrix);
 
             //Since we test quaternions seperately, we can use them to compare here
-            var expectedQ = Quaternion.FromEuler(expected);
-            var actualQ = Quaternion.FromEuler(actual);
+            var expectedQ = QuaternionF.FromEuler(expected);
+            var actualQ = QuaternionF.FromEuler(actual);
 
             if (MathF.Abs(expectedQ.x - actualQ.x) < precision &&
                 MathF.Abs(expectedQ.y - actualQ.y) < precision &&
@@ -160,11 +160,11 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void MatrixToQuaternion(string text, float3 _1, Quaternion quaternion, float4x4 matrix, float3 _2)
+        public void MatrixToQuaternion(string text, float3 _1, QuaternionF quaternion, float4x4 matrix, float3 _2)
         {
             var valid = false;
             var expected = quaternion;
-            var actual = Quaternion.FromRotationMatrix(matrix);
+            var actual = QuaternionF.FromRotationMatrix(matrix);
 
             if (MathF.Abs(expected.x - actual.x) < precision &&
                 MathF.Abs(expected.y - actual.y) < precision &&
@@ -258,7 +258,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: 0",
                 new float3(0f, 0f, 0f),
-                new Quaternion(0f, 0f, 0f, 1f),
+                new QuaternionF(0f, 0f, 0f, 1f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 0f)
             };
@@ -267,7 +267,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: 0",
                 new float3(0.001745329f, 0f, 0f),
-                new Quaternion(0.0008726645f, 0f, 0f, 0.9999996f),
+                new QuaternionF(0.0008726645f, 0f, 0f, 0.9999996f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 0.9999985f, -0.001745328f, 0f, 0f, 0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0f, 0f)
             };
@@ -276,7 +276,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: 0",
                 new float3(0.01745329f, 0f, 0f),
-                new Quaternion(0.008726535f, 0f, 0f, 0.9999619f),
+                new QuaternionF(0.008726535f, 0f, 0f, 0.9999619f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 0.9998477f, -0.01745241f, 0f, 0f, 0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0f, 0f)
             };
@@ -285,7 +285,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: 0",
                 new float3(0.7853982f, 0f, 0f),
-                new Quaternion(0.3826835f, 0f, 0f, 0.9238795f),
+                new QuaternionF(0.3826835f, 0f, 0f, 0.9238795f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 0.7071067f, -0.7071068f, 0f, 0f, 0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0f, 0f)
             };
@@ -294,7 +294,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: 0",
                 new float3(1.570796f, 0f, 0f),
-                new Quaternion(0.7071068f, 0f, 0f, 0.7071068f),
+                new QuaternionF(0.7071068f, 0f, 0f, 0.7071068f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0f, 0f)
             };
@@ -303,7 +303,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: 0",
                 new float3(3.141593f, 0f, 0f),
-                new Quaternion(1f, 0f, 0f, -4.371139E-08f),
+                new QuaternionF(1f, 0f, 0f, -4.371139E-08f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, -1f, 8.742278E-08f, 0f, 0f, -8.742278E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 3.141593f)
             };
@@ -312,7 +312,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: 0",
                 new float3(4.712389f, 0f, 0f),
-                new Quaternion(0.7071068f, 0f, 0f, -0.7071068f),
+                new QuaternionF(0.7071068f, 0f, 0f, -0.7071068f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0f, 0f)
             };
@@ -321,7 +321,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: 0",
                 new float3(6.283185f, 0f, 0f),
-                new Quaternion(-8.742278E-08f, 0f, 0f, -1f),
+                new QuaternionF(-8.742278E-08f, 0f, 0f, -1f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1f, -1.748456E-07f, 0f, 0f, 1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0f, 0f)
             };
@@ -330,7 +330,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: 0",
                 new float3(10.21018f, 0f, 0f),
-                new Quaternion(-0.9238794f, 0f, 0f, 0.3826836f),
+                new QuaternionF(-0.9238794f, 0f, 0f, 0.3826836f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, -0.7071065f, 0.707107f, 0f, 0f, -0.707107f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.141593f)
             };
@@ -339,7 +339,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: 0",
                 new float3(-1.570796f, 0f, 0f),
-                new Quaternion(-0.7071068f, 0f, 0f, 0.7071068f),
+                new QuaternionF(-0.7071068f, 0f, 0f, 0.7071068f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0f, 0f)
             };
@@ -348,7 +348,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: 0",
                 new float3(-9.424778f, 0f, 0f),
-                new Quaternion(1f, 0f, 0f, 1.192488E-08f),
+                new QuaternionF(1f, 0f, 0f, 1.192488E-08f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, -1f, -2.384976E-08f, 0f, 0f, 2.384976E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.141593f)
             };
@@ -357,7 +357,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: 0",
                 new float3(0f, 0.001745329f, 0f),
-                new Quaternion(0f, 0.0008726645f, 0f, 0.9999996f),
+                new QuaternionF(0f, 0.0008726645f, 0f, 0.9999996f),
                 new float4x4(0.9999985f, 0f, 0.001745328f, 0f, 0f, 1f, 0f, 0f, -0.001745328f, 0f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.001745329f, 0f)
             };
@@ -366,7 +366,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: 0",
                 new float3(0.001745329f, 0.001745329f, 0f),
-                new Quaternion(0.0008726642f, 0.0008726642f, -7.615433E-07f, 0.9999993f),
+                new QuaternionF(0.0008726642f, 0.0008726642f, -7.615433E-07f, 0.9999993f),
                 new float4x4(0.9999985f, 3.046171E-06f, 0.001745326f, 0f, 1.136868E-13f, 0.9999985f, -0.001745328f, 0f, -0.001745328f, 0.001745326f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 1.13687E-13f)
             };
@@ -375,7 +375,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: 0",
                 new float3(0.01745329f, 0.001745329f, 0f),
-                new Quaternion(0.008726533f, 0.0008726313f, -7.615338E-06f, 0.9999616f),
+                new QuaternionF(0.008726533f, 0.0008726313f, -7.615338E-06f, 0.9999616f),
                 new float4x4(0.9999985f, 3.046018E-05f, 0.001745063f, 0f, 0f, 0.9998477f, -0.01745241f, 0f, -0.001745328f, 0.01745238f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.001745329f, 0f)
             };
@@ -384,7 +384,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: 0",
                 new float3(0.7853982f, 0.001745329f, 0f),
-                new Quaternion(0.3826833f, 0.0008062369f, -0.0003339543f, 0.9238791f),
+                new QuaternionF(0.3826833f, 0.0008062369f, -0.0003339543f, 0.9238791f),
                 new float4x4(0.9999985f, 0.001234133f, 0.001234133f, 0f, 5.820766E-11f, 0.7071068f, -0.7071068f, 0f, -0.001745328f, 0.7071057f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.001745329f, 8.231807E-11f)
             };
@@ -393,7 +393,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: 0",
                 new float3(1.570796f, 0.001745329f, 0f),
-                new Quaternion(0.7071065f, 0.000617067f, -0.000617067f, 0.7071065f),
+                new QuaternionF(0.7071065f, 0.000617067f, -0.000617067f, 0.7071065f),
                 new float4x4(0.9999985f, 0.001745328f, 0f, 0f, 0f, -4.62876E-08f, -1f, 0f, -0.001745328f, 0.9999985f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.001745329f, 0f)
             };
@@ -402,7 +402,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: 0",
                 new float3(3.141593f, 0.001745329f, 0f),
-                new Quaternion(0.9999996f, -3.814538E-11f, -0.0008726645f, -4.371137E-08f),
+                new QuaternionF(0.9999996f, -3.814538E-11f, -0.0008726645f, -4.371137E-08f),
                 new float4x4(0.9999985f, -1.525814E-10f, -0.001745328f, 0f, 6.938894E-18f, -1f, 8.742278E-08f, 0f, -0.001745328f, -8.742266E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.143338f, 3.141593f)
             };
@@ -411,7 +411,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: 0",
                 new float3(4.712389f, 0.001745329f, 0f),
-                new Quaternion(0.7071065f, -0.000617067f, -0.000617067f, -0.7071065f),
+                new QuaternionF(0.7071065f, -0.000617067f, -0.000617067f, -0.7071065f),
                 new float4x4(0.9999985f, -0.001745328f, 0f, 0f, 0f, -4.62876E-08f, 1f, 0f, -0.001745328f, -0.9999985f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.001745329f, 0f)
             };
@@ -420,7 +420,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: 0",
                 new float3(6.283185f, 0.001745329f, 0f),
-                new Quaternion(-8.742275E-08f, -0.0008726645f, 7.629075E-11f, -0.9999996f),
+                new QuaternionF(-8.742275E-08f, -0.0008726645f, 7.629075E-11f, -0.9999996f),
                 new float4x4(0.9999985f, 3.051629E-10f, 0.001745328f, 0f, 1.387779E-17f, 1f, -1.748456E-07f, 0f, -0.001745328f, 1.748453E-07f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0.001745329f, 1.387779E-17f)
             };
@@ -429,7 +429,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: 0",
                 new float3(10.21018f, 0.001745329f, 0f),
-                new Quaternion(-0.9238791f, 0.0003339544f, 0.0008062368f, 0.3826835f),
+                new QuaternionF(-0.9238791f, 0.0003339544f, 0.0008062368f, 0.3826835f),
                 new float4x4(0.9999985f, -0.001234134f, -0.001234133f, 0f, 0f, -0.7071065f, 0.707107f, 0f, -0.001745328f, -0.7071059f, -0.7071054f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 3.141593f)
             };
@@ -438,7 +438,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: 0",
                 new float3(-1.570796f, 0.001745329f, 0f),
-                new Quaternion(-0.7071065f, 0.000617067f, 0.000617067f, 0.7071065f),
+                new QuaternionF(-0.7071065f, 0.000617067f, 0.000617067f, 0.7071065f),
                 new float4x4(0.9999985f, -0.001745328f, 0f, 0f, 0f, -4.62876E-08f, 1f, 0f, -0.001745328f, -0.9999985f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.001745329f, 0f)
             };
@@ -447,7 +447,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: 0",
                 new float3(-9.424778f, 0.001745329f, 0f),
-                new Quaternion(0.9999996f, 1.040642E-11f, -0.0008726645f, 1.192488E-08f),
+                new QuaternionF(0.9999996f, 1.040642E-11f, -0.0008726645f, 1.192488E-08f),
                 new float4x4(0.9999985f, 4.162566E-11f, -0.001745328f, 0f, 0f, -1f, -2.384976E-08f, 0f, -0.001745328f, 2.384973E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.143338f, 3.141593f)
             };
@@ -456,7 +456,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: 0",
                 new float3(0f, 0.01745329f, 0f),
-                new Quaternion(0f, 0.008726535f, 0f, 0.9999619f),
+                new QuaternionF(0f, 0.008726535f, 0f, 0.9999619f),
                 new float4x4(0.9998477f, 0f, 0.01745241f, 0f, 0f, 1f, 0f, 0f, -0.01745241f, 0f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.01745329f, 0f)
             };
@@ -465,7 +465,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: 0",
                 new float3(0.001745329f, 0.01745329f, 0f),
-                new Quaternion(0.0008726313f, 0.008726533f, -7.615338E-06f, 0.9999616f),
+                new QuaternionF(0.0008726313f, 0.008726533f, -7.615338E-06f, 0.9999616f),
                 new float4x4(0.9998477f, 3.046018E-05f, 0.01745238f, 0f, 0f, 0.9999985f, -0.001745328f, 0f, -0.01745241f, 0.001745063f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.01745329f, 0f)
             };
@@ -474,7 +474,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: 0",
                 new float3(0.01745329f, 0.01745329f, 0f),
-                new Quaternion(0.008726203f, 0.008726203f, -7.615242E-05f, 0.9999238f),
+                new QuaternionF(0.008726203f, 0.008726203f, -7.615242E-05f, 0.9999238f),
                 new float4x4(0.9998477f, 0.0003045865f, 0.01744975f, 0f, -1.455192E-11f, 0.9998477f, -0.01745241f, 0f, -0.01745241f, 0.01744975f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.0174533f, 0.01745329f, 1.455413E-11f)
             };
@@ -483,7 +483,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: 0",
                 new float3(0.7853982f, 0.01745329f, 0f),
-                new Quaternion(0.3826689f, 0.008062267f, -0.003339501f, 0.9238443f),
+                new QuaternionF(0.3826689f, 0.008062267f, -0.003339501f, 0.9238443f),
                 new float4x4(0.9998477f, 0.01234072f, 0.01234071f, 0f, -4.656613E-10f, 0.7071068f, -0.7071068f, 0f, -0.0174524f, 0.7069991f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.01745329f, -6.585445E-10f)
             };
@@ -492,7 +492,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: 0",
                 new float3(1.570796f, 0.01745329f, 0f),
-                new Quaternion(0.7070798f, 0.006170592f, -0.006170592f, 0.7070798f),
+                new QuaternionF(0.7070798f, 0.006170592f, -0.006170592f, 0.7070798f),
                 new float4x4(0.9998477f, 0.01745241f, 0f, 0f, 0f, 8.192001E-08f, -0.9999999f, 0f, -0.01745241f, 0.9998476f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.01745329f, 0f)
             };
@@ -501,7 +501,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: 0",
                 new float3(3.141593f, 0.01745329f, 0f),
-                new Quaternion(0.9999619f, -3.81449E-10f, -0.008726535f, -4.370972E-08f),
+                new QuaternionF(0.9999619f, -3.81449E-10f, -0.008726535f, -4.370972E-08f),
                 new float4x4(0.9998477f, -1.525738E-09f, -0.01745241f, 0f, -5.551115E-17f, -0.9999999f, 8.742277E-08f, 0f, -0.01745241f, -8.740945E-08f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.159046f, 3.141593f)
             };
@@ -510,7 +510,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: 0",
                 new float3(4.712389f, 0.01745329f, 0f),
-                new Quaternion(0.7070798f, -0.006170592f, -0.006170592f, -0.7070798f),
+                new QuaternionF(0.7070798f, -0.006170592f, -0.006170592f, -0.7070798f),
                 new float4x4(0.9998477f, -0.01745241f, 0f, 0f, 0f, 8.192001E-08f, 0.9999999f, 0f, -0.01745241f, -0.9998476f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01745329f, 0f)
             };
@@ -519,7 +519,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: 0",
                 new float3(6.283185f, 0.01745329f, 0f),
-                new Quaternion(-8.741944E-08f, -0.008726535f, 7.62898E-10f, -0.9999619f),
+                new QuaternionF(-8.741944E-08f, -0.008726535f, 7.62898E-10f, -0.9999619f),
                 new float4x4(0.9998477f, 3.051476E-09f, 0.01745241f, 0f, -1.110223E-16f, 1f, -1.748455E-07f, 0f, -0.01745241f, 1.748189E-07f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 0.01745329f, -1.110223E-16f)
             };
@@ -528,7 +528,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: 0",
                 new float3(10.21018f, 0.01745329f, 0f),
-                new Quaternion(-0.9238443f, 0.003339502f, 0.008062267f, 0.382669f),
+                new QuaternionF(-0.9238443f, 0.003339502f, 0.008062267f, 0.382669f),
                 new float4x4(0.9998477f, -0.01234072f, -0.01234071f, 0f, -4.656613E-10f, -0.7071065f, 0.707107f, 0f, -0.01745241f, -0.7069994f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 3.141593f)
             };
@@ -537,7 +537,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: 0",
                 new float3(-1.570796f, 0.01745329f, 0f),
-                new Quaternion(-0.7070798f, 0.006170592f, 0.006170592f, 0.7070798f),
+                new QuaternionF(-0.7070798f, 0.006170592f, 0.006170592f, 0.7070798f),
                 new float4x4(0.9998477f, -0.01745241f, 0f, 0f, 0f, 8.192001E-08f, 0.9999999f, 0f, -0.01745241f, -0.9998476f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01745329f, 0f)
             };
@@ -546,7 +546,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: 0",
                 new float3(-9.424778f, 0.01745329f, 0f),
-                new Quaternion(0.9999619f, 1.040629E-10f, -0.008726535f, 1.192443E-08f),
+                new QuaternionF(0.9999619f, 1.040629E-10f, -0.008726535f, 1.192443E-08f),
                 new float4x4(0.9998477f, 4.162357E-10f, -0.01745241f, 0f, -1.387779E-17f, -0.9999999f, -2.384976E-08f, 0f, -0.01745241f, 2.384613E-08f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.159046f, 3.141593f)
             };
@@ -555,7 +555,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: 0",
                 new float3(0f, 0.7853982f, 0f),
-                new Quaternion(0f, 0.3826835f, 0f, 0.9238795f),
+                new QuaternionF(0f, 0.3826835f, 0f, 0.9238795f),
                 new float4x4(0.7071067f, 0f, 0.7071068f, 0f, 0f, 1f, 0f, 0f, -0.7071068f, 0f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853982f, 0f)
             };
@@ -564,7 +564,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: 0",
                 new float3(0.001745329f, 0.7853982f, 0f),
-                new Quaternion(0.0008062369f, 0.3826833f, -0.0003339543f, 0.9238791f),
+                new QuaternionF(0.0008062369f, 0.3826833f, -0.0003339543f, 0.9238791f),
                 new float4x4(0.7071068f, 0.001234133f, 0.7071057f, 0f, 5.820766E-11f, 0.9999985f, -0.001745328f, 0f, -0.7071068f, 0.001234133f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.7853982f, 5.820775E-11f)
             };
@@ -573,7 +573,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: 0",
                 new float3(0.01745329f, 0.7853982f, 0f),
-                new Quaternion(0.008062267f, 0.3826689f, -0.003339501f, 0.9238443f),
+                new QuaternionF(0.008062267f, 0.3826689f, -0.003339501f, 0.9238443f),
                 new float4x4(0.7071068f, 0.01234072f, 0.7069991f, 0f, -4.656613E-10f, 0.9998477f, -0.0174524f, 0f, -0.7071068f, 0.01234071f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.7853982f, -4.657322E-10f)
             };
@@ -582,7 +582,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: 0",
                 new float3(0.7853982f, 0.7853982f, 0f),
-                new Quaternion(0.3535534f, 0.3535534f, -0.1464466f, 0.8535534f),
+                new QuaternionF(0.3535534f, 0.3535534f, -0.1464466f, 0.8535534f),
                 new float4x4(0.7071067f, 0.5000001f, 0.5f, 0f, 0f, 0.7071067f, -0.7071068f, 0f, -0.7071068f, 0.5f, 0.4999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.7853982f, 0f)
             };
@@ -591,7 +591,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: 0",
                 new float3(1.570796f, 0.7853982f, 0f),
-                new Quaternion(0.6532815f, 0.2705981f, -0.2705981f, 0.6532815f),
+                new QuaternionF(0.6532815f, 0.2705981f, -0.2705981f, 0.6532815f),
                 new float4x4(0.7071068f, 0.7071068f, 0f, 0f, 0f, 8.940697E-08f, -0.9999999f, 0f, -0.7071068f, 0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.7853982f, 0f)
             };
@@ -600,7 +600,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: 0",
                 new float3(3.141593f, 0.7853982f, 0f),
-                new Quaternion(0.9238795f, -1.672763E-08f, -0.3826835f, -4.038406E-08f),
+                new QuaternionF(0.9238795f, -1.672763E-08f, -0.3826835f, -4.038406E-08f),
                 new float4x4(0.7071067f, -6.181724E-08f, -0.7071068f, 0f, 0f, -1f, 8.742278E-08f, 0f, -0.7071068f, -6.181723E-08f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.926991f, 3.141593f)
             };
@@ -609,7 +609,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: 0",
                 new float3(4.712389f, 0.7853982f, 0f),
-                new Quaternion(0.6532815f, -0.2705981f, -0.2705981f, -0.6532815f),
+                new QuaternionF(0.6532815f, -0.2705981f, -0.2705981f, -0.6532815f),
                 new float4x4(0.7071068f, -0.7071068f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, -0.7071068f, -0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853982f, 0f)
             };
@@ -618,7 +618,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: 0",
                 new float3(6.283185f, 0.7853982f, 0f),
-                new Quaternion(-8.076811E-08f, -0.3826835f, 3.345525E-08f, -0.9238795f),
+                new QuaternionF(-8.076811E-08f, -0.3826835f, 3.345525E-08f, -0.9238795f),
                 new float4x4(0.7071067f, 1.236345E-07f, 0.7071068f, 0f, 0f, 1f, -1.748456E-07f, 0f, -0.7071068f, 1.236345E-07f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0.7853982f, 0f)
             };
@@ -627,7 +627,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: 0",
                 new float3(10.21018f, 0.7853982f, 0f),
-                new Quaternion(-0.8535533f, 0.1464467f, 0.3535534f, 0.3535535f),
+                new QuaternionF(-0.8535533f, 0.1464467f, 0.3535534f, 0.3535535f),
                 new float4x4(0.7071068f, -0.5000002f, -0.4999998f, 0f, -2.980232E-08f, -0.7071065f, 0.7071071f, 0f, -0.7071068f, -0.5000001f, -0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 3.141593f)
             };
@@ -636,7 +636,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: 0",
                 new float3(-1.570796f, 0.7853982f, 0f),
-                new Quaternion(-0.6532815f, 0.2705981f, 0.2705981f, 0.6532815f),
+                new QuaternionF(-0.6532815f, 0.2705981f, 0.2705981f, 0.6532815f),
                 new float4x4(0.7071068f, -0.7071068f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, -0.7071068f, -0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853982f, 0f)
             };
@@ -645,7 +645,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: 0",
                 new float3(-9.424778f, 0.7853982f, 0f),
-                new Quaternion(0.9238795f, 4.563455E-09f, -0.3826835f, 1.101715E-08f),
+                new QuaternionF(0.9238795f, 4.563455E-09f, -0.3826835f, 1.101715E-08f),
                 new float4x4(0.7071067f, 1.686433E-08f, -0.7071068f, 0f, 0f, -1f, -2.384976E-08f, 0f, -0.7071068f, 1.686433E-08f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.926991f, 3.141593f)
             };
@@ -654,7 +654,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: 0",
                 new float3(0f, 1.570796f, 0f),
-                new Quaternion(0f, 0.7071068f, 0f, 0.7071068f),
+                new QuaternionF(0f, 0.7071068f, 0f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0f, 0.9999999f, 0f, 0f, 1f, 0f, 0f, -0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 0f)
             };
@@ -663,7 +663,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: 0",
                 new float3(0.001745329f, 1.570796f, 0f),
-                new Quaternion(0.000617067f, 0.7071065f, -0.000617067f, 0.7071065f),
+                new QuaternionF(0.000617067f, 0.7071065f, -0.000617067f, 0.7071065f),
                 new float4x4(-4.62876E-08f, 0.001745328f, 0.9999985f, 0f, 0f, 0.9999985f, -0.001745328f, 0f, -1f, 0f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.570796f, 0f)
             };
@@ -672,7 +672,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: 0",
                 new float3(0.01745329f, 1.570796f, 0f),
-                new Quaternion(0.006170592f, 0.7070798f, -0.006170592f, 0.7070798f),
+                new QuaternionF(0.006170592f, 0.7070798f, -0.006170592f, 0.7070798f),
                 new float4x4(8.192001E-08f, 0.01745241f, 0.9998476f, 0f, 0f, 0.9998477f, -0.01745241f, 0f, -0.9999999f, 0f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.570796f, 0f)
             };
@@ -681,7 +681,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: 0",
                 new float3(0.7853982f, 1.570796f, 0f),
-                new Quaternion(0.2705981f, 0.6532815f, -0.2705981f, 0.6532815f),
+                new QuaternionF(0.2705981f, 0.6532815f, -0.2705981f, 0.6532815f),
                 new float4x4(8.940697E-08f, 0.7071068f, 0.7071067f, 0f, 0f, 0.7071068f, -0.7071068f, 0f, -0.9999999f, 0f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 1.570796f, 0f)
             };
@@ -690,7 +690,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: 0",
                 new float3(1.570796f, 1.570796f, 0f),
-                new Quaternion(0.5f, 0.5f, -0.5f, 0.5f),
+                new QuaternionF(0.5f, 0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -699,7 +699,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: 0",
                 new float3(3.141593f, 1.570796f, 0f),
-                new Quaternion(0.7071068f, -3.090862E-08f, -0.7071068f, -3.090862E-08f),
+                new QuaternionF(0.7071068f, -3.090862E-08f, -0.7071068f, -3.090862E-08f),
                 new float4x4(5.960464E-08f, -8.742278E-08f, -0.9999999f, 0f, 0f, -0.9999999f, 8.742278E-08f, 0f, -0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 4.712389f, 3.141593f)
             };
@@ -708,7 +708,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: 0",
                 new float3(4.712389f, 1.570796f, 0f),
-                new Quaternion(0.5f, -0.5f, -0.5f, -0.5f),
+                new QuaternionF(0.5f, -0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -717,7 +717,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: 0",
                 new float3(6.283185f, 1.570796f, 0f),
-                new Quaternion(-6.181724E-08f, -0.7071068f, 6.181724E-08f, -0.7071068f),
+                new QuaternionF(-6.181724E-08f, -0.7071068f, 6.181724E-08f, -0.7071068f),
                 new float4x4(5.960464E-08f, 1.748456E-07f, 0.9999999f, 0f, 0f, 1f, -1.748456E-07f, 0f, -0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.570796f, 0f)
             };
@@ -726,7 +726,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: 0",
                 new float3(10.21018f, 1.570796f, 0f),
-                new Quaternion(-0.6532814f, 0.2705982f, 0.6532814f, 0.2705982f),
+                new QuaternionF(-0.6532814f, 0.2705982f, 0.6532814f, 0.2705982f),
                 new float4x4(7.450581E-08f, -0.707107f, -0.7071064f, 0f, 0f, -0.7071064f, 0.707107f, 0f, -0.9999999f, 0f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 3.141593f)
             };
@@ -735,7 +735,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: 0",
                 new float3(-1.570796f, 1.570796f, 0f),
-                new Quaternion(-0.5f, 0.5f, 0.5f, 0.5f),
+                new QuaternionF(-0.5f, 0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -744,7 +744,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: 0",
                 new float3(-9.424778f, 1.570796f, 0f),
-                new Quaternion(0.7071068f, 8.432163E-09f, -0.7071068f, 8.432163E-09f),
+                new QuaternionF(0.7071068f, 8.432163E-09f, -0.7071068f, 8.432163E-09f),
                 new float4x4(5.960464E-08f, 2.384976E-08f, -0.9999999f, 0f, 0f, -0.9999999f, -2.384976E-08f, 0f, -0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 4.712389f, 3.141593f)
             };
@@ -753,7 +753,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: 0",
                 new float3(0f, 3.141593f, 0f),
-                new Quaternion(0f, 1f, 0f, -4.371139E-08f),
+                new QuaternionF(0f, 1f, 0f, -4.371139E-08f),
                 new float4x4(-1f, 0f, -8.742278E-08f, 0f, 0f, 1f, 0f, 0f, 8.742278E-08f, 0f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 0f)
             };
@@ -762,7 +762,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: 0",
                 new float3(0.001745329f, 3.141593f, 0f),
-                new Quaternion(-3.814538E-11f, 0.9999996f, -0.0008726645f, -4.371137E-08f),
+                new QuaternionF(-3.814538E-11f, 0.9999996f, -0.0008726645f, -4.371137E-08f),
                 new float4x4(-1f, -1.525814E-10f, -8.742266E-08f, 0f, 6.938894E-18f, 0.9999985f, -0.001745328f, 0f, 8.742278E-08f, -0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 6.938905E-18f)
             };
@@ -771,7 +771,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: 0",
                 new float3(0.01745329f, 3.141593f, 0f),
-                new Quaternion(-3.81449E-10f, 0.9999619f, -0.008726535f, -4.370972E-08f),
+                new QuaternionF(-3.81449E-10f, 0.9999619f, -0.008726535f, -4.370972E-08f),
                 new float4x4(-0.9999999f, -1.525738E-09f, -8.740945E-08f, 0f, -5.551115E-17f, 0.9998477f, -0.01745241f, 0f, 8.742277E-08f, -0.01745241f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, -5.551961E-17f)
             };
@@ -780,7 +780,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: 0",
                 new float3(0.7853982f, 3.141593f, 0f),
-                new Quaternion(-1.672763E-08f, 0.9238795f, -0.3826835f, -4.038406E-08f),
+                new QuaternionF(-1.672763E-08f, 0.9238795f, -0.3826835f, -4.038406E-08f),
                 new float4x4(-1f, -6.181724E-08f, -6.181723E-08f, 0f, 0f, 0.7071067f, -0.7071068f, 0f, 8.742278E-08f, -0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 0f)
             };
@@ -789,7 +789,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: 0",
                 new float3(1.570796f, 3.141593f, 0f),
-                new Quaternion(-3.090862E-08f, 0.7071068f, -0.7071068f, -3.090862E-08f),
+                new QuaternionF(-3.090862E-08f, 0.7071068f, -0.7071068f, -3.090862E-08f),
                 new float4x4(-0.9999999f, -8.742278E-08f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 8.742278E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.141593f, 0f)
             };
@@ -798,7 +798,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: 0",
                 new float3(3.141593f, 3.141593f, 0f),
-                new Quaternion(-4.371139E-08f, -4.371139E-08f, -1f, 1.910685E-15f),
+                new QuaternionF(-4.371139E-08f, -4.371139E-08f, -1f, 1.910685E-15f),
                 new float4x4(-1f, 7.642742E-15f, 8.742278E-08f, 0f, 0f, -1f, 8.742278E-08f, 0f, 8.742278E-08f, 8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 8.742278E-08f, 3.141593f)
             };
@@ -807,7 +807,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: 0",
                 new float3(4.712389f, 3.141593f, 0f),
-                new Quaternion(-3.090862E-08f, -0.7071068f, -0.7071068f, 3.090862E-08f),
+                new QuaternionF(-3.090862E-08f, -0.7071068f, -0.7071068f, 3.090862E-08f),
                 new float4x4(-0.9999999f, 8.742278E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 8.742278E-08f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -816,7 +816,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: 0",
                 new float3(6.283185f, 3.141593f, 0f),
-                new Quaternion(3.821371E-15f, -1f, 8.742278E-08f, 4.371139E-08f),
+                new QuaternionF(3.821371E-15f, -1f, 8.742278E-08f, 4.371139E-08f),
                 new float4x4(-1f, -1.528548E-14f, -8.742278E-08f, 0f, 0f, 1f, -1.748456E-07f, 0f, 8.742278E-08f, -1.748456E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 0f)
             };
@@ -825,7 +825,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: 0",
                 new float3(10.21018f, 3.141593f, 0f),
-                new Quaternion(4.038405E-08f, 0.3826836f, 0.9238794f, -1.672763E-08f),
+                new QuaternionF(4.038405E-08f, 0.3826836f, 0.9238794f, -1.672763E-08f),
                 new float4x4(-0.9999999f, 6.181726E-08f, 6.181721E-08f, 0f, 0f, -0.7071065f, 0.707107f, 0f, 8.742277E-08f, 0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 8.742278E-08f, 3.141593f)
             };
@@ -834,7 +834,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: 0",
                 new float3(-1.570796f, 3.141593f, 0f),
-                new Quaternion(3.090862E-08f, 0.7071068f, 0.7071068f, -3.090862E-08f),
+                new QuaternionF(3.090862E-08f, 0.7071068f, 0.7071068f, -3.090862E-08f),
                 new float4x4(-0.9999999f, 8.742278E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 8.742278E-08f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -843,7 +843,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: 0",
                 new float3(-9.424778f, 3.141593f, 0f),
-                new Quaternion(-4.371139E-08f, 1.192488E-08f, -1f, -5.212531E-16f),
+                new QuaternionF(-4.371139E-08f, 1.192488E-08f, -1f, -5.212531E-16f),
                 new float4x4(-1f, -2.085012E-15f, 8.742278E-08f, 0f, 0f, -1f, -2.384976E-08f, 0f, 8.742278E-08f, -2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742278E-08f, 3.141593f)
             };
@@ -852,7 +852,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: 0",
                 new float3(0f, 4.712389f, 0f),
-                new Quaternion(0f, 0.7071068f, 0f, -0.7071068f),
+                new QuaternionF(0f, 0.7071068f, 0f, -0.7071068f),
                 new float4x4(5.960464E-08f, 0f, -0.9999999f, 0f, 0f, 1f, 0f, 0f, 0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 0f)
             };
@@ -861,7 +861,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: 0",
                 new float3(0.001745329f, 4.712389f, 0f),
-                new Quaternion(-0.000617067f, 0.7071065f, -0.000617067f, -0.7071065f),
+                new QuaternionF(-0.000617067f, 0.7071065f, -0.000617067f, -0.7071065f),
                 new float4x4(-4.62876E-08f, -0.001745328f, -0.9999985f, 0f, 0f, 0.9999985f, -0.001745328f, 0f, 1f, 0f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 0f)
             };
@@ -870,7 +870,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: 0",
                 new float3(0.01745329f, 4.712389f, 0f),
-                new Quaternion(-0.006170592f, 0.7070798f, -0.006170592f, -0.7070798f),
+                new QuaternionF(-0.006170592f, 0.7070798f, -0.006170592f, -0.7070798f),
                 new float4x4(8.192001E-08f, -0.01745241f, -0.9998476f, 0f, 0f, 0.9998477f, -0.01745241f, 0f, 0.9999999f, 0f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 0f)
             };
@@ -879,7 +879,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: 0",
                 new float3(0.7853982f, 4.712389f, 0f),
-                new Quaternion(-0.2705981f, 0.6532815f, -0.2705981f, -0.6532815f),
+                new QuaternionF(-0.2705981f, 0.6532815f, -0.2705981f, -0.6532815f),
                 new float4x4(8.940697E-08f, -0.7071068f, -0.7071067f, 0f, 0f, 0.7071068f, -0.7071068f, 0f, 0.9999999f, 0f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 0f)
             };
@@ -888,7 +888,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: 0",
                 new float3(1.570796f, 4.712389f, 0f),
-                new Quaternion(-0.5f, 0.5f, -0.5f, -0.5f),
+                new QuaternionF(-0.5f, 0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -897,7 +897,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: 0",
                 new float3(3.141593f, 4.712389f, 0f),
-                new Quaternion(-0.7071068f, -3.090862E-08f, -0.7071068f, 3.090862E-08f),
+                new QuaternionF(-0.7071068f, -3.090862E-08f, -0.7071068f, 3.090862E-08f),
                 new float4x4(5.960464E-08f, 8.742278E-08f, 0.9999999f, 0f, 0f, -0.9999999f, 8.742278E-08f, 0f, 0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 1.570796f, 3.141593f)
             };
@@ -906,7 +906,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: 0",
                 new float3(4.712389f, 4.712389f, 0f),
-                new Quaternion(-0.5f, -0.5f, -0.5f, 0.5f),
+                new QuaternionF(-0.5f, -0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -915,7 +915,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: 0",
                 new float3(6.283185f, 4.712389f, 0f),
-                new Quaternion(6.181724E-08f, -0.7071068f, 6.181724E-08f, 0.7071068f),
+                new QuaternionF(6.181724E-08f, -0.7071068f, 6.181724E-08f, 0.7071068f),
                 new float4x4(5.960464E-08f, -1.748456E-07f, -0.9999999f, 0f, 0f, 1f, -1.748456E-07f, 0f, 0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 4.712389f, 0f)
             };
@@ -924,7 +924,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: 0",
                 new float3(10.21018f, 4.712389f, 0f),
-                new Quaternion(0.6532814f, 0.2705982f, 0.6532814f, -0.2705982f),
+                new QuaternionF(0.6532814f, 0.2705982f, 0.6532814f, -0.2705982f),
                 new float4x4(7.450581E-08f, 0.707107f, 0.7071064f, 0f, 0f, -0.7071064f, 0.707107f, 0f, 0.9999999f, 0f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.141593f)
             };
@@ -933,7 +933,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: 0",
                 new float3(-1.570796f, 4.712389f, 0f),
-                new Quaternion(0.5f, 0.5f, 0.5f, -0.5f),
+                new QuaternionF(0.5f, 0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -942,7 +942,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: 0",
                 new float3(-9.424778f, 4.712389f, 0f),
-                new Quaternion(-0.7071068f, 8.432163E-09f, -0.7071068f, -8.432163E-09f),
+                new QuaternionF(-0.7071068f, 8.432163E-09f, -0.7071068f, -8.432163E-09f),
                 new float4x4(5.960464E-08f, -2.384976E-08f, 0.9999999f, 0f, 0f, -0.9999999f, -2.384976E-08f, 0f, 0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 1.570796f, 3.141593f)
             };
@@ -951,7 +951,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: 0",
                 new float3(0f, 6.283185f, 0f),
-                new Quaternion(0f, -8.742278E-08f, 0f, -1f),
+                new QuaternionF(0f, -8.742278E-08f, 0f, -1f),
                 new float4x4(1f, 0f, 1.748456E-07f, 0f, 0f, 1f, 0f, 0f, -1.748456E-07f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.748456E-07f, 0f)
             };
@@ -960,7 +960,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: 0",
                 new float3(0.001745329f, 6.283185f, 0f),
-                new Quaternion(-0.0008726645f, -8.742275E-08f, 7.629075E-11f, -0.9999996f),
+                new QuaternionF(-0.0008726645f, -8.742275E-08f, 7.629075E-11f, -0.9999996f),
                 new float4x4(1f, 3.051629E-10f, 1.748453E-07f, 0f, 1.387779E-17f, 0.9999985f, -0.001745328f, 0f, -1.748456E-07f, 0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.748456E-07f, 1.387781E-17f)
             };
@@ -969,7 +969,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: 0",
                 new float3(0.01745329f, 6.283185f, 0f),
-                new Quaternion(-0.008726535f, -8.741944E-08f, 7.62898E-10f, -0.9999619f),
+                new QuaternionF(-0.008726535f, -8.741944E-08f, 7.62898E-10f, -0.9999619f),
                 new float4x4(1f, 3.051476E-09f, 1.748189E-07f, 0f, -1.110223E-16f, 0.9998477f, -0.01745241f, 0f, -1.748455E-07f, 0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.748455E-07f, -1.110392E-16f)
             };
@@ -978,7 +978,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: 0",
                 new float3(0.7853982f, 6.283185f, 0f),
-                new Quaternion(-0.3826835f, -8.076811E-08f, 3.345525E-08f, -0.9238795f),
+                new QuaternionF(-0.3826835f, -8.076811E-08f, 3.345525E-08f, -0.9238795f),
                 new float4x4(1f, 1.236345E-07f, 1.236345E-07f, 0f, 0f, 0.7071067f, -0.7071068f, 0f, -1.748456E-07f, 0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 1.748456E-07f, 0f)
             };
@@ -987,7 +987,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: 0",
                 new float3(1.570796f, 6.283185f, 0f),
-                new Quaternion(-0.7071068f, -6.181724E-08f, 6.181724E-08f, -0.7071068f),
+                new QuaternionF(-0.7071068f, -6.181724E-08f, 6.181724E-08f, -0.7071068f),
                 new float4x4(1f, 1.748456E-07f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, -1.748456E-07f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.748456E-07f, 0f)
             };
@@ -996,7 +996,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: 0",
                 new float3(3.141593f, 6.283185f, 0f),
-                new Quaternion(-1f, 3.821371E-15f, 8.742278E-08f, 4.371139E-08f),
+                new QuaternionF(-1f, 3.821371E-15f, 8.742278E-08f, 4.371139E-08f),
                 new float4x4(1f, -1.528548E-14f, -1.748456E-07f, 0f, 0f, -1f, 8.742278E-08f, 0f, -1.748456E-07f, -8.742278E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 3.141593f)
             };
@@ -1005,7 +1005,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: 0",
                 new float3(4.712389f, 6.283185f, 0f),
-                new Quaternion(-0.7071068f, 6.181724E-08f, 6.181724E-08f, 0.7071068f),
+                new QuaternionF(-0.7071068f, 6.181724E-08f, 6.181724E-08f, 0.7071068f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.748456E-07f, 0f)
             };
@@ -1014,7 +1014,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: 0",
                 new float3(6.283185f, 6.283185f, 0f),
-                new Quaternion(8.742278E-08f, 8.742278E-08f, -7.642742E-15f, 1f),
+                new QuaternionF(8.742278E-08f, 8.742278E-08f, -7.642742E-15f, 1f),
                 new float4x4(1f, 3.057097E-14f, 1.748456E-07f, 0f, 0f, 1f, -1.748456E-07f, 0f, -1.748456E-07f, 1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.748456E-07f, 0f)
             };
@@ -1023,7 +1023,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: 0",
                 new float3(10.21018f, 6.283185f, 0f),
-                new Quaternion(0.9238794f, -3.345526E-08f, -8.07681E-08f, -0.3826836f),
+                new QuaternionF(0.9238794f, -3.345526E-08f, -8.07681E-08f, -0.3826836f),
                 new float4x4(1f, -1.236345E-07f, -1.236344E-07f, 0f, 0f, -0.7071065f, 0.707107f, 0f, -1.748455E-07f, -0.707107f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.141593f)
             };
@@ -1032,7 +1032,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: 0",
                 new float3(-1.570796f, 6.283185f, 0f),
-                new Quaternion(0.7071068f, -6.181724E-08f, -6.181724E-08f, -0.7071068f),
+                new QuaternionF(0.7071068f, -6.181724E-08f, -6.181724E-08f, -0.7071068f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.748456E-07f, 0f)
             };
@@ -1041,7 +1041,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: 0",
                 new float3(-9.424778f, 6.283185f, 0f),
-                new Quaternion(-1f, -1.042506E-15f, 8.742278E-08f, -1.192488E-08f),
+                new QuaternionF(-1f, -1.042506E-15f, 8.742278E-08f, -1.192488E-08f),
                 new float4x4(1f, 4.170025E-15f, -1.748456E-07f, 0f, 0f, -1f, -2.384976E-08f, 0f, -1.748456E-07f, 2.384976E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.141593f)
             };
@@ -1050,7 +1050,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: 0",
                 new float3(0f, 10.21018f, 0f),
-                new Quaternion(0f, -0.9238794f, 0f, 0.3826836f),
+                new QuaternionF(0f, -0.9238794f, 0f, 0.3826836f),
                 new float4x4(-0.7071065f, 0f, -0.707107f, 0f, 0f, 1f, 0f, 0f, 0.707107f, 0f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 0f)
             };
@@ -1059,7 +1059,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: 0",
                 new float3(0.001745329f, 10.21018f, 0f),
-                new Quaternion(0.0003339544f, -0.9238791f, 0.0008062368f, 0.3826835f),
+                new QuaternionF(0.0003339544f, -0.9238791f, 0.0008062368f, 0.3826835f),
                 new float4x4(-0.7071065f, -0.001234134f, -0.7071059f, 0f, 0f, 0.9999985f, -0.001745328f, 0f, 0.707107f, -0.001234133f, -0.7071054f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.926991f, 0f)
             };
@@ -1068,7 +1068,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: 0",
                 new float3(0.01745329f, 10.21018f, 0f),
-                new Quaternion(0.003339502f, -0.9238443f, 0.008062267f, 0.382669f),
+                new QuaternionF(0.003339502f, -0.9238443f, 0.008062267f, 0.382669f),
                 new float4x4(-0.7071065f, -0.01234072f, -0.7069994f, 0f, -4.656613E-10f, 0.9998477f, -0.01745241f, 0f, 0.707107f, -0.01234071f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.926991f, -4.657322E-10f)
             };
@@ -1077,7 +1077,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: 0",
                 new float3(0.7853982f, 10.21018f, 0f),
-                new Quaternion(0.1464467f, -0.8535533f, 0.3535534f, 0.3535535f),
+                new QuaternionF(0.1464467f, -0.8535533f, 0.3535534f, 0.3535535f),
                 new float4x4(-0.7071065f, -0.5000002f, -0.5000001f, 0f, -2.980232E-08f, 0.7071068f, -0.7071068f, 0f, 0.7071071f, -0.4999998f, -0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.926991f, -4.214685E-08f)
             };
@@ -1086,7 +1086,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: 0",
                 new float3(1.570796f, 10.21018f, 0f),
-                new Quaternion(0.2705982f, -0.6532814f, 0.6532814f, 0.2705982f),
+                new QuaternionF(0.2705982f, -0.6532814f, 0.6532814f, 0.2705982f),
                 new float4x4(-0.7071064f, -0.707107f, 0f, 0f, 0f, 7.450581E-08f, -0.9999999f, 0f, 0.707107f, -0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.926991f, 0f)
             };
@@ -1095,7 +1095,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: 0",
                 new float3(3.141593f, 10.21018f, 0f),
-                new Quaternion(0.3826836f, 4.038405E-08f, 0.9238794f, -1.672763E-08f),
+                new QuaternionF(0.3826836f, 4.038405E-08f, 0.9238794f, -1.672763E-08f),
                 new float4x4(-0.7071065f, 6.181726E-08f, 0.707107f, 0f, 0f, -0.9999999f, 8.742277E-08f, 0f, 0.707107f, 6.181721E-08f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 0.7853985f, 3.141593f)
             };
@@ -1104,7 +1104,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: 0",
                 new float3(4.712389f, 10.21018f, 0f),
-                new Quaternion(0.2705982f, 0.6532814f, 0.6532814f, -0.2705982f),
+                new QuaternionF(0.2705982f, 0.6532814f, 0.6532814f, -0.2705982f),
                 new float4x4(-0.7071064f, 0.707107f, 0f, 0f, 0f, 7.450581E-08f, 0.9999999f, 0f, 0.707107f, 0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -1113,7 +1113,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: 0",
                 new float3(6.283185f, 10.21018f, 0f),
-                new Quaternion(-3.345526E-08f, 0.9238794f, -8.07681E-08f, -0.3826836f),
+                new QuaternionF(-3.345526E-08f, 0.9238794f, -8.07681E-08f, -0.3826836f),
                 new float4x4(-0.7071065f, -1.236345E-07f, -0.707107f, 0f, 0f, 1f, -1.748455E-07f, 0f, 0.707107f, -1.236344E-07f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 3.926991f, 0f)
             };
@@ -1122,7 +1122,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: 0",
                 new float3(10.21018f, 10.21018f, 0f),
-                new Quaternion(-0.3535535f, -0.3535535f, -0.8535532f, 0.1464467f),
+                new QuaternionF(-0.3535535f, -0.3535535f, -0.8535532f, 0.1464467f),
                 new float4x4(-0.7071064f, 0.5000004f, 0.5f, 0f, -2.980232E-08f, -0.7071064f, 0.707107f, 0f, 0.707107f, 0.5f, 0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853986f, 3.141593f)
             };
@@ -1131,7 +1131,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: 0",
                 new float3(-1.570796f, 10.21018f, 0f),
-                new Quaternion(-0.2705982f, -0.6532814f, -0.6532814f, 0.2705982f),
+                new QuaternionF(-0.2705982f, -0.6532814f, -0.6532814f, 0.2705982f),
                 new float4x4(-0.7071064f, 0.707107f, 0f, 0f, 0f, 7.450581E-08f, 0.9999999f, 0f, 0.707107f, 0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -1140,7 +1140,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: 0",
                 new float3(-9.424778f, 10.21018f, 0f),
-                new Quaternion(0.3826836f, -1.101715E-08f, 0.9238794f, 4.563456E-09f),
+                new QuaternionF(0.3826836f, -1.101715E-08f, 0.9238794f, 4.563456E-09f),
                 new float4x4(-0.7071065f, -1.686433E-08f, 0.707107f, 0f, 0f, -0.9999999f, -2.384976E-08f, 0f, 0.707107f, -1.686432E-08f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 0.7853985f, 3.141593f)
             };
@@ -1149,7 +1149,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: 0",
                 new float3(0f, -1.570796f, 0f),
-                new Quaternion(0f, -0.7071068f, 0f, 0.7071068f),
+                new QuaternionF(0f, -0.7071068f, 0f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0f, -0.9999999f, 0f, 0f, 1f, 0f, 0f, 0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 0f)
             };
@@ -1158,7 +1158,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: 0",
                 new float3(0.001745329f, -1.570796f, 0f),
-                new Quaternion(0.000617067f, -0.7071065f, 0.000617067f, 0.7071065f),
+                new QuaternionF(0.000617067f, -0.7071065f, 0.000617067f, 0.7071065f),
                 new float4x4(-4.62876E-08f, -0.001745328f, -0.9999985f, 0f, 0f, 0.9999985f, -0.001745328f, 0f, 1f, 0f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 0f)
             };
@@ -1167,7 +1167,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: 0",
                 new float3(0.01745329f, -1.570796f, 0f),
-                new Quaternion(0.006170592f, -0.7070798f, 0.006170592f, 0.7070798f),
+                new QuaternionF(0.006170592f, -0.7070798f, 0.006170592f, 0.7070798f),
                 new float4x4(8.192001E-08f, -0.01745241f, -0.9998476f, 0f, 0f, 0.9998477f, -0.01745241f, 0f, 0.9999999f, 0f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 0f)
             };
@@ -1176,7 +1176,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: 0",
                 new float3(0.7853982f, -1.570796f, 0f),
-                new Quaternion(0.2705981f, -0.6532815f, 0.2705981f, 0.6532815f),
+                new QuaternionF(0.2705981f, -0.6532815f, 0.2705981f, 0.6532815f),
                 new float4x4(8.940697E-08f, -0.7071068f, -0.7071067f, 0f, 0f, 0.7071068f, -0.7071068f, 0f, 0.9999999f, 0f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 0f)
             };
@@ -1185,7 +1185,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: 0",
                 new float3(1.570796f, -1.570796f, 0f),
-                new Quaternion(0.5f, -0.5f, 0.5f, 0.5f),
+                new QuaternionF(0.5f, -0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -1194,7 +1194,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: 0",
                 new float3(3.141593f, -1.570796f, 0f),
-                new Quaternion(0.7071068f, 3.090862E-08f, 0.7071068f, -3.090862E-08f),
+                new QuaternionF(0.7071068f, 3.090862E-08f, 0.7071068f, -3.090862E-08f),
                 new float4x4(5.960464E-08f, 8.742278E-08f, 0.9999999f, 0f, 0f, -0.9999999f, 8.742278E-08f, 0f, 0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 1.570796f, 3.141593f)
             };
@@ -1203,7 +1203,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: 0",
                 new float3(4.712389f, -1.570796f, 0f),
-                new Quaternion(0.5f, 0.5f, 0.5f, -0.5f),
+                new QuaternionF(0.5f, 0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -1212,7 +1212,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: 0",
                 new float3(6.283185f, -1.570796f, 0f),
-                new Quaternion(-6.181724E-08f, 0.7071068f, -6.181724E-08f, -0.7071068f),
+                new QuaternionF(-6.181724E-08f, 0.7071068f, -6.181724E-08f, -0.7071068f),
                 new float4x4(5.960464E-08f, -1.748456E-07f, -0.9999999f, 0f, 0f, 1f, -1.748456E-07f, 0f, 0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 4.712389f, 0f)
             };
@@ -1221,7 +1221,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: 0",
                 new float3(10.21018f, -1.570796f, 0f),
-                new Quaternion(-0.6532814f, -0.2705982f, -0.6532814f, 0.2705982f),
+                new QuaternionF(-0.6532814f, -0.2705982f, -0.6532814f, 0.2705982f),
                 new float4x4(7.450581E-08f, 0.707107f, 0.7071064f, 0f, 0f, -0.7071064f, 0.707107f, 0f, 0.9999999f, 0f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.141593f)
             };
@@ -1230,7 +1230,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: 0",
                 new float3(-1.570796f, -1.570796f, 0f),
-                new Quaternion(-0.5f, -0.5f, -0.5f, 0.5f),
+                new QuaternionF(-0.5f, -0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -1239,7 +1239,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: 0",
                 new float3(-9.424778f, -1.570796f, 0f),
-                new Quaternion(0.7071068f, -8.432163E-09f, 0.7071068f, 8.432163E-09f),
+                new QuaternionF(0.7071068f, -8.432163E-09f, 0.7071068f, 8.432163E-09f),
                 new float4x4(5.960464E-08f, -2.384976E-08f, 0.9999999f, 0f, 0f, -0.9999999f, -2.384976E-08f, 0f, 0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 1.570796f, 3.141593f)
             };
@@ -1248,7 +1248,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: 0",
                 new float3(0f, -9.424778f, 0f),
-                new Quaternion(0f, 1f, 0f, 1.192488E-08f),
+                new QuaternionF(0f, 1f, 0f, 1.192488E-08f),
                 new float4x4(-1f, 0f, 2.384976E-08f, 0f, 0f, 1f, 0f, 0f, -2.384976E-08f, 0f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 0f)
             };
@@ -1257,7 +1257,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: 0",
                 new float3(0.001745329f, -9.424778f, 0f),
-                new Quaternion(1.040642E-11f, 0.9999996f, -0.0008726645f, 1.192488E-08f),
+                new QuaternionF(1.040642E-11f, 0.9999996f, -0.0008726645f, 1.192488E-08f),
                 new float4x4(-1f, 4.162566E-11f, 2.384973E-08f, 0f, 0f, 0.9999985f, -0.001745328f, 0f, -2.384976E-08f, -0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 0f)
             };
@@ -1266,7 +1266,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: 0",
                 new float3(0.01745329f, -9.424778f, 0f),
-                new Quaternion(1.040629E-10f, 0.9999619f, -0.008726535f, 1.192443E-08f),
+                new QuaternionF(1.040629E-10f, 0.9999619f, -0.008726535f, 1.192443E-08f),
                 new float4x4(-0.9999999f, 4.162357E-10f, 2.384613E-08f, 0f, -1.387779E-17f, 0.9998477f, -0.01745241f, 0f, -2.384976E-08f, -0.01745241f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, -1.38799E-17f)
             };
@@ -1275,7 +1275,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: 0",
                 new float3(0.7853982f, -9.424778f, 0f),
-                new Quaternion(4.563455E-09f, 0.9238795f, -0.3826835f, 1.101715E-08f),
+                new QuaternionF(4.563455E-09f, 0.9238795f, -0.3826835f, 1.101715E-08f),
                 new float4x4(-1f, 1.686433E-08f, 1.686433E-08f, 0f, 0f, 0.7071067f, -0.7071068f, 0f, -2.384976E-08f, -0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 0f)
             };
@@ -1284,7 +1284,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: 0",
                 new float3(1.570796f, -9.424778f, 0f),
-                new Quaternion(8.432163E-09f, 0.7071068f, -0.7071068f, 8.432163E-09f),
+                new QuaternionF(8.432163E-09f, 0.7071068f, -0.7071068f, 8.432163E-09f),
                 new float4x4(-0.9999999f, 2.384976E-08f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, -2.384976E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.141593f, 0f)
             };
@@ -1293,7 +1293,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: 0",
                 new float3(3.141593f, -9.424778f, 0f),
-                new Quaternion(1.192488E-08f, -4.371139E-08f, -1f, -5.212531E-16f),
+                new QuaternionF(1.192488E-08f, -4.371139E-08f, -1f, -5.212531E-16f),
                 new float4x4(-1f, -2.085012E-15f, -2.384976E-08f, 0f, 0f, -1f, 8.742278E-08f, 0f, -2.384976E-08f, 8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, -2.384976E-08f, 3.141593f)
             };
@@ -1302,7 +1302,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: 0",
                 new float3(4.712389f, -9.424778f, 0f),
-                new Quaternion(8.432163E-09f, -0.7071068f, -0.7071068f, -8.432163E-09f),
+                new QuaternionF(8.432163E-09f, -0.7071068f, -0.7071068f, -8.432163E-09f),
                 new float4x4(-0.9999999f, -2.384976E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -2.384976E-08f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -1311,7 +1311,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: 0",
                 new float3(6.283185f, -9.424778f, 0f),
-                new Quaternion(-1.042506E-15f, -1f, 8.742278E-08f, -1.192488E-08f),
+                new QuaternionF(-1.042506E-15f, -1f, 8.742278E-08f, -1.192488E-08f),
                 new float4x4(-1f, 4.170025E-15f, 2.384976E-08f, 0f, 0f, 1f, -1.748456E-07f, 0f, -2.384976E-08f, -1.748456E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 0f)
             };
@@ -1320,7 +1320,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: 0",
                 new float3(10.21018f, -9.424778f, 0f),
-                new Quaternion(-1.101715E-08f, 0.3826836f, 0.9238794f, 4.563456E-09f),
+                new QuaternionF(-1.101715E-08f, 0.3826836f, 0.9238794f, 4.563456E-09f),
                 new float4x4(-0.9999999f, -1.686433E-08f, -1.686432E-08f, 0f, 0f, -0.7071065f, 0.707107f, 0f, -2.384976E-08f, 0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, -2.384976E-08f, 3.141593f)
             };
@@ -1329,7 +1329,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: 0",
                 new float3(-1.570796f, -9.424778f, 0f),
-                new Quaternion(-8.432163E-09f, 0.7071068f, 0.7071068f, 8.432163E-09f),
+                new QuaternionF(-8.432163E-09f, 0.7071068f, 0.7071068f, 8.432163E-09f),
                 new float4x4(-0.9999999f, -2.384976E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -2.384976E-08f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -1338,7 +1338,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: 0",
                 new float3(-9.424778f, -9.424778f, 0f),
-                new Quaternion(1.192488E-08f, 1.192488E-08f, -1f, 1.422028E-16f),
+                new QuaternionF(1.192488E-08f, 1.192488E-08f, -1f, 1.422028E-16f),
                 new float4x4(-1f, 5.688111E-16f, -2.384976E-08f, 0f, 0f, -1f, -2.384976E-08f, 0f, -2.384976E-08f, -2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 3.141593f)
             };
@@ -1347,7 +1347,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: 0.1",
                 new float3(0f, 0f, 0.001745329f),
-                new Quaternion(0f, 0f, 0.0008726645f, 0.9999996f),
+                new QuaternionF(0f, 0f, 0.0008726645f, 0.9999996f),
                 new float4x4(0.9999985f, -0.001745328f, 0f, 0f, 0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 0.001745329f)
             };
@@ -1356,7 +1356,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: 0.1",
                 new float3(0.001745329f, 0f, 0.001745329f),
-                new Quaternion(0.0008726642f, -7.615433E-07f, 0.0008726642f, 0.9999993f),
+                new QuaternionF(0.0008726642f, -7.615433E-07f, 0.0008726642f, 0.9999993f),
                 new float4x4(0.9999985f, -0.001745328f, 1.136868E-13f, 0f, 0.001745326f, 0.999997f, -0.001745328f, 0f, 3.046171E-06f, 0.001745326f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.13687E-13f, 0.001745329f)
             };
@@ -1365,7 +1365,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: 0.1",
                 new float3(0.01745329f, 0f, 0.001745329f),
-                new Quaternion(0.008726533f, -7.615338E-06f, 0.0008726313f, 0.9999616f),
+                new QuaternionF(0.008726533f, -7.615338E-06f, 0.0008726313f, 0.9999616f),
                 new float4x4(0.9999985f, -0.001745328f, 0f, 0f, 0.001745063f, 0.9998462f, -0.01745241f, 0f, 3.046018E-05f, 0.01745238f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0f, 0.001745329f)
             };
@@ -1374,7 +1374,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: 0.1",
                 new float3(0.7853982f, 0f, 0.001745329f),
-                new Quaternion(0.3826833f, -0.0003339543f, 0.0008062369f, 0.9238791f),
+                new QuaternionF(0.3826833f, -0.0003339543f, 0.0008062369f, 0.9238791f),
                 new float4x4(0.9999985f, -0.001745328f, 5.820766E-11f, 0f, 0.001234133f, 0.7071057f, -0.7071068f, 0f, 0.001234133f, 0.7071057f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 8.231807E-11f, 0.001745329f)
             };
@@ -1383,7 +1383,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: 0.1",
                 new float3(1.570796f, 0f, 0.001745329f),
-                new Quaternion(0.7071065f, -0.000617067f, 0.000617067f, 0.7071065f),
+                new QuaternionF(0.7071065f, -0.000617067f, 0.000617067f, 0.7071065f),
                 new float4x4(0.9999985f, -0.001745328f, 0f, 0f, 0f, -4.62876E-08f, -1f, 0f, 0.001745328f, 0.9999985f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 6.28144f, 0f)
             };
@@ -1392,7 +1392,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: 0.1",
                 new float3(3.141593f, 0f, 0.001745329f),
-                new Quaternion(0.9999996f, -0.0008726645f, -3.814538E-11f, -4.371137E-08f),
+                new QuaternionF(0.9999996f, -0.0008726645f, -3.814538E-11f, -4.371137E-08f),
                 new float4x4(0.9999985f, -0.001745328f, 6.938894E-18f, 0f, -0.001745328f, -0.9999986f, 8.742278E-08f, 0f, -1.525814E-10f, -8.742266E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 3.143338f)
             };
@@ -1401,7 +1401,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: 0.1",
                 new float3(4.712389f, 0f, 0.001745329f),
-                new Quaternion(0.7071065f, -0.000617067f, -0.000617067f, -0.7071065f),
+                new QuaternionF(0.7071065f, -0.000617067f, -0.000617067f, -0.7071065f),
                 new float4x4(0.9999985f, -0.001745328f, 0f, 0f, 0f, -4.62876E-08f, 1f, 0f, -0.001745328f, -0.9999985f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.001745329f, 0f)
             };
@@ -1410,7 +1410,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: 0.1",
                 new float3(6.283185f, 0f, 0.001745329f),
-                new Quaternion(-8.742275E-08f, 7.629075E-11f, -0.0008726645f, -0.9999996f),
+                new QuaternionF(-8.742275E-08f, 7.629075E-11f, -0.0008726645f, -0.9999996f),
                 new float4x4(0.9999985f, -0.001745328f, 1.387779E-17f, 0f, 0.001745328f, 0.9999985f, -1.748456E-07f, 0f, 3.051629E-10f, 1.748453E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.387779E-17f, 0.001745329f)
             };
@@ -1419,7 +1419,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: 0.1",
                 new float3(10.21018f, 0f, 0.001745329f),
-                new Quaternion(-0.9238791f, 0.0008062368f, 0.0003339544f, 0.3826835f),
+                new QuaternionF(-0.9238791f, 0.0008062368f, 0.0003339544f, 0.3826835f),
                 new float4x4(0.9999985f, -0.001745328f, 0f, 0f, -0.001234133f, -0.7071054f, 0.707107f, 0f, -0.001234134f, -0.7071059f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.143338f)
             };
@@ -1428,7 +1428,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: 0.1",
                 new float3(-1.570796f, 0f, 0.001745329f),
-                new Quaternion(-0.7071065f, 0.000617067f, 0.000617067f, 0.7071065f),
+                new QuaternionF(-0.7071065f, 0.000617067f, 0.000617067f, 0.7071065f),
                 new float4x4(0.9999985f, -0.001745328f, 0f, 0f, 0f, -4.62876E-08f, 1f, 0f, -0.001745328f, -0.9999985f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.001745329f, 0f)
             };
@@ -1437,7 +1437,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: 0.1",
                 new float3(-9.424778f, 0f, 0.001745329f),
-                new Quaternion(0.9999996f, -0.0008726645f, 1.040642E-11f, 1.192488E-08f),
+                new QuaternionF(0.9999996f, -0.0008726645f, 1.040642E-11f, 1.192488E-08f),
                 new float4x4(0.9999985f, -0.001745328f, 0f, 0f, -0.001745328f, -0.9999986f, -2.384976E-08f, 0f, 4.162566E-11f, 2.384973E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.143338f)
             };
@@ -1446,7 +1446,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: 0.1",
                 new float3(0f, 0.001745329f, 0.001745329f),
-                new Quaternion(7.615433E-07f, 0.0008726642f, 0.0008726642f, 0.9999993f),
+                new QuaternionF(7.615433E-07f, 0.0008726642f, 0.0008726642f, 0.9999993f),
                 new float4x4(0.999997f, -0.001745326f, 0.001745328f, 0f, 0.001745328f, 0.9999985f, 1.136868E-13f, 0f, -0.001745326f, 3.046171E-06f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.136868E-13f, 0.001745329f, 0.001745329f)
             };
@@ -1455,7 +1455,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: 0.1",
                 new float3(0.001745329f, 0.001745329f, 0.001745329f),
-                new Quaternion(0.0008734255f, 0.0008719024f, 0.0008719023f, 0.9999989f),
+                new QuaternionF(0.0008734255f, 0.0008719024f, 0.0008719023f, 0.9999989f),
                 new float4x4(0.999997f, -0.00174228f, 0.001745326f, 0f, 0.001745326f, 0.999997f, -0.001745329f, 0f, -0.00174228f, 0.001748369f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.00174533f, 0.001745329f, 0.001745329f)
             };
@@ -1464,7 +1464,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: 0.1",
                 new float3(0.01745329f, 0.001745329f, 0.001745329f),
-                new Quaternion(0.008727292f, 0.0008650157f, 0.0008650157f, 0.9999612f),
+                new QuaternionF(0.008727292f, 0.0008650157f, 0.0008650157f, 0.9999612f),
                 new float4x4(0.999997f, -0.001714866f, 0.001745063f, 0f, 0.001745063f, 0.9998462f, -0.01745241f, 0f, -0.001714866f, 0.0174554f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.0174533f, 0.001745329f, 0.001745329f)
             };
@@ -1473,7 +1473,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: 0.1",
                 new float3(0.7853982f, 0.001745329f, 0.001745329f),
-                new Quaternion(0.3826839f, 0.0004722824f, 0.0004722824f, 0.9238791f),
+                new QuaternionF(0.3826839f, 0.0004722824f, 0.0004722824f, 0.9238791f),
                 new float4x4(0.9999991f, -0.0005111939f, 0.001234133f, 0f, 0.001234133f, 0.7071057f, -0.7071068f, 0f, -0.0005111941f, 0.7071077f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.001745329f, 0.001745329f)
             };
@@ -1482,7 +1482,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: 0.1",
                 new float3(1.570796f, 0.001745329f, 0.001745329f),
-                new Quaternion(0.7071068f, 0f, 0f, 0.7071068f),
+                new QuaternionF(0.7071068f, 0f, 0f, 0.7071068f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, -1.192093E-07f, -1f, 0f, 0f, 1f, -1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0f, 0f)
             };
@@ -1491,7 +1491,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: 0.1",
                 new float3(3.141593f, 0.001745329f, 0.001745329f),
-                new Quaternion(0.9999993f, -0.0008726643f, -0.0008726643f, 7.17832E-07f),
+                new QuaternionF(0.9999993f, -0.0008726643f, -0.0008726643f, 7.17832E-07f),
                 new float4x4(0.999997f, -0.001745326f, -0.001745329f, 0f, -0.001745329f, -0.9999987f, 8.74229E-08f, 0f, -0.001745326f, 2.958749E-06f, -0.9999987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.74229E-08f, 3.143338f, 3.143338f)
             };
@@ -1500,7 +1500,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: 0.1",
                 new float3(4.712389f, 0.001745329f, 0.001745329f),
-                new Quaternion(0.7071058f, -0.001234133f, -0.001234133f, -0.7071058f),
+                new QuaternionF(0.7071058f, -0.001234133f, -0.001234133f, -0.7071058f),
                 new float4x4(0.9999939f, -0.003490651f, 0f, 0f, 0f, -1.255435E-07f, 1f, 0f, -0.003490651f, -0.999994f, -1.255435E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.003490658f, 0f)
             };
@@ -1509,7 +1509,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: 0.1",
                 new float3(6.283185f, 0.001745329f, 0.001745329f),
-                new Quaternion(-8.489661E-07f, -0.0008726642f, -0.0008726642f, -0.9999993f),
+                new QuaternionF(-8.489661E-07f, -0.0008726642f, -0.0008726642f, -0.9999993f),
                 new float4x4(0.999997f, -0.001745326f, 0.001745329f, 0f, 0.001745329f, 0.9999985f, -1.748455E-07f, 0f, -0.001745326f, 3.221016E-06f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 0.001745329f, 0.001745329f)
             };
@@ -1518,7 +1518,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: 0.1",
                 new float3(10.21018f, 0.001745329f, 0.001745329f),
-                new Quaternion(-0.9238784f, 0.001140191f, 0.001140191f, 0.3826826f),
+                new QuaternionF(-0.9238784f, 0.001140191f, 0.001140191f, 0.3826826f),
                 new float4x4(0.9999948f, -0.002979458f, -0.001234133f, 0f, -0.001234133f, -0.7071053f, 0.707107f, 0f, -0.002979458f, -0.7071018f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 3.143338f)
             };
@@ -1527,7 +1527,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: 0.1",
                 new float3(-1.570796f, 0.001745329f, 0.001745329f),
-                new Quaternion(-0.7071058f, 0.001234133f, 0.001234133f, 0.7071058f),
+                new QuaternionF(-0.7071058f, 0.001234133f, 0.001234133f, 0.7071058f),
                 new float4x4(0.9999939f, -0.003490651f, 0f, 0f, 0f, -1.255435E-07f, 1f, 0f, -0.003490651f, -0.999994f, -1.255435E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.003490658f, 0f)
             };
@@ -1536,7 +1536,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: 0.1",
                 new float3(-9.424778f, 0.001745329f, 0.001745329f),
-                new Quaternion(0.9999993f, -0.0008726642f, -0.0008726642f, 7.734682E-07f),
+                new QuaternionF(0.9999993f, -0.0008726642f, -0.0008726642f, 7.734682E-07f),
                 new float4x4(0.999997f, -0.001745326f, -0.001745329f, 0f, -0.001745329f, -0.9999987f, -2.384968E-08f, 0f, -0.001745326f, 3.070021E-06f, -0.9999987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384968E-08f, 3.143338f, 3.143338f)
             };
@@ -1545,7 +1545,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: 0.1",
                 new float3(0f, 0.01745329f, 0.001745329f),
-                new Quaternion(7.615338E-06f, 0.008726533f, 0.0008726313f, 0.9999616f),
+                new QuaternionF(7.615338E-06f, 0.008726533f, 0.0008726313f, 0.9999616f),
                 new float4x4(0.9998462f, -0.001745063f, 0.01745241f, 0f, 0.001745328f, 0.9999985f, 0f, 0f, -0.01745238f, 3.046018E-05f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.01745329f, 0.001745329f)
             };
@@ -1554,7 +1554,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: 0.1",
                 new float3(0.001745329f, 0.01745329f, 0.001745329f),
-                new Quaternion(0.0008802463f, 0.008725768f, 0.0008650157f, 0.9999612f),
+                new QuaternionF(0.0008802463f, 0.008725768f, 0.0008650157f, 0.9999612f),
                 new float4x4(0.9998462f, -0.001714602f, 0.01745238f, 0f, 0.001745326f, 0.999997f, -0.001745328f, 0f, -0.01744933f, 0.00177552f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.01745329f, 0.001745329f)
             };
@@ -1563,7 +1563,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: 0.1",
                 new float3(0.01745329f, 0.01745329f, 0.001745329f),
-                new Quaternion(0.008733816f, 0.008718585f, 0.0007964456f, 0.9999235f),
+                new QuaternionF(0.008733816f, 0.008718585f, 0.0007964456f, 0.9999235f),
                 new float4x4(0.9998467f, -0.001440477f, 0.01744975f, 0f, 0.001745063f, 0.9998462f, -0.01745241f, 0f, -0.01742192f, 0.01748018f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.01745329f, 0.001745329f)
             };
@@ -1572,7 +1572,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: 0.1",
                 new float3(0.7853982f, 0.01745329f, 0.001745329f),
-                new Quaternion(0.3826758f, 0.007728322f, -0.002533293f, 0.9238469f),
+                new QuaternionF(0.3826758f, 0.007728322f, -0.002533293f, 0.9238469f),
                 new float4x4(0.9998677f, 0.01059563f, 0.01234071f, 0f, 0.001234133f, 0.7071057f, -0.7071068f, 0f, -0.01621843f, 0.7070285f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.01745329f, 0.001745329f)
             };
@@ -1581,7 +1581,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: 0.1",
                 new float3(1.570796f, 0.01745329f, 0.001745329f),
-                new Quaternion(0.707085f, 0.005553546f, -0.005553546f, 0.707085f),
+                new QuaternionF(0.707085f, 0.005553546f, -0.005553546f, 0.707085f),
                 new float4x4(0.9998766f, 0.01570732f, 0f, 0f, 0f, 6.665505E-08f, -0.9999999f, 0f, -0.01570732f, 0.9998766f, 6.665505E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.01570796f, 0f)
             };
@@ -1590,7 +1590,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: 0.1",
                 new float3(3.141593f, 0.01745329f, 0.001745329f),
-                new Quaternion(0.9999616f, -0.0008726317f, -0.008726533f, 7.571628E-06f),
+                new QuaternionF(0.9999616f, -0.0008726317f, -0.008726533f, 7.571628E-06f),
                 new float4x4(0.9998462f, -0.001745064f, -0.01745241f, 0f, -0.001745328f, -0.9999985f, 8.742336E-08f, 0f, -0.01745238f, 3.037277E-05f, -0.9998478f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742337E-08f, 3.159046f, 3.143338f)
             };
@@ -1599,7 +1599,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: 0.1",
                 new float3(4.712389f, 0.01745329f, 0.001745329f),
-                new Quaternion(0.7070742f, -0.006787634f, -0.006787634f, -0.7070742f),
+                new QuaternionF(0.7070742f, -0.006787634f, -0.006787634f, -0.7070742f),
                 new float4x4(0.9998157f, -0.01919744f, 0f, 0f, 0f, -5.475886E-08f, 1f, 0f, -0.01919744f, -0.9998158f, -5.475886E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01919862f, 0f)
             };
@@ -1608,7 +1608,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: 0.1",
                 new float3(6.283185f, 0.01745329f, 0.001745329f),
-                new Quaternion(-7.702757E-06f, -0.008726533f, -0.0008726305f, -0.9999616f),
+                new QuaternionF(-7.702757E-06f, -0.008726533f, -0.0008726305f, -0.9999616f),
                 new float4x4(0.9998462f, -0.00174506f, 0.01745241f, 0f, 0.001745328f, 0.9999985f, -1.74844E-07f, 0f, -0.01745238f, 3.0635E-05f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.74844E-07f, 0.01745329f, 0.001745329f)
             };
@@ -1617,7 +1617,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: 0.1",
                 new float3(10.21018f, 0.01745329f, 0.001745329f),
-                new Quaternion(-0.923841f, 0.004145707f, 0.008396205f, 0.3826618f),
+                new QuaternionF(-0.923841f, 0.004145707f, 0.008396205f, 0.3826618f),
                 new float4x4(0.9998246f, -0.01408576f, -0.01234071f, 0f, -0.001234133f, -0.7071053f, 0.707107f, 0f, -0.01868633f, -0.7069678f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 3.143338f)
             };
@@ -1626,7 +1626,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: 0.1",
                 new float3(-1.570796f, 0.01745329f, 0.001745329f),
-                new Quaternion(-0.7070742f, 0.006787634f, 0.006787634f, 0.7070742f),
+                new QuaternionF(-0.7070742f, 0.006787634f, 0.006787634f, 0.7070742f),
                 new float4x4(0.9998157f, -0.01919744f, 0f, 0f, 0f, -5.475886E-08f, 1f, 0f, -0.01919744f, -0.9998158f, -5.475886E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01919862f, 0f)
             };
@@ -1635,7 +1635,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: 0.1",
                 new float3(-9.424778f, 0.01745329f, 0.001745329f),
-                new Quaternion(0.9999616f, -0.0008726311f, -0.008726533f, 7.627262E-06f),
+                new QuaternionF(0.9999616f, -0.0008726311f, -0.008726533f, 7.627262E-06f),
                 new float4x4(0.9998462f, -0.001745062f, -0.01745241f, 0f, -0.001745328f, -0.9999985f, -2.384968E-08f, 0f, -0.01745238f, 3.048403E-05f, -0.9998478f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384968E-08f, 3.159046f, 3.143338f)
             };
@@ -1644,7 +1644,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: 0.1",
                 new float3(0f, 0.7853982f, 0.001745329f),
-                new Quaternion(0.0003339543f, 0.3826833f, 0.0008062369f, 0.9238791f),
+                new QuaternionF(0.0003339543f, 0.3826833f, 0.0008062369f, 0.9238791f),
                 new float4x4(0.7071057f, -0.001234133f, 0.7071068f, 0f, 0.001745328f, 0.9999985f, 5.820766E-11f, 0f, -0.7071057f, 0.001234133f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-5.820766E-11f, 0.7853982f, 0.001745329f)
             };
@@ -1653,7 +1653,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: 0.1",
                 new float3(0.001745329f, 0.7853982f, 0.001745329f),
-                new Quaternion(0.001140191f, 0.3826824f, 0.0004722824f, 0.9238791f),
+                new QuaternionF(0.001140191f, 0.3826824f, 0.0004722824f, 0.9238791f),
                 new float4x4(0.7071078f, -1.688022E-09f, 0.7071057f, 0f, 0.001745326f, 0.999997f, -0.001745328f, 0f, -0.7071036f, 0.002468265f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.00174533f, 0.7853982f, 0.001745329f)
             };
@@ -1662,7 +1662,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: 0.1",
                 new float3(0.01745329f, 0.7853982f, 0.001745329f),
-                new Quaternion(0.008396205f, 0.3826617f, -0.002533293f, 0.9238469f),
+                new QuaternionF(0.008396205f, 0.3826617f, -0.002533293f, 0.9238469f),
                 new float4x4(0.7071272f, 0.01110656f, 0.7069991f, 0f, 0.001745062f, 0.9998462f, -0.01745241f, 0f, -0.7070842f, 0.01357483f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.7853982f, 0.001745329f)
             };
@@ -1671,7 +1671,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: 0.1",
                 new float3(0.7853982f, 0.7853982f, 0.001745329f),
-                new Quaternion(0.3538618f, 0.3532448f, -0.1457017f, 0.8536808f),
+                new QuaternionF(0.3538618f, 0.3532448f, -0.1457017f, 0.8536808f),
                 new float4x4(0.7079783f, 0.4987652f, 0.5f, 0f, 0.001234159f, 0.7071056f, -0.7071069f, 0f, -0.7062331f, 0.5012334f, 0.4999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0.7853982f, 0.001745365f)
             };
@@ -1680,7 +1680,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: 0.1",
                 new float3(1.570796f, 0.7853982f, 0.001745329f),
-                new Quaternion(0.6535174f, 0.2700279f, -0.2700279f, 0.6535174f),
+                new QuaternionF(0.6535174f, 0.2700279f, -0.2700279f, 0.6535174f),
                 new float4x4(0.7083398f, 0.7058716f, 0f, 0f, 0f, -1.490116E-08f, -1f, 0f, -0.7058716f, 0.7083398f, -1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.7836529f, 0f)
             };
@@ -1689,7 +1689,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: 0.1",
                 new float3(3.141593f, 0.7853982f, 0.001745329f),
-                new Quaternion(0.9238791f, -0.0008062536f, -0.3826833f, 0.0003339139f),
+                new QuaternionF(0.9238791f, -0.0008062536f, -0.3826833f, 0.0003339139f),
                 new float4x4(0.7071057f, -0.001234195f, -0.7071068f, 0f, -0.001745328f, -0.9999985f, 8.742791E-08f, 0f, -0.7071057f, 0.001234072f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742791E-08f, 3.926991f, 3.143338f)
             };
@@ -1698,7 +1698,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: 0.1",
                 new float3(4.712389f, 0.7853982f, 0.001745329f),
-                new Quaternion(0.6530451f, -0.2711681f, -0.2711681f, -0.6530451f),
+                new QuaternionF(0.6530451f, -0.2711681f, -0.2711681f, -0.6530451f),
                 new float4x4(0.7058716f, -0.7083398f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7083398f, -0.7058715f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7871436f, 0f)
             };
@@ -1707,7 +1707,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: 0.1",
                 new float3(6.283185f, 0.7853982f, 0.001745329f),
-                new Quaternion(-0.000334035f, -0.3826833f, -0.0008062034f, -0.9238791f),
+                new QuaternionF(-0.000334035f, -0.3826833f, -0.0008062034f, -0.9238791f),
                 new float4x4(0.7071057f, -0.00123401f, 0.7071068f, 0f, 0.001745328f, 0.9999985f, -1.747976E-07f, 0f, -0.7071057f, 0.001234257f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.747976E-07f, 0.7853982f, 0.001745329f)
             };
@@ -1716,7 +1716,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: 0.1",
                 new float3(10.21018f, 0.7853982f, 0.001745329f),
-                new Quaternion(-0.8534252f, 0.1471915f, 0.3538618f, 0.3532449f),
+                new QuaternionF(-0.8534252f, 0.1471915f, 0.3538618f, 0.3532449f),
                 new float4x4(0.706233f, -0.5012336f, -0.4999999f, 0f, -0.001234144f, -0.7071056f, 0.7071071f, 0f, -0.7079785f, -0.4987653f, -0.4999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 3.143338f)
             };
@@ -1725,7 +1725,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: 0.1",
                 new float3(-1.570796f, 0.7853982f, 0.001745329f),
-                new Quaternion(-0.6530451f, 0.2711681f, 0.2711681f, 0.6530451f),
+                new QuaternionF(-0.6530451f, 0.2711681f, 0.2711681f, 0.6530451f),
                 new float4x4(0.7058716f, -0.7083398f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7083398f, -0.7058715f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7871436f, 0f)
             };
@@ -1734,7 +1734,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: 0.1",
                 new float3(-9.424778f, 0.7853982f, 0.001745329f),
-                new Quaternion(0.9238791f, -0.0008062323f, -0.3826833f, 0.0003339653f),
+                new QuaternionF(0.9238791f, -0.0008062323f, -0.3826833f, 0.0003339653f),
                 new float4x4(0.7071057f, -0.001234117f, -0.7071068f, 0f, -0.001745328f, -0.9999985f, -2.380693E-08f, 0f, -0.7071057f, 0.00123415f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.380693E-08f, 3.926991f, 3.143338f)
             };
@@ -1743,7 +1743,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: 0.1",
                 new float3(0f, 1.570796f, 0.001745329f),
-                new Quaternion(0.000617067f, 0.7071065f, 0.000617067f, 0.7071065f),
+                new QuaternionF(0.000617067f, 0.7071065f, 0.000617067f, 0.7071065f),
                 new float4x4(-4.62876E-08f, 0f, 1f, 0f, 0.001745328f, 0.9999985f, 0f, 0f, -0.9999985f, 0.001745328f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 0.001745329f)
             };
@@ -1752,7 +1752,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: 0.1",
                 new float3(0.001745329f, 1.570796f, 0.001745329f),
-                new Quaternion(0.001234133f, 0.7071058f, 0f, 0.7071068f),
+                new QuaternionF(0.001234133f, 0.7071058f, 0f, 0.7071068f),
                 new float4x4(2.920628E-06f, 0.001745326f, 0.9999986f, 0f, 0.001745326f, 0.999997f, -0.001745328f, 0f, -0.9999986f, 0.001745328f, -1.255435E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.570796f, 0.001745329f)
             };
@@ -1761,7 +1761,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: 0.1",
                 new float3(0.01745329f, 1.570796f, 0.001745329f),
-                new Quaternion(0.006787634f, 0.7070742f, -0.005553546f, 0.707085f),
+                new QuaternionF(0.006787634f, 0.7070742f, -0.005553546f, 0.707085f),
                 new float4x4(3.040542E-05f, 0.01745238f, 0.9998477f, 0f, 0.001745064f, 0.9998462f, -0.01745241f, 0f, -0.9999985f, 0.001745328f, -5.475886E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.0174533f, 1.570796f, 0.001745329f)
             };
@@ -1770,7 +1770,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: 0.1",
                 new float3(0.7853982f, 1.570796f, 0.001745329f),
-                new Quaternion(0.2711681f, 0.6530451f, -0.2700279f, 0.6535174f),
+                new QuaternionF(0.2711681f, 0.6530451f, -0.2700279f, 0.6535174f),
                 new float4x4(0.001234218f, 0.7071058f, 0.7071067f, 0f, 0.001234084f, 0.7071056f, -0.7071068f, 0f, -0.9999985f, 0.001745313f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 1.570796f, 0.00174526f)
             };
@@ -1779,7 +1779,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: 0.1",
                 new float3(1.570796f, 1.570796f, 0.001745329f),
-                new Quaternion(0.5004361f, 0.4995635f, -0.4995635f, 0.5004361f),
+                new QuaternionF(0.5004361f, 0.4995635f, -0.4995635f, 0.5004361f),
                 new float4x4(0.001745403f, 0.9999984f, 0f, 0f, 0f, 8.940697E-08f, -0.9999999f, 0f, -0.9999984f, 0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.569051f, 0f)
             };
@@ -1788,7 +1788,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: 0.1",
                 new float3(3.141593f, 1.570796f, 0.001745329f),
-                new Quaternion(0.7071065f, -0.0006170979f, -0.7071065f, 0.0006170361f),
+                new QuaternionF(0.7071065f, -0.0006170979f, -0.7071065f, 0.0006170361f),
                 new float4x4(-4.636388E-08f, -8.73697E-08f, -1f, 0f, -0.001745328f, -0.9999986f, 8.73697E-08f, 0f, -0.9999985f, 0.001745328f, -4.636388E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.73697E-08f, 4.712389f, 3.143338f)
             };
@@ -1797,7 +1797,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: 0.1",
                 new float3(4.712389f, 1.570796f, 0.001745329f),
-                new Quaternion(0.4995635f, -0.5004361f, -0.5004361f, -0.4995635f),
+                new QuaternionF(0.4995635f, -0.5004361f, -0.5004361f, -0.4995635f),
                 new float4x4(-0.001745224f, -0.9999984f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, -0.9999984f, 0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.572542f, 0f)
             };
@@ -1806,7 +1806,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: 0.1",
                 new float3(6.283185f, 1.570796f, 0.001745329f),
-                new Quaternion(-0.0006171288f, -0.7071065f, -0.0006170052f, -0.7071065f),
+                new QuaternionF(-0.0006171288f, -0.7071065f, -0.0006170052f, -0.7071065f),
                 new float4x4(-4.613503E-08f, 1.747976E-07f, 1f, 0f, 0.001745328f, 0.9999985f, -1.747976E-07f, 0f, -0.9999985f, 0.001745328f, -4.644016E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.747976E-07f, 1.570796f, 0.001745329f)
             };
@@ -1815,7 +1815,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: 0.1",
                 new float3(10.21018f, 1.570796f, 0.001745329f),
-                new Quaternion(-0.653045f, 0.2711682f, 0.6535173f, 0.270028f),
+                new QuaternionF(-0.653045f, 0.2711682f, 0.6535173f, 0.270028f),
                 new float4x4(-0.001234084f, -0.707106f, -0.7071064f, 0f, -0.001234084f, -0.7071053f, 0.7071071f, 0f, -0.9999984f, 0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 3.143338f)
             };
@@ -1824,7 +1824,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: 0.1",
                 new float3(-1.570796f, 1.570796f, 0.001745329f),
-                new Quaternion(-0.4995635f, 0.5004361f, 0.5004361f, 0.4995635f),
+                new QuaternionF(-0.4995635f, 0.5004361f, 0.5004361f, 0.4995635f),
                 new float4x4(-0.001745224f, -0.9999984f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, -0.9999984f, 0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.572542f, 0f)
             };
@@ -1833,7 +1833,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: 0.1",
                 new float3(-9.424778f, 1.570796f, 0.001745329f),
-                new Quaternion(0.7071065f, -0.0006170585f, -0.7071065f, 0.0006170754f),
+                new QuaternionF(0.7071065f, -0.0006170585f, -0.7071065f, 0.0006170754f),
                 new float4x4(-4.626673E-08f, 2.392335E-08f, -1f, 0f, -0.001745328f, -0.9999986f, -2.392335E-08f, 0f, -0.9999985f, 0.001745328f, -4.626673E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.392335E-08f, 4.712389f, 3.143338f)
             };
@@ -1842,7 +1842,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: 0.1",
                 new float3(0f, 3.141593f, 0.001745329f),
-                new Quaternion(0.0008726645f, 0.9999996f, -3.814538E-11f, -4.371137E-08f),
+                new QuaternionF(0.0008726645f, 0.9999996f, -3.814538E-11f, -4.371137E-08f),
                 new float4x4(-0.9999986f, 0.001745328f, -8.742278E-08f, 0f, 0.001745328f, 0.9999985f, 6.938894E-18f, 0f, 8.742266E-08f, -1.525814E-10f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-6.938894E-18f, 3.141593f, 0.001745329f)
             };
@@ -1851,7 +1851,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: 0.1",
                 new float3(0.001745329f, 3.141593f, 0.001745329f),
-                new Quaternion(0.0008726642f, 0.9999993f, -0.0008726643f, 7.17832E-07f),
+                new QuaternionF(0.0008726642f, 0.9999993f, -0.0008726643f, 7.17832E-07f),
                 new float4x4(-0.9999987f, 0.001745328f, -8.742268E-08f, 0f, 0.001745326f, 0.999997f, -0.001745329f, 0f, -2.958749E-06f, -0.001745326f, -0.9999987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 0.001745329f)
             };
@@ -1860,7 +1860,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: 0.1",
                 new float3(0.01745329f, 3.141593f, 0.001745329f),
-                new Quaternion(0.0008726309f, 0.9999616f, -0.008726533f, 7.571628E-06f),
+                new QuaternionF(0.0008726309f, 0.9999616f, -0.008726533f, 7.571628E-06f),
                 new float4x4(-0.9999985f, 0.001745327f, -8.740972E-08f, 0f, 0.001745063f, 0.9998462f, -0.01745241f, 0f, -3.037276E-05f, -0.01745238f, -0.9998478f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 0.001745329f)
             };
@@ -1869,7 +1869,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: 0.1",
                 new float3(0.7853982f, 3.141593f, 0.001745329f),
-                new Quaternion(0.0008062202f, 0.9238791f, -0.3826833f, 0.0003339139f),
+                new QuaternionF(0.0008062202f, 0.9238791f, -0.3826833f, 0.0003339139f),
                 new float4x4(-0.9999985f, 0.001745267f, -6.187474E-08f, 0f, 0.001234133f, 0.7071057f, -0.7071068f, 0f, -0.001234046f, -0.7071057f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 0.001745329f)
             };
@@ -1878,7 +1878,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: 0.1",
                 new float3(1.570796f, 3.141593f, 0.001745329f),
-                new Quaternion(0.0006170361f, 0.7071065f, -0.7071065f, 0.0006170361f),
+                new QuaternionF(0.0006170361f, 0.7071065f, -0.7071065f, 0.0006170361f),
                 new float4x4(-0.9999986f, 0.001745241f, 0f, 0f, 0f, -4.621131E-08f, -1f, 0f, -0.001745241f, -0.9999985f, -4.621131E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.139848f, 0f)
             };
@@ -1887,7 +1887,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: 0.1",
                 new float3(3.141593f, 3.141593f, 0.001745329f),
-                new Quaternion(-4.374952E-08f, -4.367323E-08f, -0.9999996f, 0.0008726645f),
+                new QuaternionF(-4.374952E-08f, -4.367323E-08f, -0.9999996f, 0.0008726645f),
                 new float4x4(-0.9999986f, 0.001745328f, 8.742278E-08f, 0f, -0.001745328f, -0.9999986f, 8.742278E-08f, 0f, 8.757524E-08f, 8.727007E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 8.742278E-08f, 3.143338f)
             };
@@ -1896,7 +1896,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: 0.1",
                 new float3(4.712389f, 3.141593f, 0.001745329f),
-                new Quaternion(-0.0006170979f, -0.7071065f, -0.7071065f, 0.0006170979f),
+                new QuaternionF(-0.0006170979f, -0.7071065f, -0.7071065f, 0.0006170979f),
                 new float4x4(-0.9999986f, 0.001745416f, 0f, 0f, 0f, -4.636388E-08f, 1f, 0f, 0.001745416f, 0.9999985f, -4.636388E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.143338f, 0f)
             };
@@ -1905,7 +1905,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: 0.1",
                 new float3(6.283185f, 3.141593f, 0.001745329f),
-                new Quaternion(-0.0008726645f, -0.9999996f, 8.746089E-08f, 4.363508E-08f),
+                new QuaternionF(-0.0008726645f, -0.9999996f, 8.746089E-08f, 4.363508E-08f),
                 new float4x4(-0.9999986f, 0.001745328f, -8.742278E-08f, 0f, 0.001745328f, 0.9999985f, -1.748456E-07f, 0f, 8.711749E-08f, -1.749979E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 0.001745329f)
             };
@@ -1914,7 +1914,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: 0.1",
                 new float3(10.21018f, 3.141593f, 0.001745329f),
-                new Quaternion(0.0003339948f, 0.3826835f, 0.9238791f, -0.0008062535f),
+                new QuaternionF(0.0003339948f, 0.3826835f, 0.9238791f, -0.0008062535f),
                 new float4x4(-0.9999985f, 0.00174539f, 6.181654E-08f, 0f, -0.001234133f, -0.7071054f, 0.707107f, 0f, 0.001234221f, 0.7071059f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 8.750413E-08f, 3.143338f)
             };
@@ -1923,7 +1923,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: 0.1",
                 new float3(-1.570796f, 3.141593f, 0.001745329f),
-                new Quaternion(0.0006170979f, 0.7071065f, 0.7071065f, -0.0006170979f),
+                new QuaternionF(0.0006170979f, 0.7071065f, 0.7071065f, -0.0006170979f),
                 new float4x4(-0.9999986f, 0.001745416f, 0f, 0f, 0f, -4.636388E-08f, 1f, 0f, 0.001745416f, 0.9999985f, -4.636388E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.143338f, 0f)
             };
@@ -1932,7 +1932,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: 0.1",
                 new float3(-9.424778f, 3.141593f, 0.001745329f),
-                new Quaternion(-4.370097E-08f, 1.196302E-08f, -0.9999996f, 0.0008726645f),
+                new QuaternionF(-4.370097E-08f, 1.196302E-08f, -0.9999996f, 0.0008726645f),
                 new float4x4(-0.9999986f, 0.001745328f, 8.742279E-08f, 0f, -0.001745328f, -0.9999986f, -2.384976E-08f, 0f, 8.738103E-08f, -2.400231E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742279E-08f, 3.143338f)
             };
@@ -1941,7 +1941,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: 0.1",
                 new float3(0f, 4.712389f, 0.001745329f),
-                new Quaternion(0.000617067f, 0.7071065f, -0.000617067f, -0.7071065f),
+                new QuaternionF(0.000617067f, 0.7071065f, -0.000617067f, -0.7071065f),
                 new float4x4(-4.62876E-08f, 0f, -1f, 0f, 0.001745328f, 0.9999985f, 0f, 0f, 0.9999985f, -0.001745328f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 0.001745329f)
             };
@@ -1950,7 +1950,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: 0.1",
                 new float3(0.001745329f, 4.712389f, 0.001745329f),
-                new Quaternion(0f, 0.7071068f, -0.001234133f, -0.7071058f),
+                new QuaternionF(0f, 0.7071068f, -0.001234133f, -0.7071058f),
                 new float4x4(-3.16538E-06f, -0.001745326f, -0.9999986f, 0f, 0.001745326f, 0.999997f, -0.001745328f, 0f, 0.9999986f, -0.001745328f, -1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 0.001745329f)
             };
@@ -1959,7 +1959,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: 0.1",
                 new float3(0.01745329f, 4.712389f, 0.001745329f),
-                new Quaternion(-0.005553546f, 0.707085f, -0.006787634f, -0.7070742f),
+                new QuaternionF(-0.005553546f, 0.707085f, -0.006787634f, -0.7070742f),
                 new float4x4(-3.039352E-05f, -0.01745238f, -0.9998477f, 0f, 0.001745064f, 0.9998462f, -0.01745241f, 0f, 0.9999985f, -0.001745328f, 6.665505E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 0.001745331f)
             };
@@ -1968,7 +1968,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: 0.1",
                 new float3(0.7853982f, 4.712389f, 0.001745329f),
-                new Quaternion(-0.2700279f, 0.6535174f, -0.2711681f, -0.6530451f),
+                new QuaternionF(-0.2700279f, 0.6535174f, -0.2711681f, -0.6530451f),
                 new float4x4(-0.001234129f, -0.7071058f, -0.7071067f, 0f, 0.001234084f, 0.7071056f, -0.7071068f, 0f, 0.9999985f, -0.001745313f, -1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 4.712389f, 0.001745302f)
             };
@@ -1977,7 +1977,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: 0.1",
                 new float3(1.570796f, 4.712389f, 0.001745329f),
-                new Quaternion(-0.4995635f, 0.5004361f, -0.5004361f, -0.4995635f),
+                new QuaternionF(-0.4995635f, 0.5004361f, -0.5004361f, -0.4995635f),
                 new float4x4(-0.001745224f, -0.9999984f, 0f, 0f, 0f, 8.940697E-08f, -0.9999999f, 0f, 0.9999984f, -0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.710643f, 0f)
             };
@@ -1986,7 +1986,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: 0.1",
                 new float3(3.141593f, 4.712389f, 0.001745329f),
-                new Quaternion(-0.7071065f, 0.0006170361f, -0.7071065f, 0.0006170979f),
+                new QuaternionF(-0.7071065f, 0.0006170361f, -0.7071065f, 0.0006170979f),
                 new float4x4(-4.621131E-08f, 8.73697E-08f, 1f, 0f, -0.001745328f, -0.9999986f, 8.73697E-08f, 0f, 0.9999985f, -0.001745328f, -4.621131E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.73697E-08f, 1.570796f, 3.143338f)
             };
@@ -1995,7 +1995,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: 0.1",
                 new float3(4.712389f, 4.712389f, 0.001745329f),
-                new Quaternion(-0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
+                new QuaternionF(-0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
                 new float4x4(0.001745403f, 0.9999984f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.9999984f, -0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.714134f, 0f)
             };
@@ -2004,7 +2004,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: 0.1",
                 new float3(6.283185f, 4.712389f, 0.001745329f),
-                new Quaternion(-0.0006170052f, -0.7071065f, 0.0006171288f, 0.7071065f),
+                new QuaternionF(-0.0006170052f, -0.7071065f, 0.0006171288f, 0.7071065f),
                 new float4x4(-4.644016E-08f, -1.747976E-07f, -1f, 0f, 0.001745328f, 0.9999985f, -1.747976E-07f, 0f, 0.9999985f, -0.001745328f, -4.613503E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.747976E-07f, 4.712389f, 0.001745329f)
             };
@@ -2013,7 +2013,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: 0.1",
                 new float3(10.21018f, 4.712389f, 0.001745329f),
-                new Quaternion(0.6535173f, 0.270028f, 0.653045f, -0.2711682f),
+                new QuaternionF(0.6535173f, 0.270028f, 0.653045f, -0.2711682f),
                 new float4x4(0.001234218f, 0.707106f, 0.7071064f, 0f, -0.001234084f, -0.7071053f, 0.7071071f, 0f, 0.9999984f, -0.001745313f, 4.470348E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.143338f)
             };
@@ -2022,7 +2022,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: 0.1",
                 new float3(-1.570796f, 4.712389f, 0.001745329f),
-                new Quaternion(0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
+                new QuaternionF(0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
                 new float4x4(0.001745403f, 0.9999984f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.9999984f, -0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.714134f, 0f)
             };
@@ -2031,7 +2031,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: 0.1",
                 new float3(-9.424778f, 4.712389f, 0.001745329f),
-                new Quaternion(-0.7071065f, 0.0006170754f, -0.7071065f, 0.0006170585f),
+                new QuaternionF(-0.7071065f, 0.0006170754f, -0.7071065f, 0.0006170585f),
                 new float4x4(-4.63084E-08f, -2.392335E-08f, 1f, 0f, -0.001745328f, -0.9999986f, -2.392335E-08f, 0f, 0.9999985f, -0.001745328f, -4.63084E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.392335E-08f, 1.570796f, 3.143338f)
             };
@@ -2040,7 +2040,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: 0.1",
                 new float3(0f, 6.283185f, 0.001745329f),
-                new Quaternion(-7.629075E-11f, -8.742275E-08f, -0.0008726645f, -0.9999996f),
+                new QuaternionF(-7.629075E-11f, -8.742275E-08f, -0.0008726645f, -0.9999996f),
                 new float4x4(0.9999985f, -0.001745328f, 1.748456E-07f, 0f, 0.001745328f, 0.9999985f, 1.387779E-17f, 0f, -1.748453E-07f, 3.051629E-10f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.387779E-17f, 1.748456E-07f, 0.001745329f)
             };
@@ -2049,7 +2049,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: 0.1",
                 new float3(0.001745329f, 6.283185f, 0.001745329f),
-                new Quaternion(-0.0008726643f, 6.741206E-07f, -0.0008726642f, -0.9999993f),
+                new QuaternionF(-0.0008726643f, 6.741206E-07f, -0.0008726642f, -0.9999993f),
                 new float4x4(0.9999985f, -0.001745328f, 1.748454E-07f, 0f, 0.001745326f, 0.999997f, -0.001745328f, 0f, 2.871326E-06f, 0.001745326f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.748456E-07f, 0.001745329f)
             };
@@ -2058,7 +2058,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: 0.1",
                 new float3(0.01745329f, 6.283185f, 0.001745329f),
-                new Quaternion(-0.008726533f, 7.527919E-06f, -0.0008726305f, -0.9999616f),
+                new QuaternionF(-0.008726533f, 7.527919E-06f, -0.0008726305f, -0.9999616f),
                 new float4x4(0.9999985f, -0.001745325f, 1.748185E-07f, 0f, 0.001745063f, 0.9998462f, -0.01745241f, 0f, 3.028534E-05f, 0.01745238f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.748452E-07f, 0.001745329f)
             };
@@ -2067,7 +2067,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: 0.1",
                 new float3(0.7853982f, 6.283185f, 0.001745329f),
-                new Quaternion(-0.3826833f, 0.0003338735f, -0.0008062034f, -0.9238791f),
+                new QuaternionF(-0.3826833f, 0.0003338735f, -0.0008062034f, -0.9238791f),
                 new float4x4(0.9999985f, -0.001745205f, 1.236913E-07f, 0f, 0.001234133f, 0.7071057f, -0.7071068f, 0f, 0.001233959f, 0.7071057f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 1.749259E-07f, 0.001745329f)
             };
@@ -2076,7 +2076,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: 0.1",
                 new float3(1.570796f, 6.283185f, 0.001745329f),
-                new Quaternion(-0.7071065f, 0.0006170052f, -0.0006170052f, -0.7071065f),
+                new QuaternionF(-0.7071065f, 0.0006170052f, -0.0006170052f, -0.7071065f),
                 new float4x4(0.9999985f, -0.001745154f, 0f, 0f, 0f, -4.613503E-08f, -1f, 0f, 0.001745154f, 0.9999985f, -4.613503E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 6.28144f, 0f)
             };
@@ -2085,7 +2085,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: 0.1",
                 new float3(3.141593f, 6.283185f, 0.001745329f),
-                new Quaternion(-0.9999996f, 0.0008726645f, 8.746089E-08f, 4.363508E-08f),
+                new QuaternionF(-0.9999996f, 0.0008726645f, 8.746089E-08f, 4.363508E-08f),
                 new float4x4(0.9999985f, -0.001745328f, -1.748456E-07f, 0f, -0.001745328f, -0.9999986f, 8.742278E-08f, 0f, -1.749979E-07f, -8.711749E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 3.143338f)
             };
@@ -2094,7 +2094,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: 0.1",
                 new float3(4.712389f, 6.283185f, 0.001745329f),
-                new Quaternion(-0.7071065f, 0.0006171288f, 0.0006171288f, 0.7071065f),
+                new QuaternionF(-0.7071065f, 0.0006171288f, 0.0006171288f, 0.7071065f),
                 new float4x4(0.9999985f, -0.001745503f, 0f, 0f, 0f, -4.644016E-08f, 1f, 0f, -0.001745503f, -0.9999985f, -4.644016E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.001745504f, 0f)
             };
@@ -2103,7 +2103,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: 0.1",
                 new float3(6.283185f, 6.283185f, 0.001745329f),
-                new Quaternion(8.749904E-08f, 8.734646E-08f, 0.0008726645f, 0.9999996f),
+                new QuaternionF(8.749904E-08f, 8.734646E-08f, 0.0008726645f, 0.9999996f),
                 new float4x4(0.9999985f, -0.001745328f, 1.748456E-07f, 0f, 0.001745328f, 0.9999985f, -1.748456E-07f, 0f, -1.745401E-07f, 1.751505E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.748456E-07f, 0.001745329f)
             };
@@ -2112,7 +2112,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: 0.1",
                 new float3(10.21018f, 6.283185f, 0.001745329f),
-                new Quaternion(0.9238791f, -0.0008062703f, -0.0003340352f, -0.3826835f),
+                new QuaternionF(0.9238791f, -0.0008062703f, -0.0003340352f, -0.3826835f),
                 new float4x4(0.9999985f, -0.001745452f, -1.236331E-07f, 0f, -0.001234133f, -0.7071054f, 0.707107f, 0f, -0.001234309f, -0.7071059f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.143338f)
             };
@@ -2121,7 +2121,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: 0.1",
                 new float3(-1.570796f, 6.283185f, 0.001745329f),
-                new Quaternion(0.7071065f, -0.0006171288f, -0.0006171288f, -0.7071065f),
+                new QuaternionF(0.7071065f, -0.0006171288f, -0.0006171288f, -0.7071065f),
                 new float4x4(0.9999985f, -0.001745503f, 0f, 0f, 0f, -4.644016E-08f, 1f, 0f, -0.001745503f, -0.9999985f, -4.644016E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.001745504f, 0f)
             };
@@ -2130,7 +2130,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: 0.1",
                 new float3(-9.424778f, 6.283185f, 0.001745329f),
-                new Quaternion(-0.9999996f, 0.0008726645f, 8.741234E-08f, -1.200117E-08f),
+                new QuaternionF(-0.9999996f, 0.0008726645f, 8.741234E-08f, -1.200117E-08f),
                 new float4x4(0.9999985f, -0.001745328f, -1.748456E-07f, 0f, -0.001745328f, -0.9999986f, -2.384976E-08f, 0f, -1.748037E-07f, 2.415489E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.143338f)
             };
@@ -2139,7 +2139,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: 0.1",
                 new float3(0f, 10.21018f, 0.001745329f),
-                new Quaternion(-0.0008062368f, -0.9238791f, 0.0003339544f, 0.3826835f),
+                new QuaternionF(-0.0008062368f, -0.9238791f, 0.0003339544f, 0.3826835f),
                 new float4x4(-0.7071054f, 0.001234133f, -0.707107f, 0f, 0.001745328f, 0.9999985f, 0f, 0f, 0.7071059f, -0.001234134f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 0.001745329f)
             };
@@ -2148,7 +2148,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: 0.1",
                 new float3(0.001745329f, 10.21018f, 0.001745329f),
-                new Quaternion(-0.0004722822f, -0.923879f, 0.001140191f, 0.3826826f),
+                new QuaternionF(-0.0004722822f, -0.923879f, 0.001140191f, 0.3826826f),
                 new float4x4(-0.7071075f, 9.313226E-10f, -0.7071059f, 0f, 0.001745326f, 0.999997f, -0.001745328f, 0f, 0.7071038f, -0.002468265f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.926991f, 0.001745329f)
             };
@@ -2157,7 +2157,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: 0.1",
                 new float3(0.01745329f, 10.21018f, 0.001745329f),
-                new Quaternion(0.002533295f, -0.9238468f, 0.008396205f, 0.3826618f),
+                new QuaternionF(0.002533295f, -0.9238468f, 0.008396205f, 0.3826618f),
                 new float4x4(-0.7071269f, -0.01110657f, -0.7069993f, 0f, 0.001745062f, 0.9998462f, -0.01745241f, 0f, 0.7070844f, -0.01357483f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.926991f, 0.001745329f)
             };
@@ -2166,7 +2166,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: 0.1",
                 new float3(0.7853982f, 10.21018f, 0.001745329f),
-                new Quaternion(0.1457018f, -0.8536808f, 0.3538618f, 0.3532449f),
+                new QuaternionF(0.1457018f, -0.8536808f, 0.3538618f, 0.3532449f),
                 new float4x4(-0.7079782f, -0.4987653f, -0.5000001f, 0f, 0.001234129f, 0.7071056f, -0.7071069f, 0f, 0.7062333f, -0.5012333f, -0.4999998f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 3.926991f, 0.001745323f)
             };
@@ -2175,7 +2175,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: 0.1",
                 new float3(1.570796f, 10.21018f, 0.001745329f),
-                new Quaternion(0.270028f, -0.6535173f, 0.6535173f, 0.270028f),
+                new QuaternionF(0.270028f, -0.6535173f, 0.6535173f, 0.270028f),
                 new float4x4(-0.7083395f, -0.7058719f, 0f, 0f, 0f, 4.470348E-08f, -0.9999999f, 0f, 0.7058719f, -0.7083395f, 4.470348E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.925246f, 0f)
             };
@@ -2184,7 +2184,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: 0.1",
                 new float3(3.141593f, 10.21018f, 0.001745329f),
-                new Quaternion(0.3826835f, -0.000333914f, 0.9238791f, -0.0008062535f),
+                new QuaternionF(0.3826835f, -0.000333914f, 0.9238791f, -0.0008062535f),
                 new float4x4(-0.7071054f, 0.001234195f, 0.707107f, 0f, -0.001745328f, -0.9999985f, 8.742791E-08f, 0f, 0.7071059f, -0.001234072f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742791E-08f, 0.7853985f, 3.143338f)
             };
@@ -2193,7 +2193,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: 0.1",
                 new float3(4.712389f, 10.21018f, 0.001745329f),
-                new Quaternion(0.2711682f, 0.653045f, 0.653045f, -0.2711682f),
+                new QuaternionF(0.2711682f, 0.653045f, 0.653045f, -0.2711682f),
                 new float4x4(-0.7058711f, 0.70834f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.70834f, 0.7058712f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.928736f, 0f)
             };
@@ -2202,7 +2202,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: 0.1",
                 new float3(6.283185f, 10.21018f, 0.001745329f),
-                new Quaternion(0.0008062033f, 0.9238791f, -0.0003340352f, -0.3826835f),
+                new QuaternionF(0.0008062033f, 0.9238791f, -0.0003340352f, -0.3826835f),
                 new float4x4(-0.7071054f, 0.001234009f, -0.707107f, 0f, 0.001745328f, 0.9999985f, -1.748558E-07f, 0f, 0.7071059f, -0.001234258f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748558E-07f, 3.926991f, 0.001745329f)
             };
@@ -2211,7 +2211,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: 0.1",
                 new float3(10.21018f, 10.21018f, 0.001745329f),
-                new Quaternion(-0.3538619f, -0.3532448f, -0.8534251f, 0.1471915f),
+                new QuaternionF(-0.3538619f, -0.3532448f, -0.8534251f, 0.1471915f),
                 new float4x4(-0.7062328f, 0.5012338f, 0.5000001f, 0f, -0.001234129f, -0.7071055f, 0.7071071f, 0f, 0.7079787f, 0.4987651f, 0.4999996f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853986f, 3.143338f)
             };
@@ -2220,7 +2220,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: 0.1",
                 new float3(-1.570796f, 10.21018f, 0.001745329f),
-                new Quaternion(-0.2711682f, -0.653045f, -0.653045f, 0.2711682f),
+                new QuaternionF(-0.2711682f, -0.653045f, -0.653045f, 0.2711682f),
                 new float4x4(-0.7058711f, 0.70834f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.70834f, 0.7058712f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.928736f, 0f)
             };
@@ -2229,7 +2229,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: 0.1",
                 new float3(-9.424778f, 10.21018f, 0.001745329f),
-                new Quaternion(0.3826835f, -0.0003339654f, 0.9238791f, -0.0008062323f),
+                new QuaternionF(0.3826835f, -0.0003339654f, 0.9238791f, -0.0008062323f),
                 new float4x4(-0.7071054f, 0.001234116f, 0.707107f, 0f, -0.001745328f, -0.9999985f, -2.386514E-08f, 0f, 0.7071059f, -0.001234151f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.386514E-08f, 0.7853985f, 3.143338f)
             };
@@ -2238,7 +2238,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: 0.1",
                 new float3(0f, -1.570796f, 0.001745329f),
-                new Quaternion(-0.000617067f, -0.7071065f, 0.000617067f, 0.7071065f),
+                new QuaternionF(-0.000617067f, -0.7071065f, 0.000617067f, 0.7071065f),
                 new float4x4(-4.62876E-08f, 0f, -1f, 0f, 0.001745328f, 0.9999985f, 0f, 0f, 0.9999985f, -0.001745328f, -4.62876E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 0.001745329f)
             };
@@ -2247,7 +2247,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: 0.1",
                 new float3(0.001745329f, -1.570796f, 0.001745329f),
-                new Quaternion(0f, -0.7071068f, 0.001234133f, 0.7071058f),
+                new QuaternionF(0f, -0.7071068f, 0.001234133f, 0.7071058f),
                 new float4x4(-3.16538E-06f, -0.001745326f, -0.9999986f, 0f, 0.001745326f, 0.999997f, -0.001745328f, 0f, 0.9999986f, -0.001745328f, -1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 0.001745329f)
             };
@@ -2256,7 +2256,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: 0.1",
                 new float3(0.01745329f, -1.570796f, 0.001745329f),
-                new Quaternion(0.005553546f, -0.707085f, 0.006787634f, 0.7070742f),
+                new QuaternionF(0.005553546f, -0.707085f, 0.006787634f, 0.7070742f),
                 new float4x4(-3.039352E-05f, -0.01745238f, -0.9998477f, 0f, 0.001745064f, 0.9998462f, -0.01745241f, 0f, 0.9999985f, -0.001745328f, 6.665505E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 0.001745331f)
             };
@@ -2265,7 +2265,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: 0.1",
                 new float3(0.7853982f, -1.570796f, 0.001745329f),
-                new Quaternion(0.2700279f, -0.6535174f, 0.2711681f, 0.6530451f),
+                new QuaternionF(0.2700279f, -0.6535174f, 0.2711681f, 0.6530451f),
                 new float4x4(-0.001234129f, -0.7071058f, -0.7071067f, 0f, 0.001234084f, 0.7071056f, -0.7071068f, 0f, 0.9999985f, -0.001745313f, -1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 4.712389f, 0.001745302f)
             };
@@ -2274,7 +2274,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: 0.1",
                 new float3(1.570796f, -1.570796f, 0.001745329f),
-                new Quaternion(0.4995635f, -0.5004361f, 0.5004361f, 0.4995635f),
+                new QuaternionF(0.4995635f, -0.5004361f, 0.5004361f, 0.4995635f),
                 new float4x4(-0.001745224f, -0.9999984f, 0f, 0f, 0f, 8.940697E-08f, -0.9999999f, 0f, 0.9999984f, -0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.710643f, 0f)
             };
@@ -2283,7 +2283,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: 0.1",
                 new float3(3.141593f, -1.570796f, 0.001745329f),
-                new Quaternion(0.7071065f, -0.0006170361f, 0.7071065f, -0.0006170979f),
+                new QuaternionF(0.7071065f, -0.0006170361f, 0.7071065f, -0.0006170979f),
                 new float4x4(-4.621131E-08f, 8.73697E-08f, 1f, 0f, -0.001745328f, -0.9999986f, 8.73697E-08f, 0f, 0.9999985f, -0.001745328f, -4.621131E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.73697E-08f, 1.570796f, 3.143338f)
             };
@@ -2292,7 +2292,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: 0.1",
                 new float3(4.712389f, -1.570796f, 0.001745329f),
-                new Quaternion(0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
+                new QuaternionF(0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
                 new float4x4(0.001745403f, 0.9999984f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.9999984f, -0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.714134f, 0f)
             };
@@ -2301,7 +2301,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: 0.1",
                 new float3(6.283185f, -1.570796f, 0.001745329f),
-                new Quaternion(0.0006170052f, 0.7071065f, -0.0006171288f, -0.7071065f),
+                new QuaternionF(0.0006170052f, 0.7071065f, -0.0006171288f, -0.7071065f),
                 new float4x4(-4.644016E-08f, -1.747976E-07f, -1f, 0f, 0.001745328f, 0.9999985f, -1.747976E-07f, 0f, 0.9999985f, -0.001745328f, -4.613503E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.747976E-07f, 4.712389f, 0.001745329f)
             };
@@ -2310,7 +2310,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: 0.1",
                 new float3(10.21018f, -1.570796f, 0.001745329f),
-                new Quaternion(-0.6535173f, -0.270028f, -0.653045f, 0.2711682f),
+                new QuaternionF(-0.6535173f, -0.270028f, -0.653045f, 0.2711682f),
                 new float4x4(0.001234218f, 0.707106f, 0.7071064f, 0f, -0.001234084f, -0.7071053f, 0.7071071f, 0f, 0.9999984f, -0.001745313f, 4.470348E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.143338f)
             };
@@ -2319,7 +2319,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: 0.1",
                 new float3(-1.570796f, -1.570796f, 0.001745329f),
-                new Quaternion(-0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
+                new QuaternionF(-0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
                 new float4x4(0.001745403f, 0.9999984f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.9999984f, -0.001745313f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.714134f, 0f)
             };
@@ -2328,7 +2328,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: 0.1",
                 new float3(-9.424778f, -1.570796f, 0.001745329f),
-                new Quaternion(0.7071065f, -0.0006170754f, 0.7071065f, -0.0006170585f),
+                new QuaternionF(0.7071065f, -0.0006170754f, 0.7071065f, -0.0006170585f),
                 new float4x4(-4.63084E-08f, -2.392335E-08f, 1f, 0f, -0.001745328f, -0.9999986f, -2.392335E-08f, 0f, 0.9999985f, -0.001745328f, -4.63084E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.392335E-08f, 1.570796f, 3.143338f)
             };
@@ -2337,7 +2337,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: 0.1",
                 new float3(0f, -9.424778f, 0.001745329f),
-                new Quaternion(0.0008726645f, 0.9999996f, 1.040642E-11f, 1.192488E-08f),
+                new QuaternionF(0.0008726645f, 0.9999996f, 1.040642E-11f, 1.192488E-08f),
                 new float4x4(-0.9999986f, 0.001745328f, 2.384976E-08f, 0f, 0.001745328f, 0.9999985f, 0f, 0f, -2.384973E-08f, 4.162566E-11f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 0.001745329f)
             };
@@ -2346,7 +2346,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: 0.1",
                 new float3(0.001745329f, -9.424778f, 0.001745329f),
-                new Quaternion(0.0008726642f, 0.9999993f, -0.0008726642f, 7.734682E-07f),
+                new QuaternionF(0.0008726642f, 0.9999993f, -0.0008726642f, 7.734682E-07f),
                 new float4x4(-0.9999987f, 0.001745329f, 2.384968E-08f, 0f, 0.001745326f, 0.999997f, -0.001745329f, 0f, -3.070021E-06f, -0.001745326f, -0.9999987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 0.001745329f)
             };
@@ -2355,7 +2355,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: 0.1",
                 new float3(0.01745329f, -9.424778f, 0.001745329f),
-                new Quaternion(0.0008726314f, 0.9999616f, -0.008726533f, 7.627262E-06f),
+                new QuaternionF(0.0008726314f, 0.9999616f, -0.008726533f, 7.627262E-06f),
                 new float4x4(-0.9999985f, 0.001745329f, 2.384513E-08f, 0f, 0.001745063f, 0.9998462f, -0.01745241f, 0f, -3.048403E-05f, -0.01745238f, -0.9998478f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 0.001745329f)
             };
@@ -2364,7 +2364,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: 0.1",
                 new float3(0.7853982f, -9.424778f, 0.001745329f),
-                new Quaternion(0.0008062414f, 0.9238791f, -0.3826833f, 0.0003339653f),
+                new QuaternionF(0.0008062414f, 0.9238791f, -0.3826833f, 0.0003339653f),
                 new float4x4(-0.9999985f, 0.001745345f, 1.688022E-08f, 0f, 0.001234133f, 0.7071057f, -0.7071068f, 0f, -0.001234157f, -0.7071057f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 0.001745329f)
             };
@@ -2373,7 +2373,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: 0.1",
                 new float3(1.570796f, -9.424778f, 0.001745329f),
-                new Quaternion(0.0006170754f, 0.7071065f, -0.7071065f, 0.0006170754f),
+                new QuaternionF(0.0006170754f, 0.7071065f, -0.7071065f, 0.0006170754f),
                 new float4x4(-0.9999986f, 0.001745352f, 0f, 0f, 0f, -4.63084E-08f, -1f, 0f, -0.001745352f, -0.9999985f, -4.63084E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.139847f, 0f)
             };
@@ -2382,7 +2382,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: 0.1",
                 new float3(3.141593f, -9.424778f, 0.001745329f),
-                new Quaternion(1.188673E-08f, -4.372178E-08f, -0.9999996f, 0.0008726645f),
+                new QuaternionF(1.188673E-08f, -4.372178E-08f, -0.9999996f, 0.0008726645f),
                 new float4x4(-0.9999986f, 0.001745328f, -2.384976E-08f, 0f, -0.001745328f, -0.9999986f, 8.742278E-08f, 0f, -2.369714E-08f, 8.746428E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, -2.384976E-08f, 3.143338f)
             };
@@ -2391,7 +2391,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: 0.1",
                 new float3(4.712389f, -9.424778f, 0.001745329f),
-                new Quaternion(-0.0006170585f, -0.7071065f, -0.7071065f, 0.0006170585f),
+                new QuaternionF(-0.0006170585f, -0.7071065f, -0.7071065f, 0.0006170585f),
                 new float4x4(-0.9999986f, 0.001745304f, 0f, 0f, 0f, -4.626673E-08f, 1f, 0f, 0.001745304f, 0.9999985f, -4.626673E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.143338f, 0f)
             };
@@ -2400,7 +2400,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: 0.1",
                 new float3(6.283185f, -9.424778f, 0.001745329f),
-                new Quaternion(-0.0008726645f, -0.9999996f, 8.741234E-08f, -1.200117E-08f),
+                new QuaternionF(-0.0008726645f, -0.9999996f, 8.741234E-08f, -1.200117E-08f),
                 new float4x4(-0.9999986f, 0.001745328f, 2.384976E-08f, 0f, 0.001745328f, 0.9999985f, -1.748456E-07f, 0f, -2.415489E-08f, -1.748037E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 0.001745329f)
             };
@@ -2409,7 +2409,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: 0.1",
                 new float3(10.21018f, -9.424778f, 0.001745329f),
-                new Quaternion(0.0003339434f, 0.3826835f, 0.9238791f, -0.0008062323f),
+                new QuaternionF(0.0003339434f, 0.3826835f, 0.9238791f, -0.0008062323f),
                 new float4x4(-0.9999985f, 0.001745312f, -1.688022E-08f, 0f, -0.001234133f, -0.7071054f, 0.707107f, 0f, 0.00123411f, 0.7071059f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, -2.395456E-08f, 3.143338f)
             };
@@ -2418,7 +2418,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: 0.1",
                 new float3(-1.570796f, -9.424778f, 0.001745329f),
-                new Quaternion(0.0006170585f, 0.7071065f, 0.7071065f, -0.0006170585f),
+                new QuaternionF(0.0006170585f, 0.7071065f, 0.7071065f, -0.0006170585f),
                 new float4x4(-0.9999986f, 0.001745304f, 0f, 0f, 0f, -4.626673E-08f, 1f, 0f, 0.001745304f, 0.9999985f, -4.626673E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.143338f, 0f)
             };
@@ -2427,7 +2427,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: 0.1",
                 new float3(-9.424778f, -9.424778f, 0.001745329f),
-                new Quaternion(1.193528E-08f, 1.191447E-08f, -0.9999996f, 0.0008726645f),
+                new QuaternionF(1.193528E-08f, 1.191447E-08f, -0.9999996f, 0.0008726645f),
                 new float4x4(-0.9999986f, 0.001745328f, -2.384976E-08f, 0f, -0.001745328f, -0.9999986f, -2.384976E-08f, 0f, -2.389135E-08f, -2.38081E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 3.143338f)
             };
@@ -2436,7 +2436,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: 1",
                 new float3(0f, 0f, 0.01745329f),
-                new Quaternion(0f, 0f, 0.008726535f, 0.9999619f),
+                new QuaternionF(0f, 0f, 0.008726535f, 0.9999619f),
                 new float4x4(0.9998477f, -0.01745241f, 0f, 0f, 0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 0.01745329f)
             };
@@ -2445,7 +2445,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: 1",
                 new float3(0.001745329f, 0f, 0.01745329f),
-                new Quaternion(0.0008726313f, -7.615338E-06f, 0.008726533f, 0.9999616f),
+                new QuaternionF(0.0008726313f, -7.615338E-06f, 0.008726533f, 0.9999616f),
                 new float4x4(0.9998477f, -0.01745241f, 0f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, 3.046018E-05f, 0.001745063f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0f, 0.01745329f)
             };
@@ -2454,7 +2454,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: 1",
                 new float3(0.01745329f, 0f, 0.01745329f),
-                new Quaternion(0.008726203f, -7.615242E-05f, 0.008726203f, 0.9999238f),
+                new QuaternionF(0.008726203f, -7.615242E-05f, 0.008726203f, 0.9999238f),
                 new float4x4(0.9998477f, -0.01745241f, -1.455192E-11f, 0f, 0.01744975f, 0.9996954f, -0.01745241f, 0f, 0.0003045865f, 0.01744975f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.0174533f, 1.455413E-11f, 0.01745329f)
             };
@@ -2463,7 +2463,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: 1",
                 new float3(0.7853982f, 0f, 0.01745329f),
-                new Quaternion(0.3826689f, -0.003339501f, 0.008062267f, 0.9238443f),
+                new QuaternionF(0.3826689f, -0.003339501f, 0.008062267f, 0.9238443f),
                 new float4x4(0.9998477f, -0.0174524f, -4.656613E-10f, 0f, 0.01234071f, 0.7069991f, -0.7071068f, 0f, 0.01234072f, 0.7069991f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, -6.585445E-10f, 0.01745329f)
             };
@@ -2472,7 +2472,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: 1",
                 new float3(1.570796f, 0f, 0.01745329f),
-                new Quaternion(0.7070798f, -0.006170592f, 0.006170592f, 0.7070798f),
+                new QuaternionF(0.7070798f, -0.006170592f, 0.006170592f, 0.7070798f),
                 new float4x4(0.9998477f, -0.01745241f, 0f, 0f, 0f, 8.192001E-08f, -0.9999999f, 0f, 0.01745241f, 0.9998476f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 6.265732f, 0f)
             };
@@ -2481,7 +2481,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: 1",
                 new float3(3.141593f, 0f, 0.01745329f),
-                new Quaternion(0.9999619f, -0.008726535f, -3.81449E-10f, -4.370972E-08f),
+                new QuaternionF(0.9999619f, -0.008726535f, -3.81449E-10f, -4.370972E-08f),
                 new float4x4(0.9998477f, -0.01745241f, -5.551115E-17f, 0f, -0.01745241f, -0.9998477f, 8.742277E-08f, 0f, -1.525738E-09f, -8.740945E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.141593f, 3.159046f)
             };
@@ -2490,7 +2490,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: 1",
                 new float3(4.712389f, 0f, 0.01745329f),
-                new Quaternion(0.7070798f, -0.006170592f, -0.006170592f, -0.7070798f),
+                new QuaternionF(0.7070798f, -0.006170592f, -0.006170592f, -0.7070798f),
                 new float4x4(0.9998477f, -0.01745241f, 0f, 0f, 0f, 8.192001E-08f, 0.9999999f, 0f, -0.01745241f, -0.9998476f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01745329f, 0f)
             };
@@ -2499,7 +2499,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: 1",
                 new float3(6.283185f, 0f, 0.01745329f),
-                new Quaternion(-8.741944E-08f, 7.62898E-10f, -0.008726535f, -0.9999619f),
+                new QuaternionF(-8.741944E-08f, 7.62898E-10f, -0.008726535f, -0.9999619f),
                 new float4x4(0.9998477f, -0.01745241f, -1.110223E-16f, 0f, 0.01745241f, 0.9998477f, -1.748455E-07f, 0f, 3.051476E-09f, 1.748189E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, -1.110223E-16f, 0.01745329f)
             };
@@ -2508,7 +2508,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: 1",
                 new float3(10.21018f, 0f, 0.01745329f),
-                new Quaternion(-0.9238443f, 0.008062267f, 0.003339502f, 0.382669f),
+                new QuaternionF(-0.9238443f, 0.008062267f, 0.003339502f, 0.382669f),
                 new float4x4(0.9998477f, -0.01745241f, -4.656613E-10f, 0f, -0.01234071f, -0.7069988f, 0.707107f, 0f, -0.01234072f, -0.7069994f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.159046f)
             };
@@ -2517,7 +2517,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: 1",
                 new float3(-1.570796f, 0f, 0.01745329f),
-                new Quaternion(-0.7070798f, 0.006170592f, 0.006170592f, 0.7070798f),
+                new QuaternionF(-0.7070798f, 0.006170592f, 0.006170592f, 0.7070798f),
                 new float4x4(0.9998477f, -0.01745241f, 0f, 0f, 0f, 8.192001E-08f, 0.9999999f, 0f, -0.01745241f, -0.9998476f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01745329f, 0f)
             };
@@ -2526,7 +2526,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: 1",
                 new float3(-9.424778f, 0f, 0.01745329f),
-                new Quaternion(0.9999619f, -0.008726535f, 1.040629E-10f, 1.192443E-08f),
+                new QuaternionF(0.9999619f, -0.008726535f, 1.040629E-10f, 1.192443E-08f),
                 new float4x4(0.9998477f, -0.01745241f, -1.387779E-17f, 0f, -0.01745241f, -0.9998477f, -2.384976E-08f, 0f, 4.162357E-10f, 2.384613E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.159046f)
             };
@@ -2535,7 +2535,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: 1",
                 new float3(0f, 0.001745329f, 0.01745329f),
-                new Quaternion(7.615338E-06f, 0.0008726313f, 0.008726533f, 0.9999616f),
+                new QuaternionF(7.615338E-06f, 0.0008726313f, 0.008726533f, 0.9999616f),
                 new float4x4(0.9998462f, -0.01745238f, 0.001745328f, 0f, 0.01745241f, 0.9998477f, 0f, 0f, -0.001745063f, 3.046018E-05f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.001745329f, 0.01745329f)
             };
@@ -2544,7 +2544,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: 1",
                 new float3(0.001745329f, 0.001745329f, 0.01745329f),
-                new Quaternion(0.0008802463f, 0.0008650157f, 0.008725767f, 0.9999612f),
+                new QuaternionF(0.0008802463f, 0.0008650157f, 0.008725767f, 0.9999612f),
                 new float4x4(0.9998462f, -0.01744933f, 0.001745326f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, -0.001714602f, 0.00177552f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 0.01745329f)
             };
@@ -2553,7 +2553,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: 1",
                 new float3(0.01745329f, 0.001745329f, 0.01745329f),
-                new Quaternion(0.008733816f, 0.0007964456f, 0.008718585f, 0.9999235f),
+                new QuaternionF(0.008733816f, 0.0007964456f, 0.008718585f, 0.9999235f),
                 new float4x4(0.9998467f, -0.01742192f, 0.001745063f, 0f, 0.01744975f, 0.9996954f, -0.01745241f, 0f, -0.001440477f, 0.01748018f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.001745329f, 0.01745329f)
             };
@@ -2562,7 +2562,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: 1",
                 new float3(0.7853982f, 0.001745329f, 0.01745329f),
-                new Quaternion(0.3826758f, -0.002533293f, 0.007728322f, 0.9238469f),
+                new QuaternionF(0.3826758f, -0.002533293f, 0.007728322f, 0.9238469f),
                 new float4x4(0.9998677f, -0.01621843f, 0.001234133f, 0f, 0.01234071f, 0.7069991f, -0.7071068f, 0f, 0.01059563f, 0.7070285f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.001745329f, 0.01745329f)
             };
@@ -2571,7 +2571,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: 1",
                 new float3(1.570796f, 0.001745329f, 0.01745329f),
-                new Quaternion(0.707085f, -0.005553546f, 0.005553546f, 0.707085f),
+                new QuaternionF(0.707085f, -0.005553546f, 0.005553546f, 0.707085f),
                 new float4x4(0.9998766f, -0.01570732f, 0f, 0f, 0f, 6.665505E-08f, -0.9999999f, 0f, 0.01570732f, 0.9998766f, 6.665505E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 6.267478f, 0f)
             };
@@ -2580,7 +2580,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: 1",
                 new float3(3.141593f, 0.001745329f, 0.01745329f),
-                new Quaternion(0.9999616f, -0.008726533f, -0.0008726317f, 7.571628E-06f),
+                new QuaternionF(0.9999616f, -0.008726533f, -0.0008726317f, 7.571628E-06f),
                 new float4x4(0.9998462f, -0.01745238f, -0.001745328f, 0f, -0.01745241f, -0.9998478f, 8.742336E-08f, 0f, -0.001745064f, 3.037277E-05f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742337E-08f, 3.143338f, 3.159046f)
             };
@@ -2589,7 +2589,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: 1",
                 new float3(4.712389f, 0.001745329f, 0.01745329f),
-                new Quaternion(0.7070742f, -0.006787634f, -0.006787634f, -0.7070742f),
+                new QuaternionF(0.7070742f, -0.006787634f, -0.006787634f, -0.7070742f),
                 new float4x4(0.9998157f, -0.01919744f, 0f, 0f, 0f, -5.475886E-08f, 1f, 0f, -0.01919744f, -0.9998158f, -5.475886E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01919862f, 0f)
             };
@@ -2598,7 +2598,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: 1",
                 new float3(6.283185f, 0.001745329f, 0.01745329f),
-                new Quaternion(-7.702757E-06f, -0.0008726305f, -0.008726533f, -0.9999616f),
+                new QuaternionF(-7.702757E-06f, -0.0008726305f, -0.008726533f, -0.9999616f),
                 new float4x4(0.9998462f, -0.01745238f, 0.001745328f, 0f, 0.01745241f, 0.9998477f, -1.74844E-07f, 0f, -0.00174506f, 3.0635E-05f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.74844E-07f, 0.001745329f, 0.01745329f)
             };
@@ -2607,7 +2607,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: 1",
                 new float3(10.21018f, 0.001745329f, 0.01745329f),
-                new Quaternion(-0.923841f, 0.008396205f, 0.004145707f, 0.3826618f),
+                new QuaternionF(-0.923841f, 0.008396205f, 0.004145707f, 0.3826618f),
                 new float4x4(0.9998246f, -0.01868632f, -0.001234132f, 0f, -0.01234071f, -0.7069988f, 0.707107f, 0f, -0.01408576f, -0.7069678f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 3.159046f)
             };
@@ -2616,7 +2616,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: 1",
                 new float3(-1.570796f, 0.001745329f, 0.01745329f),
-                new Quaternion(-0.7070742f, 0.006787634f, 0.006787634f, 0.7070742f),
+                new QuaternionF(-0.7070742f, 0.006787634f, 0.006787634f, 0.7070742f),
                 new float4x4(0.9998157f, -0.01919744f, 0f, 0f, 0f, -5.475886E-08f, 1f, 0f, -0.01919744f, -0.9998158f, -5.475886E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01919862f, 0f)
             };
@@ -2625,7 +2625,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: 1",
                 new float3(-9.424778f, 0.001745329f, 0.01745329f),
-                new Quaternion(0.9999616f, -0.008726533f, -0.0008726311f, 7.627262E-06f),
+                new QuaternionF(0.9999616f, -0.008726533f, -0.0008726311f, 7.627262E-06f),
                 new float4x4(0.9998462f, -0.01745238f, -0.001745328f, 0f, -0.01745241f, -0.9998478f, -2.384968E-08f, 0f, -0.001745062f, 3.048403E-05f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384968E-08f, 3.143338f, 3.159046f)
             };
@@ -2634,7 +2634,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: 1",
                 new float3(0f, 0.01745329f, 0.01745329f),
-                new Quaternion(7.615242E-05f, 0.008726203f, 0.008726203f, 0.9999238f),
+                new QuaternionF(7.615242E-05f, 0.008726203f, 0.008726203f, 0.9999238f),
                 new float4x4(0.9996954f, -0.01744975f, 0.01745241f, 0f, 0.01745241f, 0.9998477f, -1.455192E-11f, 0f, -0.01744975f, 0.0003045865f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.455192E-11f, 0.01745329f, 0.01745329f)
             };
@@ -2643,7 +2643,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: 1",
                 new float3(0.001745329f, 0.01745329f, 0.01745329f),
-                new Quaternion(0.0009487504f, 0.008718585f, 0.008718585f, 0.9999235f),
+                new QuaternionF(0.0009487504f, 0.008718585f, 0.008718585f, 0.9999235f),
                 new float4x4(0.999696f, -0.01741929f, 0.01745238f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, -0.01741929f, 0.002049383f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.01745329f, 0.01745329f)
             };
@@ -2652,7 +2652,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: 1",
                 new float3(0.01745329f, 0.01745329f, 0.01745329f),
-                new Quaternion(0.00880202f, 0.008649721f, 0.008649721f, 0.9998864f),
+                new QuaternionF(0.00880202f, 0.008649721f, 0.008649721f, 0.9998864f),
                 new float4x4(0.9997007f, -0.01714521f, 0.01744975f, 0f, 0.01744975f, 0.9996954f, -0.0174524f, 0f, -0.01714521f, 0.01775168f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.01745329f, 0.01745329f)
             };
@@ -2661,7 +2661,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: 1",
                 new float3(0.7853982f, 0.01745329f, 0.01745329f),
-                new Quaternion(0.3827247f, 0.004722586f, 0.004722587f, 0.9238383f),
+                new QuaternionF(0.3827247f, 0.004722586f, 0.004722587f, 0.9238383f),
                 new float4x4(0.9999108f, -0.005110913f, 0.01234071f, 0f, 0.01234071f, 0.7069991f, -0.7071068f, 0f, -0.005110911f, 0.707196f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.01745329f, 0.01745329f)
             };
@@ -2670,7 +2670,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: 1",
                 new float3(1.570796f, 0.01745329f, 0.01745329f),
-                new Quaternion(0.7071067f, 0f, 0f, 0.7071067f),
+                new QuaternionF(0.7071067f, 0f, 0f, 0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 0f, 0f)
             };
@@ -2679,7 +2679,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: 1",
                 new float3(3.141593f, 0.01745329f, 0.01745329f),
-                new Quaternion(0.9999238f, -0.008726203f, -0.008726203f, 7.610871E-05f),
+                new QuaternionF(0.9999238f, -0.008726203f, -0.008726203f, 7.610871E-05f),
                 new float4x4(0.9996954f, -0.01744975f, -0.0174524f, 0f, -0.0174524f, -0.9998476f, 8.73988E-08f, 0f, -0.01744975f, 0.0003044991f, -0.9998476f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.739881E-08f, 3.159046f, 3.159046f)
             };
@@ -2688,7 +2688,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: 1",
                 new float3(4.712389f, 0.01745329f, 0.01745329f),
-                new Quaternion(0.7069991f, -0.01234071f, -0.01234071f, -0.7069991f),
+                new QuaternionF(0.7069991f, -0.01234071f, -0.01234071f, -0.7069991f),
                 new float4x4(0.9993908f, -0.03489949f, 0f, 0f, 0f, 5.288166E-08f, 0.9999999f, 0f, -0.03489949f, -0.9993908f, 5.288166E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0.03490658f, 0f)
             };
@@ -2697,7 +2697,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: 1",
                 new float3(6.283185f, 0.01745329f, 0.01745329f),
-                new Quaternion(-7.623983E-05f, -0.008726202f, -0.008726202f, -0.9999238f),
+                new QuaternionF(-7.623983E-05f, -0.008726202f, -0.008726202f, -0.9999238f),
                 new float4x4(0.9996954f, -0.01744974f, 0.0174524f, 0f, 0.0174524f, 0.9998477f, -1.748558E-07f, 0f, -0.01744974f, 0.0003047613f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748413E-07f, 0.01745329f, 0.01745329f)
             };
@@ -2706,7 +2706,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: 1",
                 new float3(10.21018f, 0.01745329f, 0.01745329f),
-                new Quaternion(-0.92378f, 0.01140133f, 0.01140133f, 0.3825841f),
+                new QuaternionF(-0.92378f, 0.01140133f, 0.01140133f, 0.3825841f),
                 new float4x4(0.99948f, -0.02978859f, -0.01234071f, 0f, -0.01234071f, -0.7069988f, 0.7071071f, 0f, -0.02978859f, -0.7065871f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 3.159046f)
             };
@@ -2715,7 +2715,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: 1",
                 new float3(-1.570796f, 0.01745329f, 0.01745329f),
-                new Quaternion(-0.7069991f, 0.01234071f, 0.01234071f, 0.7069991f),
+                new QuaternionF(-0.7069991f, 0.01234071f, 0.01234071f, 0.7069991f),
                 new float4x4(0.9993908f, -0.03489949f, 0f, 0f, 0f, 5.288166E-08f, 0.9999999f, 0f, -0.03489949f, -0.9993908f, 5.288166E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0.03490658f, 0f)
             };
@@ -2724,7 +2724,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: 1",
                 new float3(-9.424778f, 0.01745329f, 0.01745329f),
-                new Quaternion(0.9999238f, -0.008726203f, -0.008726203f, 7.616435E-05f),
+                new QuaternionF(0.9999238f, -0.008726203f, -0.008726203f, 7.616435E-05f),
                 new float4x4(0.9996954f, -0.01744975f, -0.01745241f, 0f, -0.01745241f, -0.9998476f, -2.386514E-08f, 0f, -0.01744975f, 0.0003046103f, -0.9998476f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.386514E-08f, 3.159046f, 3.159046f)
             };
@@ -2733,7 +2733,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: 1",
                 new float3(0f, 0.7853982f, 0.01745329f),
-                new Quaternion(0.003339501f, 0.3826689f, 0.008062267f, 0.9238443f),
+                new QuaternionF(0.003339501f, 0.3826689f, 0.008062267f, 0.9238443f),
                 new float4x4(0.7069991f, -0.01234071f, 0.7071068f, 0f, 0.0174524f, 0.9998477f, -4.656613E-10f, 0f, -0.7069991f, 0.01234072f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.656613E-10f, 0.7853982f, 0.01745329f)
             };
@@ -2742,7 +2742,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: 1",
                 new float3(0.001745329f, 0.7853982f, 0.01745329f),
-                new Quaternion(0.004145706f, 0.3826617f, 0.007728322f, 0.9238469f),
+                new QuaternionF(0.004145706f, 0.3826617f, 0.007728322f, 0.9238469f),
                 new float4x4(0.7070206f, -0.01110677f, 0.7071058f, 0f, 0.01745238f, 0.9998462f, -0.001745329f, 0f, -0.7069776f, 0.01357466f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.00174533f, 0.7853982f, 0.01745329f)
             };
@@ -2751,7 +2751,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: 1",
                 new float3(0.01745329f, 0.7853982f, 0.01745329f),
-                new Quaternion(0.01140133f, 0.3825839f, 0.004722587f, 0.9238383f),
+                new QuaternionF(0.01140133f, 0.3825839f, 0.004722587f, 0.9238383f),
                 new float4x4(0.7072145f, -1.879409E-06f, 0.7069991f, 0f, 0.01744975f, 0.9996954f, -0.0174524f, 0f, -0.7067837f, 0.02467955f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.7853982f, 0.01745329f)
             };
@@ -2760,7 +2760,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: 1",
                 new float3(0.7853982f, 0.7853982f, 0.01745329f),
-                new Quaternion(0.3566252f, 0.3504547f, -0.1389925f, 0.8547989f),
+                new QuaternionF(0.3566252f, 0.3504547f, -0.1389925f, 0.8547989f),
                 new float4x4(0.7157252f, 0.4875832f, 0.5f, 0f, 0.01234071f, 0.7069991f, -0.7071068f, 0f, -0.6982729f, 0.5122645f, 0.4999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.7853982f, 0.01745328f)
             };
@@ -2769,7 +2769,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: 1",
                 new float3(1.570796f, 0.7853982f, 0.01745329f),
-                new Quaternion(0.655618f, 0.2648869f, -0.2648869f, 0.655618f),
+                new QuaternionF(0.655618f, 0.2648869f, -0.2648869f, 0.655618f),
                 new float4x4(0.7193398f, 0.6946583f, 0f, 0f, 0f, 1.043081E-07f, -0.9999999f, 0f, -0.6946583f, 0.7193397f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.7679449f, 0f)
             };
@@ -2778,7 +2778,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: 1",
                 new float3(3.141593f, 0.7853982f, 0.01745329f),
-                new Quaternion(0.9238443f, -0.008062284f, -0.3826689f, 0.00333946f),
+                new QuaternionF(0.9238443f, -0.008062284f, -0.3826689f, 0.00333946f),
                 new float4x4(0.7069991f, -0.01234077f, -0.7071068f, 0f, -0.01745241f, -0.9998477f, 8.707866E-08f, 0f, -0.7069991f, 0.01234065f, -0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.707866E-08f, 3.926991f, 3.159046f)
             };
@@ -2787,7 +2787,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: 1",
                 new float3(4.712389f, 0.7853982f, 0.01745329f),
-                new Quaternion(0.6508952f, -0.2762886f, -0.2762886f, -0.6508952f),
+                new QuaternionF(0.6508952f, -0.2762886f, -0.2762886f, -0.6508952f),
                 new float4x4(0.6946584f, -0.7193398f, 0f, 0f, 0f, -1.490116E-08f, 1f, 0f, -0.7193398f, -0.6946584f, -1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.8028514f, 0f)
             };
@@ -2796,7 +2796,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: 1",
                 new float3(6.283185f, 0.7853982f, 0.01745329f),
-                new Quaternion(-0.003339581f, -0.3826689f, -0.008062233f, -0.9238443f),
+                new QuaternionF(-0.003339581f, -0.3826689f, -0.008062233f, -0.9238443f),
                 new float4x4(0.7069991f, -0.01234059f, 0.7071068f, 0f, 0.0174524f, 0.9998477f, -1.750886E-07f, 0f, -0.7069991f, 0.01234084f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 0.7853982f, 0.01745329f)
             };
@@ -2805,7 +2805,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: 1",
                 new float3(10.21018f, 0.7853982f, 0.01745329f),
-                new Quaternion(-0.8522428f, 0.1538897f, 0.3566252f, 0.3504548f),
+                new QuaternionF(-0.8522428f, 0.1538897f, 0.3566252f, 0.3504548f),
                 new float4x4(0.6982729f, -0.5122648f, -0.4999998f, 0f, -0.01234074f, -0.7069987f, 0.707107f, 0f, -0.7157253f, -0.4875832f, -0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 3.159046f)
             };
@@ -2814,7 +2814,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: 1",
                 new float3(-1.570796f, 0.7853982f, 0.01745329f),
-                new Quaternion(-0.6508952f, 0.2762886f, 0.2762886f, 0.6508952f),
+                new QuaternionF(-0.6508952f, 0.2762886f, 0.2762886f, 0.6508952f),
                 new float4x4(0.6946584f, -0.7193398f, 0f, 0f, 0f, -1.490116E-08f, 1f, 0f, -0.7193398f, -0.6946584f, -1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.8028514f, 0f)
             };
@@ -2823,7 +2823,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: 1",
                 new float3(-9.424778f, 0.7853982f, 0.01745329f),
-                new Quaternion(0.9238443f, -0.008062262f, -0.3826689f, 0.003339512f),
+                new QuaternionF(0.9238443f, -0.008062262f, -0.3826689f, 0.003339512f),
                 new float4x4(0.7069991f, -0.0123407f, -0.7071068f, 0f, -0.0174524f, -0.9998477f, -2.374873E-08f, 0f, -0.7069991f, 0.01234073f, -0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.374873E-08f, 3.926991f, 3.159046f)
             };
@@ -2832,7 +2832,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: 1",
                 new float3(0f, 1.570796f, 0.01745329f),
-                new Quaternion(0.006170592f, 0.7070798f, 0.006170592f, 0.7070798f),
+                new QuaternionF(0.006170592f, 0.7070798f, 0.006170592f, 0.7070798f),
                 new float4x4(8.192001E-08f, 0f, 0.9999999f, 0f, 0.01745241f, 0.9998477f, 0f, 0f, -0.9998476f, 0.01745241f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 0.01745329f)
             };
@@ -2841,7 +2841,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: 1",
                 new float3(0.001745329f, 1.570796f, 0.01745329f),
-                new Quaternion(0.006787634f, 0.7070742f, 0.005553546f, 0.707085f),
+                new QuaternionF(0.006787634f, 0.7070742f, 0.005553546f, 0.707085f),
                 new float4x4(3.040542E-05f, 0.001745064f, 0.9999985f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, -0.9998477f, 0.01745241f, -5.475886E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.570796f, 0.01745329f)
             };
@@ -2850,7 +2850,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: 1",
                 new float3(0.01745329f, 1.570796f, 0.01745329f),
-                new Quaternion(0.01234071f, 0.7069991f, 0f, 0.7071067f),
+                new QuaternionF(0.01234071f, 0.7069991f, 0f, 0.7071067f),
                 new float4x4(0.0003046393f, 0.01744975f, 0.9998476f, 0f, 0.01744975f, 0.9996954f, -0.0174524f, 0f, -0.9998476f, 0.0174524f, 5.288166E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.570796f, 0.01745329f)
             };
@@ -2859,7 +2859,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: 1",
                 new float3(0.7853982f, 1.570796f, 0.01745329f),
-                new Quaternion(0.2762886f, 0.6508952f, -0.2648869f, 0.655618f),
+                new QuaternionF(0.2762886f, 0.6508952f, -0.2648869f, 0.655618f),
                 new float4x4(0.01234071f, 0.7069991f, 0.7071067f, 0f, 0.01234072f, 0.7069991f, -0.7071067f, 0f, -0.9998477f, 0.01745239f, -1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 1.570796f, 0.01745335f)
             };
@@ -2868,7 +2868,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: 1",
                 new float3(1.570796f, 1.570796f, 0.01745329f),
-                new Quaternion(0.5043442f, 0.4956177f, -0.4956177f, 0.5043442f),
+                new QuaternionF(0.5043442f, 0.4956177f, -0.4956177f, 0.5043442f),
                 new float4x4(0.01745254f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, -0.9999998f, 0f, -0.9998475f, 0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.553343f, 0f)
             };
@@ -2877,7 +2877,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: 1",
                 new float3(3.141593f, 1.570796f, 0.01745329f),
-                new Quaternion(0.7070798f, -0.006170623f, -0.7070798f, 0.006170562f),
+                new QuaternionF(0.7070798f, -0.006170623f, -0.7070798f, 0.006170562f),
                 new float4x4(8.116331E-08f, -8.6613E-08f, -0.9999999f, 0f, -0.0174524f, -0.9998475f, 8.6613E-08f, 0f, -0.9998476f, 0.0174524f, 8.116331E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.6613E-08f, 4.712389f, 3.159046f)
             };
@@ -2886,7 +2886,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: 1",
                 new float3(4.712389f, 1.570796f, 0.01745329f),
-                new Quaternion(0.4956177f, -0.5043442f, -0.5043442f, -0.4956177f),
+                new QuaternionF(0.4956177f, -0.5043442f, -0.5043442f, -0.4956177f),
                 new float4x4(-0.01745212f, -0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, -0.9998475f, 0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.58825f, 0f)
             };
@@ -2895,7 +2895,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: 1",
                 new float3(6.283185f, 1.570796f, 0.01745329f),
-                new Quaternion(-0.006170654f, -0.7070798f, -0.00617053f, -0.7070798f),
+                new QuaternionF(-0.006170654f, -0.7070798f, -0.00617053f, -0.7070798f),
                 new float4x4(8.344796E-08f, 1.750886E-07f, 0.9999999f, 0f, 0.01745241f, 0.9998477f, -1.750886E-07f, 0f, -0.9998476f, 0.01745241f, 8.039206E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 1.570796f, 0.01745329f)
             };
@@ -2904,7 +2904,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: 1",
                 new float3(10.21018f, 1.570796f, 0.01745329f),
-                new Quaternion(-0.6508952f, 0.2762887f, 0.6556179f, 0.264887f),
+                new QuaternionF(-0.6508952f, 0.2762887f, 0.6556179f, 0.264887f),
                 new float4x4(-0.01234058f, -0.7069993f, -0.7071065f, 0f, -0.01234072f, -0.7069987f, 0.707107f, 0f, -0.9998477f, 0.01745236f, -2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 3.159046f)
             };
@@ -2913,7 +2913,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: 1",
                 new float3(-1.570796f, 1.570796f, 0.01745329f),
-                new Quaternion(-0.4956177f, 0.5043442f, 0.5043442f, 0.4956177f),
+                new QuaternionF(-0.4956177f, 0.5043442f, 0.5043442f, 0.4956177f),
                 new float4x4(-0.01745212f, -0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, -0.9998475f, 0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.58825f, 0f)
             };
@@ -2922,7 +2922,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: 1",
                 new float3(-9.424778f, 1.570796f, 0.01745329f),
-                new Quaternion(0.7070798f, -0.006170584f, -0.7070798f, 0.006170601f),
+                new QuaternionF(0.7070798f, -0.006170584f, -0.7070798f, 0.006170601f),
                 new float4x4(8.213101E-08f, 2.328306E-08f, -0.9999999f, 0f, -0.0174524f, -0.9998475f, -2.328306E-08f, 0f, -0.9998476f, 0.0174524f, 8.213101E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.328306E-08f, 4.712389f, 3.159046f)
             };
@@ -2931,7 +2931,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: 1",
                 new float3(0f, 3.141593f, 0.01745329f),
-                new Quaternion(0.008726535f, 0.9999619f, -3.81449E-10f, -4.370972E-08f),
+                new QuaternionF(0.008726535f, 0.9999619f, -3.81449E-10f, -4.370972E-08f),
                 new float4x4(-0.9998477f, 0.01745241f, -8.742277E-08f, 0f, 0.01745241f, 0.9998477f, -5.551115E-17f, 0f, 8.740945E-08f, -1.525738E-09f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.551115E-17f, 3.141593f, 0.01745329f)
             };
@@ -2940,7 +2940,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: 1",
                 new float3(0.001745329f, 3.141593f, 0.01745329f),
-                new Quaternion(0.008726533f, 0.9999616f, -0.0008726317f, 7.571628E-06f),
+                new QuaternionF(0.008726533f, 0.9999616f, -0.0008726317f, 7.571628E-06f),
                 new float4x4(-0.9998478f, 0.01745241f, -8.742336E-08f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, -3.037277E-05f, -0.001745064f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 0.01745329f)
             };
@@ -2949,7 +2949,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: 1",
                 new float3(0.01745329f, 3.141593f, 0.01745329f),
-                new Quaternion(0.008726203f, 0.9999238f, -0.008726203f, 7.610871E-05f),
+                new QuaternionF(0.008726203f, 0.9999238f, -0.008726203f, 7.610871E-05f),
                 new float4x4(-0.9998476f, 0.0174524f, -8.73988E-08f, 0f, 0.01744975f, 0.9996954f, -0.0174524f, 0f, -0.0003044991f, -0.01744975f, -0.9998476f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 0.01745329f)
             };
@@ -2958,7 +2958,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: 1",
                 new float3(0.7853982f, 3.141593f, 0.01745329f),
-                new Quaternion(0.00806225f, 0.9238443f, -0.3826689f, 0.00333946f),
+                new QuaternionF(0.00806225f, 0.9238443f, -0.3826689f, 0.00333946f),
                 new float4x4(-0.9998477f, 0.01745234f, -6.146729E-08f, 0f, 0.01234071f, 0.7069991f, -0.7071068f, 0f, -0.01234063f, -0.7069991f, -0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 0.01745329f)
             };
@@ -2967,7 +2967,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: 1",
                 new float3(1.570796f, 3.141593f, 0.01745329f),
-                new Quaternion(0.006170562f, 0.7070798f, -0.7070798f, 0.006170562f),
+                new QuaternionF(0.006170562f, 0.7070798f, -0.7070798f, 0.006170562f),
                 new float4x4(-0.9998475f, 0.01745232f, 0f, 0f, 0f, 8.268398E-08f, -0.9999999f, 0f, -0.01745232f, -0.9998476f, 8.268398E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.12414f, 0f)
             };
@@ -2976,7 +2976,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: 1",
                 new float3(3.141593f, 3.141593f, 0.01745329f),
-                new Quaternion(-4.409117E-08f, -4.332827E-08f, -0.9999619f, 0.008726535f),
+                new QuaternionF(-4.409117E-08f, -4.332827E-08f, -0.9999619f, 0.008726535f),
                 new float4x4(-0.9998477f, 0.01745241f, 8.742277E-08f, 0f, -0.01745241f, -0.9998477f, 8.742277E-08f, 0f, 8.893519E-08f, 8.588372E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 8.742277E-08f, 3.159046f)
             };
@@ -2985,7 +2985,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: 1",
                 new float3(4.712389f, 3.141593f, 0.01745329f),
-                new Quaternion(-0.006170623f, -0.7070798f, -0.7070798f, 0.006170623f),
+                new QuaternionF(-0.006170623f, -0.7070798f, -0.7070798f, 0.006170623f),
                 new float4x4(-0.9998475f, 0.01745249f, 0f, 0f, 0f, 8.116331E-08f, 0.9999999f, 0f, 0.01745249f, 0.9998476f, 8.116331E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.159046f, 0f)
             };
@@ -2994,7 +2994,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: 1",
                 new float3(6.283185f, 3.141593f, 0.01745329f),
-                new Quaternion(-0.008726535f, -0.9999619f, 8.780089E-08f, 4.294682E-08f),
+                new QuaternionF(-0.008726535f, -0.9999619f, 8.780089E-08f, 4.294682E-08f),
                 new float4x4(-0.9998477f, 0.01745241f, -8.742277E-08f, 0f, 0.01745241f, 0.9998477f, -1.748455E-07f, 0f, 8.435799E-08f, -1.763446E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 3.141593f, 0.01745329f)
             };
@@ -3003,7 +3003,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: 1",
                 new float3(10.21018f, 3.141593f, 0.01745329f),
-                new Quaternion(0.003339542f, 0.382669f, 0.9238443f, -0.008062284f),
+                new QuaternionF(0.003339542f, 0.382669f, 0.9238443f, -0.008062284f),
                 new float4x4(-0.9998477f, 0.01745247f, 6.146729E-08f, 0f, -0.01234071f, -0.7069988f, 0.707107f, 0f, 0.01234081f, 0.7069994f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 8.69279E-08f, 3.159046f)
             };
@@ -3012,7 +3012,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: 1",
                 new float3(-1.570796f, 3.141593f, 0.01745329f),
-                new Quaternion(0.006170623f, 0.7070798f, 0.7070798f, -0.006170623f),
+                new QuaternionF(0.006170623f, 0.7070798f, 0.7070798f, -0.006170623f),
                 new float4x4(-0.9998475f, 0.01745249f, 0f, 0f, 0f, 8.116331E-08f, 0.9999999f, 0f, 0.01745249f, 0.9998476f, 8.116331E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.159046f, 0f)
             };
@@ -3021,7 +3021,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: 1",
                 new float3(-9.424778f, 3.141593f, 0.01745329f),
-                new Quaternion(-4.360566E-08f, 1.230588E-08f, -0.9999619f, 0.008726535f),
+                new QuaternionF(-4.360566E-08f, 1.230588E-08f, -0.9999619f, 0.008726535f),
                 new float4x4(-0.9998477f, 0.01745241f, 8.742278E-08f, 0f, -0.01745241f, -0.9998477f, -2.384976E-08f, 0f, 8.699323E-08f, -2.537187E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742278E-08f, 3.159046f)
             };
@@ -3030,7 +3030,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: 1",
                 new float3(0f, 4.712389f, 0.01745329f),
-                new Quaternion(0.006170592f, 0.7070798f, -0.006170592f, -0.7070798f),
+                new QuaternionF(0.006170592f, 0.7070798f, -0.006170592f, -0.7070798f),
                 new float4x4(8.192001E-08f, 0f, -0.9999999f, 0f, 0.01745241f, 0.9998477f, 0f, 0f, 0.9998476f, -0.01745241f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 0.01745329f)
             };
@@ -3039,7 +3039,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: 1",
                 new float3(0.001745329f, 4.712389f, 0.01745329f),
-                new Quaternion(0.005553546f, 0.707085f, -0.006787634f, -0.7070742f),
+                new QuaternionF(0.005553546f, 0.707085f, -0.006787634f, -0.7070742f),
                 new float4x4(-3.039352E-05f, -0.001745064f, -0.9999985f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, 0.9998477f, -0.01745241f, 6.665505E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 0.01745329f)
             };
@@ -3048,7 +3048,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: 1",
                 new float3(0.01745329f, 4.712389f, 0.01745329f),
-                new Quaternion(0f, 0.7071067f, -0.01234071f, -0.7069991f),
+                new QuaternionF(0f, 0.7071067f, -0.01234071f, -0.7069991f),
                 new float4x4(-0.0003044076f, -0.01744975f, -0.9998476f, 0f, 0.01744975f, 0.9996954f, -0.0174524f, 0f, 0.9998476f, -0.0174524f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 0.01745329f)
             };
@@ -3057,7 +3057,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: 1",
                 new float3(0.7853982f, 4.712389f, 0.01745329f),
-                new Quaternion(-0.2648869f, 0.655618f, -0.2762886f, -0.6508952f),
+                new QuaternionF(-0.2648869f, 0.655618f, -0.2762886f, -0.6508952f),
                 new float4x4(-0.01234062f, -0.7069991f, -0.7071067f, 0f, 0.01234072f, 0.7069991f, -0.7071067f, 0f, 0.9998477f, -0.01745239f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853981f, 4.712389f, 0.01745331f)
             };
@@ -3066,7 +3066,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: 1",
                 new float3(1.570796f, 4.712389f, 0.01745329f),
-                new Quaternion(-0.4956177f, 0.5043442f, -0.5043442f, -0.4956177f),
+                new QuaternionF(-0.4956177f, 0.5043442f, -0.5043442f, -0.4956177f),
                 new float4x4(-0.01745212f, -0.9998475f, 0f, 0f, 0f, 2.086163E-07f, -0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.694936f, 0f)
             };
@@ -3075,7 +3075,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: 1",
                 new float3(3.141593f, 4.712389f, 0.01745329f),
-                new Quaternion(-0.7070798f, 0.006170562f, -0.7070798f, 0.006170623f),
+                new QuaternionF(-0.7070798f, 0.006170562f, -0.7070798f, 0.006170623f),
                 new float4x4(8.268398E-08f, 8.6613E-08f, 0.9999999f, 0f, -0.0174524f, -0.9998475f, 8.6613E-08f, 0f, 0.9998476f, -0.0174524f, 8.268398E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.6613E-08f, 1.570796f, 3.159046f)
             };
@@ -3084,7 +3084,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: 1",
                 new float3(4.712389f, 4.712389f, 0.01745329f),
-                new Quaternion(-0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
+                new QuaternionF(-0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
                 new float4x4(0.01745254f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.729842f, 0f)
             };
@@ -3093,7 +3093,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: 1",
                 new float3(6.283185f, 4.712389f, 0.01745329f),
-                new Quaternion(-0.00617053f, -0.7070798f, 0.006170654f, 0.7070798f),
+                new QuaternionF(-0.00617053f, -0.7070798f, 0.006170654f, 0.7070798f),
                 new float4x4(8.039206E-08f, -1.750886E-07f, -0.9999999f, 0f, 0.01745241f, 0.9998477f, -1.750886E-07f, 0f, 0.9998476f, -0.01745241f, 8.344796E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 4.712389f, 0.01745329f)
             };
@@ -3102,7 +3102,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: 1",
                 new float3(10.21018f, 4.712389f, 0.01745329f),
-                new Quaternion(0.6556179f, 0.264887f, 0.6508952f, -0.2762887f),
+                new QuaternionF(0.6556179f, 0.264887f, 0.6508952f, -0.2762887f),
                 new float4x4(0.01234069f, 0.7069993f, 0.7071065f, 0f, -0.01234072f, -0.7069987f, 0.707107f, 0f, 0.9998477f, -0.01745236f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.159046f)
             };
@@ -3111,7 +3111,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: 1",
                 new float3(-1.570796f, 4.712389f, 0.01745329f),
-                new Quaternion(0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
+                new QuaternionF(0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
                 new float4x4(0.01745254f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.729842f, 0f)
             };
@@ -3120,7 +3120,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: 1",
                 new float3(-9.424778f, 4.712389f, 0.01745329f),
-                new Quaternion(-0.7070798f, 0.006170601f, -0.7070798f, 0.006170584f),
+                new QuaternionF(-0.7070798f, 0.006170601f, -0.7070798f, 0.006170584f),
                 new float4x4(8.171628E-08f, -2.328306E-08f, 0.9999999f, 0f, -0.0174524f, -0.9998475f, -2.328306E-08f, 0f, 0.9998476f, -0.0174524f, 8.171628E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.328306E-08f, 1.570796f, 3.159046f)
             };
@@ -3129,7 +3129,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: 1",
                 new float3(0f, 6.283185f, 0.01745329f),
-                new Quaternion(-7.62898E-10f, -8.741944E-08f, -0.008726535f, -0.9999619f),
+                new QuaternionF(-7.62898E-10f, -8.741944E-08f, -0.008726535f, -0.9999619f),
                 new float4x4(0.9998477f, -0.01745241f, 1.748455E-07f, 0f, 0.01745241f, 0.9998477f, -1.110223E-16f, 0f, -1.748189E-07f, 3.051476E-09f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.110223E-16f, 1.748455E-07f, 0.01745329f)
             };
@@ -3138,7 +3138,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: 1",
                 new float3(0.001745329f, 6.283185f, 0.01745329f),
-                new Quaternion(-0.000872632f, 7.527919E-06f, -0.008726533f, -0.9999616f),
+                new QuaternionF(-0.000872632f, 7.527919E-06f, -0.008726533f, -0.9999616f),
                 new float4x4(0.9998477f, -0.01745241f, 1.748449E-07f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, 3.028536E-05f, 0.001745066f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.748452E-07f, 0.01745329f)
             };
@@ -3147,7 +3147,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: 1",
                 new float3(0.01745329f, 6.283185f, 0.01745329f),
-                new Quaternion(-0.008726204f, 7.606501E-05f, -0.008726202f, -0.9999238f),
+                new QuaternionF(-0.008726204f, 7.606501E-05f, -0.008726202f, -0.9999238f),
                 new float4x4(0.9998477f, -0.0174524f, 1.747976E-07f, 0f, 0.01744975f, 0.9996954f, -0.01745241f, 0f, 0.0003044117f, 0.01744975f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.0174533f, 1.748533E-07f, 0.01745329f)
             };
@@ -3156,7 +3156,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: 1",
                 new float3(0.7853982f, 6.283185f, 0.01745329f),
-                new Quaternion(-0.3826689f, 0.00333942f, -0.008062233f, -0.9238443f),
+                new QuaternionF(-0.3826689f, 0.00333942f, -0.008062233f, -0.9238443f),
                 new float4x4(0.9998477f, -0.01745228f, 1.234002E-07f, 0f, 0.01234071f, 0.7069991f, -0.7071068f, 0f, 0.01234054f, 0.7069991f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 1.745143E-07f, 0.01745329f)
             };
@@ -3165,7 +3165,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: 1",
                 new float3(1.570796f, 6.283185f, 0.01745329f),
-                new Quaternion(-0.7070798f, 0.00617053f, -0.00617053f, -0.7070798f),
+                new QuaternionF(-0.7070798f, 0.00617053f, -0.00617053f, -0.7070798f),
                 new float4x4(0.9998477f, -0.01745223f, 0f, 0f, 0f, 8.344796E-08f, -0.9999999f, 0f, 0.01745223f, 0.9998476f, 8.344796E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 6.265732f, 0f)
             };
@@ -3174,7 +3174,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: 1",
                 new float3(3.141593f, 6.283185f, 0.01745329f),
-                new Quaternion(-0.9999619f, 0.008726535f, 8.780089E-08f, 4.294682E-08f),
+                new QuaternionF(-0.9999619f, 0.008726535f, 8.780089E-08f, 4.294682E-08f),
                 new float4x4(0.9998477f, -0.01745241f, -1.748455E-07f, 0f, -0.01745241f, -0.9998477f, 8.742277E-08f, 0f, -1.763446E-07f, -8.435799E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.141593f, 3.159046f)
             };
@@ -3183,7 +3183,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: 1",
                 new float3(4.712389f, 6.283185f, 0.01745329f),
-                new Quaternion(-0.7070798f, 0.006170654f, 0.006170654f, 0.7070798f),
+                new QuaternionF(-0.7070798f, 0.006170654f, 0.006170654f, 0.7070798f),
                 new float4x4(0.9998477f, -0.01745258f, 0f, 0f, 0f, 8.039206E-08f, 0.9999999f, 0f, -0.01745258f, -0.9998476f, 8.039206E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01745347f, 0f)
             };
@@ -3192,7 +3192,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: 1",
                 new float3(6.283185f, 6.283185f, 0.01745329f),
-                new Quaternion(8.818234E-08f, 8.665655E-08f, 0.008726535f, 0.9999619f),
+                new QuaternionF(8.818234E-08f, 8.665655E-08f, 0.008726535f, 0.9999619f),
                 new float4x4(0.9998477f, -0.01745241f, 1.748455E-07f, 0f, 0.01745241f, 0.9998477f, -1.748455E-07f, 0f, -1.717674E-07f, 1.778704E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 1.748455E-07f, 0.01745329f)
             };
@@ -3201,7 +3201,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: 1",
                 new float3(10.21018f, 6.283185f, 0.01745329f),
-                new Quaternion(0.9238443f, -0.0080623f, -0.003339583f, -0.382669f),
+                new QuaternionF(0.9238443f, -0.0080623f, -0.003339583f, -0.382669f),
                 new float4x4(0.9998477f, -0.01745253f, -1.238659E-07f, 0f, -0.01234071f, -0.7069988f, 0.707107f, 0f, -0.01234089f, -0.7069994f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.159046f)
             };
@@ -3210,7 +3210,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: 1",
                 new float3(-1.570796f, 6.283185f, 0.01745329f),
-                new Quaternion(0.7070798f, -0.006170654f, -0.006170654f, -0.7070798f),
+                new QuaternionF(0.7070798f, -0.006170654f, -0.006170654f, -0.7070798f),
                 new float4x4(0.9998477f, -0.01745258f, 0f, 0f, 0f, 8.039206E-08f, 0.9999999f, 0f, -0.01745258f, -0.9998476f, 8.039206E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01745347f, 0f)
             };
@@ -3219,7 +3219,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: 1",
                 new float3(-9.424778f, 6.283185f, 0.01745329f),
-                new Quaternion(-0.9999619f, 0.008726535f, 8.731538E-08f, -1.268732E-08f),
+                new QuaternionF(-0.9999619f, 0.008726535f, 8.731538E-08f, -1.268732E-08f),
                 new float4x4(0.9998477f, -0.01745241f, -1.748455E-07f, 0f, -0.01745241f, -0.9998477f, -2.384976E-08f, 0f, -1.744027E-07f, 2.689761E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.159046f)
             };
@@ -3228,7 +3228,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: 1",
                 new float3(0f, 10.21018f, 0.01745329f),
-                new Quaternion(-0.008062267f, -0.9238443f, 0.003339502f, 0.382669f),
+                new QuaternionF(-0.008062267f, -0.9238443f, 0.003339502f, 0.382669f),
                 new float4x4(-0.7069988f, 0.01234071f, -0.707107f, 0f, 0.01745241f, 0.9998477f, -4.656613E-10f, 0f, 0.7069994f, -0.01234072f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.656613E-10f, 3.926991f, 0.01745329f)
             };
@@ -3237,7 +3237,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: 1",
                 new float3(0.001745329f, 10.21018f, 0.01745329f),
-                new Quaternion(-0.007728322f, -0.9238468f, 0.004145707f, 0.3826618f),
+                new QuaternionF(-0.007728322f, -0.9238468f, 0.004145707f, 0.3826618f),
                 new float4x4(-0.7070203f, 0.01110676f, -0.7071059f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, 0.7069778f, -0.01357466f, -0.7071054f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.926991f, 0.01745329f)
             };
@@ -3246,7 +3246,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: 1",
                 new float3(0.01745329f, 10.21018f, 0.01745329f),
-                new Quaternion(-0.004722585f, -0.9238383f, 0.01140133f, 0.3825841f),
+                new QuaternionF(-0.004722585f, -0.9238383f, 0.01140133f, 0.3825841f),
                 new float4x4(-0.7072142f, 1.870096E-06f, -0.7069994f, 0f, 0.01744975f, 0.9996954f, -0.01745241f, 0f, 0.706784f, -0.02467955f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.926991f, 0.01745329f)
             };
@@ -3255,7 +3255,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: 1",
                 new float3(0.7853982f, 10.21018f, 0.01745329f),
-                new Quaternion(0.1389925f, -0.8547988f, 0.3566252f, 0.3504548f),
+                new QuaternionF(0.1389925f, -0.8547988f, 0.3566252f, 0.3504548f),
                 new float4x4(-0.7157251f, -0.4875833f, -0.5000002f, 0f, 0.01234069f, 0.7069991f, -0.7071068f, 0f, 0.6982731f, -0.5122644f, -0.4999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.926991f, 0.01745326f)
             };
@@ -3264,7 +3264,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: 1",
                 new float3(1.570796f, 10.21018f, 0.01745329f),
-                new Quaternion(0.264887f, -0.6556179f, 0.6556179f, 0.264887f),
+                new QuaternionF(0.264887f, -0.6556179f, 0.6556179f, 0.264887f),
                 new float4x4(-0.7193393f, -0.6946586f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, 0.6946586f, -0.7193394f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.909538f, 0f)
             };
@@ -3273,7 +3273,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: 1",
                 new float3(3.141593f, 10.21018f, 0.01745329f),
-                new Quaternion(0.382669f, -0.003339462f, 0.9238443f, -0.008062284f),
+                new QuaternionF(0.382669f, -0.003339462f, 0.9238443f, -0.008062284f),
                 new float4x4(-0.7069988f, 0.01234077f, 0.707107f, 0f, -0.01745241f, -0.9998477f, 8.707866E-08f, 0f, 0.7069994f, -0.01234066f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.707866E-08f, 0.7853985f, 3.159046f)
             };
@@ -3282,7 +3282,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: 1",
                 new float3(4.712389f, 10.21018f, 0.01745329f),
-                new Quaternion(0.2762887f, 0.6508952f, 0.6508952f, -0.2762887f),
+                new QuaternionF(0.2762887f, 0.6508952f, 0.6508952f, -0.2762887f),
                 new float4x4(-0.6946582f, 0.71934f, 0f, 0f, 0f, -2.980232E-08f, 1f, 0f, 0.71934f, 0.6946582f, -2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.944444f, 0f)
             };
@@ -3291,7 +3291,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: 1",
                 new float3(6.283185f, 10.21018f, 0.01745329f),
-                new Quaternion(0.008062233f, 0.9238443f, -0.003339583f, -0.382669f),
+                new QuaternionF(0.008062233f, 0.9238443f, -0.003339583f, -0.382669f),
                 new float4x4(-0.7069988f, 0.01234059f, -0.707107f, 0f, 0.01745241f, 0.9998477f, -1.750886E-07f, 0f, 0.7069994f, -0.01234084f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 3.926991f, 0.01745329f)
             };
@@ -3300,7 +3300,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: 1",
                 new float3(10.21018f, 10.21018f, 0.01745329f),
-                new Quaternion(-0.3566253f, -0.3504547f, -0.8522428f, 0.1538897f),
+                new QuaternionF(-0.3566253f, -0.3504547f, -0.8522428f, 0.1538897f),
                 new float4x4(-0.6982726f, 0.5122649f, 0.4999999f, 0f, -0.01234074f, -0.7069988f, 0.707107f, 0f, 0.7157255f, 0.4875831f, 0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853985f, 3.159046f)
             };
@@ -3309,7 +3309,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: 1",
                 new float3(-1.570796f, 10.21018f, 0.01745329f),
-                new Quaternion(-0.2762887f, -0.6508952f, -0.6508952f, 0.2762887f),
+                new QuaternionF(-0.2762887f, -0.6508952f, -0.6508952f, 0.2762887f),
                 new float4x4(-0.6946582f, 0.71934f, 0f, 0f, 0f, -2.980232E-08f, 1f, 0f, 0.71934f, 0.6946582f, -2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.944444f, 0f)
             };
@@ -3318,7 +3318,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: 1",
                 new float3(-9.424778f, 10.21018f, 0.01745329f),
-                new Quaternion(0.382669f, -0.003339513f, 0.9238443f, -0.008062262f),
+                new QuaternionF(0.382669f, -0.003339513f, 0.9238443f, -0.008062262f),
                 new float4x4(-0.7069988f, 0.01234069f, 0.707107f, 0f, -0.01745241f, -0.9998477f, -2.374873E-08f, 0f, 0.7069994f, -0.01234074f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.374873E-08f, 0.7853985f, 3.159046f)
             };
@@ -3327,7 +3327,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: 1",
                 new float3(0f, -1.570796f, 0.01745329f),
-                new Quaternion(-0.006170592f, -0.7070798f, 0.006170592f, 0.7070798f),
+                new QuaternionF(-0.006170592f, -0.7070798f, 0.006170592f, 0.7070798f),
                 new float4x4(8.192001E-08f, 0f, -0.9999999f, 0f, 0.01745241f, 0.9998477f, 0f, 0f, 0.9998476f, -0.01745241f, 8.192001E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 0.01745329f)
             };
@@ -3336,7 +3336,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: 1",
                 new float3(0.001745329f, -1.570796f, 0.01745329f),
-                new Quaternion(-0.005553546f, -0.707085f, 0.006787634f, 0.7070742f),
+                new QuaternionF(-0.005553546f, -0.707085f, 0.006787634f, 0.7070742f),
                 new float4x4(-3.039352E-05f, -0.001745064f, -0.9999985f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, 0.9998477f, -0.01745241f, 6.665505E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 0.01745329f)
             };
@@ -3345,7 +3345,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: 1",
                 new float3(0.01745329f, -1.570796f, 0.01745329f),
-                new Quaternion(0f, -0.7071067f, 0.01234071f, 0.7069991f),
+                new QuaternionF(0f, -0.7071067f, 0.01234071f, 0.7069991f),
                 new float4x4(-0.0003044076f, -0.01744975f, -0.9998476f, 0f, 0.01744975f, 0.9996954f, -0.0174524f, 0f, 0.9998476f, -0.0174524f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 0.01745329f)
             };
@@ -3354,7 +3354,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: 1",
                 new float3(0.7853982f, -1.570796f, 0.01745329f),
-                new Quaternion(0.2648869f, -0.655618f, 0.2762886f, 0.6508952f),
+                new QuaternionF(0.2648869f, -0.655618f, 0.2762886f, 0.6508952f),
                 new float4x4(-0.01234062f, -0.7069991f, -0.7071067f, 0f, 0.01234072f, 0.7069991f, -0.7071067f, 0f, 0.9998477f, -0.01745239f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853981f, 4.712389f, 0.01745331f)
             };
@@ -3363,7 +3363,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: 1",
                 new float3(1.570796f, -1.570796f, 0.01745329f),
-                new Quaternion(0.4956177f, -0.5043442f, 0.5043442f, 0.4956177f),
+                new QuaternionF(0.4956177f, -0.5043442f, 0.5043442f, 0.4956177f),
                 new float4x4(-0.01745212f, -0.9998475f, 0f, 0f, 0f, 2.086163E-07f, -0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.694936f, 0f)
             };
@@ -3372,7 +3372,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: 1",
                 new float3(3.141593f, -1.570796f, 0.01745329f),
-                new Quaternion(0.7070798f, -0.006170562f, 0.7070798f, -0.006170623f),
+                new QuaternionF(0.7070798f, -0.006170562f, 0.7070798f, -0.006170623f),
                 new float4x4(8.268398E-08f, 8.6613E-08f, 0.9999999f, 0f, -0.0174524f, -0.9998475f, 8.6613E-08f, 0f, 0.9998476f, -0.0174524f, 8.268398E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.6613E-08f, 1.570796f, 3.159046f)
             };
@@ -3381,7 +3381,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: 1",
                 new float3(4.712389f, -1.570796f, 0.01745329f),
-                new Quaternion(0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
+                new QuaternionF(0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
                 new float4x4(0.01745254f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.729842f, 0f)
             };
@@ -3390,7 +3390,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: 1",
                 new float3(6.283185f, -1.570796f, 0.01745329f),
-                new Quaternion(0.00617053f, 0.7070798f, -0.006170654f, -0.7070798f),
+                new QuaternionF(0.00617053f, 0.7070798f, -0.006170654f, -0.7070798f),
                 new float4x4(8.039206E-08f, -1.750886E-07f, -0.9999999f, 0f, 0.01745241f, 0.9998477f, -1.750886E-07f, 0f, 0.9998476f, -0.01745241f, 8.344796E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 4.712389f, 0.01745329f)
             };
@@ -3399,7 +3399,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: 1",
                 new float3(10.21018f, -1.570796f, 0.01745329f),
-                new Quaternion(-0.6556179f, -0.264887f, -0.6508952f, 0.2762887f),
+                new QuaternionF(-0.6556179f, -0.264887f, -0.6508952f, 0.2762887f),
                 new float4x4(0.01234069f, 0.7069993f, 0.7071065f, 0f, -0.01234072f, -0.7069987f, 0.707107f, 0f, 0.9998477f, -0.01745236f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.159046f)
             };
@@ -3408,7 +3408,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: 1",
                 new float3(-1.570796f, -1.570796f, 0.01745329f),
-                new Quaternion(-0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
+                new QuaternionF(-0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
                 new float4x4(0.01745254f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.729842f, 0f)
             };
@@ -3417,7 +3417,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: 1",
                 new float3(-9.424778f, -1.570796f, 0.01745329f),
-                new Quaternion(0.7070798f, -0.006170601f, 0.7070798f, -0.006170584f),
+                new QuaternionF(0.7070798f, -0.006170601f, 0.7070798f, -0.006170584f),
                 new float4x4(8.171628E-08f, -2.328306E-08f, 0.9999999f, 0f, -0.0174524f, -0.9998475f, -2.328306E-08f, 0f, 0.9998476f, -0.0174524f, 8.171628E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.328306E-08f, 1.570796f, 3.159046f)
             };
@@ -3426,7 +3426,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: 1",
                 new float3(0f, -9.424778f, 0.01745329f),
-                new Quaternion(0.008726535f, 0.9999619f, 1.040629E-10f, 1.192443E-08f),
+                new QuaternionF(0.008726535f, 0.9999619f, 1.040629E-10f, 1.192443E-08f),
                 new float4x4(-0.9998477f, 0.01745241f, 2.384976E-08f, 0f, 0.01745241f, 0.9998477f, -1.387779E-17f, 0f, -2.384613E-08f, 4.162357E-10f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.387779E-17f, 3.141593f, 0.01745329f)
             };
@@ -3435,7 +3435,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: 1",
                 new float3(0.001745329f, -9.424778f, 0.01745329f),
-                new Quaternion(0.008726533f, 0.9999616f, -0.0008726311f, 7.627262E-06f),
+                new QuaternionF(0.008726533f, 0.9999616f, -0.0008726311f, 7.627262E-06f),
                 new float4x4(-0.9998478f, 0.01745241f, 2.384968E-08f, 0f, 0.01745238f, 0.9998462f, -0.001745328f, 0f, -3.048403E-05f, -0.001745062f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 0.01745329f)
             };
@@ -3444,7 +3444,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: 1",
                 new float3(0.01745329f, -9.424778f, 0.01745329f),
-                new Quaternion(0.008726203f, 0.9999238f, -0.008726203f, 7.616435E-05f),
+                new QuaternionF(0.008726203f, 0.9999238f, -0.008726203f, 7.616435E-05f),
                 new float4x4(-0.9998476f, 0.01745241f, 2.386514E-08f, 0f, 0.01744975f, 0.9996954f, -0.01745241f, 0f, -0.0003046103f, -0.01744975f, -0.9998476f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 0.01745329f)
             };
@@ -3453,7 +3453,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: 1",
                 new float3(0.7853982f, -9.424778f, 0.01745329f),
-                new Quaternion(0.008062271f, 0.9238443f, -0.3826689f, 0.003339512f),
+                new QuaternionF(0.008062271f, 0.9238443f, -0.3826689f, 0.003339512f),
                 new float4x4(-0.9998477f, 0.01745242f, 1.676381E-08f, 0f, 0.01234071f, 0.7069991f, -0.7071068f, 0f, -0.01234074f, -0.7069991f, -0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 0.01745329f)
             };
@@ -3462,7 +3462,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: 1",
                 new float3(1.570796f, -9.424778f, 0.01745329f),
-                new Quaternion(0.006170601f, 0.7070798f, -0.7070798f, 0.006170601f),
+                new QuaternionF(0.006170601f, 0.7070798f, -0.7070798f, 0.006170601f),
                 new float4x4(-0.9998475f, 0.01745243f, 0f, 0f, 0f, 8.171628E-08f, -0.9999999f, 0f, -0.01745243f, -0.9998476f, 8.171628E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.124139f, 0f)
             };
@@ -3471,7 +3471,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: 1",
                 new float3(3.141593f, -9.424778f, 0.01745329f),
-                new Quaternion(1.154298E-08f, -4.381378E-08f, -0.9999619f, 0.008726535f),
+                new QuaternionF(1.154298E-08f, -4.381378E-08f, -0.9999619f, 0.008726535f),
                 new float4x4(-0.9998477f, 0.01745241f, -2.384976E-08f, 0f, -0.01745241f, -0.9998477f, 8.742277E-08f, 0f, -2.232039E-08f, 8.782569E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, -2.384976E-08f, 3.159046f)
             };
@@ -3480,7 +3480,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: 1",
                 new float3(4.712389f, -9.424778f, 0.01745329f),
-                new Quaternion(-0.006170584f, -0.7070798f, -0.7070798f, 0.006170584f),
+                new QuaternionF(-0.006170584f, -0.7070798f, -0.7070798f, 0.006170584f),
                 new float4x4(-0.9998475f, 0.01745238f, 0f, 0f, 0f, 8.213101E-08f, 0.9999999f, 0f, 0.01745238f, 0.9998476f, 8.213101E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.159046f, 0f)
             };
@@ -3489,7 +3489,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: 1",
                 new float3(6.283185f, -9.424778f, 0.01745329f),
-                new Quaternion(-0.008726535f, -0.9999619f, 8.731538E-08f, -1.268732E-08f),
+                new QuaternionF(-0.008726535f, -0.9999619f, 8.731538E-08f, -1.268732E-08f),
                 new float4x4(-0.9998477f, 0.01745241f, 2.384976E-08f, 0f, 0.01745241f, 0.9998477f, -1.748455E-07f, 0f, -2.689761E-08f, -1.744027E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 3.141593f, 0.01745329f)
             };
@@ -3498,7 +3498,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: 1",
                 new float3(10.21018f, -9.424778f, 0.01745329f),
-                new Quaternion(0.003339491f, 0.382669f, 0.9238443f, -0.008062262f),
+                new QuaternionF(0.003339491f, 0.382669f, 0.9238443f, -0.008062262f),
                 new float4x4(-0.9998477f, 0.01745239f, -1.676381E-08f, 0f, -0.01234071f, -0.7069988f, 0.707107f, 0f, 0.0123407f, 0.7069994f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, -2.370761E-08f, 3.159046f)
             };
@@ -3507,7 +3507,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: 1",
                 new float3(-1.570796f, -9.424778f, 0.01745329f),
-                new Quaternion(0.006170584f, 0.7070798f, 0.7070798f, -0.006170584f),
+                new QuaternionF(0.006170584f, 0.7070798f, 0.7070798f, -0.006170584f),
                 new float4x4(-0.9998475f, 0.01745238f, 0f, 0f, 0f, 8.213101E-08f, 0.9999999f, 0f, 0.01745238f, 0.9998476f, 8.213101E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.159046f, 0f)
             };
@@ -3516,7 +3516,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: 1",
                 new float3(-9.424778f, -9.424778f, 0.01745329f),
-                new Quaternion(1.202849E-08f, 1.182036E-08f, -0.9999619f, 0.008726535f),
+                new QuaternionF(1.202849E-08f, 1.182036E-08f, -0.9999619f, 0.008726535f),
                 new float4x4(-0.9998477f, 0.01745241f, -2.384976E-08f, 0f, -0.01745241f, -0.9998477f, -2.384976E-08f, 0f, -2.426236E-08f, -2.342989E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 3.159046f)
             };
@@ -3525,7 +3525,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: 45",
                 new float3(0f, 0f, 0.7853982f),
-                new Quaternion(0f, 0f, 0.3826835f, 0.9238795f),
+                new QuaternionF(0f, 0f, 0.3826835f, 0.9238795f),
                 new float4x4(0.7071067f, -0.7071068f, 0f, 0f, 0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 0.7853982f)
             };
@@ -3534,7 +3534,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: 45",
                 new float3(0.001745329f, 0f, 0.7853982f),
-                new Quaternion(0.0008062369f, -0.0003339543f, 0.3826833f, 0.9238791f),
+                new QuaternionF(0.0008062369f, -0.0003339543f, 0.3826833f, 0.9238791f),
                 new float4x4(0.7071068f, -0.7071068f, 5.820766E-11f, 0f, 0.7071057f, 0.7071057f, -0.001745328f, 0f, 0.001234133f, 0.001234133f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 5.820775E-11f, 0.7853982f)
             };
@@ -3543,7 +3543,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: 45",
                 new float3(0.01745329f, 0f, 0.7853982f),
-                new Quaternion(0.008062267f, -0.003339501f, 0.3826689f, 0.9238443f),
+                new QuaternionF(0.008062267f, -0.003339501f, 0.3826689f, 0.9238443f),
                 new float4x4(0.7071068f, -0.7071068f, -4.656613E-10f, 0f, 0.7069991f, 0.7069991f, -0.0174524f, 0f, 0.01234072f, 0.01234071f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, -4.657322E-10f, 0.7853982f)
             };
@@ -3552,7 +3552,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: 45",
                 new float3(0.7853982f, 0f, 0.7853982f),
-                new Quaternion(0.3535534f, -0.1464466f, 0.3535534f, 0.8535534f),
+                new QuaternionF(0.3535534f, -0.1464466f, 0.3535534f, 0.8535534f),
                 new float4x4(0.7071067f, -0.7071068f, 0f, 0f, 0.5f, 0.4999999f, -0.7071068f, 0f, 0.5000001f, 0.5f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0f, 0.7853982f)
             };
@@ -3561,7 +3561,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: 45",
                 new float3(1.570796f, 0f, 0.7853982f),
-                new Quaternion(0.6532815f, -0.2705981f, 0.2705981f, 0.6532815f),
+                new QuaternionF(0.6532815f, -0.2705981f, 0.2705981f, 0.6532815f),
                 new float4x4(0.7071068f, -0.7071068f, 0f, 0f, 0f, 8.940697E-08f, -0.9999999f, 0f, 0.7071068f, 0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 5.497787f, 0f)
             };
@@ -3570,7 +3570,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: 45",
                 new float3(3.141593f, 0f, 0.7853982f),
-                new Quaternion(0.9238795f, -0.3826835f, -1.672763E-08f, -4.038406E-08f),
+                new QuaternionF(0.9238795f, -0.3826835f, -1.672763E-08f, -4.038406E-08f),
                 new float4x4(0.7071067f, -0.7071068f, 0f, 0f, -0.7071068f, -0.7071067f, 8.742278E-08f, 0f, -6.181724E-08f, -6.181723E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 3.926991f)
             };
@@ -3579,7 +3579,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: 45",
                 new float3(4.712389f, 0f, 0.7853982f),
-                new Quaternion(0.6532815f, -0.2705981f, -0.2705981f, -0.6532815f),
+                new QuaternionF(0.6532815f, -0.2705981f, -0.2705981f, -0.6532815f),
                 new float4x4(0.7071068f, -0.7071068f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, -0.7071068f, -0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853982f, 0f)
             };
@@ -3588,7 +3588,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: 45",
                 new float3(6.283185f, 0f, 0.7853982f),
-                new Quaternion(-8.076811E-08f, 3.345525E-08f, -0.3826835f, -0.9238795f),
+                new QuaternionF(-8.076811E-08f, 3.345525E-08f, -0.3826835f, -0.9238795f),
                 new float4x4(0.7071067f, -0.7071068f, 0f, 0f, 0.7071068f, 0.7071067f, -1.748456E-07f, 0f, 1.236345E-07f, 1.236345E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0f, 0.7853982f)
             };
@@ -3597,7 +3597,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: 45",
                 new float3(10.21018f, 0f, 0.7853982f),
-                new Quaternion(-0.8535533f, 0.3535534f, 0.1464467f, 0.3535535f),
+                new QuaternionF(-0.8535533f, 0.3535534f, 0.1464467f, 0.3535535f),
                 new float4x4(0.7071068f, -0.7071068f, -2.980232E-08f, 0f, -0.4999998f, -0.4999997f, 0.7071071f, 0f, -0.5000002f, -0.5000001f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.926991f)
             };
@@ -3606,7 +3606,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: 45",
                 new float3(-1.570796f, 0f, 0.7853982f),
-                new Quaternion(-0.6532815f, 0.2705981f, 0.2705981f, 0.6532815f),
+                new QuaternionF(-0.6532815f, 0.2705981f, 0.2705981f, 0.6532815f),
                 new float4x4(0.7071068f, -0.7071068f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, -0.7071068f, -0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853982f, 0f)
             };
@@ -3615,7 +3615,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: 45",
                 new float3(-9.424778f, 0f, 0.7853982f),
-                new Quaternion(0.9238795f, -0.3826835f, 4.563455E-09f, 1.101715E-08f),
+                new QuaternionF(0.9238795f, -0.3826835f, 4.563455E-09f, 1.101715E-08f),
                 new float4x4(0.7071067f, -0.7071068f, 0f, 0f, -0.7071068f, -0.7071067f, -2.384976E-08f, 0f, 1.686433E-08f, 1.686433E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.926991f)
             };
@@ -3624,7 +3624,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: 45",
                 new float3(0f, 0.001745329f, 0.7853982f),
-                new Quaternion(0.0003339543f, 0.0008062369f, 0.3826833f, 0.9238791f),
+                new QuaternionF(0.0003339543f, 0.0008062369f, 0.3826833f, 0.9238791f),
                 new float4x4(0.7071057f, -0.7071057f, 0.001745328f, 0f, 0.7071068f, 0.7071068f, 5.820766E-11f, 0f, -0.001234133f, 0.001234133f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-5.820766E-11f, 0.001745329f, 0.7853982f)
             };
@@ -3633,7 +3633,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: 45",
                 new float3(0.001745329f, 0.001745329f, 0.7853982f),
-                new Quaternion(0.001140191f, 0.0004722824f, 0.3826825f, 0.9238791f),
+                new QuaternionF(0.001140191f, 0.0004722824f, 0.3826825f, 0.9238791f),
                 new float4x4(0.7071078f, -0.7071036f, 0.001745326f, 0f, 0.7071058f, 0.7071056f, -0.001745329f, 0f, -1.74623E-09f, 0.002468265f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 0.7853982f)
             };
@@ -3642,7 +3642,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: 45",
                 new float3(0.01745329f, 0.001745329f, 0.7853982f),
-                new Quaternion(0.008396206f, -0.002533294f, 0.3826617f, 0.9238469f),
+                new QuaternionF(0.008396206f, -0.002533294f, 0.3826617f, 0.9238469f),
                 new float4x4(0.7071272f, -0.7070842f, 0.001745062f, 0f, 0.7069991f, 0.7069991f, -0.01745241f, 0f, 0.01110656f, 0.01357483f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.001745329f, 0.7853982f)
             };
@@ -3651,7 +3651,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: 45",
                 new float3(0.7853982f, 0.001745329f, 0.7853982f),
-                new Quaternion(0.3538618f, -0.1457017f, 0.3532447f, 0.8536808f),
+                new QuaternionF(0.3538618f, -0.1457017f, 0.3532447f, 0.8536808f),
                 new float4x4(0.7079784f, -0.706233f, 0.001234129f, 0f, 0.4999999f, 0.5f, -0.7071068f, 0f, 0.4987651f, 0.5012333f, 0.7071056f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0.001745323f, 0.7853982f)
             };
@@ -3660,7 +3660,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: 45",
                 new float3(1.570796f, 0.001745329f, 0.7853982f),
-                new Quaternion(0.6535174f, -0.2700279f, 0.2700279f, 0.6535174f),
+                new QuaternionF(0.6535174f, -0.2700279f, 0.2700279f, 0.6535174f),
                 new float4x4(0.7083398f, -0.7058716f, 0f, 0f, 0f, -1.490116E-08f, -1f, 0f, 0.7058716f, 0.7083398f, -1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 5.499533f, 0f)
             };
@@ -3669,7 +3669,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: 45",
                 new float3(3.141593f, 0.001745329f, 0.7853982f),
-                new Quaternion(0.9238791f, -0.3826833f, -0.0008062536f, 0.0003339139f),
+                new QuaternionF(0.9238791f, -0.3826833f, -0.0008062536f, 0.0003339139f),
                 new float4x4(0.7071057f, -0.7071057f, -0.001745328f, 0f, -0.7071068f, -0.7071067f, 8.742791E-08f, 0f, -0.001234195f, 0.001234072f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742791E-08f, 3.143338f, 3.926991f)
             };
@@ -3678,7 +3678,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: 45",
                 new float3(4.712389f, 0.001745329f, 0.7853982f),
-                new Quaternion(0.6530451f, -0.2711681f, -0.2711681f, -0.6530451f),
+                new QuaternionF(0.6530451f, -0.2711681f, -0.2711681f, -0.6530451f),
                 new float4x4(0.7058716f, -0.7083398f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7083398f, -0.7058715f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7871436f, 0f)
             };
@@ -3687,7 +3687,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: 45",
                 new float3(6.283185f, 0.001745329f, 0.7853982f),
-                new Quaternion(-0.000334035f, -0.0008062034f, -0.3826833f, -0.9238791f),
+                new QuaternionF(-0.000334035f, -0.0008062034f, -0.3826833f, -0.9238791f),
                 new float4x4(0.7071057f, -0.7071057f, 0.001745328f, 0f, 0.7071068f, 0.7071068f, -1.747976E-07f, 0f, -0.00123401f, 0.001234257f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.747976E-07f, 0.001745329f, 0.7853982f)
             };
@@ -3696,7 +3696,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: 45",
                 new float3(10.21018f, 0.001745329f, 0.7853982f),
-                new Quaternion(-0.8534251f, 0.3538618f, 0.1471915f, 0.3532449f),
+                new QuaternionF(-0.8534251f, 0.3538618f, 0.1471915f, 0.3532449f),
                 new float4x4(0.706233f, -0.7079784f, -0.001234129f, 0f, -0.4999998f, -0.4999996f, 0.7071069f, 0f, -0.5012336f, -0.4987652f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 3.926991f)
             };
@@ -3705,7 +3705,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: 45",
                 new float3(-1.570796f, 0.001745329f, 0.7853982f),
-                new Quaternion(-0.6530451f, 0.2711681f, 0.2711681f, 0.6530451f),
+                new QuaternionF(-0.6530451f, 0.2711681f, 0.2711681f, 0.6530451f),
                 new float4x4(0.7058716f, -0.7083398f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7083398f, -0.7058715f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7871436f, 0f)
             };
@@ -3714,7 +3714,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: 45",
                 new float3(-9.424778f, 0.001745329f, 0.7853982f),
-                new Quaternion(0.9238791f, -0.3826833f, -0.0008062323f, 0.0003339653f),
+                new QuaternionF(0.9238791f, -0.3826833f, -0.0008062323f, 0.0003339653f),
                 new float4x4(0.7071057f, -0.7071057f, -0.001745328f, 0f, -0.7071068f, -0.7071067f, -2.380693E-08f, 0f, -0.001234117f, 0.00123415f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.380693E-08f, 3.143338f, 3.926991f)
             };
@@ -3723,7 +3723,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: 45",
                 new float3(0f, 0.01745329f, 0.7853982f),
-                new Quaternion(0.003339501f, 0.008062267f, 0.3826689f, 0.9238443f),
+                new QuaternionF(0.003339501f, 0.008062267f, 0.3826689f, 0.9238443f),
                 new float4x4(0.7069991f, -0.7069991f, 0.0174524f, 0f, 0.7071068f, 0.7071068f, -4.656613E-10f, 0f, -0.01234071f, 0.01234072f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.656613E-10f, 0.01745329f, 0.7853982f)
             };
@@ -3732,7 +3732,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: 45",
                 new float3(0.001745329f, 0.01745329f, 0.7853982f),
-                new Quaternion(0.004145706f, 0.007728323f, 0.3826617f, 0.9238469f),
+                new QuaternionF(0.004145706f, 0.007728323f, 0.3826617f, 0.9238469f),
                 new float4x4(0.7070206f, -0.7069776f, 0.01745238f, 0f, 0.7071058f, 0.7071057f, -0.001745329f, 0f, -0.01110677f, 0.01357466f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.00174533f, 0.01745329f, 0.7853982f)
             };
@@ -3741,7 +3741,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: 45",
                 new float3(0.01745329f, 0.01745329f, 0.7853982f),
-                new Quaternion(0.01140133f, 0.004722587f, 0.3825839f, 0.9238383f),
+                new QuaternionF(0.01140133f, 0.004722587f, 0.3825839f, 0.9238383f),
                 new float4x4(0.7072145f, -0.7067837f, 0.01744975f, 0f, 0.7069991f, 0.7069991f, -0.0174524f, 0f, -1.878478E-06f, 0.02467955f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.0174533f, 0.7853982f)
             };
@@ -3750,7 +3750,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: 45",
                 new float3(0.7853982f, 0.01745329f, 0.7853982f),
-                new Quaternion(0.3566252f, -0.1389925f, 0.3504547f, 0.8547989f),
+                new QuaternionF(0.3566252f, -0.1389925f, 0.3504547f, 0.8547989f),
                 new float4x4(0.7157252f, -0.6982729f, 0.01234071f, 0f, 0.5f, 0.4999999f, -0.7071068f, 0f, 0.4875832f, 0.5122645f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.01745328f, 0.7853982f)
             };
@@ -3759,7 +3759,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: 45",
                 new float3(1.570796f, 0.01745329f, 0.7853982f),
-                new Quaternion(0.6556179f, -0.2648869f, 0.2648869f, 0.6556179f),
+                new QuaternionF(0.6556179f, -0.2648869f, 0.2648869f, 0.6556179f),
                 new float4x4(0.7193398f, -0.6946582f, 0f, 0f, 0f, 2.831221E-07f, -0.9999997f, 0f, 0.6946582f, 0.7193395f, 2.831221E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 5.51524f, 0f)
             };
@@ -3768,7 +3768,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: 45",
                 new float3(3.141593f, 0.01745329f, 0.7853982f),
-                new Quaternion(0.9238443f, -0.3826689f, -0.008062284f, 0.00333946f),
+                new QuaternionF(0.9238443f, -0.3826689f, -0.008062284f, 0.00333946f),
                 new float4x4(0.7069991f, -0.7069991f, -0.01745241f, 0f, -0.7071068f, -0.7071068f, 8.707866E-08f, 0f, -0.01234077f, 0.01234065f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.707866E-08f, 3.159046f, 3.926991f)
             };
@@ -3777,7 +3777,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: 45",
                 new float3(4.712389f, 0.01745329f, 0.7853982f),
-                new Quaternion(0.6508952f, -0.2762886f, -0.2762886f, -0.6508952f),
+                new QuaternionF(0.6508952f, -0.2762886f, -0.2762886f, -0.6508952f),
                 new float4x4(0.6946584f, -0.7193397f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7193397f, -0.6946583f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.8028516f, 0f)
             };
@@ -3786,7 +3786,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: 45",
                 new float3(6.283185f, 0.01745329f, 0.7853982f),
-                new Quaternion(-0.003339581f, -0.008062233f, -0.3826689f, -0.9238443f),
+                new QuaternionF(-0.003339581f, -0.008062233f, -0.3826689f, -0.9238443f),
                 new float4x4(0.7069991f, -0.7069991f, 0.0174524f, 0f, 0.7071068f, 0.7071068f, -1.750886E-07f, 0f, -0.01234059f, 0.01234084f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 0.01745329f, 0.7853982f)
             };
@@ -3795,7 +3795,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: 45",
                 new float3(10.21018f, 0.01745329f, 0.7853982f),
-                new Quaternion(-0.8522428f, 0.3566252f, 0.1538897f, 0.3504548f),
+                new QuaternionF(-0.8522428f, 0.3566252f, 0.1538897f, 0.3504548f),
                 new float4x4(0.6982729f, -0.7157253f, -0.01234071f, 0f, -0.4999998f, -0.4999997f, 0.707107f, 0f, -0.5122647f, -0.4875832f, -0.7069987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 3.926991f)
             };
@@ -3804,7 +3804,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: 45",
                 new float3(-1.570796f, 0.01745329f, 0.7853982f),
-                new Quaternion(-0.6508952f, 0.2762886f, 0.2762886f, 0.6508952f),
+                new QuaternionF(-0.6508952f, 0.2762886f, 0.2762886f, 0.6508952f),
                 new float4x4(0.6946584f, -0.7193397f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7193397f, -0.6946583f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.8028516f, 0f)
             };
@@ -3813,7 +3813,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: 45",
                 new float3(-9.424778f, 0.01745329f, 0.7853982f),
-                new Quaternion(0.9238443f, -0.3826689f, -0.008062262f, 0.003339512f),
+                new QuaternionF(0.9238443f, -0.3826689f, -0.008062262f, 0.003339512f),
                 new float4x4(0.7069991f, -0.7069991f, -0.0174524f, 0f, -0.7071068f, -0.7071068f, -2.374873E-08f, 0f, -0.0123407f, 0.01234073f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.374873E-08f, 3.159046f, 3.926991f)
             };
@@ -3822,7 +3822,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: 45",
                 new float3(0f, 0.7853982f, 0.7853982f),
-                new Quaternion(0.1464466f, 0.3535534f, 0.3535534f, 0.8535534f),
+                new QuaternionF(0.1464466f, 0.3535534f, 0.3535534f, 0.8535534f),
                 new float4x4(0.4999999f, -0.5f, 0.7071068f, 0f, 0.7071068f, 0.7071067f, 0f, 0f, -0.5f, 0.5000001f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853982f, 0.7853982f)
             };
@@ -3831,7 +3831,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: 45",
                 new float3(0.001745329f, 0.7853982f, 0.7853982f),
-                new Quaternion(0.1471914f, 0.3532447f, 0.3532447f, 0.8536808f),
+                new QuaternionF(0.1471914f, 0.3532447f, 0.3532447f, 0.8536808f),
                 new float4x4(0.5008727f, -0.4991273f, 0.7071056f, 0f, 0.7071056f, 0.7071057f, -0.001745343f, 0f, -0.4991273f, 0.5008727f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.7853982f, 0.7853982f)
             };
@@ -3840,7 +3840,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: 45",
                 new float3(0.01745329f, 0.7853982f, 0.7853982f),
-                new Quaternion(0.1538896f, 0.3504547f, 0.3504547f, 0.8547989f),
+                new QuaternionF(0.1538896f, 0.3504547f, 0.3504547f, 0.8547989f),
                 new float4x4(0.5087261f, -0.4912738f, 0.7069991f, 0f, 0.7069991f, 0.706999f, -0.01745242f, 0f, -0.4912738f, 0.5087263f, 0.706999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745331f, 0.7853982f, 0.7853982f)
             };
@@ -3849,7 +3849,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: 45",
                 new float3(0.7853982f, 0.7853982f, 0.7853982f),
-                new Quaternion(0.4619398f, 0.1913417f, 0.1913417f, 0.8446232f),
+                new QuaternionF(0.4619398f, 0.1913417f, 0.1913417f, 0.8446232f),
                 new float4x4(0.8535534f, -0.1464466f, 0.5f, 0f, 0.5f, 0.4999999f, -0.7071069f, 0f, -0.1464466f, 0.8535535f, 0.4999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0.7853982f, 0.7853982f)
             };
@@ -3858,7 +3858,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: 45",
                 new float3(1.570796f, 0.7853982f, 0.7853982f),
-                new Quaternion(0.7071068f, 0f, 0f, 0.7071068f),
+                new QuaternionF(0.7071068f, 0f, 0f, 0.7071068f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0f, 0f)
             };
@@ -3867,7 +3867,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: 45",
                 new float3(3.141593f, 0.7853982f, 0.7853982f),
-                new Quaternion(0.8535534f, -0.3535534f, -0.3535534f, 0.1464466f),
+                new QuaternionF(0.8535534f, -0.3535534f, -0.3535534f, 0.1464466f),
                 new float4x4(0.4999998f, -0.5000001f, -0.7071069f, 0f, -0.7071069f, -0.7071068f, 1.341105E-07f, 0f, -0.5000001f, 0.5000001f, -0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.341105E-07f, 3.926991f, 3.926991f)
             };
@@ -3876,7 +3876,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: 45",
                 new float3(4.712389f, 0.7853982f, 0.7853982f),
-                new Quaternion(0.4999999f, -0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -3885,7 +3885,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: 45",
                 new float3(6.283185f, 0.7853982f, 0.7853982f),
-                new Quaternion(-0.1464467f, -0.3535534f, -0.3535534f, -0.8535534f),
+                new QuaternionF(-0.1464467f, -0.3535534f, -0.3535534f, -0.8535534f),
                 new float4x4(0.5f, -0.4999999f, 0.7071068f, 0f, 0.7071068f, 0.7071067f, -1.639128E-07f, 0f, -0.4999999f, 0.5000001f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.639128E-07f, 0.7853982f, 0.7853982f)
             };
@@ -3894,7 +3894,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: 45",
                 new float3(10.21018f, 0.7853982f, 0.7853982f),
-                new Quaternion(-0.7325377f, 0.4619398f, 0.4619398f, 0.1913418f),
+                new QuaternionF(-0.7325377f, 0.4619398f, 0.4619398f, 0.1913418f),
                 new float4x4(0.1464465f, -0.8535535f, -0.4999998f, 0f, -0.4999998f, -0.4999996f, 0.707107f, 0f, -0.8535535f, 0.1464465f, -0.4999996f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 3.926991f)
             };
@@ -3903,7 +3903,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: 45",
                 new float3(-1.570796f, 0.7853982f, 0.7853982f),
-                new Quaternion(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -3912,7 +3912,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: 45",
                 new float3(-9.424778f, 0.7853982f, 0.7853982f),
-                new Quaternion(0.8535534f, -0.3535534f, -0.3535534f, 0.1464466f),
+                new QuaternionF(0.8535534f, -0.3535534f, -0.3535534f, 0.1464466f),
                 new float4x4(0.4999999f, -0.5f, -0.7071068f, 0f, -0.7071068f, -0.7071067f, -2.980232E-08f, 0f, -0.5f, 0.5000001f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.980232E-08f, 3.926991f, 3.926991f)
             };
@@ -3921,7 +3921,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: 45",
                 new float3(0f, 1.570796f, 0.7853982f),
-                new Quaternion(0.2705981f, 0.6532815f, 0.2705981f, 0.6532815f),
+                new QuaternionF(0.2705981f, 0.6532815f, 0.2705981f, 0.6532815f),
                 new float4x4(8.940697E-08f, 0f, 0.9999999f, 0f, 0.7071068f, 0.7071068f, 0f, 0f, -0.7071067f, 0.7071068f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 0.7853982f)
             };
@@ -3930,7 +3930,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: 45",
                 new float3(0.001745329f, 1.570796f, 0.7853982f),
-                new Quaternion(0.2711681f, 0.6530451f, 0.2700279f, 0.6535174f),
+                new QuaternionF(0.2711681f, 0.6530451f, 0.2700279f, 0.6535174f),
                 new float4x4(0.001234218f, 0.001234084f, 0.9999985f, 0f, 0.7071058f, 0.7071056f, -0.001745313f, 0f, -0.7071067f, 0.7071068f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745314f, 1.570796f, 0.7853982f)
             };
@@ -3939,7 +3939,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: 45",
                 new float3(0.01745329f, 1.570796f, 0.7853982f),
-                new Quaternion(0.2762886f, 0.6508952f, 0.2648869f, 0.6556179f),
+                new QuaternionF(0.2762886f, 0.6508952f, 0.2648869f, 0.6556179f),
                 new float4x4(0.01234083f, 0.01234075f, 0.9998475f, 0f, 0.7069989f, 0.7069991f, -0.01745239f, 0f, -0.7071066f, 0.7071067f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 1.570796f, 0.7853983f)
             };
@@ -3948,7 +3948,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: 45",
                 new float3(0.7853982f, 1.570796f, 0.7853982f),
-                new Quaternion(0.5f, 0.4999999f, 0f, 0.7071068f),
+                new QuaternionF(0.5f, 0.4999999f, 0f, 0.7071068f),
                 new float4x4(0.5000001f, 0.4999999f, 0.7071067f, 0f, 0.4999999f, 0.5f, -0.7071068f, 0f, -0.7071067f, 0.7071068f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 1.570796f, 0.7853982f)
             };
@@ -3957,7 +3957,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: 45",
                 new float3(1.570796f, 1.570796f, 0.7853982f),
-                new Quaternion(0.6532815f, 0.270598f, -0.270598f, 0.6532815f),
+                new QuaternionF(0.6532815f, 0.270598f, -0.270598f, 0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, -0.7071066f, 0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.7853981f, 0f)
             };
@@ -3966,7 +3966,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: 45",
                 new float3(3.141593f, 1.570796f, 0.7853982f),
-                new Quaternion(0.6532815f, -0.2705981f, -0.6532815f, 0.270598f),
+                new QuaternionF(0.6532815f, -0.2705981f, -0.6532815f, 0.270598f),
                 new float4x4(5.960464E-08f, -8.940697E-08f, -0.9999999f, 0f, -0.7071067f, -0.7071066f, 8.940697E-08f, 0f, -0.7071067f, 0.7071067f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-5.960464E-08f, 4.712389f, 3.926991f)
             };
@@ -3975,7 +3975,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: 45",
                 new float3(4.712389f, 1.570796f, 0.7853982f),
-                new Quaternion(0.270598f, -0.6532815f, -0.6532815f, -0.270598f),
+                new QuaternionF(0.270598f, -0.6532815f, -0.6532815f, -0.270598f),
                 new float4x4(-0.7071066f, -0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, -0.7071066f, 0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 2.356194f, 0f)
             };
@@ -3984,7 +3984,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: 45",
                 new float3(6.283185f, 1.570796f, 0.7853982f),
-                new Quaternion(-0.2705981f, -0.6532815f, -0.270598f, -0.6532815f),
+                new QuaternionF(-0.2705981f, -0.6532815f, -0.270598f, -0.6532815f),
                 new float4x4(1.490116E-07f, 1.490116E-07f, 0.9999999f, 0f, 0.7071067f, 0.7071068f, -1.490116E-07f, 0f, -0.7071067f, 0.7071067f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 1.570796f, 0.7853982f)
             };
@@ -3993,7 +3993,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: 45",
                 new float3(10.21018f, 1.570796f, 0.7853982f),
-                new Quaternion(-0.4999999f, 0.5000001f, 0.7071067f, 1.341105E-07f),
+                new QuaternionF(-0.4999999f, 0.5000001f, 0.7071067f, 1.341105E-07f),
                 new float4x4(-0.5000001f, -0.5000002f, -0.7071064f, 0f, -0.4999998f, -0.4999995f, 0.707107f, 0f, -0.7071066f, 0.7071068f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 3.926991f)
             };
@@ -4002,7 +4002,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: 45",
                 new float3(-1.570796f, 1.570796f, 0.7853982f),
-                new Quaternion(-0.270598f, 0.6532815f, 0.6532815f, 0.270598f),
+                new QuaternionF(-0.270598f, 0.6532815f, 0.6532815f, 0.270598f),
                 new float4x4(-0.7071066f, -0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, -0.7071066f, 0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 2.356194f, 0f)
             };
@@ -4011,7 +4011,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: 45",
                 new float3(-9.424778f, 1.570796f, 0.7853982f),
-                new Quaternion(0.6532815f, -0.2705981f, -0.6532815f, 0.2705981f),
+                new QuaternionF(0.6532815f, -0.2705981f, -0.6532815f, 0.2705981f),
                 new float4x4(8.940697E-08f, 0f, -0.9999999f, 0f, -0.7071068f, -0.7071066f, 0f, 0f, -0.7071067f, 0.7071068f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 3.926991f)
             };
@@ -4020,7 +4020,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: 45",
                 new float3(0f, 3.141593f, 0.7853982f),
-                new Quaternion(0.3826835f, 0.9238795f, -1.672763E-08f, -4.038406E-08f),
+                new QuaternionF(0.3826835f, 0.9238795f, -1.672763E-08f, -4.038406E-08f),
                 new float4x4(-0.7071067f, 0.7071068f, -8.742278E-08f, 0f, 0.7071068f, 0.7071067f, 0f, 0f, 6.181723E-08f, -6.181724E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 0.7853982f)
             };
@@ -4029,7 +4029,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: 45",
                 new float3(0.001745329f, 3.141593f, 0.7853982f),
-                new Quaternion(0.3826833f, 0.9238791f, -0.0008062536f, 0.0003339139f),
+                new QuaternionF(0.3826833f, 0.9238791f, -0.0008062536f, 0.0003339139f),
                 new float4x4(-0.7071067f, 0.7071068f, -8.742791E-08f, 0f, 0.7071057f, 0.7071057f, -0.001745328f, 0f, -0.001234072f, -0.001234195f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 0.7853982f)
             };
@@ -4038,7 +4038,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: 45",
                 new float3(0.01745329f, 3.141593f, 0.7853982f),
-                new Quaternion(0.3826689f, 0.9238443f, -0.008062284f, 0.00333946f),
+                new QuaternionF(0.3826689f, 0.9238443f, -0.008062284f, 0.00333946f),
                 new float4x4(-0.7071068f, 0.7071068f, -8.707866E-08f, 0f, 0.7069991f, 0.7069991f, -0.01745241f, 0f, -0.01234065f, -0.01234077f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 0.7853982f)
             };
@@ -4047,7 +4047,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: 45",
                 new float3(0.7853982f, 3.141593f, 0.7853982f),
-                new Quaternion(0.3535534f, 0.8535534f, -0.3535534f, 0.1464466f),
+                new QuaternionF(0.3535534f, 0.8535534f, -0.3535534f, 0.1464466f),
                 new float4x4(-0.7071068f, 0.7071068f, -7.450581E-08f, 0f, 0.5f, 0.4999999f, -0.7071068f, 0f, -0.5f, -0.5000001f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 0.7853982f)
             };
@@ -4056,7 +4056,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: 45",
                 new float3(1.570796f, 3.141593f, 0.7853982f),
-                new Quaternion(0.270598f, 0.6532815f, -0.6532815f, 0.270598f),
+                new QuaternionF(0.270598f, 0.6532815f, -0.6532815f, 0.270598f),
                 new float4x4(-0.7071066f, 0.7071066f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.7071066f, -0.7071067f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 2.356194f, 0f)
             };
@@ -4065,7 +4065,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: 45",
                 new float3(3.141593f, 3.141593f, 0.7853982f),
-                new Quaternion(-5.711168E-08f, -2.365643E-08f, -0.9238795f, 0.3826835f),
+                new QuaternionF(-5.711168E-08f, -2.365643E-08f, -0.9238795f, 0.3826835f),
                 new float4x4(-0.7071067f, 0.7071068f, 8.742277E-08f, 0f, -0.7071068f, -0.7071067f, 8.742278E-08f, 0f, 1.236345E-07f, -1.065814E-14f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 8.742277E-08f, 3.926991f)
             };
@@ -4074,7 +4074,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: 45",
                 new float3(4.712389f, 3.141593f, 0.7853982f),
-                new Quaternion(-0.2705981f, -0.6532815f, -0.6532815f, 0.2705981f),
+                new QuaternionF(-0.2705981f, -0.6532815f, -0.6532815f, 0.2705981f),
                 new float4x4(-0.7071066f, 0.7071068f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 0.7071068f, 0.7071066f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.926991f, 0f)
             };
@@ -4083,7 +4083,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: 45",
                 new float3(6.283185f, 3.141593f, 0.7853982f),
-                new Quaternion(-0.3826835f, -0.9238795f, 9.749574E-08f, 6.928804E-09f),
+                new QuaternionF(-0.3826835f, -0.9238795f, 9.749574E-08f, 6.928804E-09f),
                 new float4x4(-0.7071067f, 0.7071068f, -8.742277E-08f, 0f, 0.7071068f, 0.7071067f, -1.748455E-07f, 0f, -6.181725E-08f, -1.854517E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 3.141593f, 0.7853982f)
             };
@@ -4092,7 +4092,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: 45",
                 new float3(10.21018f, 3.141593f, 0.7853982f),
-                new Quaternion(0.1464467f, 0.3535535f, 0.8535533f, -0.3535534f),
+                new QuaternionF(0.1464467f, 0.3535535f, 0.8535533f, -0.3535534f),
                 new float4x4(-0.7071066f, 0.7071069f, 8.940697E-08f, 0f, -0.4999999f, -0.4999998f, 0.707107f, 0f, 0.5000002f, 0.5000001f, 0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.264406E-07f, 3.926991f)
             };
@@ -4101,7 +4101,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: 45",
                 new float3(-1.570796f, 3.141593f, 0.7853982f),
-                new Quaternion(0.2705981f, 0.6532815f, 0.6532815f, -0.2705981f),
+                new QuaternionF(0.2705981f, 0.6532815f, 0.6532815f, -0.2705981f),
                 new float4x4(-0.7071066f, 0.7071068f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 0.7071068f, 0.7071066f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.926991f, 0f)
             };
@@ -4110,7 +4110,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: 45",
                 new float3(-9.424778f, 3.141593f, 0.7853982f),
-                new Quaternion(-3.58206E-08f, 2.774478E-08f, -0.9238795f, 0.3826835f),
+                new QuaternionF(-3.58206E-08f, 2.774478E-08f, -0.9238795f, 0.3826835f),
                 new float4x4(-0.7071067f, 0.7071068f, 8.742278E-08f, 0f, -0.7071068f, -0.7071067f, -2.384976E-08f, 0f, 4.49529E-08f, -7.868157E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742278E-08f, 3.926991f)
             };
@@ -4119,7 +4119,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: 45",
                 new float3(0f, 4.712389f, 0.7853982f),
-                new Quaternion(0.2705981f, 0.6532815f, -0.2705981f, -0.6532815f),
+                new QuaternionF(0.2705981f, 0.6532815f, -0.2705981f, -0.6532815f),
                 new float4x4(8.940697E-08f, 0f, -0.9999999f, 0f, 0.7071068f, 0.7071068f, 0f, 0f, 0.7071067f, -0.7071068f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 0.7853982f)
             };
@@ -4128,7 +4128,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: 45",
                 new float3(0.001745329f, 4.712389f, 0.7853982f),
-                new Quaternion(0.2700279f, 0.6535174f, -0.2711681f, -0.6530451f),
+                new QuaternionF(0.2700279f, 0.6535174f, -0.2711681f, -0.6530451f),
                 new float4x4(-0.001234129f, -0.001234084f, -0.9999985f, 0f, 0.7071058f, 0.7071056f, -0.001745313f, 0f, 0.7071067f, -0.7071068f, -1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745344f, 4.712389f, 0.7853982f)
             };
@@ -4137,7 +4137,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: 45",
                 new float3(0.01745329f, 4.712389f, 0.7853982f),
-                new Quaternion(0.2648869f, 0.6556179f, -0.2762886f, -0.6508952f),
+                new QuaternionF(0.2648869f, 0.6556179f, -0.2762886f, -0.6508952f),
                 new float4x4(-0.01234044f, -0.01234075f, -0.9998475f, 0f, 0.7069989f, 0.7069991f, -0.01745239f, 0f, 0.7071066f, -0.7071067f, 2.831221E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 4.712389f, 0.7853983f)
             };
@@ -4146,7 +4146,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: 45",
                 new float3(0.7853982f, 4.712389f, 0.7853982f),
-                new Quaternion(0f, 0.7071068f, -0.5f, -0.4999999f),
+                new QuaternionF(0f, 0.7071068f, -0.5f, -0.4999999f),
                 new float4x4(-0.4999999f, -0.4999999f, -0.7071067f, 0f, 0.4999999f, 0.5f, -0.7071068f, 0f, 0.7071067f, -0.7071068f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 0.7853982f)
             };
@@ -4155,7 +4155,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: 45",
                 new float3(1.570796f, 4.712389f, 0.7853982f),
-                new Quaternion(-0.270598f, 0.6532815f, -0.6532815f, -0.270598f),
+                new QuaternionF(-0.270598f, 0.6532815f, -0.6532815f, -0.270598f),
                 new float4x4(-0.7071066f, -0.7071066f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.926991f, 0f)
             };
@@ -4164,7 +4164,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: 45",
                 new float3(3.141593f, 4.712389f, 0.7853982f),
-                new Quaternion(-0.6532815f, 0.270598f, -0.6532815f, 0.2705981f),
+                new QuaternionF(-0.6532815f, 0.270598f, -0.6532815f, 0.2705981f),
                 new float4x4(1.192093E-07f, 8.940697E-08f, 0.9999999f, 0f, -0.7071067f, -0.7071066f, 8.940697E-08f, 0f, 0.7071067f, -0.7071067f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-5.960464E-08f, 1.570796f, 3.926991f)
             };
@@ -4173,7 +4173,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: 45",
                 new float3(4.712389f, 4.712389f, 0.7853982f),
-                new Quaternion(-0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
+                new QuaternionF(-0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -4182,7 +4182,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: 45",
                 new float3(6.283185f, 4.712389f, 0.7853982f),
-                new Quaternion(-0.270598f, -0.6532815f, 0.2705981f, 0.6532815f),
+                new QuaternionF(-0.270598f, -0.6532815f, 0.2705981f, 0.6532815f),
                 new float4x4(2.980232E-08f, -1.490116E-07f, -0.9999999f, 0f, 0.7071067f, 0.7071068f, -1.490116E-07f, 0f, 0.7071067f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 4.712389f, 0.7853982f)
             };
@@ -4191,7 +4191,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: 45",
                 new float3(10.21018f, 4.712389f, 0.7853982f),
-                new Quaternion(0.7071067f, 1.341105E-07f, 0.4999999f, -0.5000001f),
+                new QuaternionF(0.7071067f, 1.341105E-07f, 0.4999999f, -0.5000001f),
                 new float4x4(0.5000003f, 0.5000002f, 0.7071064f, 0f, -0.4999998f, -0.4999995f, 0.707107f, 0f, 0.7071066f, -0.7071068f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.926991f)
             };
@@ -4200,7 +4200,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: 45",
                 new float3(-1.570796f, 4.712389f, 0.7853982f),
-                new Quaternion(0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
+                new QuaternionF(0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -4209,7 +4209,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: 45",
                 new float3(-9.424778f, 4.712389f, 0.7853982f),
-                new Quaternion(-0.6532815f, 0.2705981f, -0.6532815f, 0.2705981f),
+                new QuaternionF(-0.6532815f, 0.2705981f, -0.6532815f, 0.2705981f),
                 new float4x4(8.940697E-08f, 0f, 0.9999999f, 0f, -0.7071068f, -0.7071066f, 0f, 0f, 0.7071067f, -0.7071068f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 3.926991f)
             };
@@ -4218,7 +4218,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: 45",
                 new float3(0f, 6.283185f, 0.7853982f),
-                new Quaternion(-3.345525E-08f, -8.076811E-08f, -0.3826835f, -0.9238795f),
+                new QuaternionF(-3.345525E-08f, -8.076811E-08f, -0.3826835f, -0.9238795f),
                 new float4x4(0.7071067f, -0.7071068f, 1.748456E-07f, 0f, 0.7071068f, 0.7071067f, 0f, 0f, -1.236345E-07f, 1.236345E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.748456E-07f, 0.7853982f)
             };
@@ -4227,7 +4227,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: 45",
                 new float3(0.001745329f, 6.283185f, 0.7853982f),
-                new Quaternion(-0.0008062703f, 0.0003338735f, -0.3826833f, -0.9238791f),
+                new QuaternionF(-0.0008062703f, 0.0003338735f, -0.3826833f, -0.9238791f),
                 new float4x4(0.7071068f, -0.7071068f, 1.74914E-07f, 0f, 0.7071057f, 0.7071057f, -0.001745328f, 0f, 0.00123401f, 0.001234257f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.749143E-07f, 0.7853982f)
             };
@@ -4236,7 +4236,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: 45",
                 new float3(0.01745329f, 6.283185f, 0.7853982f),
-                new Quaternion(-0.0080623f, 0.00333942f, -0.3826689f, -0.9238443f),
+                new QuaternionF(-0.0080623f, 0.00333942f, -0.3826689f, -0.9238443f),
                 new float4x4(0.7071068f, -0.7071068f, 1.74623E-07f, 0f, 0.7069991f, 0.7069991f, -0.01745241f, 0f, 0.01234059f, 0.01234084f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.746496E-07f, 0.7853982f)
             };
@@ -4245,7 +4245,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: 45",
                 new float3(0.7853982f, 6.283185f, 0.7853982f),
-                new Quaternion(-0.3535534f, 0.1464466f, -0.3535534f, -0.8535534f),
+                new QuaternionF(-0.3535534f, 0.1464466f, -0.3535534f, -0.8535534f),
                 new float4x4(0.7071068f, -0.7071067f, 1.341105E-07f, 0f, 0.5f, 0.4999999f, -0.7071068f, 0f, 0.4999999f, 0.5000001f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 1.896608E-07f, 0.7853982f)
             };
@@ -4254,7 +4254,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: 45",
                 new float3(1.570796f, 6.283185f, 0.7853982f),
-                new Quaternion(-0.6532815f, 0.270598f, -0.270598f, -0.6532815f),
+                new QuaternionF(-0.6532815f, 0.270598f, -0.270598f, -0.6532815f),
                 new float4x4(0.7071069f, -0.7071066f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, 0.7071066f, 0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 5.497787f, 0f)
             };
@@ -4263,7 +4263,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: 45",
                 new float3(3.141593f, 6.283185f, 0.7853982f),
-                new Quaternion(-0.9238795f, 0.3826835f, 9.749574E-08f, 6.928804E-09f),
+                new QuaternionF(-0.9238795f, 0.3826835f, 9.749574E-08f, 6.928804E-09f),
                 new float4x4(0.7071067f, -0.7071068f, -1.748455E-07f, 0f, -0.7071068f, -0.7071067f, 8.742277E-08f, 0f, -1.854517E-07f, 6.181725E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.141593f, 3.926991f)
             };
@@ -4272,7 +4272,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: 45",
                 new float3(4.712389f, 6.283185f, 0.7853982f),
-                new Quaternion(-0.6532815f, 0.2705981f, 0.2705981f, 0.6532815f),
+                new QuaternionF(-0.6532815f, 0.2705981f, 0.2705981f, 0.6532815f),
                 new float4x4(0.7071066f, -0.7071069f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, -0.7071069f, -0.7071066f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853984f, 0f)
             };
@@ -4281,7 +4281,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: 45",
                 new float3(6.283185f, 6.283185f, 0.7853982f),
-                new Quaternion(1.142234E-07f, 4.731286E-08f, 0.3826835f, 0.9238795f),
+                new QuaternionF(1.142234E-07f, 4.731286E-08f, 0.3826835f, 0.9238795f),
                 new float4x4(0.7071067f, -0.7071068f, 1.748456E-07f, 0f, 0.7071068f, 0.7071067f, -1.748455E-07f, 0f, 2.131628E-14f, 2.472689E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 1.748456E-07f, 0.7853982f)
             };
@@ -4290,7 +4290,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: 45",
                 new float3(10.21018f, 6.283185f, 0.7853982f),
-                new Quaternion(0.8535533f, -0.3535534f, -0.1464468f, -0.3535535f),
+                new QuaternionF(0.8535533f, -0.3535534f, -0.1464468f, -0.3535535f),
                 new float4x4(0.7071066f, -0.7071069f, -1.490116E-07f, 0f, -0.4999998f, -0.4999998f, 0.7071071f, 0f, -0.5000004f, -0.5f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.926991f)
             };
@@ -4299,7 +4299,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: 45",
                 new float3(-1.570796f, 6.283185f, 0.7853982f),
-                new Quaternion(0.6532815f, -0.2705981f, -0.2705981f, -0.6532815f),
+                new QuaternionF(0.6532815f, -0.2705981f, -0.2705981f, -0.6532815f),
                 new float4x4(0.7071066f, -0.7071069f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, -0.7071069f, -0.7071066f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853984f, 0f)
             };
@@ -4308,7 +4308,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: 45",
                 new float3(-9.424778f, 6.283185f, 0.7853982f),
-                new Quaternion(-0.9238795f, 0.3826835f, 7.620466E-08f, -4.44724E-08f),
+                new QuaternionF(-0.9238795f, 0.3826835f, 7.620466E-08f, -4.44724E-08f),
                 new float4x4(0.7071067f, -0.7071068f, -1.748456E-07f, 0f, -0.7071068f, -0.7071067f, -2.384976E-08f, 0f, -1.067701E-07f, 1.404988E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.926991f)
             };
@@ -4317,7 +4317,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: 45",
                 new float3(0f, 10.21018f, 0.7853982f),
-                new Quaternion(-0.3535534f, -0.8535533f, 0.1464467f, 0.3535535f),
+                new QuaternionF(-0.3535534f, -0.8535533f, 0.1464467f, 0.3535535f),
                 new float4x4(-0.4999997f, 0.4999998f, -0.7071071f, 0f, 0.7071068f, 0.7071068f, -2.980232E-08f, 0f, 0.5000001f, -0.5000002f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.980232E-08f, 3.926991f, 0.7853982f)
             };
@@ -4326,7 +4326,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: 45",
                 new float3(0.001745329f, 10.21018f, 0.7853982f),
-                new Quaternion(-0.3532447f, -0.8536807f, 0.1471915f, 0.3532449f),
+                new QuaternionF(-0.3532447f, -0.8536807f, 0.1471915f, 0.3532449f),
                 new float4x4(-0.5008723f, 0.4991271f, -0.7071059f, 0f, 0.7071057f, 0.7071057f, -0.001745343f, 0f, 0.4991274f, -0.5008729f, -0.7071052f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.926991f, 0.7853982f)
             };
@@ -4335,7 +4335,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: 45",
                 new float3(0.01745329f, 10.21018f, 0.7853982f),
-                new Quaternion(-0.3504546f, -0.8547988f, 0.1538897f, 0.3504548f),
+                new QuaternionF(-0.3504546f, -0.8547988f, 0.1538897f, 0.3504548f),
                 new float4x4(-0.5087261f, 0.4912737f, -0.7069994f, 0f, 0.7069992f, 0.7069991f, -0.01745242f, 0f, 0.4912739f, -0.5087264f, -0.7069989f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745331f, 3.926991f, 0.7853983f)
             };
@@ -4344,7 +4344,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: 45",
                 new float3(0.7853982f, 10.21018f, 0.7853982f),
-                new Quaternion(-0.1913416f, -0.8446231f, 0.4619398f, 0.1913418f),
+                new QuaternionF(-0.1913416f, -0.8446231f, 0.4619398f, 0.1913418f),
                 new float4x4(-0.8535533f, 0.1464463f, -0.5000001f, 0f, 0.5f, 0.5f, -0.7071068f, 0f, 0.1464469f, -0.8535534f, -0.4999998f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 3.926991f, 0.7853982f)
             };
@@ -4353,7 +4353,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: 45",
                 new float3(1.570796f, 10.21018f, 0.7853982f),
-                new Quaternion(1.341105E-07f, -0.7071067f, 0.7071067f, 1.341105E-07f),
+                new QuaternionF(1.341105E-07f, -0.7071067f, 0.7071067f, 1.341105E-07f),
                 new float4x4(-0.9999996f, -3.793216E-07f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 3.793216E-07f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 3.141593f, 0f)
             };
@@ -4362,7 +4362,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: 45",
                 new float3(3.141593f, 10.21018f, 0.7853982f),
-                new Quaternion(0.3535536f, -0.1464466f, 0.8535533f, -0.3535534f),
+                new QuaternionF(0.3535536f, -0.1464466f, 0.8535533f, -0.3535534f),
                 new float4x4(-0.4999997f, 0.4999999f, 0.707107f, 0f, -0.7071068f, -0.7071067f, 1.192093E-07f, 0f, 0.5000002f, -0.5000002f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.192093E-07f, 0.7853985f, 3.926991f)
             };
@@ -4371,7 +4371,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: 45",
                 new float3(4.712389f, 10.21018f, 0.7853982f),
-                new Quaternion(0.5000001f, 0.4999999f, 0.4999999f, -0.5000001f),
+                new QuaternionF(0.5000001f, 0.4999999f, 0.4999999f, -0.5000001f),
                 new float4x4(5.960464E-07f, 0.9999999f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 0.9999999f, -5.364418E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -4380,7 +4380,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: 45",
                 new float3(6.283185f, 10.21018f, 0.7853982f),
-                new Quaternion(0.3535534f, 0.8535533f, -0.1464468f, -0.3535535f),
+                new QuaternionF(0.3535534f, 0.8535533f, -0.1464468f, -0.3535535f),
                 new float4x4(-0.4999998f, 0.4999997f, -0.707107f, 0f, 0.7071068f, 0.7071067f, -1.788139E-07f, 0f, 0.5000001f, -0.5000003f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 3.926991f, 0.7853982f)
             };
@@ -4389,7 +4389,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: 45",
                 new float3(10.21018f, 10.21018f, 0.7853982f),
-                new Quaternion(-0.4619399f, -0.1913418f, -0.7325376f, 0.4619398f),
+                new QuaternionF(-0.4619399f, -0.1913418f, -0.7325376f, 0.4619398f),
                 new float4x4(-0.1464461f, 0.8535534f, 0.5f, 0f, -0.4999998f, -0.4999998f, 0.7071069f, 0f, 0.8535535f, -0.1464468f, 0.4999996f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853987f, 3.926991f)
             };
@@ -4398,7 +4398,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: 45",
                 new float3(-1.570796f, 10.21018f, 0.7853982f),
-                new Quaternion(-0.5000001f, -0.4999999f, -0.4999999f, 0.5000001f),
+                new QuaternionF(-0.5000001f, -0.4999999f, -0.4999999f, 0.5000001f),
                 new float4x4(5.960464E-07f, 0.9999999f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 0.9999999f, -5.364418E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -4407,7 +4407,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: 45",
                 new float3(-9.424778f, 10.21018f, 0.7853982f),
-                new Quaternion(0.3535535f, -0.1464467f, 0.8535533f, -0.3535534f),
+                new QuaternionF(0.3535535f, -0.1464467f, 0.8535533f, -0.3535534f),
                 new float4x4(-0.4999998f, 0.4999998f, 0.7071071f, 0f, -0.7071068f, -0.7071067f, -5.960464E-08f, 0f, 0.5000001f, -0.5000002f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.960464E-08f, 0.7853986f, 3.926991f)
             };
@@ -4416,7 +4416,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: 45",
                 new float3(0f, -1.570796f, 0.7853982f),
-                new Quaternion(-0.2705981f, -0.6532815f, 0.2705981f, 0.6532815f),
+                new QuaternionF(-0.2705981f, -0.6532815f, 0.2705981f, 0.6532815f),
                 new float4x4(8.940697E-08f, 0f, -0.9999999f, 0f, 0.7071068f, 0.7071068f, 0f, 0f, 0.7071067f, -0.7071068f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 0.7853982f)
             };
@@ -4425,7 +4425,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: 45",
                 new float3(0.001745329f, -1.570796f, 0.7853982f),
-                new Quaternion(-0.2700279f, -0.6535174f, 0.2711681f, 0.6530451f),
+                new QuaternionF(-0.2700279f, -0.6535174f, 0.2711681f, 0.6530451f),
                 new float4x4(-0.001234129f, -0.001234084f, -0.9999985f, 0f, 0.7071058f, 0.7071056f, -0.001745313f, 0f, 0.7071067f, -0.7071068f, -1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745344f, 4.712389f, 0.7853982f)
             };
@@ -4434,7 +4434,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: 45",
                 new float3(0.01745329f, -1.570796f, 0.7853982f),
-                new Quaternion(-0.2648869f, -0.6556179f, 0.2762886f, 0.6508952f),
+                new QuaternionF(-0.2648869f, -0.6556179f, 0.2762886f, 0.6508952f),
                 new float4x4(-0.01234044f, -0.01234075f, -0.9998475f, 0f, 0.7069989f, 0.7069991f, -0.01745239f, 0f, 0.7071066f, -0.7071067f, 2.831221E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 4.712389f, 0.7853983f)
             };
@@ -4443,7 +4443,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: 45",
                 new float3(0.7853982f, -1.570796f, 0.7853982f),
-                new Quaternion(0f, -0.7071068f, 0.5f, 0.4999999f),
+                new QuaternionF(0f, -0.7071068f, 0.5f, 0.4999999f),
                 new float4x4(-0.4999999f, -0.4999999f, -0.7071067f, 0f, 0.4999999f, 0.5f, -0.7071068f, 0f, 0.7071067f, -0.7071068f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 0.7853982f)
             };
@@ -4452,7 +4452,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: 45",
                 new float3(1.570796f, -1.570796f, 0.7853982f),
-                new Quaternion(0.270598f, -0.6532815f, 0.6532815f, 0.270598f),
+                new QuaternionF(0.270598f, -0.6532815f, 0.6532815f, 0.270598f),
                 new float4x4(-0.7071066f, -0.7071066f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.926991f, 0f)
             };
@@ -4461,7 +4461,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: 45",
                 new float3(3.141593f, -1.570796f, 0.7853982f),
-                new Quaternion(0.6532815f, -0.270598f, 0.6532815f, -0.2705981f),
+                new QuaternionF(0.6532815f, -0.270598f, 0.6532815f, -0.2705981f),
                 new float4x4(1.192093E-07f, 8.940697E-08f, 0.9999999f, 0f, -0.7071067f, -0.7071066f, 8.940697E-08f, 0f, 0.7071067f, -0.7071067f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-5.960464E-08f, 1.570796f, 3.926991f)
             };
@@ -4470,7 +4470,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: 45",
                 new float3(4.712389f, -1.570796f, 0.7853982f),
-                new Quaternion(0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
+                new QuaternionF(0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -4479,7 +4479,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: 45",
                 new float3(6.283185f, -1.570796f, 0.7853982f),
-                new Quaternion(0.270598f, 0.6532815f, -0.2705981f, -0.6532815f),
+                new QuaternionF(0.270598f, 0.6532815f, -0.2705981f, -0.6532815f),
                 new float4x4(2.980232E-08f, -1.490116E-07f, -0.9999999f, 0f, 0.7071067f, 0.7071068f, -1.490116E-07f, 0f, 0.7071067f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 4.712389f, 0.7853982f)
             };
@@ -4488,7 +4488,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: 45",
                 new float3(10.21018f, -1.570796f, 0.7853982f),
-                new Quaternion(-0.7071067f, -1.341105E-07f, -0.4999999f, 0.5000001f),
+                new QuaternionF(-0.7071067f, -1.341105E-07f, -0.4999999f, 0.5000001f),
                 new float4x4(0.5000003f, 0.5000002f, 0.7071064f, 0f, -0.4999998f, -0.4999995f, 0.707107f, 0f, 0.7071066f, -0.7071068f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.926991f)
             };
@@ -4497,7 +4497,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: 45",
                 new float3(-1.570796f, -1.570796f, 0.7853982f),
-                new Quaternion(-0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
+                new QuaternionF(-0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -4506,7 +4506,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: 45",
                 new float3(-9.424778f, -1.570796f, 0.7853982f),
-                new Quaternion(0.6532815f, -0.2705981f, 0.6532815f, -0.2705981f),
+                new QuaternionF(0.6532815f, -0.2705981f, 0.6532815f, -0.2705981f),
                 new float4x4(8.940697E-08f, 0f, 0.9999999f, 0f, -0.7071068f, -0.7071066f, 0f, 0f, 0.7071067f, -0.7071068f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 3.926991f)
             };
@@ -4515,7 +4515,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: 45",
                 new float3(0f, -9.424778f, 0.7853982f),
-                new Quaternion(0.3826835f, 0.9238795f, 4.563455E-09f, 1.101715E-08f),
+                new QuaternionF(0.3826835f, 0.9238795f, 4.563455E-09f, 1.101715E-08f),
                 new float4x4(-0.7071067f, 0.7071068f, 2.384976E-08f, 0f, 0.7071068f, 0.7071067f, 0f, 0f, -1.686433E-08f, 1.686433E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 0.7853982f)
             };
@@ -4524,7 +4524,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: 45",
                 new float3(0.001745329f, -9.424778f, 0.7853982f),
-                new Quaternion(0.3826833f, 0.9238791f, -0.0008062323f, 0.0003339653f),
+                new QuaternionF(0.3826833f, 0.9238791f, -0.0008062323f, 0.0003339653f),
                 new float4x4(-0.7071067f, 0.7071068f, 2.380693E-08f, 0f, 0.7071057f, 0.7071057f, -0.001745328f, 0f, -0.00123415f, -0.001234117f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 0.7853982f)
             };
@@ -4533,7 +4533,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: 45",
                 new float3(0.01745329f, -9.424778f, 0.7853982f),
-                new Quaternion(0.3826689f, 0.9238443f, -0.008062262f, 0.003339512f),
+                new QuaternionF(0.3826689f, 0.9238443f, -0.008062262f, 0.003339512f),
                 new float4x4(-0.7071068f, 0.7071068f, 2.374873E-08f, 0f, 0.7069991f, 0.7069991f, -0.0174524f, 0f, -0.01234073f, -0.0123407f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 0.7853982f)
             };
@@ -4542,7 +4542,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: 45",
                 new float3(0.7853982f, -9.424778f, 0.7853982f),
-                new Quaternion(0.3535534f, 0.8535534f, -0.3535534f, 0.1464466f),
+                new QuaternionF(0.3535534f, 0.8535534f, -0.3535534f, 0.1464466f),
                 new float4x4(-0.7071067f, 0.7071068f, 2.980232E-08f, 0f, 0.5f, 0.4999999f, -0.7071068f, 0f, -0.5000001f, -0.5f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 0.7853982f)
             };
@@ -4551,7 +4551,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: 45",
                 new float3(1.570796f, -9.424778f, 0.7853982f),
-                new Quaternion(0.2705981f, 0.6532815f, -0.6532815f, 0.2705981f),
+                new QuaternionF(0.2705981f, 0.6532815f, -0.6532815f, 0.2705981f),
                 new float4x4(-0.7071066f, 0.7071068f, 0f, 0f, 0f, 8.940697E-08f, -0.9999999f, 0f, -0.7071068f, -0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 2.356194f, 0f)
             };
@@ -4560,7 +4560,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: 45",
                 new float3(3.141593f, -9.424778f, 0.7853982f),
-                new Quaternion(-5.710473E-09f, -4.494751E-08f, -0.9238795f, 0.3826835f),
+                new QuaternionF(-5.710473E-09f, -4.494751E-08f, -0.9238795f, 0.3826835f),
                 new float4x4(-0.7071067f, 0.7071068f, -2.384976E-08f, 0f, -0.7071068f, -0.7071067f, 8.742277E-08f, 0f, 4.495291E-08f, 7.868156E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, -2.384976E-08f, 3.926991f)
             };
@@ -4569,7 +4569,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: 45",
                 new float3(4.712389f, -9.424778f, 0.7853982f),
-                new Quaternion(-0.2705981f, -0.6532815f, -0.6532815f, 0.2705981f),
+                new QuaternionF(-0.2705981f, -0.6532815f, -0.6532815f, 0.2705981f),
                 new float4x4(-0.7071066f, 0.7071068f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.7071068f, 0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -4578,7 +4578,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: 45",
                 new float3(6.283185f, -9.424778f, 0.7853982f),
-                new Quaternion(-0.3826835f, -0.9238795f, 7.620466E-08f, -4.44724E-08f),
+                new QuaternionF(-0.3826835f, -0.9238795f, 7.620466E-08f, -4.44724E-08f),
                 new float4x4(-0.7071067f, 0.7071068f, 2.384976E-08f, 0f, 0.7071068f, 0.7071067f, -1.748456E-07f, 0f, -1.404988E-07f, -1.067701E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 0.7853982f)
             };
@@ -4587,7 +4587,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: 45",
                 new float3(10.21018f, -9.424778f, 0.7853982f),
-                new Quaternion(0.1464467f, 0.3535535f, 0.8535533f, -0.3535534f),
+                new QuaternionF(0.1464467f, 0.3535535f, 0.8535533f, -0.3535534f),
                 new float4x4(-0.7071067f, 0.7071068f, 0f, 0f, -0.4999998f, -0.4999997f, 0.707107f, 0f, 0.5000002f, 0.5000002f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0f, 3.926991f)
             };
@@ -4596,7 +4596,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: 45",
                 new float3(-1.570796f, -9.424778f, 0.7853982f),
-                new Quaternion(0.2705981f, 0.6532815f, 0.6532815f, -0.2705981f),
+                new QuaternionF(0.2705981f, 0.6532815f, 0.6532815f, -0.2705981f),
                 new float4x4(-0.7071066f, 0.7071068f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.7071068f, 0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -4605,7 +4605,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: 45",
                 new float3(-9.424778f, -9.424778f, 0.7853982f),
-                new Quaternion(1.558061E-08f, 6.453698E-09f, -0.9238795f, 0.3826835f),
+                new QuaternionF(1.558061E-08f, 6.453698E-09f, -0.9238795f, 0.3826835f),
                 new float4x4(-0.7071067f, 0.7071068f, -2.384976E-08f, 0f, -0.7071068f, -0.7071067f, -2.384976E-08f, 0f, -3.372865E-08f, 2.664535E-15f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 3.926991f)
             };
@@ -4614,7 +4614,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: 90",
                 new float3(0f, 0f, 1.570796f),
-                new Quaternion(0f, 0f, 0.7071068f, 0.7071068f),
+                new QuaternionF(0f, 0f, 0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 1.570796f)
             };
@@ -4623,7 +4623,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: 90",
                 new float3(0.001745329f, 0f, 1.570796f),
-                new Quaternion(0.000617067f, -0.000617067f, 0.7071065f, 0.7071065f),
+                new QuaternionF(0.000617067f, -0.000617067f, 0.7071065f, 0.7071065f),
                 new float4x4(-4.62876E-08f, -1f, 0f, 0f, 0.9999985f, -4.62876E-08f, -0.001745328f, 0f, 0.001745328f, 0f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0f, 1.570796f)
             };
@@ -4632,7 +4632,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: 90",
                 new float3(0.01745329f, 0f, 1.570796f),
-                new Quaternion(0.006170592f, -0.006170592f, 0.7070798f, 0.7070798f),
+                new QuaternionF(0.006170592f, -0.006170592f, 0.7070798f, 0.7070798f),
                 new float4x4(8.192001E-08f, -0.9999999f, 0f, 0f, 0.9998476f, 8.192001E-08f, -0.01745241f, 0f, 0.01745241f, 0f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0f, 1.570796f)
             };
@@ -4641,7 +4641,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: 90",
                 new float3(0.7853982f, 0f, 1.570796f),
-                new Quaternion(0.2705981f, -0.2705981f, 0.6532815f, 0.6532815f),
+                new QuaternionF(0.2705981f, -0.2705981f, 0.6532815f, 0.6532815f),
                 new float4x4(8.940697E-08f, -0.9999999f, 0f, 0f, 0.7071067f, 8.940697E-08f, -0.7071068f, 0f, 0.7071068f, 0f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0f, 1.570796f)
             };
@@ -4650,7 +4650,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: 90",
                 new float3(1.570796f, 0f, 1.570796f),
-                new Quaternion(0.5f, -0.5f, 0.5f, 0.5f),
+                new QuaternionF(0.5f, -0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -4659,7 +4659,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: 90",
                 new float3(3.141593f, 0f, 1.570796f),
-                new Quaternion(0.7071068f, -0.7071068f, -3.090862E-08f, -3.090862E-08f),
+                new QuaternionF(0.7071068f, -0.7071068f, -3.090862E-08f, -3.090862E-08f),
                 new float4x4(5.960464E-08f, -0.9999999f, 0f, 0f, -0.9999999f, 5.960464E-08f, 8.742278E-08f, 0f, -8.742278E-08f, 0f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 3.141593f, 4.712389f)
             };
@@ -4668,7 +4668,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: 90",
                 new float3(4.712389f, 0f, 1.570796f),
-                new Quaternion(0.5f, -0.5f, -0.5f, -0.5f),
+                new QuaternionF(0.5f, -0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -4677,7 +4677,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: 90",
                 new float3(6.283185f, 0f, 1.570796f),
-                new Quaternion(-6.181724E-08f, 6.181724E-08f, -0.7071068f, -0.7071068f),
+                new QuaternionF(-6.181724E-08f, 6.181724E-08f, -0.7071068f, -0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, -1.748456E-07f, 0f, 1.748456E-07f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0f, 1.570796f)
             };
@@ -4686,7 +4686,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: 90",
                 new float3(10.21018f, 0f, 1.570796f),
-                new Quaternion(-0.6532814f, 0.6532814f, 0.2705982f, 0.2705982f),
+                new QuaternionF(-0.6532814f, 0.6532814f, 0.2705982f, 0.2705982f),
                 new float4x4(7.450581E-08f, -0.9999999f, 0f, 0f, -0.7071064f, 7.450581E-08f, 0.707107f, 0f, -0.707107f, 0f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 4.712389f)
             };
@@ -4695,7 +4695,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: 90",
                 new float3(-1.570796f, 0f, 1.570796f),
-                new Quaternion(-0.5f, 0.5f, 0.5f, 0.5f),
+                new QuaternionF(-0.5f, 0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -4704,7 +4704,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: 90",
                 new float3(-9.424778f, 0f, 1.570796f),
-                new Quaternion(0.7071068f, -0.7071068f, 8.432163E-09f, 8.432163E-09f),
+                new QuaternionF(0.7071068f, -0.7071068f, 8.432163E-09f, 8.432163E-09f),
                 new float4x4(5.960464E-08f, -0.9999999f, 0f, 0f, -0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, 2.384976E-08f, 0f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 4.712389f)
             };
@@ -4713,7 +4713,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: 90",
                 new float3(0f, 0.001745329f, 1.570796f),
-                new Quaternion(0.000617067f, 0.000617067f, 0.7071065f, 0.7071065f),
+                new QuaternionF(0.000617067f, 0.000617067f, 0.7071065f, 0.7071065f),
                 new float4x4(-4.62876E-08f, -0.9999985f, 0.001745328f, 0f, 1f, -4.62876E-08f, 0f, 0f, 0f, 0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.001745329f, 1.570796f)
             };
@@ -4722,7 +4722,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: 90",
                 new float3(0.001745329f, 0.001745329f, 1.570796f),
-                new Quaternion(0.001234133f, 0f, 0.7071058f, 0.7071068f),
+                new QuaternionF(0.001234133f, 0f, 0.7071058f, 0.7071068f),
                 new float4x4(2.920628E-06f, -0.9999986f, 0.001745326f, 0f, 0.9999986f, -1.255435E-07f, -0.001745328f, 0f, 0.001745326f, 0.001745328f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 1.570796f)
             };
@@ -4731,7 +4731,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: 90",
                 new float3(0.01745329f, 0.001745329f, 1.570796f),
-                new Quaternion(0.006787634f, -0.005553547f, 0.7070742f, 0.707085f),
+                new QuaternionF(0.006787634f, -0.005553547f, 0.7070742f, 0.707085f),
                 new float4x4(3.040541E-05f, -0.9999985f, 0.001745063f, 0f, 0.9998477f, -5.477341E-08f, -0.01745241f, 0f, 0.01745238f, 0.001745328f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.00174533f, 1.570796f)
             };
@@ -4740,7 +4740,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: 90",
                 new float3(0.7853982f, 0.001745329f, 1.570796f),
-                new Quaternion(0.2711681f, -0.2700279f, 0.6530451f, 0.6535174f),
+                new QuaternionF(0.2711681f, -0.2700279f, 0.6530451f, 0.6535174f),
                 new float4x4(0.001234218f, -0.9999985f, 0.001234084f, 0f, 0.7071067f, 1.043081E-07f, -0.7071068f, 0f, 0.7071058f, 0.001745313f, 0.7071056f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.00174526f, 1.570796f)
             };
@@ -4749,7 +4749,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: 90",
                 new float3(1.570796f, 0.001745329f, 1.570796f),
-                new Quaternion(0.5004361f, -0.4995635f, 0.4995635f, 0.5004361f),
+                new QuaternionF(0.5004361f, -0.4995635f, 0.4995635f, 0.5004361f),
                 new float4x4(0.001745284f, -0.9999985f, 0f, 0f, 0f, 2.980232E-08f, -1f, 0f, 0.9999985f, 0.001745254f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.714134f, 0f)
             };
@@ -4758,7 +4758,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: 90",
                 new float3(3.141593f, 0.001745329f, 1.570796f),
-                new Quaternion(0.7071065f, -0.7071065f, -0.0006170979f, 0.0006170361f),
+                new QuaternionF(0.7071065f, -0.7071065f, -0.0006170979f, 0.0006170361f),
                 new float4x4(-4.636388E-08f, -0.9999985f, -0.001745328f, 0f, -1f, -4.636388E-08f, 8.73697E-08f, 0f, -8.73697E-08f, 0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.73697E-08f, 3.143338f, 4.712389f)
             };
@@ -4767,7 +4767,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: 90",
                 new float3(4.712389f, 0.001745329f, 1.570796f),
-                new Quaternion(0.4995635f, -0.5004361f, -0.5004361f, -0.4995635f),
+                new QuaternionF(0.4995635f, -0.5004361f, -0.5004361f, -0.4995635f),
                 new float4x4(-0.001745224f, -0.9999985f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, -0.9999985f, 0.001745254f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.572542f, 0f)
             };
@@ -4776,7 +4776,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: 90",
                 new float3(6.283185f, 0.001745329f, 1.570796f),
-                new Quaternion(-0.0006171288f, -0.0006170052f, -0.7071065f, -0.7071065f),
+                new QuaternionF(-0.0006171288f, -0.0006170052f, -0.7071065f, -0.7071065f),
                 new float4x4(-4.613503E-08f, -0.9999985f, 0.001745328f, 0f, 1f, -4.644016E-08f, -1.747976E-07f, 0f, 1.747976E-07f, 0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.747976E-07f, 0.001745329f, 1.570796f)
             };
@@ -4785,7 +4785,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: 90",
                 new float3(10.21018f, 0.001745329f, 1.570796f),
-                new Quaternion(-0.653045f, 0.6535173f, 0.2711681f, 0.270028f),
+                new QuaternionF(-0.653045f, 0.6535173f, 0.2711681f, 0.270028f),
                 new float4x4(-0.001234055f, -0.9999983f, -0.001234084f, 0f, -0.7071065f, 1.192093E-07f, 0.7071069f, 0f, -0.7071059f, 0.001745313f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 4.712389f)
             };
@@ -4794,7 +4794,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: 90",
                 new float3(-1.570796f, 0.001745329f, 1.570796f),
-                new Quaternion(-0.4995635f, 0.5004361f, 0.5004361f, 0.4995635f),
+                new QuaternionF(-0.4995635f, 0.5004361f, 0.5004361f, 0.4995635f),
                 new float4x4(-0.001745224f, -0.9999985f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, -0.9999985f, 0.001745254f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.572542f, 0f)
             };
@@ -4803,7 +4803,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: 90",
                 new float3(-9.424778f, 0.001745329f, 1.570796f),
-                new Quaternion(0.7071065f, -0.7071065f, -0.0006170585f, 0.0006170754f),
+                new QuaternionF(0.7071065f, -0.7071065f, -0.0006170585f, 0.0006170754f),
                 new float4x4(-4.626673E-08f, -0.9999985f, -0.001745328f, 0f, -1f, -4.626673E-08f, -2.392335E-08f, 0f, 2.392335E-08f, 0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.392335E-08f, 3.143338f, 4.712389f)
             };
@@ -4812,7 +4812,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: 90",
                 new float3(0f, 0.01745329f, 1.570796f),
-                new Quaternion(0.006170592f, 0.006170592f, 0.7070798f, 0.7070798f),
+                new QuaternionF(0.006170592f, 0.006170592f, 0.7070798f, 0.7070798f),
                 new float4x4(8.192001E-08f, -0.9998476f, 0.01745241f, 0f, 0.9999999f, 8.192001E-08f, 0f, 0f, 0f, 0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.01745329f, 1.570796f)
             };
@@ -4821,7 +4821,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: 90",
                 new float3(0.001745329f, 0.01745329f, 1.570796f),
-                new Quaternion(0.006787634f, 0.005553547f, 0.7070742f, 0.707085f),
+                new QuaternionF(0.006787634f, 0.005553547f, 0.7070742f, 0.707085f),
                 new float4x4(3.040541E-05f, -0.9998477f, 0.01745238f, 0f, 0.9999985f, -5.477341E-08f, -0.001745328f, 0f, 0.001745063f, 0.01745241f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.01745329f, 1.570796f)
             };
@@ -4830,7 +4830,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: 90",
                 new float3(0.01745329f, 0.01745329f, 1.570796f),
-                new Quaternion(0.01234071f, 0f, 0.7069991f, 0.7071067f),
+                new QuaternionF(0.01234071f, 0f, 0.7069991f, 0.7071067f),
                 new float4x4(0.0003046393f, -0.9998476f, 0.01744975f, 0f, 0.9998476f, 5.288166E-08f, -0.0174524f, 0f, 0.01744975f, 0.0174524f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.01745329f, 1.570796f)
             };
@@ -4839,7 +4839,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: 90",
                 new float3(0.7853982f, 0.01745329f, 1.570796f),
-                new Quaternion(0.2762886f, -0.2648869f, 0.6508952f, 0.655618f),
+                new QuaternionF(0.2762886f, -0.2648869f, 0.6508952f, 0.655618f),
                 new float4x4(0.01234071f, -0.9998477f, 0.01234072f, 0f, 0.7071067f, -1.490116E-08f, -0.7071067f, 0f, 0.7069991f, 0.01745239f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 0.01745335f, 1.570796f)
             };
@@ -4848,7 +4848,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: 90",
                 new float3(1.570796f, 0.01745329f, 1.570796f),
-                new Quaternion(0.5043442f, -0.4956177f, 0.4956177f, 0.5043442f),
+                new QuaternionF(0.5043442f, -0.4956177f, 0.4956177f, 0.5043442f),
                 new float4x4(0.01745254f, -0.9998475f, 0f, 0f, 0f, 2.086163E-07f, -0.9999998f, 0f, 0.9998475f, 0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.729842f, 0f)
             };
@@ -4857,7 +4857,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: 90",
                 new float3(3.141593f, 0.01745329f, 1.570796f),
-                new Quaternion(0.7070798f, -0.7070798f, -0.006170623f, 0.006170562f),
+                new QuaternionF(0.7070798f, -0.7070798f, -0.006170623f, 0.006170562f),
                 new float4x4(8.116331E-08f, -0.9998476f, -0.0174524f, 0f, -0.9999999f, 8.116331E-08f, 8.6613E-08f, 0f, -8.6613E-08f, 0.0174524f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.6613E-08f, 3.159046f, 4.712389f)
             };
@@ -4866,7 +4866,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: 90",
                 new float3(4.712389f, 0.01745329f, 1.570796f),
-                new Quaternion(0.4956177f, -0.5043442f, -0.5043442f, -0.4956177f),
+                new QuaternionF(0.4956177f, -0.5043442f, -0.5043442f, -0.4956177f),
                 new float4x4(-0.01745212f, -0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, -0.9998475f, 0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.58825f, 0f)
             };
@@ -4875,7 +4875,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: 90",
                 new float3(6.283185f, 0.01745329f, 1.570796f),
-                new Quaternion(-0.006170654f, -0.00617053f, -0.7070798f, -0.7070798f),
+                new QuaternionF(-0.006170654f, -0.00617053f, -0.7070798f, -0.7070798f),
                 new float4x4(8.344796E-08f, -0.9998476f, 0.01745241f, 0f, 0.9999999f, 8.039206E-08f, -1.750886E-07f, 0f, 1.750886E-07f, 0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 0.01745329f, 1.570796f)
             };
@@ -4884,7 +4884,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: 90",
                 new float3(10.21018f, 0.01745329f, 1.570796f),
-                new Quaternion(-0.6508952f, 0.6556179f, 0.2762887f, 0.264887f),
+                new QuaternionF(-0.6508952f, 0.6556179f, 0.2762887f, 0.264887f),
                 new float4x4(-0.01234058f, -0.9998477f, -0.01234072f, 0f, -0.7071065f, -2.980232E-08f, 0.707107f, 0f, -0.7069993f, 0.01745236f, -0.7069987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 4.712389f)
             };
@@ -4893,7 +4893,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: 90",
                 new float3(-1.570796f, 0.01745329f, 1.570796f),
-                new Quaternion(-0.4956177f, 0.5043442f, 0.5043442f, 0.4956177f),
+                new QuaternionF(-0.4956177f, 0.5043442f, 0.5043442f, 0.4956177f),
                 new float4x4(-0.01745212f, -0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, -0.9998475f, 0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.58825f, 0f)
             };
@@ -4902,7 +4902,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: 90",
                 new float3(-9.424778f, 0.01745329f, 1.570796f),
-                new Quaternion(0.7070798f, -0.7070798f, -0.006170584f, 0.006170601f),
+                new QuaternionF(0.7070798f, -0.7070798f, -0.006170584f, 0.006170601f),
                 new float4x4(8.213101E-08f, -0.9998476f, -0.0174524f, 0f, -0.9999999f, 8.213101E-08f, -2.328306E-08f, 0f, 2.328306E-08f, 0.0174524f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.328306E-08f, 3.159046f, 4.712389f)
             };
@@ -4911,7 +4911,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: 90",
                 new float3(0f, 0.7853982f, 1.570796f),
-                new Quaternion(0.2705981f, 0.2705981f, 0.6532815f, 0.6532815f),
+                new QuaternionF(0.2705981f, 0.2705981f, 0.6532815f, 0.6532815f),
                 new float4x4(8.940697E-08f, -0.7071067f, 0.7071068f, 0f, 0.9999999f, 8.940697E-08f, 0f, 0f, 0f, 0.7071068f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853982f, 1.570796f)
             };
@@ -4920,7 +4920,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: 90",
                 new float3(0.001745329f, 0.7853982f, 1.570796f),
-                new Quaternion(0.2711681f, 0.2700279f, 0.6530451f, 0.6535174f),
+                new QuaternionF(0.2711681f, 0.2700279f, 0.6530451f, 0.6535174f),
                 new float4x4(0.001234218f, -0.7071067f, 0.7071058f, 0f, 0.9999985f, 1.043081E-07f, -0.001745313f, 0f, 0.001234084f, 0.7071068f, 0.7071056f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745314f, 0.7853982f, 1.570796f)
             };
@@ -4929,7 +4929,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: 90",
                 new float3(0.01745329f, 0.7853982f, 1.570796f),
-                new Quaternion(0.2762886f, 0.2648869f, 0.6508952f, 0.655618f),
+                new QuaternionF(0.2762886f, 0.2648869f, 0.6508952f, 0.655618f),
                 new float4x4(0.01234071f, -0.7071067f, 0.7069991f, 0f, 0.9998477f, -1.490116E-08f, -0.01745239f, 0f, 0.01234072f, 0.7071067f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 0.7853982f, 1.570796f)
             };
@@ -4938,7 +4938,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: 90",
                 new float3(0.7853982f, 0.7853982f, 1.570796f),
-                new Quaternion(0.5f, 0f, 0.4999999f, 0.7071068f),
+                new QuaternionF(0.5f, 0f, 0.4999999f, 0.7071068f),
                 new float4x4(0.5000001f, -0.7071067f, 0.4999999f, 0f, 0.7071067f, 1.192093E-07f, -0.7071068f, 0f, 0.4999999f, 0.7071068f, 0.5f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0.7853982f, 1.570796f)
             };
@@ -4947,7 +4947,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: 90",
                 new float3(1.570796f, 0.7853982f, 1.570796f),
-                new Quaternion(0.6532815f, -0.270598f, 0.270598f, 0.6532815f),
+                new QuaternionF(0.6532815f, -0.270598f, 0.270598f, 0.6532815f),
                 new float4x4(0.7071069f, -0.7071066f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, 0.7071066f, 0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 5.497787f, 0f)
             };
@@ -4956,7 +4956,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: 90",
                 new float3(3.141593f, 0.7853982f, 1.570796f),
-                new Quaternion(0.6532815f, -0.6532815f, -0.2705981f, 0.270598f),
+                new QuaternionF(0.6532815f, -0.6532815f, -0.2705981f, 0.270598f),
                 new float4x4(5.960464E-08f, -0.7071067f, -0.7071067f, 0f, -0.9999999f, 5.960464E-08f, 8.940697E-08f, 0f, -8.940697E-08f, 0.7071067f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-5.960464E-08f, 3.926991f, 4.712389f)
             };
@@ -4965,7 +4965,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: 90",
                 new float3(4.712389f, 0.7853982f, 1.570796f),
-                new Quaternion(0.270598f, -0.6532815f, -0.6532815f, -0.270598f),
+                new QuaternionF(0.270598f, -0.6532815f, -0.6532815f, -0.270598f),
                 new float4x4(-0.7071066f, -0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, -0.7071066f, 0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 2.356194f, 0f)
             };
@@ -4974,7 +4974,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: 90",
                 new float3(6.283185f, 0.7853982f, 1.570796f),
-                new Quaternion(-0.2705981f, -0.270598f, -0.6532815f, -0.6532815f),
+                new QuaternionF(-0.2705981f, -0.270598f, -0.6532815f, -0.6532815f),
                 new float4x4(1.490116E-07f, -0.7071067f, 0.7071067f, 0f, 0.9999999f, 2.980232E-08f, -1.490116E-07f, 0f, 1.490116E-07f, 0.7071067f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 0.7853982f, 1.570796f)
             };
@@ -4983,7 +4983,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: 90",
                 new float3(10.21018f, 0.7853982f, 1.570796f),
-                new Quaternion(-0.4999999f, 0.7071067f, 0.5000001f, 1.043081E-07f),
+                new QuaternionF(-0.4999999f, 0.7071067f, 0.5000001f, 1.043081E-07f),
                 new float4x4(-0.4999999f, -0.7071066f, -0.4999998f, 0f, -0.7071064f, 1.788139E-07f, 0.7071069f, 0f, -0.5000001f, 0.7071066f, -0.4999995f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 4.712389f)
             };
@@ -4992,7 +4992,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: 90",
                 new float3(-1.570796f, 0.7853982f, 1.570796f),
-                new Quaternion(-0.270598f, 0.6532815f, 0.6532815f, 0.270598f),
+                new QuaternionF(-0.270598f, 0.6532815f, 0.6532815f, 0.270598f),
                 new float4x4(-0.7071066f, -0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, -0.7071066f, 0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 2.356194f, 0f)
             };
@@ -5001,7 +5001,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: 90",
                 new float3(-9.424778f, 0.7853982f, 1.570796f),
-                new Quaternion(0.6532815f, -0.6532815f, -0.2705981f, 0.2705981f),
+                new QuaternionF(0.6532815f, -0.6532815f, -0.2705981f, 0.2705981f),
                 new float4x4(8.940697E-08f, -0.7071067f, -0.7071068f, 0f, -0.9999999f, 8.940697E-08f, 0f, 0f, 0f, 0.7071068f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 4.712389f)
             };
@@ -5010,7 +5010,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: 90",
                 new float3(0f, 1.570796f, 1.570796f),
-                new Quaternion(0.5f, 0.5f, 0.5f, 0.5f),
+                new QuaternionF(0.5f, 0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 1.570796f)
             };
@@ -5019,7 +5019,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: 90",
                 new float3(0.001745329f, 1.570796f, 1.570796f),
-                new Quaternion(0.5004361f, 0.4995635f, 0.4995635f, 0.5004361f),
+                new QuaternionF(0.5004361f, 0.4995635f, 0.4995635f, 0.5004361f),
                 new float4x4(0.001745284f, 0f, 0.9999985f, 0f, 0.9999985f, 2.980232E-08f, -0.001745254f, 0f, 0f, 1f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745255f, 1.570796f, 1.570796f)
             };
@@ -5028,7 +5028,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: 90",
                 new float3(0.01745329f, 1.570796f, 1.570796f),
-                new Quaternion(0.5043442f, 0.4956177f, 0.4956177f, 0.5043442f),
+                new QuaternionF(0.5043442f, 0.4956177f, 0.4956177f, 0.5043442f),
                 new float4x4(0.01745254f, 0f, 0.9998475f, 0f, 0.9998475f, 2.086163E-07f, -0.01745233f, 0f, 0f, 0.9999998f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745322f, 1.570796f, 1.570796f)
             };
@@ -5037,7 +5037,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: 90",
                 new float3(0.7853982f, 1.570796f, 1.570796f),
-                new Quaternion(0.6532815f, 0.270598f, 0.270598f, 0.6532815f),
+                new QuaternionF(0.6532815f, 0.270598f, 0.270598f, 0.6532815f),
                 new float4x4(0.7071069f, 0f, 0.7071066f, 0f, 0.7071066f, 1.490116E-07f, -0.7071067f, 0f, 0f, 0.9999999f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 1.570796f, 1.570796f)
             };
@@ -5046,7 +5046,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: 90",
                 new float3(1.570796f, 1.570796f, 1.570796f),
-                new Quaternion(0.7071067f, 0f, 0f, 0.7071067f),
+                new QuaternionF(0.7071067f, 0f, 0f, 0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 0f, 0f)
             };
@@ -5055,7 +5055,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: 90",
                 new float3(3.141593f, 1.570796f, 1.570796f),
-                new Quaternion(0.4999999f, -0.5f, -0.5f, 0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, -0.5f, 0.4999999f),
                 new float4x4(0f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.788139E-07f, 4.712389f, 4.712389f)
             };
@@ -5064,7 +5064,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: 90",
                 new float3(4.712389f, 1.570796f, 1.570796f),
-                new Quaternion(0f, -0.7071067f, -0.7071067f, 0f),
+                new QuaternionF(0f, -0.7071067f, -0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -5073,7 +5073,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: 90",
                 new float3(6.283185f, 1.570796f, 1.570796f),
-                new Quaternion(-0.5f, -0.4999999f, -0.4999999f, -0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, -0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, -1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 1.570796f, 1.570796f)
             };
@@ -5082,7 +5082,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: 90",
                 new float3(10.21018f, 1.570796f, 1.570796f),
-                new Quaternion(-0.2705979f, 0.6532815f, 0.6532815f, -0.2705979f),
+                new QuaternionF(-0.2705979f, 0.6532815f, 0.6532815f, -0.2705979f),
                 new float4x4(-0.7071069f, 0f, -0.7071064f, 0f, -0.7071064f, 1.043081E-07f, 0.7071071f, 0f, 0f, 0.9999999f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 4.712389f)
             };
@@ -5091,7 +5091,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: 90",
                 new float3(-1.570796f, 1.570796f, 1.570796f),
-                new Quaternion(0f, 0.7071067f, 0.7071067f, 0f),
+                new QuaternionF(0f, 0.7071067f, 0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -5100,7 +5100,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: 90",
                 new float3(-9.424778f, 1.570796f, 1.570796f),
-                new Quaternion(0.5f, -0.5f, -0.5f, 0.5f),
+                new QuaternionF(0.5f, -0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 4.712389f)
             };
@@ -5109,7 +5109,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: 90",
                 new float3(0f, 3.141593f, 1.570796f),
-                new Quaternion(0.7071068f, 0.7071068f, -3.090862E-08f, -3.090862E-08f),
+                new QuaternionF(0.7071068f, 0.7071068f, -3.090862E-08f, -3.090862E-08f),
                 new float4x4(5.960464E-08f, 0.9999999f, -8.742278E-08f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, -8.742278E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 1.570796f)
             };
@@ -5118,7 +5118,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: 90",
                 new float3(0.001745329f, 3.141593f, 1.570796f),
-                new Quaternion(0.7071065f, 0.7071065f, -0.0006170979f, 0.0006170361f),
+                new QuaternionF(0.7071065f, 0.7071065f, -0.0006170979f, 0.0006170361f),
                 new float4x4(-4.636388E-08f, 1f, -8.73697E-08f, 0f, 0.9999985f, -4.636388E-08f, -0.001745328f, 0f, -0.001745328f, -8.73697E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 1.570796f)
             };
@@ -5127,7 +5127,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: 90",
                 new float3(0.01745329f, 3.141593f, 1.570796f),
-                new Quaternion(0.7070798f, 0.7070798f, -0.006170623f, 0.006170562f),
+                new QuaternionF(0.7070798f, 0.7070798f, -0.006170623f, 0.006170562f),
                 new float4x4(8.116331E-08f, 0.9999999f, -8.6613E-08f, 0f, 0.9998476f, 8.116331E-08f, -0.0174524f, 0f, -0.0174524f, -8.6613E-08f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 1.570796f)
             };
@@ -5136,7 +5136,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: 90",
                 new float3(0.7853982f, 3.141593f, 1.570796f),
-                new Quaternion(0.6532815f, 0.6532815f, -0.2705981f, 0.270598f),
+                new QuaternionF(0.6532815f, 0.6532815f, -0.2705981f, 0.270598f),
                 new float4x4(5.960464E-08f, 0.9999999f, -8.940697E-08f, 0f, 0.7071067f, 5.960464E-08f, -0.7071067f, 0f, -0.7071067f, -8.940697E-08f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 3.141593f, 1.570796f)
             };
@@ -5145,7 +5145,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: 90",
                 new float3(1.570796f, 3.141593f, 1.570796f),
-                new Quaternion(0.4999999f, 0.5f, -0.5f, 0.4999999f),
+                new QuaternionF(0.4999999f, 0.5f, -0.5f, 0.4999999f),
                 new float4x4(0f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -5154,7 +5154,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: 90",
                 new float3(3.141593f, 3.141593f, 1.570796f),
-                new Quaternion(-6.181724E-08f, 0f, -0.7071068f, 0.7071068f),
+                new QuaternionF(-6.181724E-08f, 0f, -0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, 8.742278E-08f, 0f, -0.9999999f, 5.960464E-08f, 8.742278E-08f, 0f, 8.742278E-08f, -8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 8.742278E-08f, 4.712389f)
             };
@@ -5163,7 +5163,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: 90",
                 new float3(4.712389f, 3.141593f, 1.570796f),
-                new Quaternion(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -5172,7 +5172,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: 90",
                 new float3(6.283185f, 3.141593f, 1.570796f),
-                new Quaternion(-0.7071068f, -0.7071068f, 9.272586E-08f, -3.090862E-08f),
+                new QuaternionF(-0.7071068f, -0.7071068f, 9.272586E-08f, -3.090862E-08f),
                 new float4x4(5.960463E-08f, 0.9999999f, -8.742277E-08f, 0f, 0.9999999f, 5.960463E-08f, -1.748456E-07f, 0f, -1.748456E-07f, -8.742277E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 1.570796f)
             };
@@ -5181,7 +5181,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: 90",
                 new float3(10.21018f, 3.141593f, 1.570796f),
-                new Quaternion(0.2705982f, 0.2705981f, 0.6532814f, -0.6532814f),
+                new QuaternionF(0.2705982f, 0.2705981f, 0.6532814f, -0.6532814f),
                 new float4x4(1.192093E-07f, 0.9999999f, 5.960464E-08f, 0f, -0.7071064f, 4.470348E-08f, 0.707107f, 0f, 0.707107f, -5.960464E-08f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.264406E-07f, 4.712389f)
             };
@@ -5190,7 +5190,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: 90",
                 new float3(-1.570796f, 3.141593f, 1.570796f),
-                new Quaternion(0.5f, 0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(0.5f, 0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -5199,7 +5199,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: 90",
                 new float3(-9.424778f, 3.141593f, 1.570796f),
-                new Quaternion(-2.247646E-08f, 3.934078E-08f, -0.7071068f, 0.7071068f),
+                new QuaternionF(-2.247646E-08f, 3.934078E-08f, -0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, 8.742278E-08f, 0f, -0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, -2.384976E-08f, -8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742278E-08f, 4.712389f)
             };
@@ -5208,7 +5208,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: 90",
                 new float3(0f, 4.712389f, 1.570796f),
-                new Quaternion(0.5f, 0.5f, -0.5f, -0.5f),
+                new QuaternionF(0.5f, 0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 1.570796f)
             };
@@ -5217,7 +5217,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: 90",
                 new float3(0.001745329f, 4.712389f, 1.570796f),
-                new Quaternion(0.4995635f, 0.5004361f, -0.5004361f, -0.4995635f),
+                new QuaternionF(0.4995635f, 0.5004361f, -0.5004361f, -0.4995635f),
                 new float4x4(-0.001745224f, 0f, -0.9999985f, 0f, 0.9999985f, 2.980232E-08f, -0.001745254f, 0f, 0f, -1f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745255f, 4.712389f, 1.570796f)
             };
@@ -5226,7 +5226,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: 90",
                 new float3(0.01745329f, 4.712389f, 1.570796f),
-                new Quaternion(0.4956177f, 0.5043442f, -0.5043442f, -0.4956177f),
+                new QuaternionF(0.4956177f, 0.5043442f, -0.5043442f, -0.4956177f),
                 new float4x4(-0.01745212f, 0f, -0.9998475f, 0f, 0.9998475f, 2.086163E-07f, -0.01745233f, 0f, 0f, -0.9999998f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745322f, 4.712389f, 1.570796f)
             };
@@ -5235,7 +5235,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: 90",
                 new float3(0.7853982f, 4.712389f, 1.570796f),
-                new Quaternion(0.270598f, 0.6532815f, -0.6532815f, -0.270598f),
+                new QuaternionF(0.270598f, 0.6532815f, -0.6532815f, -0.270598f),
                 new float4x4(-0.7071066f, 0f, -0.7071066f, 0f, 0.7071066f, 1.490116E-07f, -0.7071067f, 0f, 0f, -0.9999999f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 1.570796f)
             };
@@ -5244,7 +5244,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: 90",
                 new float3(1.570796f, 4.712389f, 1.570796f),
-                new Quaternion(0f, 0.7071067f, -0.7071067f, 0f),
+                new QuaternionF(0f, 0.7071067f, -0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 3.141593f, 0f)
             };
@@ -5253,7 +5253,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: 90",
                 new float3(3.141593f, 4.712389f, 1.570796f),
-                new Quaternion(-0.5f, 0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(-0.5f, 0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.788139E-07f, 1.570796f, 4.712389f)
             };
@@ -5262,7 +5262,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: 90",
                 new float3(4.712389f, 4.712389f, 1.570796f),
-                new Quaternion(-0.7071067f, 0f, 0f, 0.7071067f),
+                new QuaternionF(-0.7071067f, 0f, 0f, 0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0f, 0f)
             };
@@ -5271,7 +5271,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: 90",
                 new float3(6.283185f, 4.712389f, 1.570796f),
-                new Quaternion(-0.4999999f, -0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(-0.4999999f, -0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, 0f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, -1.192093E-07f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 4.712389f, 1.570796f)
             };
@@ -5280,7 +5280,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: 90",
                 new float3(10.21018f, 4.712389f, 1.570796f),
-                new Quaternion(0.6532815f, -0.2705979f, 0.2705979f, -0.6532815f),
+                new QuaternionF(0.6532815f, -0.2705979f, 0.2705979f, -0.6532815f),
                 new float4x4(0.7071072f, 0f, 0.7071064f, 0f, -0.7071064f, 1.043081E-07f, 0.7071071f, 0f, 0f, -0.9999999f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 4.712389f)
             };
@@ -5289,7 +5289,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: 90",
                 new float3(-1.570796f, 4.712389f, 1.570796f),
-                new Quaternion(0.7071067f, 0f, 0f, -0.7071067f),
+                new QuaternionF(0.7071067f, 0f, 0f, -0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0f, 0f)
             };
@@ -5298,7 +5298,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: 90",
                 new float3(-9.424778f, 4.712389f, 1.570796f),
-                new Quaternion(-0.5f, 0.5f, -0.5f, 0.5f),
+                new QuaternionF(-0.5f, 0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 4.712389f)
             };
@@ -5307,7 +5307,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: 90",
                 new float3(0f, 6.283185f, 1.570796f),
-                new Quaternion(-6.181724E-08f, -6.181724E-08f, -0.7071068f, -0.7071068f),
+                new QuaternionF(-6.181724E-08f, -6.181724E-08f, -0.7071068f, -0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, 1.748456E-07f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.748456E-07f, 1.570796f)
             };
@@ -5316,7 +5316,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: 90",
                 new float3(0.001745329f, 6.283185f, 1.570796f),
-                new Quaternion(-0.0006171288f, 0.0006170052f, -0.7071065f, -0.7071065f),
+                new QuaternionF(-0.0006171288f, 0.0006170052f, -0.7071065f, -0.7071065f),
                 new float4x4(-4.613503E-08f, -1f, 1.747976E-07f, 0f, 0.9999985f, -4.644016E-08f, -0.001745328f, 0f, 0.001745328f, 1.747976E-07f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.747979E-07f, 1.570796f)
             };
@@ -5325,7 +5325,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: 90",
                 new float3(0.01745329f, 6.283185f, 1.570796f),
-                new Quaternion(-0.006170654f, 0.00617053f, -0.7070798f, -0.7070798f),
+                new QuaternionF(-0.006170654f, 0.00617053f, -0.7070798f, -0.7070798f),
                 new float4x4(8.344796E-08f, -0.9999999f, 1.750886E-07f, 0f, 0.9998476f, 8.039206E-08f, -0.01745241f, 0f, 0.01745241f, 1.750886E-07f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.751153E-07f, 1.570796f)
             };
@@ -5334,7 +5334,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: 90",
                 new float3(0.7853982f, 6.283185f, 1.570796f),
-                new Quaternion(-0.2705981f, 0.270598f, -0.6532815f, -0.6532815f),
+                new QuaternionF(-0.2705981f, 0.270598f, -0.6532815f, -0.6532815f),
                 new float4x4(1.490116E-07f, -0.9999999f, 1.490116E-07f, 0f, 0.7071067f, 2.980232E-08f, -0.7071067f, 0f, 0.7071067f, 1.490116E-07f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 2.107342E-07f, 1.570796f)
             };
@@ -5343,7 +5343,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: 90",
                 new float3(1.570796f, 6.283185f, 1.570796f),
-                new Quaternion(-0.5f, 0.4999999f, -0.4999999f, -0.5f),
+                new QuaternionF(-0.5f, 0.4999999f, -0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -5352,7 +5352,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: 90",
                 new float3(3.141593f, 6.283185f, 1.570796f),
-                new Quaternion(-0.7071068f, 0.7071068f, 9.272586E-08f, -3.090862E-08f),
+                new QuaternionF(-0.7071068f, 0.7071068f, 9.272586E-08f, -3.090862E-08f),
                 new float4x4(5.960463E-08f, -0.9999999f, -1.748456E-07f, 0f, -0.9999999f, 5.960463E-08f, 8.742277E-08f, 0f, -8.742277E-08f, 1.748456E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 3.141593f, 4.712389f)
             };
@@ -5361,7 +5361,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: 90",
                 new float3(4.712389f, 6.283185f, 1.570796f),
-                new Quaternion(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -5370,7 +5370,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: 90",
                 new float3(6.283185f, 6.283185f, 1.570796f),
-                new Quaternion(1.236345E-07f, 0f, 0.7071068f, 0.7071068f),
+                new QuaternionF(1.236345E-07f, 0f, 0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, 1.748456E-07f, 0f, 0.9999999f, 5.960461E-08f, -1.748456E-07f, 0f, 1.748456E-07f, 1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.748456E-07f, 1.570796f)
             };
@@ -5379,7 +5379,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: 90",
                 new float3(10.21018f, 6.283185f, 1.570796f),
-                new Quaternion(0.6532814f, -0.6532814f, -0.2705982f, -0.2705981f),
+                new QuaternionF(0.6532814f, -0.6532814f, -0.2705982f, -0.2705981f),
                 new float4x4(1.490116E-08f, -0.9999999f, -1.788139E-07f, 0f, -0.7071064f, 1.490116E-08f, 0.707107f, 0f, -0.707107f, 1.788139E-07f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 4.712389f)
             };
@@ -5388,7 +5388,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: 90",
                 new float3(-1.570796f, 6.283185f, 1.570796f),
-                new Quaternion(0.4999999f, -0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -5397,7 +5397,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: 90",
                 new float3(-9.424778f, 6.283185f, 1.570796f),
-                new Quaternion(-0.7071068f, 0.7071068f, 5.338508E-08f, -7.02494E-08f),
+                new QuaternionF(-0.7071068f, 0.7071068f, 5.338508E-08f, -7.02494E-08f),
                 new float4x4(5.960464E-08f, -0.9999999f, -1.748456E-07f, 0f, -0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, 2.384976E-08f, 1.748456E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 4.712389f)
             };
@@ -5406,7 +5406,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: 90",
                 new float3(0f, 10.21018f, 1.570796f),
-                new Quaternion(-0.6532814f, -0.6532814f, 0.2705982f, 0.2705982f),
+                new QuaternionF(-0.6532814f, -0.6532814f, 0.2705982f, 0.2705982f),
                 new float4x4(7.450581E-08f, 0.7071064f, -0.707107f, 0f, 0.9999999f, 7.450581E-08f, 0f, 0f, 0f, -0.707107f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 1.570796f)
             };
@@ -5415,7 +5415,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: 90",
                 new float3(0.001745329f, 10.21018f, 1.570796f),
-                new Quaternion(-0.653045f, -0.6535173f, 0.2711681f, 0.270028f),
+                new QuaternionF(-0.653045f, -0.6535173f, 0.2711681f, 0.270028f),
                 new float4x4(-0.001234055f, 0.7071065f, -0.7071059f, 0f, 0.9999983f, 1.192093E-07f, -0.001745313f, 0f, -0.001234084f, -0.7071069f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745314f, 3.926991f, 1.570796f)
             };
@@ -5424,7 +5424,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: 90",
                 new float3(0.01745329f, 10.21018f, 1.570796f),
-                new Quaternion(-0.6508952f, -0.6556179f, 0.2762887f, 0.264887f),
+                new QuaternionF(-0.6508952f, -0.6556179f, 0.2762887f, 0.264887f),
                 new float4x4(-0.01234058f, 0.7071065f, -0.7069993f, 0f, 0.9998477f, -2.980232E-08f, -0.01745236f, 0f, -0.01234072f, -0.707107f, -0.7069987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 3.926991f, 1.570796f)
             };
@@ -5433,7 +5433,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: 90",
                 new float3(0.7853982f, 10.21018f, 1.570796f),
-                new Quaternion(-0.4999999f, -0.7071067f, 0.5000001f, 1.043081E-07f),
+                new QuaternionF(-0.4999999f, -0.7071067f, 0.5000001f, 1.043081E-07f),
                 new float4x4(-0.4999999f, 0.7071064f, -0.5000001f, 0f, 0.7071066f, 1.788139E-07f, -0.7071066f, 0f, -0.4999998f, -0.7071069f, -0.4999995f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.926991f, 1.570796f)
             };
@@ -5442,7 +5442,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: 90",
                 new float3(1.570796f, 10.21018f, 1.570796f),
-                new Quaternion(-0.2705979f, -0.6532815f, 0.6532815f, -0.2705979f),
+                new QuaternionF(-0.2705979f, -0.6532815f, 0.6532815f, -0.2705979f),
                 new float4x4(-0.7071069f, 0.7071064f, 0f, 0f, 0f, 1.043081E-07f, -0.9999999f, 0f, -0.7071064f, -0.7071071f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 2.356195f, 0f)
             };
@@ -5451,7 +5451,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: 90",
                 new float3(3.141593f, 10.21018f, 1.570796f),
-                new Quaternion(0.2705982f, -0.2705981f, 0.6532814f, -0.6532814f),
+                new QuaternionF(0.2705982f, -0.2705981f, 0.6532814f, -0.6532814f),
                 new float4x4(1.192093E-07f, 0.7071064f, 0.707107f, 0f, -0.9999999f, 4.470348E-08f, 5.960464E-08f, 0f, 5.960464E-08f, -0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.940697E-08f, 0.7853987f, 4.712389f)
             };
@@ -5460,7 +5460,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: 90",
                 new float3(4.712389f, 10.21018f, 1.570796f),
-                new Quaternion(0.6532815f, 0.2705979f, 0.2705979f, -0.6532815f),
+                new QuaternionF(0.6532815f, 0.2705979f, 0.2705979f, -0.6532815f),
                 new float4x4(0.7071072f, 0.7071064f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, 0.7071064f, -0.7071071f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -5469,7 +5469,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: 90",
                 new float3(6.283185f, 10.21018f, 1.570796f),
-                new Quaternion(0.6532814f, 0.6532814f, -0.2705982f, -0.2705981f),
+                new QuaternionF(0.6532814f, 0.6532814f, -0.2705982f, -0.2705981f),
                 new float4x4(1.490116E-08f, 0.7071064f, -0.707107f, 0f, 0.9999999f, 1.490116E-08f, -1.788139E-07f, 0f, -1.788139E-07f, -0.707107f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 3.926991f, 1.570796f)
             };
@@ -5478,7 +5478,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: 90",
                 new float3(10.21018f, 10.21018f, 1.570796f),
-                new Quaternion(-0.5000002f, 0f, -0.4999998f, 0.7071068f),
+                new QuaternionF(-0.5000002f, 0f, -0.4999998f, 0.7071068f),
                 new float4x4(0.5000004f, 0.7071065f, 0.5f, 0f, -0.7071065f, 0f, 0.707107f, 0f, 0.5f, -0.707107f, 0.4999996f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853985f, 4.712389f)
             };
@@ -5487,7 +5487,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: 90",
                 new float3(-1.570796f, 10.21018f, 1.570796f),
-                new Quaternion(-0.6532815f, -0.2705979f, -0.2705979f, 0.6532815f),
+                new QuaternionF(-0.6532815f, -0.2705979f, -0.2705979f, 0.6532815f),
                 new float4x4(0.7071072f, 0.7071064f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, 0.7071064f, -0.7071071f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -5496,7 +5496,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: 90",
                 new float3(-9.424778f, 10.21018f, 1.570796f),
-                new Quaternion(0.2705982f, -0.2705982f, 0.6532814f, -0.6532814f),
+                new QuaternionF(0.2705982f, -0.2705982f, 0.6532814f, -0.6532814f),
                 new float4x4(7.450581E-08f, 0.7071064f, 0.707107f, 0f, -0.9999999f, 7.450581E-08f, 0f, 0f, 0f, -0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853986f, 4.712389f)
             };
@@ -5505,7 +5505,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: 90",
                 new float3(0f, -1.570796f, 1.570796f),
-                new Quaternion(-0.5f, -0.5f, 0.5f, 0.5f),
+                new QuaternionF(-0.5f, -0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 1.570796f)
             };
@@ -5514,7 +5514,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: 90",
                 new float3(0.001745329f, -1.570796f, 1.570796f),
-                new Quaternion(-0.4995635f, -0.5004361f, 0.5004361f, 0.4995635f),
+                new QuaternionF(-0.4995635f, -0.5004361f, 0.5004361f, 0.4995635f),
                 new float4x4(-0.001745224f, 0f, -0.9999985f, 0f, 0.9999985f, 2.980232E-08f, -0.001745254f, 0f, 0f, -1f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745255f, 4.712389f, 1.570796f)
             };
@@ -5523,7 +5523,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: 90",
                 new float3(0.01745329f, -1.570796f, 1.570796f),
-                new Quaternion(-0.4956177f, -0.5043442f, 0.5043442f, 0.4956177f),
+                new QuaternionF(-0.4956177f, -0.5043442f, 0.5043442f, 0.4956177f),
                 new float4x4(-0.01745212f, 0f, -0.9998475f, 0f, 0.9998475f, 2.086163E-07f, -0.01745233f, 0f, 0f, -0.9999998f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745322f, 4.712389f, 1.570796f)
             };
@@ -5532,7 +5532,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: 90",
                 new float3(0.7853982f, -1.570796f, 1.570796f),
-                new Quaternion(-0.270598f, -0.6532815f, 0.6532815f, 0.270598f),
+                new QuaternionF(-0.270598f, -0.6532815f, 0.6532815f, 0.270598f),
                 new float4x4(-0.7071066f, 0f, -0.7071066f, 0f, 0.7071066f, 1.490116E-07f, -0.7071067f, 0f, 0f, -0.9999999f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 1.570796f)
             };
@@ -5541,7 +5541,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: 90",
                 new float3(1.570796f, -1.570796f, 1.570796f),
-                new Quaternion(0f, -0.7071067f, 0.7071067f, 0f),
+                new QuaternionF(0f, -0.7071067f, 0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 3.141593f, 0f)
             };
@@ -5550,7 +5550,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: 90",
                 new float3(3.141593f, -1.570796f, 1.570796f),
-                new Quaternion(0.5f, -0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(0.5f, -0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.788139E-07f, 1.570796f, 4.712389f)
             };
@@ -5559,7 +5559,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: 90",
                 new float3(4.712389f, -1.570796f, 1.570796f),
-                new Quaternion(0.7071067f, 0f, 0f, -0.7071067f),
+                new QuaternionF(0.7071067f, 0f, 0f, -0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0f, 0f)
             };
@@ -5568,7 +5568,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: 90",
                 new float3(6.283185f, -1.570796f, 1.570796f),
-                new Quaternion(0.4999999f, 0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(0.4999999f, 0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, 0f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, -1.192093E-07f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 4.712389f, 1.570796f)
             };
@@ -5577,7 +5577,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: 90",
                 new float3(10.21018f, -1.570796f, 1.570796f),
-                new Quaternion(-0.6532815f, 0.2705979f, -0.2705979f, 0.6532815f),
+                new QuaternionF(-0.6532815f, 0.2705979f, -0.2705979f, 0.6532815f),
                 new float4x4(0.7071072f, 0f, 0.7071064f, 0f, -0.7071064f, 1.043081E-07f, 0.7071071f, 0f, 0f, -0.9999999f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 4.712389f)
             };
@@ -5586,7 +5586,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: 90",
                 new float3(-1.570796f, -1.570796f, 1.570796f),
-                new Quaternion(-0.7071067f, 0f, 0f, 0.7071067f),
+                new QuaternionF(-0.7071067f, 0f, 0f, 0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0f, 0f)
             };
@@ -5595,7 +5595,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: 90",
                 new float3(-9.424778f, -1.570796f, 1.570796f),
-                new Quaternion(0.5f, -0.5f, 0.5f, -0.5f),
+                new QuaternionF(0.5f, -0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 4.712389f)
             };
@@ -5604,7 +5604,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: 90",
                 new float3(0f, -9.424778f, 1.570796f),
-                new Quaternion(0.7071068f, 0.7071068f, 8.432163E-09f, 8.432163E-09f),
+                new QuaternionF(0.7071068f, 0.7071068f, 8.432163E-09f, 8.432163E-09f),
                 new float4x4(5.960464E-08f, 0.9999999f, 2.384976E-08f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 2.384976E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 1.570796f)
             };
@@ -5613,7 +5613,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: 90",
                 new float3(0.001745329f, -9.424778f, 1.570796f),
-                new Quaternion(0.7071065f, 0.7071065f, -0.0006170585f, 0.0006170754f),
+                new QuaternionF(0.7071065f, 0.7071065f, -0.0006170585f, 0.0006170754f),
                 new float4x4(-4.626673E-08f, 1f, 2.392335E-08f, 0f, 0.9999985f, -4.626673E-08f, -0.001745328f, 0f, -0.001745328f, 2.392335E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 1.570796f)
             };
@@ -5622,7 +5622,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: 90",
                 new float3(0.01745329f, -9.424778f, 1.570796f),
-                new Quaternion(0.7070798f, 0.7070798f, -0.006170584f, 0.006170601f),
+                new QuaternionF(0.7070798f, 0.7070798f, -0.006170584f, 0.006170601f),
                 new float4x4(8.213101E-08f, 0.9999999f, 2.328306E-08f, 0f, 0.9998476f, 8.213101E-08f, -0.0174524f, 0f, -0.0174524f, 2.328306E-08f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 1.570796f)
             };
@@ -5631,7 +5631,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: 90",
                 new float3(0.7853982f, -9.424778f, 1.570796f),
-                new Quaternion(0.6532815f, 0.6532815f, -0.2705981f, 0.2705981f),
+                new QuaternionF(0.6532815f, 0.6532815f, -0.2705981f, 0.2705981f),
                 new float4x4(8.940697E-08f, 0.9999999f, 0f, 0f, 0.7071067f, 8.940697E-08f, -0.7071068f, 0f, -0.7071068f, 0f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 3.141593f, 1.570796f)
             };
@@ -5640,7 +5640,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: 90",
                 new float3(1.570796f, -9.424778f, 1.570796f),
-                new Quaternion(0.5f, 0.5f, -0.5f, 0.5f),
+                new QuaternionF(0.5f, 0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -5649,7 +5649,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: 90",
                 new float3(3.141593f, -9.424778f, 1.570796f),
-                new Quaternion(-2.247646E-08f, -3.934078E-08f, -0.7071068f, 0.7071068f),
+                new QuaternionF(-2.247646E-08f, -3.934078E-08f, -0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, -2.384976E-08f, 0f, -0.9999999f, 5.960464E-08f, 8.742278E-08f, 0f, 8.742278E-08f, 2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, -2.384976E-08f, 4.712389f)
             };
@@ -5658,7 +5658,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: 90",
                 new float3(4.712389f, -9.424778f, 1.570796f),
-                new Quaternion(-0.5f, -0.5f, -0.5f, 0.5f),
+                new QuaternionF(-0.5f, -0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -5667,7 +5667,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: 90",
                 new float3(6.283185f, -9.424778f, 1.570796f),
-                new Quaternion(-0.7071068f, -0.7071068f, 5.338508E-08f, -7.02494E-08f),
+                new QuaternionF(-0.7071068f, -0.7071068f, 5.338508E-08f, -7.02494E-08f),
                 new float4x4(5.960464E-08f, 0.9999999f, 2.384976E-08f, 0f, 0.9999999f, 5.960464E-08f, -1.748456E-07f, 0f, -1.748456E-07f, 2.384976E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 1.570796f)
             };
@@ -5676,7 +5676,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: 90",
                 new float3(10.21018f, -9.424778f, 1.570796f),
-                new Quaternion(0.2705982f, 0.2705982f, 0.6532814f, -0.6532814f),
+                new QuaternionF(0.2705982f, 0.2705982f, 0.6532814f, -0.6532814f),
                 new float4x4(7.450581E-08f, 0.9999999f, 0f, 0f, -0.7071064f, 7.450581E-08f, 0.707107f, 0f, 0.707107f, 0f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0f, 4.712389f)
             };
@@ -5685,7 +5685,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: 90",
                 new float3(-1.570796f, -9.424778f, 1.570796f),
-                new Quaternion(0.5f, 0.5f, 0.5f, -0.5f),
+                new QuaternionF(0.5f, 0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -5694,7 +5694,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: 90",
                 new float3(-9.424778f, -9.424778f, 1.570796f),
-                new Quaternion(1.686433E-08f, 0f, -0.7071068f, 0.7071068f),
+                new QuaternionF(1.686433E-08f, 0f, -0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, -2.384976E-08f, 0f, -0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, -2.384976E-08f, 2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 4.712389f)
             };
@@ -5703,7 +5703,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: 180",
                 new float3(0f, 0f, 3.141593f),
-                new Quaternion(0f, 0f, 1f, -4.371139E-08f),
+                new QuaternionF(0f, 0f, 1f, -4.371139E-08f),
                 new float4x4(-1f, 8.742278E-08f, 0f, 0f, -8.742278E-08f, -1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 3.141593f)
             };
@@ -5712,7 +5712,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: 180",
                 new float3(0.001745329f, 0f, 3.141593f),
-                new Quaternion(-3.814538E-11f, -0.0008726645f, 0.9999996f, -4.371137E-08f),
+                new QuaternionF(-3.814538E-11f, -0.0008726645f, 0.9999996f, -4.371137E-08f),
                 new float4x4(-1f, 8.742278E-08f, 6.938894E-18f, 0f, -8.742266E-08f, -0.9999986f, -0.001745328f, 0f, -1.525814E-10f, -0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 6.938905E-18f, 3.141593f)
             };
@@ -5721,7 +5721,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: 180",
                 new float3(0.01745329f, 0f, 3.141593f),
-                new Quaternion(-3.81449E-10f, -0.008726535f, 0.9999619f, -4.370972E-08f),
+                new QuaternionF(-3.81449E-10f, -0.008726535f, 0.9999619f, -4.370972E-08f),
                 new float4x4(-0.9999999f, 8.742277E-08f, -5.551115E-17f, 0f, -8.740945E-08f, -0.9998477f, -0.01745241f, 0f, -1.525738E-09f, -0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, -5.551961E-17f, 3.141593f)
             };
@@ -5730,7 +5730,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: 180",
                 new float3(0.7853982f, 0f, 3.141593f),
-                new Quaternion(-1.672763E-08f, -0.3826835f, 0.9238795f, -4.038406E-08f),
+                new QuaternionF(-1.672763E-08f, -0.3826835f, 0.9238795f, -4.038406E-08f),
                 new float4x4(-1f, 8.742278E-08f, 0f, 0f, -6.181723E-08f, -0.7071067f, -0.7071068f, 0f, -6.181724E-08f, -0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0f, 3.141593f)
             };
@@ -5739,7 +5739,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: 180",
                 new float3(1.570796f, 0f, 3.141593f),
-                new Quaternion(-3.090862E-08f, -0.7071068f, 0.7071068f, -3.090862E-08f),
+                new QuaternionF(-3.090862E-08f, -0.7071068f, 0.7071068f, -3.090862E-08f),
                 new float4x4(-0.9999999f, 8.742278E-08f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, -8.742278E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.141593f, 0f)
             };
@@ -5748,7 +5748,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: 180",
                 new float3(3.141593f, 0f, 3.141593f),
-                new Quaternion(-4.371139E-08f, -1f, -4.371139E-08f, 1.910685E-15f),
+                new QuaternionF(-4.371139E-08f, -1f, -4.371139E-08f, 1.910685E-15f),
                 new float4x4(-1f, 8.742278E-08f, 0f, 0f, 8.742278E-08f, 1f, 8.742278E-08f, 0f, 7.642742E-15f, 8.742278E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 8.742278E-08f)
             };
@@ -5757,7 +5757,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: 180",
                 new float3(4.712389f, 0f, 3.141593f),
-                new Quaternion(-3.090862E-08f, -0.7071068f, -0.7071068f, 3.090862E-08f),
+                new QuaternionF(-3.090862E-08f, -0.7071068f, -0.7071068f, 3.090862E-08f),
                 new float4x4(-0.9999999f, 8.742278E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 8.742278E-08f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -5766,7 +5766,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: 180",
                 new float3(6.283185f, 0f, 3.141593f),
-                new Quaternion(3.821371E-15f, 8.742278E-08f, -1f, 4.371139E-08f),
+                new QuaternionF(3.821371E-15f, 8.742278E-08f, -1f, 4.371139E-08f),
                 new float4x4(-1f, 8.742278E-08f, 0f, 0f, -8.742278E-08f, -1f, -1.748456E-07f, 0f, -1.528548E-14f, -1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0f, 3.141593f)
             };
@@ -5775,7 +5775,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: 180",
                 new float3(10.21018f, 0f, 3.141593f),
-                new Quaternion(4.038405E-08f, 0.9238794f, 0.3826836f, -1.672763E-08f),
+                new QuaternionF(4.038405E-08f, 0.9238794f, 0.3826836f, -1.672763E-08f),
                 new float4x4(-0.9999999f, 8.742277E-08f, 0f, 0f, 6.181721E-08f, 0.7071065f, 0.707107f, 0f, 6.181726E-08f, 0.707107f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 8.742278E-08f)
             };
@@ -5784,7 +5784,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: 180",
                 new float3(-1.570796f, 0f, 3.141593f),
-                new Quaternion(3.090862E-08f, 0.7071068f, 0.7071068f, -3.090862E-08f),
+                new QuaternionF(3.090862E-08f, 0.7071068f, 0.7071068f, -3.090862E-08f),
                 new float4x4(-0.9999999f, 8.742278E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 8.742278E-08f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -5793,7 +5793,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: 180",
                 new float3(-9.424778f, 0f, 3.141593f),
-                new Quaternion(-4.371139E-08f, -1f, 1.192488E-08f, -5.212531E-16f),
+                new QuaternionF(-4.371139E-08f, -1f, 1.192488E-08f, -5.212531E-16f),
                 new float4x4(-1f, 8.742278E-08f, 0f, 0f, 8.742278E-08f, 1f, -2.384976E-08f, 0f, -2.085012E-15f, -2.384976E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 8.742278E-08f)
             };
@@ -5802,7 +5802,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: 180",
                 new float3(0f, 0.001745329f, 3.141593f),
-                new Quaternion(0.0008726645f, -3.814538E-11f, 0.9999996f, -4.371137E-08f),
+                new QuaternionF(0.0008726645f, -3.814538E-11f, 0.9999996f, -4.371137E-08f),
                 new float4x4(-0.9999986f, 8.742266E-08f, 0.001745328f, 0f, -8.742278E-08f, -1f, 6.938894E-18f, 0f, 0.001745328f, -1.525814E-10f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-6.938894E-18f, 0.001745329f, 3.141593f)
             };
@@ -5811,7 +5811,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: 180",
                 new float3(0.001745329f, 0.001745329f, 3.141593f),
-                new Quaternion(0.0008726642f, -0.0008726643f, 0.9999993f, 7.17832E-07f),
+                new QuaternionF(0.0008726642f, -0.0008726643f, 0.9999993f, 7.17832E-07f),
                 new float4x4(-0.9999987f, -2.958749E-06f, 0.001745326f, 0f, -8.742268E-08f, -0.9999987f, -0.001745329f, 0f, 0.001745328f, -0.001745326f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 3.141593f)
             };
@@ -5820,7 +5820,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: 180",
                 new float3(0.01745329f, 0.001745329f, 3.141593f),
-                new Quaternion(0.0008726309f, -0.008726533f, 0.9999616f, 7.571628E-06f),
+                new QuaternionF(0.0008726309f, -0.008726533f, 0.9999616f, 7.571628E-06f),
                 new float4x4(-0.9999985f, -3.037276E-05f, 0.001745063f, 0f, -8.740972E-08f, -0.9998478f, -0.01745241f, 0f, 0.001745327f, -0.01745238f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.001745329f, 3.141593f)
             };
@@ -5829,7 +5829,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: 180",
                 new float3(0.7853982f, 0.001745329f, 3.141593f),
-                new Quaternion(0.0008062202f, -0.3826833f, 0.9238791f, 0.0003339139f),
+                new QuaternionF(0.0008062202f, -0.3826833f, 0.9238791f, 0.0003339139f),
                 new float4x4(-0.9999985f, -0.001234046f, 0.001234133f, 0f, -6.187474E-08f, -0.7071067f, -0.7071068f, 0f, 0.001745267f, -0.7071057f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.001745329f, 3.141593f)
             };
@@ -5838,7 +5838,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: 180",
                 new float3(1.570796f, 0.001745329f, 3.141593f),
-                new Quaternion(0.0006170361f, -0.7071065f, 0.7071065f, 0.0006170361f),
+                new QuaternionF(0.0006170361f, -0.7071065f, 0.7071065f, 0.0006170361f),
                 new float4x4(-0.9999986f, -0.001745241f, 0f, 0f, 0f, -4.621131E-08f, -1f, 0f, 0.001745241f, -0.9999985f, -4.621131E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.143338f, 0f)
             };
@@ -5847,7 +5847,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: 180",
                 new float3(3.141593f, 0.001745329f, 3.141593f),
-                new Quaternion(-4.374952E-08f, -0.9999996f, -4.367323E-08f, 0.0008726645f),
+                new QuaternionF(-4.374952E-08f, -0.9999996f, -4.367323E-08f, 0.0008726645f),
                 new float4x4(-0.9999986f, 8.757524E-08f, -0.001745328f, 0f, 8.742278E-08f, 1f, 8.742278E-08f, 0f, 0.001745328f, 8.727007E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.143338f, 8.742278E-08f)
             };
@@ -5856,7 +5856,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: 180",
                 new float3(4.712389f, 0.001745329f, 3.141593f),
-                new Quaternion(-0.0006170979f, -0.7071065f, -0.7071065f, 0.0006170979f),
+                new QuaternionF(-0.0006170979f, -0.7071065f, -0.7071065f, 0.0006170979f),
                 new float4x4(-0.9999986f, 0.001745416f, 0f, 0f, 0f, -4.636388E-08f, 1f, 0f, 0.001745416f, 0.9999985f, -4.636388E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.143338f, 0f)
             };
@@ -5865,7 +5865,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: 180",
                 new float3(6.283185f, 0.001745329f, 3.141593f),
-                new Quaternion(-0.0008726645f, 8.746089E-08f, -0.9999996f, 4.363508E-08f),
+                new QuaternionF(-0.0008726645f, 8.746089E-08f, -0.9999996f, 4.363508E-08f),
                 new float4x4(-0.9999986f, 8.711749E-08f, 0.001745328f, 0f, -8.742278E-08f, -1f, -1.748456E-07f, 0f, 0.001745328f, -1.749979E-07f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0.001745329f, 3.141593f)
             };
@@ -5874,7 +5874,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: 180",
                 new float3(10.21018f, 0.001745329f, 3.141593f),
-                new Quaternion(0.0003339948f, 0.9238791f, 0.3826835f, -0.0008062535f),
+                new QuaternionF(0.0003339948f, 0.9238791f, 0.3826835f, -0.0008062535f),
                 new float4x4(-0.9999985f, 0.001234221f, -0.001234133f, 0f, 6.181654E-08f, 0.7071065f, 0.707107f, 0f, 0.00174539f, 0.7071059f, -0.7071054f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 8.742182E-08f)
             };
@@ -5883,7 +5883,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: 180",
                 new float3(-1.570796f, 0.001745329f, 3.141593f),
-                new Quaternion(0.0006170979f, 0.7071065f, 0.7071065f, -0.0006170979f),
+                new QuaternionF(0.0006170979f, 0.7071065f, 0.7071065f, -0.0006170979f),
                 new float4x4(-0.9999986f, 0.001745416f, 0f, 0f, 0f, -4.636388E-08f, 1f, 0f, 0.001745416f, 0.9999985f, -4.636388E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.143338f, 0f)
             };
@@ -5892,7 +5892,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: 180",
                 new float3(-9.424778f, 0.001745329f, 3.141593f),
-                new Quaternion(-4.370097E-08f, -0.9999996f, 1.196302E-08f, 0.0008726645f),
+                new QuaternionF(-4.370097E-08f, -0.9999996f, 1.196302E-08f, 0.0008726645f),
                 new float4x4(-0.9999986f, 8.738103E-08f, -0.001745328f, 0f, 8.742279E-08f, 1f, -2.384976E-08f, 0f, 0.001745328f, -2.400231E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.143338f, 8.742279E-08f)
             };
@@ -5901,7 +5901,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: 180",
                 new float3(0f, 0.01745329f, 3.141593f),
-                new Quaternion(0.008726535f, -3.81449E-10f, 0.9999619f, -4.370972E-08f),
+                new QuaternionF(0.008726535f, -3.81449E-10f, 0.9999619f, -4.370972E-08f),
                 new float4x4(-0.9998477f, 8.740945E-08f, 0.01745241f, 0f, -8.742277E-08f, -0.9999999f, -5.551115E-17f, 0f, 0.01745241f, -1.525738E-09f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.551115E-17f, 0.01745329f, 3.141593f)
             };
@@ -5910,7 +5910,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: 180",
                 new float3(0.001745329f, 0.01745329f, 3.141593f),
-                new Quaternion(0.008726533f, -0.0008726317f, 0.9999616f, 7.571628E-06f),
+                new QuaternionF(0.008726533f, -0.0008726317f, 0.9999616f, 7.571628E-06f),
                 new float4x4(-0.9998478f, -3.037277E-05f, 0.01745238f, 0f, -8.742336E-08f, -0.9999985f, -0.001745328f, 0f, 0.01745241f, -0.001745064f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.01745329f, 3.141593f)
             };
@@ -5919,7 +5919,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: 180",
                 new float3(0.01745329f, 0.01745329f, 3.141593f),
-                new Quaternion(0.008726203f, -0.008726203f, 0.9999238f, 7.610871E-05f),
+                new QuaternionF(0.008726203f, -0.008726203f, 0.9999238f, 7.610871E-05f),
                 new float4x4(-0.9998476f, -0.0003044991f, 0.01744975f, 0f, -8.73988E-08f, -0.9998476f, -0.0174524f, 0f, 0.0174524f, -0.01744975f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.0174533f, 3.141593f)
             };
@@ -5928,7 +5928,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: 180",
                 new float3(0.7853982f, 0.01745329f, 3.141593f),
-                new Quaternion(0.00806225f, -0.3826689f, 0.9238443f, 0.00333946f),
+                new QuaternionF(0.00806225f, -0.3826689f, 0.9238443f, 0.00333946f),
                 new float4x4(-0.9998477f, -0.01234063f, 0.01234071f, 0f, -6.146729E-08f, -0.7071068f, -0.7071068f, 0f, 0.01745234f, -0.7069991f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.01745329f, 3.141593f)
             };
@@ -5937,7 +5937,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: 180",
                 new float3(1.570796f, 0.01745329f, 3.141593f),
-                new Quaternion(0.006170562f, -0.7070798f, 0.7070798f, 0.006170562f),
+                new QuaternionF(0.006170562f, -0.7070798f, 0.7070798f, 0.006170562f),
                 new float4x4(-0.9998475f, -0.01745232f, 0f, 0f, 0f, 8.268398E-08f, -0.9999999f, 0f, 0.01745232f, -0.9998476f, 8.268398E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.159046f, 0f)
             };
@@ -5946,7 +5946,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: 180",
                 new float3(3.141593f, 0.01745329f, 3.141593f),
-                new Quaternion(-4.409117E-08f, -0.9999619f, -4.332827E-08f, 0.008726535f),
+                new QuaternionF(-4.409117E-08f, -0.9999619f, -4.332827E-08f, 0.008726535f),
                 new float4x4(-0.9998477f, 8.893519E-08f, -0.01745241f, 0f, 8.742277E-08f, 1f, 8.742277E-08f, 0f, 0.01745241f, 8.588372E-08f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.159046f, 8.742277E-08f)
             };
@@ -5955,7 +5955,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: 180",
                 new float3(4.712389f, 0.01745329f, 3.141593f),
-                new Quaternion(-0.006170623f, -0.7070798f, -0.7070798f, 0.006170623f),
+                new QuaternionF(-0.006170623f, -0.7070798f, -0.7070798f, 0.006170623f),
                 new float4x4(-0.9998475f, 0.01745249f, 0f, 0f, 0f, 8.116331E-08f, 0.9999999f, 0f, 0.01745249f, 0.9998476f, 8.116331E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.159046f, 0f)
             };
@@ -5964,7 +5964,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: 180",
                 new float3(6.283185f, 0.01745329f, 3.141593f),
-                new Quaternion(-0.008726535f, 8.780089E-08f, -0.9999619f, 4.294682E-08f),
+                new QuaternionF(-0.008726535f, 8.780089E-08f, -0.9999619f, 4.294682E-08f),
                 new float4x4(-0.9998477f, 8.435799E-08f, 0.01745241f, 0f, -8.742277E-08f, -0.9999999f, -1.748455E-07f, 0f, 0.01745241f, -1.763446E-07f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 0.01745329f, 3.141593f)
             };
@@ -5973,7 +5973,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: 180",
                 new float3(10.21018f, 0.01745329f, 3.141593f),
-                new Quaternion(0.003339542f, 0.9238443f, 0.382669f, -0.008062284f),
+                new QuaternionF(0.003339542f, 0.9238443f, 0.382669f, -0.008062284f),
                 new float4x4(-0.9998477f, 0.01234081f, -0.01234071f, 0f, 6.146729E-08f, 0.7071065f, 0.707107f, 0f, 0.01745247f, 0.7069994f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 8.69279E-08f)
             };
@@ -5982,7 +5982,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: 180",
                 new float3(-1.570796f, 0.01745329f, 3.141593f),
-                new Quaternion(0.006170623f, 0.7070798f, 0.7070798f, -0.006170623f),
+                new QuaternionF(0.006170623f, 0.7070798f, 0.7070798f, -0.006170623f),
                 new float4x4(-0.9998475f, 0.01745249f, 0f, 0f, 0f, 8.116331E-08f, 0.9999999f, 0f, 0.01745249f, 0.9998476f, 8.116331E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.159046f, 0f)
             };
@@ -5991,7 +5991,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: 180",
                 new float3(-9.424778f, 0.01745329f, 3.141593f),
-                new Quaternion(-4.360566E-08f, -0.9999619f, 1.230588E-08f, 0.008726535f),
+                new QuaternionF(-4.360566E-08f, -0.9999619f, 1.230588E-08f, 0.008726535f),
                 new float4x4(-0.9998477f, 8.699323E-08f, -0.01745241f, 0f, 8.742278E-08f, 1f, -2.384976E-08f, 0f, 0.01745241f, -2.537187E-08f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.159046f, 8.742278E-08f)
             };
@@ -6000,7 +6000,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: 180",
                 new float3(0f, 0.7853982f, 3.141593f),
-                new Quaternion(0.3826835f, -1.672763E-08f, 0.9238795f, -4.038406E-08f),
+                new QuaternionF(0.3826835f, -1.672763E-08f, 0.9238795f, -4.038406E-08f),
                 new float4x4(-0.7071067f, 6.181723E-08f, 0.7071068f, 0f, -8.742278E-08f, -1f, 0f, 0f, 0.7071068f, -6.181724E-08f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853982f, 3.141593f)
             };
@@ -6009,7 +6009,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: 180",
                 new float3(0.001745329f, 0.7853982f, 3.141593f),
-                new Quaternion(0.3826833f, -0.0008062536f, 0.9238791f, 0.0003339139f),
+                new QuaternionF(0.3826833f, -0.0008062536f, 0.9238791f, 0.0003339139f),
                 new float4x4(-0.7071067f, -0.001234072f, 0.7071057f, 0f, -8.742791E-08f, -0.9999985f, -0.001745328f, 0f, 0.7071068f, -0.001234195f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.7853982f, 3.141593f)
             };
@@ -6018,7 +6018,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: 180",
                 new float3(0.01745329f, 0.7853982f, 3.141593f),
-                new Quaternion(0.3826689f, -0.008062284f, 0.9238443f, 0.00333946f),
+                new QuaternionF(0.3826689f, -0.008062284f, 0.9238443f, 0.00333946f),
                 new float4x4(-0.7071068f, -0.01234065f, 0.7069991f, 0f, -8.707866E-08f, -0.9998477f, -0.01745241f, 0f, 0.7071068f, -0.01234077f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.7853982f, 3.141593f)
             };
@@ -6027,7 +6027,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: 180",
                 new float3(0.7853982f, 0.7853982f, 3.141593f),
-                new Quaternion(0.3535534f, -0.3535534f, 0.8535534f, 0.1464466f),
+                new QuaternionF(0.3535534f, -0.3535534f, 0.8535534f, 0.1464466f),
                 new float4x4(-0.7071068f, -0.5f, 0.5f, 0f, -7.450581E-08f, -0.7071067f, -0.7071068f, 0f, 0.7071068f, -0.5000001f, 0.4999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.7853982f, 3.141593f)
             };
@@ -6036,7 +6036,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: 180",
                 new float3(1.570796f, 0.7853982f, 3.141593f),
-                new Quaternion(0.270598f, -0.6532815f, 0.6532815f, 0.270598f),
+                new QuaternionF(0.270598f, -0.6532815f, 0.6532815f, 0.270598f),
                 new float4x4(-0.7071066f, -0.7071066f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.926991f, 0f)
             };
@@ -6045,7 +6045,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: 180",
                 new float3(3.141593f, 0.7853982f, 3.141593f),
-                new Quaternion(-5.711168E-08f, -0.9238795f, -2.365643E-08f, 0.3826835f),
+                new QuaternionF(-5.711168E-08f, -0.9238795f, -2.365643E-08f, 0.3826835f),
                 new float4x4(-0.7071067f, 1.236345E-07f, -0.7071068f, 0f, 8.742277E-08f, 1f, 8.742278E-08f, 0f, 0.7071068f, -1.065814E-14f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.926991f, 8.742277E-08f)
             };
@@ -6054,7 +6054,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: 180",
                 new float3(4.712389f, 0.7853982f, 3.141593f),
-                new Quaternion(-0.2705981f, -0.6532815f, -0.6532815f, 0.2705981f),
+                new QuaternionF(-0.2705981f, -0.6532815f, -0.6532815f, 0.2705981f),
                 new float4x4(-0.7071066f, 0.7071068f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 0.7071068f, 0.7071066f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.926991f, 0f)
             };
@@ -6063,7 +6063,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: 180",
                 new float3(6.283185f, 0.7853982f, 3.141593f),
-                new Quaternion(-0.3826835f, 9.749574E-08f, -0.9238795f, 6.928804E-09f),
+                new QuaternionF(-0.3826835f, 9.749574E-08f, -0.9238795f, 6.928804E-09f),
                 new float4x4(-0.7071067f, -6.181725E-08f, 0.7071068f, 0f, -8.742277E-08f, -1f, -1.748455E-07f, 0f, 0.7071068f, -1.854517E-07f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 0.7853982f, 3.141593f)
             };
@@ -6072,7 +6072,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: 180",
                 new float3(10.21018f, 0.7853982f, 3.141593f),
-                new Quaternion(0.1464467f, 0.8535533f, 0.3535535f, -0.3535534f),
+                new QuaternionF(0.1464467f, 0.8535533f, 0.3535535f, -0.3535534f),
                 new float4x4(-0.7071066f, 0.5000002f, -0.4999999f, 0f, 8.940697E-08f, 0.7071066f, 0.707107f, 0f, 0.7071069f, 0.5000001f, -0.4999998f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 1.264406E-07f)
             };
@@ -6081,7 +6081,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: 180",
                 new float3(-1.570796f, 0.7853982f, 3.141593f),
-                new Quaternion(0.2705981f, 0.6532815f, 0.6532815f, -0.2705981f),
+                new QuaternionF(0.2705981f, 0.6532815f, 0.6532815f, -0.2705981f),
                 new float4x4(-0.7071066f, 0.7071068f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 0.7071068f, 0.7071066f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.926991f, 0f)
             };
@@ -6090,7 +6090,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: 180",
                 new float3(-9.424778f, 0.7853982f, 3.141593f),
-                new Quaternion(-3.58206E-08f, -0.9238795f, 2.774478E-08f, 0.3826835f),
+                new QuaternionF(-3.58206E-08f, -0.9238795f, 2.774478E-08f, 0.3826835f),
                 new float4x4(-0.7071067f, 4.49529E-08f, -0.7071068f, 0f, 8.742278E-08f, 1f, -2.384976E-08f, 0f, 0.7071068f, -7.868157E-08f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.926991f, 8.742278E-08f)
             };
@@ -6099,7 +6099,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: 180",
                 new float3(0f, 1.570796f, 3.141593f),
-                new Quaternion(0.7071068f, -3.090862E-08f, 0.7071068f, -3.090862E-08f),
+                new QuaternionF(0.7071068f, -3.090862E-08f, 0.7071068f, -3.090862E-08f),
                 new float4x4(5.960464E-08f, 0f, 0.9999999f, 0f, -8.742278E-08f, -0.9999999f, 0f, 0f, 0.9999999f, -8.742278E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 3.141593f)
             };
@@ -6108,7 +6108,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: 180",
                 new float3(0.001745329f, 1.570796f, 3.141593f),
-                new Quaternion(0.7071065f, -0.0006170979f, 0.7071065f, 0.0006170361f),
+                new QuaternionF(0.7071065f, -0.0006170979f, 0.7071065f, 0.0006170361f),
                 new float4x4(-4.636388E-08f, -0.001745328f, 0.9999985f, 0f, -8.73697E-08f, -0.9999986f, -0.001745328f, 0f, 1f, -8.73697E-08f, -4.636388E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.570796f, 3.141593f)
             };
@@ -6117,7 +6117,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: 180",
                 new float3(0.01745329f, 1.570796f, 3.141593f),
-                new Quaternion(0.7070798f, -0.006170623f, 0.7070798f, 0.006170562f),
+                new QuaternionF(0.7070798f, -0.006170623f, 0.7070798f, 0.006170562f),
                 new float4x4(8.116331E-08f, -0.0174524f, 0.9998476f, 0f, -8.6613E-08f, -0.9998475f, -0.0174524f, 0f, 0.9999999f, -8.6613E-08f, 8.116331E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.570796f, 3.141593f)
             };
@@ -6126,7 +6126,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: 180",
                 new float3(0.7853982f, 1.570796f, 3.141593f),
-                new Quaternion(0.6532815f, -0.2705981f, 0.6532815f, 0.270598f),
+                new QuaternionF(0.6532815f, -0.2705981f, 0.6532815f, 0.270598f),
                 new float4x4(5.960464E-08f, -0.7071067f, 0.7071067f, 0f, -8.940697E-08f, -0.7071066f, -0.7071067f, 0f, 0.9999999f, -8.940697E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 1.570796f, 3.141593f)
             };
@@ -6135,7 +6135,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: 180",
                 new float3(1.570796f, 1.570796f, 3.141593f),
-                new Quaternion(0.4999999f, -0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -6144,7 +6144,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: 180",
                 new float3(3.141593f, 1.570796f, 3.141593f),
-                new Quaternion(-6.181724E-08f, -0.7071068f, 0f, 0.7071068f),
+                new QuaternionF(-6.181724E-08f, -0.7071068f, 0f, 0.7071068f),
                 new float4x4(5.960464E-08f, 8.742278E-08f, -0.9999999f, 0f, 8.742278E-08f, 1f, 8.742278E-08f, 0f, 0.9999999f, -8.742278E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 4.712389f, 8.742278E-08f)
             };
@@ -6153,7 +6153,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: 180",
                 new float3(4.712389f, 1.570796f, 3.141593f),
-                new Quaternion(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -6162,7 +6162,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: 180",
                 new float3(6.283185f, 1.570796f, 3.141593f),
-                new Quaternion(-0.7071068f, 9.272586E-08f, -0.7071068f, -3.090862E-08f),
+                new QuaternionF(-0.7071068f, 9.272586E-08f, -0.7071068f, -3.090862E-08f),
                 new float4x4(5.960463E-08f, -1.748456E-07f, 0.9999999f, 0f, -8.742277E-08f, -0.9999999f, -1.748456E-07f, 0f, 0.9999999f, -8.742277E-08f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.570796f, 3.141593f)
             };
@@ -6171,7 +6171,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: 180",
                 new float3(10.21018f, 1.570796f, 3.141593f),
-                new Quaternion(0.2705982f, 0.6532814f, 0.2705981f, -0.6532814f),
+                new QuaternionF(0.2705982f, 0.6532814f, 0.2705981f, -0.6532814f),
                 new float4x4(1.192093E-07f, 0.707107f, -0.7071064f, 0f, 5.960464E-08f, 0.7071065f, 0.707107f, 0f, 0.9999999f, -5.960464E-08f, 4.470348E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 1.264406E-07f)
             };
@@ -6180,7 +6180,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: 180",
                 new float3(-1.570796f, 1.570796f, 3.141593f),
-                new Quaternion(0.5f, 0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(0.5f, 0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -6189,7 +6189,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: 180",
                 new float3(-9.424778f, 1.570796f, 3.141593f),
-                new Quaternion(-2.247646E-08f, -0.7071068f, 3.934078E-08f, 0.7071068f),
+                new QuaternionF(-2.247646E-08f, -0.7071068f, 3.934078E-08f, 0.7071068f),
                 new float4x4(5.960464E-08f, -2.384976E-08f, -0.9999999f, 0f, 8.742278E-08f, 1f, -2.384976E-08f, 0f, 0.9999999f, -8.742278E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 4.712389f, 8.742278E-08f)
             };
@@ -6198,7 +6198,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: 180",
                 new float3(0f, 3.141593f, 3.141593f),
-                new Quaternion(1f, -4.371139E-08f, -4.371139E-08f, 1.910685E-15f),
+                new QuaternionF(1f, -4.371139E-08f, -4.371139E-08f, 1.910685E-15f),
                 new float4x4(1f, -8.742278E-08f, -8.742278E-08f, 0f, -8.742278E-08f, -1f, 0f, 0f, -8.742278E-08f, 7.642742E-15f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 3.141593f)
             };
@@ -6207,7 +6207,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: 180",
                 new float3(0.001745329f, 3.141593f, 3.141593f),
-                new Quaternion(0.9999996f, -4.367323E-08f, -4.367323E-08f, 0.0008726645f),
+                new QuaternionF(0.9999996f, -4.367323E-08f, -4.367323E-08f, 0.0008726645f),
                 new float4x4(1f, -8.72702E-08f, -8.742266E-08f, 0f, -8.742266E-08f, -0.9999986f, -0.001745328f, 0f, -8.72702E-08f, 0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 3.141593f)
             };
@@ -6216,7 +6216,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: 180",
                 new float3(0.01745329f, 3.141593f, 3.141593f),
-                new Quaternion(0.9999619f, -4.332827E-08f, -4.332827E-08f, 0.008726535f),
+                new QuaternionF(0.9999619f, -4.332827E-08f, -4.332827E-08f, 0.008726535f),
                 new float4x4(1f, -8.589704E-08f, -8.740945E-08f, 0f, -8.740945E-08f, -0.9998477f, -0.01745241f, 0f, -8.589704E-08f, 0.01745241f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 3.141593f)
             };
@@ -6225,7 +6225,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: 180",
                 new float3(0.7853982f, 3.141593f, 3.141593f),
-                new Quaternion(0.9238795f, -2.365643E-08f, -2.365643E-08f, 0.3826835f),
+                new QuaternionF(0.9238795f, -2.365643E-08f, -2.365643E-08f, 0.3826835f),
                 new float4x4(1f, -2.560553E-08f, -6.181723E-08f, 0f, -6.181723E-08f, -0.7071067f, -0.7071068f, 0f, -2.560553E-08f, 0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 3.141593f)
             };
@@ -6234,7 +6234,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: 180",
                 new float3(1.570796f, 3.141593f, 3.141593f),
-                new Quaternion(0.7071068f, 0f, 0f, 0.7071068f),
+                new QuaternionF(0.7071068f, 0f, 0f, 0.7071068f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0f, 0f)
             };
@@ -6243,7 +6243,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: 180",
                 new float3(3.141593f, 3.141593f, 3.141593f),
-                new Quaternion(-4.371138E-08f, 4.371139E-08f, 4.371139E-08f, 1f),
+                new QuaternionF(-4.371138E-08f, 4.371139E-08f, 4.371139E-08f, 1f),
                 new float4x4(1f, -8.742279E-08f, 8.742278E-08f, 0f, 8.742278E-08f, 1f, 8.742278E-08f, 0f, -8.742279E-08f, -8.742276E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 8.742278E-08f, 8.742278E-08f)
             };
@@ -6252,7 +6252,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: 180",
                 new float3(4.712389f, 3.141593f, 3.141593f),
-                new Quaternion(-0.7071068f, 6.181724E-08f, 6.181724E-08f, 0.7071068f),
+                new QuaternionF(-0.7071068f, 6.181724E-08f, 6.181724E-08f, 0.7071068f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.748456E-07f, 0f)
             };
@@ -6261,7 +6261,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: 180",
                 new float3(6.283185f, 3.141593f, 3.141593f),
-                new Quaternion(-1f, 4.371138E-08f, 4.371138E-08f, -8.742278E-08f),
+                new QuaternionF(-1f, 4.371138E-08f, 4.371138E-08f, -8.742278E-08f),
                 new float4x4(1f, -8.742276E-08f, -8.742278E-08f, 0f, -8.742278E-08f, -1f, -1.748456E-07f, 0f, -8.742276E-08f, 1.748456E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 3.141593f)
             };
@@ -6270,7 +6270,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: 180",
                 new float3(10.21018f, 3.141593f, 3.141593f),
-                new Quaternion(0.3826836f, -5.711168E-08f, -5.711168E-08f, -0.9238794f),
+                new QuaternionF(0.3826836f, -5.711168E-08f, -5.711168E-08f, -0.9238794f),
                 new float4x4(1f, -1.4924E-07f, 6.181721E-08f, 0f, 6.181721E-08f, 0.7071065f, 0.707107f, 0f, -1.4924E-07f, -0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 8.742278E-08f, 8.742278E-08f)
             };
@@ -6279,7 +6279,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: 180",
                 new float3(-1.570796f, 3.141593f, 3.141593f),
-                new Quaternion(0.7071068f, -6.181724E-08f, -6.181724E-08f, -0.7071068f),
+                new QuaternionF(0.7071068f, -6.181724E-08f, -6.181724E-08f, -0.7071068f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.748456E-07f, 0f)
             };
@@ -6288,7 +6288,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: 180",
                 new float3(-9.424778f, 3.141593f, 3.141593f),
-                new Quaternion(1.192488E-08f, 4.371139E-08f, 4.371139E-08f, 1f),
+                new QuaternionF(1.192488E-08f, 4.371139E-08f, 4.371139E-08f, 1f),
                 new float4x4(1f, -8.742278E-08f, 8.742278E-08f, 0f, 8.742278E-08f, 1f, -2.384976E-08f, 0f, -8.742278E-08f, 2.384977E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742278E-08f, 8.742278E-08f)
             };
@@ -6297,7 +6297,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: 180",
                 new float3(0f, 4.712389f, 3.141593f),
-                new Quaternion(0.7071068f, -3.090862E-08f, -0.7071068f, 3.090862E-08f),
+                new QuaternionF(0.7071068f, -3.090862E-08f, -0.7071068f, 3.090862E-08f),
                 new float4x4(5.960464E-08f, 0f, -0.9999999f, 0f, -8.742278E-08f, -0.9999999f, 0f, 0f, -0.9999999f, 8.742278E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 3.141593f)
             };
@@ -6306,7 +6306,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: 180",
                 new float3(0.001745329f, 4.712389f, 3.141593f),
-                new Quaternion(0.7071065f, 0.0006170361f, -0.7071065f, 0.0006170979f),
+                new QuaternionF(0.7071065f, 0.0006170361f, -0.7071065f, 0.0006170979f),
                 new float4x4(-4.621131E-08f, 0.001745328f, -0.9999985f, 0f, -8.73697E-08f, -0.9999986f, -0.001745328f, 0f, -1f, 8.73697E-08f, -4.621131E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 3.141593f)
             };
@@ -6315,7 +6315,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: 180",
                 new float3(0.01745329f, 4.712389f, 3.141593f),
-                new Quaternion(0.7070798f, 0.006170562f, -0.7070798f, 0.006170623f),
+                new QuaternionF(0.7070798f, 0.006170562f, -0.7070798f, 0.006170623f),
                 new float4x4(8.268398E-08f, 0.0174524f, -0.9998476f, 0f, -8.6613E-08f, -0.9998475f, -0.0174524f, 0f, -0.9999999f, 8.6613E-08f, 8.268398E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 3.141593f)
             };
@@ -6324,7 +6324,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: 180",
                 new float3(0.7853982f, 4.712389f, 3.141593f),
-                new Quaternion(0.6532815f, 0.270598f, -0.6532815f, 0.2705981f),
+                new QuaternionF(0.6532815f, 0.270598f, -0.6532815f, 0.2705981f),
                 new float4x4(1.192093E-07f, 0.7071067f, -0.7071067f, 0f, -8.940697E-08f, -0.7071066f, -0.7071067f, 0f, -0.9999999f, 8.940697E-08f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 3.141593f)
             };
@@ -6333,7 +6333,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: 180",
                 new float3(1.570796f, 4.712389f, 3.141593f),
-                new Quaternion(0.5f, 0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(0.5f, 0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -6342,7 +6342,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: 180",
                 new float3(3.141593f, 4.712389f, 3.141593f),
-                new Quaternion(0f, 0.7071068f, 6.181724E-08f, 0.7071068f),
+                new QuaternionF(0f, 0.7071068f, 6.181724E-08f, 0.7071068f),
                 new float4x4(5.960464E-08f, -8.742278E-08f, 0.9999999f, 0f, 8.742278E-08f, 1f, 8.742278E-08f, 0f, -0.9999999f, 8.742278E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 1.570796f, 8.742278E-08f)
             };
@@ -6351,7 +6351,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: 180",
                 new float3(4.712389f, 4.712389f, 3.141593f),
-                new Quaternion(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -6360,7 +6360,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: 180",
                 new float3(6.283185f, 4.712389f, 3.141593f),
-                new Quaternion(-0.7071068f, -3.090862E-08f, 0.7071068f, -9.272586E-08f),
+                new QuaternionF(-0.7071068f, -3.090862E-08f, 0.7071068f, -9.272586E-08f),
                 new float4x4(5.960464E-08f, 1.748456E-07f, -0.9999999f, 0f, -8.742277E-08f, -0.9999999f, -1.748456E-07f, 0f, -0.9999999f, 8.742277E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 4.712389f, 3.141593f)
             };
@@ -6369,7 +6369,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: 180",
                 new float3(10.21018f, 4.712389f, 3.141593f),
-                new Quaternion(0.2705981f, -0.6532814f, -0.2705982f, -0.6532814f),
+                new QuaternionF(0.2705981f, -0.6532814f, -0.2705982f, -0.6532814f),
                 new float4x4(4.470348E-08f, -0.707107f, 0.7071064f, 0f, 5.960464E-08f, 0.7071065f, 0.707107f, 0f, -0.9999999f, 5.960464E-08f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 1.264406E-07f)
             };
@@ -6378,7 +6378,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: 180",
                 new float3(-1.570796f, 4.712389f, 3.141593f),
-                new Quaternion(0.4999999f, -0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -6387,7 +6387,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: 180",
                 new float3(-9.424778f, 4.712389f, 3.141593f),
-                new Quaternion(3.934078E-08f, 0.7071068f, 2.247646E-08f, 0.7071068f),
+                new QuaternionF(3.934078E-08f, 0.7071068f, 2.247646E-08f, 0.7071068f),
                 new float4x4(5.960464E-08f, 2.384976E-08f, 0.9999999f, 0f, 8.742278E-08f, 1f, -2.384976E-08f, 0f, -0.9999999f, 8.742278E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 1.570796f, 8.742278E-08f)
             };
@@ -6396,7 +6396,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: 180",
                 new float3(0f, 6.283185f, 3.141593f),
-                new Quaternion(-8.742278E-08f, 3.821371E-15f, -1f, 4.371139E-08f),
+                new QuaternionF(-8.742278E-08f, 3.821371E-15f, -1f, 4.371139E-08f),
                 new float4x4(-1f, 8.742278E-08f, 1.748456E-07f, 0f, -8.742278E-08f, -1f, 0f, 0f, 1.748456E-07f, -1.528548E-14f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.748456E-07f, 3.141593f)
             };
@@ -6405,7 +6405,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: 180",
                 new float3(0.001745329f, 6.283185f, 3.141593f),
-                new Quaternion(-8.738461E-08f, 0.0008726645f, -0.9999996f, 4.363508E-08f),
+                new QuaternionF(-8.738461E-08f, 0.0008726645f, -0.9999996f, 4.363508E-08f),
                 new float4x4(-1f, 8.711762E-08f, 1.748453E-07f, 0f, -8.742266E-08f, -0.9999986f, -0.001745328f, 0f, 1.74693E-07f, -0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.748456E-07f, 3.141593f)
             };
@@ -6414,7 +6414,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: 180",
                 new float3(0.01745329f, 6.283185f, 3.141593f),
-                new Quaternion(-8.7038E-08f, 0.008726535f, -0.9999619f, 4.294682E-08f),
+                new QuaternionF(-8.7038E-08f, 0.008726535f, -0.9999619f, 4.294682E-08f),
                 new float4x4(-0.9999999f, 8.437129E-08f, 1.748189E-07f, 0f, -8.740946E-08f, -0.9998477f, -0.01745241f, 0f, 1.733198E-07f, -0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.748455E-07f, 3.141593f)
             };
@@ -6423,7 +6423,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: 180",
                 new float3(0.7853982f, 6.283185f, 3.141593f),
-                new Quaternion(-6.404048E-08f, 0.3826835f, -0.9238795f, 6.928804E-09f),
+                new QuaternionF(-6.404048E-08f, 0.3826835f, -0.9238795f, 6.928804E-09f),
                 new float4x4(-1f, -3.621171E-08f, 1.236345E-07f, 0f, -6.181723E-08f, -0.7071067f, -0.7071068f, 0f, 1.130283E-07f, -0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 1.748456E-07f, 3.141593f)
             };
@@ -6432,7 +6432,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: 180",
                 new float3(1.570796f, 6.283185f, 3.141593f),
-                new Quaternion(-3.090862E-08f, 0.7071068f, -0.7071068f, -3.090862E-08f),
+                new QuaternionF(-3.090862E-08f, 0.7071068f, -0.7071068f, -3.090862E-08f),
                 new float4x4(-0.9999999f, -8.742278E-08f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 8.742278E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.141593f, 0f)
             };
@@ -6441,7 +6441,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: 180",
                 new float3(3.141593f, 6.283185f, 3.141593f),
-                new Quaternion(4.371139E-08f, 1f, 4.371138E-08f, -8.742278E-08f),
+                new QuaternionF(4.371139E-08f, 1f, 4.371138E-08f, -8.742278E-08f),
                 new float4x4(-1f, 8.742279E-08f, -1.748456E-07f, 0f, 8.742278E-08f, 1f, 8.742278E-08f, 0f, 1.748456E-07f, 8.742276E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 8.742278E-08f)
             };
@@ -6450,7 +6450,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: 180",
                 new float3(4.712389f, 6.283185f, 3.141593f),
-                new Quaternion(9.272586E-08f, 0.7071068f, 0.7071068f, -9.272586E-08f),
+                new QuaternionF(9.272586E-08f, 0.7071068f, 0.7071068f, -9.272586E-08f),
                 new float4x4(-0.9999999f, 2.622683E-07f, 0f, 0f, 0f, 5.960463E-08f, 0.9999999f, 0f, 2.622683E-07f, 0.9999999f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -6459,7 +6459,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: 180",
                 new float3(6.283185f, 6.283185f, 3.141593f),
-                new Quaternion(8.742277E-08f, -8.742278E-08f, 1f, -4.371138E-08f),
+                new QuaternionF(8.742277E-08f, -8.742278E-08f, 1f, -4.371138E-08f),
                 new float4x4(-1f, 8.742275E-08f, 1.748456E-07f, 0f, -8.742278E-08f, -1f, -1.748456E-07f, 0f, 1.748455E-07f, -1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.748456E-07f, 3.141593f)
             };
@@ -6468,7 +6468,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: 180",
                 new float3(10.21018f, 6.283185f, 3.141593f),
-                new Quaternion(-7.383932E-08f, -0.9238794f, -0.3826836f, 9.749574E-08f),
+                new QuaternionF(-7.383932E-08f, -0.9238794f, -0.3826836f, 9.749574E-08f),
                 new float4x4(-0.9999999f, 2.110573E-07f, -1.236344E-07f, 0f, 6.181721E-08f, 0.7071065f, 0.707107f, 0f, 2.366628E-07f, 0.707107f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 8.742278E-08f)
             };
@@ -6477,7 +6477,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: 180",
                 new float3(-1.570796f, 6.283185f, 3.141593f),
-                new Quaternion(-9.272586E-08f, -0.7071068f, -0.7071068f, 9.272586E-08f),
+                new QuaternionF(-9.272586E-08f, -0.7071068f, -0.7071068f, 9.272586E-08f),
                 new float4x4(-0.9999999f, 2.622683E-07f, 0f, 0f, 0f, 5.960463E-08f, 0.9999999f, 0f, 2.622683E-07f, 0.9999999f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -6486,7 +6486,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: 180",
                 new float3(-9.424778f, 6.283185f, 3.141593f),
-                new Quaternion(4.371139E-08f, 1f, -1.192488E-08f, -8.742278E-08f),
+                new QuaternionF(4.371139E-08f, 1f, -1.192488E-08f, -8.742278E-08f),
                 new float4x4(-1f, 8.742278E-08f, -1.748456E-07f, 0f, 8.742278E-08f, 1f, -2.384976E-08f, 0f, 1.748456E-07f, -2.384978E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 8.742278E-08f)
             };
@@ -6495,7 +6495,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: 180",
                 new float3(0f, 10.21018f, 3.141593f),
-                new Quaternion(-0.9238794f, 4.038405E-08f, 0.3826836f, -1.672763E-08f),
+                new QuaternionF(-0.9238794f, 4.038405E-08f, 0.3826836f, -1.672763E-08f),
                 new float4x4(0.7071065f, -6.181721E-08f, -0.707107f, 0f, -8.742277E-08f, -0.9999999f, 0f, 0f, -0.707107f, 6.181726E-08f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 3.141593f)
             };
@@ -6504,7 +6504,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: 180",
                 new float3(0.001745329f, 10.21018f, 3.141593f),
-                new Quaternion(-0.9238791f, -0.000333914f, 0.3826835f, -0.0008062535f),
+                new QuaternionF(-0.9238791f, -0.000333914f, 0.3826835f, -0.0008062535f),
                 new float4x4(0.7071065f, 0.001234072f, -0.7071059f, 0f, -8.742791E-08f, -0.9999985f, -0.001745328f, 0f, -0.707107f, 0.001234195f, -0.7071054f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.926991f, 3.141593f)
             };
@@ -6513,7 +6513,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: 180",
                 new float3(0.01745329f, 10.21018f, 3.141593f),
-                new Quaternion(-0.9238443f, -0.003339462f, 0.382669f, -0.008062284f),
+                new QuaternionF(-0.9238443f, -0.003339462f, 0.382669f, -0.008062284f),
                 new float4x4(0.7071065f, 0.01234066f, -0.7069994f, 0f, -8.707866E-08f, -0.9998477f, -0.01745241f, 0f, -0.707107f, 0.01234077f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.926991f, 3.141593f)
             };
@@ -6522,7 +6522,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: 180",
                 new float3(0.7853982f, 10.21018f, 3.141593f),
-                new Quaternion(-0.8535533f, -0.1464466f, 0.3535535f, -0.3535534f),
+                new QuaternionF(-0.8535533f, -0.1464466f, 0.3535535f, -0.3535534f),
                 new float4x4(0.7071066f, 0.5000001f, -0.5000001f, 0f, -5.960464E-08f, -0.7071066f, -0.7071068f, 0f, -0.7071069f, 0.4999999f, -0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 3.926991f, 3.141593f)
             };
@@ -6531,7 +6531,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: 180",
                 new float3(1.570796f, 10.21018f, 3.141593f),
-                new Quaternion(-0.6532814f, -0.2705981f, 0.2705981f, -0.6532814f),
+                new QuaternionF(-0.6532814f, -0.2705981f, 0.2705981f, -0.6532814f),
                 new float4x4(0.7071066f, 0.7071069f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.7071069f, 0.7071065f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.7853985f, 0f)
             };
@@ -6540,7 +6540,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: 180",
                 new float3(3.141593f, 10.21018f, 3.141593f),
-                new Quaternion(2.365642E-08f, -0.3826836f, -5.711168E-08f, -0.9238794f),
+                new QuaternionF(2.365642E-08f, -0.3826836f, -5.711168E-08f, -0.9238794f),
                 new float4x4(0.7071065f, -1.236345E-07f, 0.707107f, 0f, 8.742277E-08f, 1f, 8.742278E-08f, 0f, -0.707107f, 4.618528E-14f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 0.7853985f, 8.742277E-08f)
             };
@@ -6549,7 +6549,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: 180",
                 new float3(4.712389f, 10.21018f, 3.141593f),
-                new Quaternion(0.6532814f, -0.2705982f, -0.2705982f, -0.6532814f),
+                new QuaternionF(0.6532814f, -0.2705982f, -0.2705982f, -0.6532814f),
                 new float4x4(0.7071065f, -0.7071071f, 0f, 0f, 0f, 4.470348E-08f, 0.9999999f, 0f, -0.7071071f, -0.7071064f, 4.470348E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853988f, 0f)
             };
@@ -6558,7 +6558,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: 180",
                 new float3(6.283185f, 10.21018f, 3.141593f),
-                new Quaternion(0.9238794f, -6.92879E-09f, -0.3826836f, 9.749574E-08f),
+                new QuaternionF(0.9238794f, -6.92879E-09f, -0.3826836f, 9.749574E-08f),
                 new float4x4(0.7071065f, 6.18173E-08f, -0.707107f, 0f, -8.742278E-08f, -0.9999999f, -1.748456E-07f, 0f, -0.707107f, 1.854517E-07f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.926991f, 3.141593f)
             };
@@ -6567,7 +6567,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: 180",
                 new float3(10.21018f, 10.21018f, 3.141593f),
-                new Quaternion(-0.3535535f, 0.3535535f, 0.1464468f, 0.8535532f),
+                new QuaternionF(-0.3535535f, 0.3535535f, 0.1464468f, 0.8535532f),
                 new float4x4(0.7071065f, -0.5000004f, 0.5f, 0f, 8.940697E-08f, 0.7071066f, 0.7071069f, 0f, -0.7071071f, -0.4999999f, 0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853985f, 1.264406E-07f)
             };
@@ -6576,7 +6576,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: 180",
                 new float3(-1.570796f, 10.21018f, 3.141593f),
-                new Quaternion(-0.6532814f, 0.2705982f, 0.2705982f, 0.6532814f),
+                new QuaternionF(-0.6532814f, 0.2705982f, 0.2705982f, 0.6532814f),
                 new float4x4(0.7071065f, -0.7071071f, 0f, 0f, 0f, 4.470348E-08f, 0.9999999f, 0f, -0.7071071f, -0.7071064f, 4.470348E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853988f, 0f)
             };
@@ -6585,7 +6585,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: 180",
                 new float3(-9.424778f, 10.21018f, 3.141593f),
-                new Quaternion(-2.774478E-08f, -0.3826836f, -3.582059E-08f, -0.9238794f),
+                new QuaternionF(-2.774478E-08f, -0.3826836f, -3.582059E-08f, -0.9238794f),
                 new float4x4(0.7071065f, -4.495288E-08f, 0.707107f, 0f, 8.742277E-08f, 1f, -2.384976E-08f, 0f, -0.707107f, 7.868158E-08f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 0.7853985f, 8.742277E-08f)
             };
@@ -6594,7 +6594,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: 180",
                 new float3(0f, -1.570796f, 3.141593f),
-                new Quaternion(-0.7071068f, 3.090862E-08f, 0.7071068f, -3.090862E-08f),
+                new QuaternionF(-0.7071068f, 3.090862E-08f, 0.7071068f, -3.090862E-08f),
                 new float4x4(5.960464E-08f, 0f, -0.9999999f, 0f, -8.742278E-08f, -0.9999999f, 0f, 0f, -0.9999999f, 8.742278E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 3.141593f)
             };
@@ -6603,7 +6603,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: 180",
                 new float3(0.001745329f, -1.570796f, 3.141593f),
-                new Quaternion(-0.7071065f, -0.0006170361f, 0.7071065f, -0.0006170979f),
+                new QuaternionF(-0.7071065f, -0.0006170361f, 0.7071065f, -0.0006170979f),
                 new float4x4(-4.621131E-08f, 0.001745328f, -0.9999985f, 0f, -8.73697E-08f, -0.9999986f, -0.001745328f, 0f, -1f, 8.73697E-08f, -4.621131E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 3.141593f)
             };
@@ -6612,7 +6612,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: 180",
                 new float3(0.01745329f, -1.570796f, 3.141593f),
-                new Quaternion(-0.7070798f, -0.006170562f, 0.7070798f, -0.006170623f),
+                new QuaternionF(-0.7070798f, -0.006170562f, 0.7070798f, -0.006170623f),
                 new float4x4(8.268398E-08f, 0.0174524f, -0.9998476f, 0f, -8.6613E-08f, -0.9998475f, -0.0174524f, 0f, -0.9999999f, 8.6613E-08f, 8.268398E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 3.141593f)
             };
@@ -6621,7 +6621,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: 180",
                 new float3(0.7853982f, -1.570796f, 3.141593f),
-                new Quaternion(-0.6532815f, -0.270598f, 0.6532815f, -0.2705981f),
+                new QuaternionF(-0.6532815f, -0.270598f, 0.6532815f, -0.2705981f),
                 new float4x4(1.192093E-07f, 0.7071067f, -0.7071067f, 0f, -8.940697E-08f, -0.7071066f, -0.7071067f, 0f, -0.9999999f, 8.940697E-08f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 3.141593f)
             };
@@ -6630,7 +6630,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: 180",
                 new float3(1.570796f, -1.570796f, 3.141593f),
-                new Quaternion(-0.5f, -0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -6639,7 +6639,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: 180",
                 new float3(3.141593f, -1.570796f, 3.141593f),
-                new Quaternion(0f, -0.7071068f, -6.181724E-08f, -0.7071068f),
+                new QuaternionF(0f, -0.7071068f, -6.181724E-08f, -0.7071068f),
                 new float4x4(5.960464E-08f, -8.742278E-08f, 0.9999999f, 0f, 8.742278E-08f, 1f, 8.742278E-08f, 0f, -0.9999999f, 8.742278E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 1.570796f, 8.742278E-08f)
             };
@@ -6648,7 +6648,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: 180",
                 new float3(4.712389f, -1.570796f, 3.141593f),
-                new Quaternion(0.4999999f, -0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -6657,7 +6657,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: 180",
                 new float3(6.283185f, -1.570796f, 3.141593f),
-                new Quaternion(0.7071068f, 3.090862E-08f, -0.7071068f, 9.272586E-08f),
+                new QuaternionF(0.7071068f, 3.090862E-08f, -0.7071068f, 9.272586E-08f),
                 new float4x4(5.960464E-08f, 1.748456E-07f, -0.9999999f, 0f, -8.742277E-08f, -0.9999999f, -1.748456E-07f, 0f, -0.9999999f, 8.742277E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 4.712389f, 3.141593f)
             };
@@ -6666,7 +6666,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: 180",
                 new float3(10.21018f, -1.570796f, 3.141593f),
-                new Quaternion(-0.2705981f, 0.6532814f, 0.2705982f, 0.6532814f),
+                new QuaternionF(-0.2705981f, 0.6532814f, 0.2705982f, 0.6532814f),
                 new float4x4(4.470348E-08f, -0.707107f, 0.7071064f, 0f, 5.960464E-08f, 0.7071065f, 0.707107f, 0f, -0.9999999f, 5.960464E-08f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 1.264406E-07f)
             };
@@ -6675,7 +6675,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: 180",
                 new float3(-1.570796f, -1.570796f, 3.141593f),
-                new Quaternion(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -6684,7 +6684,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: 180",
                 new float3(-9.424778f, -1.570796f, 3.141593f),
-                new Quaternion(-3.934078E-08f, -0.7071068f, -2.247646E-08f, -0.7071068f),
+                new QuaternionF(-3.934078E-08f, -0.7071068f, -2.247646E-08f, -0.7071068f),
                 new float4x4(5.960464E-08f, 2.384976E-08f, 0.9999999f, 0f, 8.742278E-08f, 1f, -2.384976E-08f, 0f, -0.9999999f, 8.742278E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 1.570796f, 8.742278E-08f)
             };
@@ -6693,7 +6693,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: 180",
                 new float3(0f, -9.424778f, 3.141593f),
-                new Quaternion(1f, -4.371139E-08f, 1.192488E-08f, -5.212531E-16f),
+                new QuaternionF(1f, -4.371139E-08f, 1.192488E-08f, -5.212531E-16f),
                 new float4x4(1f, -8.742278E-08f, 2.384976E-08f, 0f, -8.742278E-08f, -1f, 0f, 0f, 2.384976E-08f, -2.085012E-15f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 3.141593f)
             };
@@ -6702,7 +6702,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: 180",
                 new float3(0.001745329f, -9.424778f, 3.141593f),
-                new Quaternion(0.9999996f, -4.372178E-08f, 1.196302E-08f, 0.0008726645f),
+                new QuaternionF(0.9999996f, -4.372178E-08f, 1.196302E-08f, 0.0008726645f),
                 new float4x4(1f, -8.746441E-08f, 2.384973E-08f, 0f, -8.742265E-08f, -0.9999986f, -0.001745328f, 0f, 2.400234E-08f, 0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 3.141593f)
             };
@@ -6711,7 +6711,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: 180",
                 new float3(0.01745329f, -9.424778f, 3.141593f),
-                new Quaternion(0.9999619f, -4.381378E-08f, 1.230588E-08f, 0.008726535f),
+                new QuaternionF(0.9999619f, -4.381378E-08f, 1.230588E-08f, 0.008726535f),
                 new float4x4(1f, -8.783901E-08f, 2.384613E-08f, 0f, -8.740945E-08f, -0.9998477f, -0.01745241f, 0f, 2.53755E-08f, 0.01745241f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 3.141593f)
             };
@@ -6720,7 +6720,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: 180",
                 new float3(0.7853982f, -9.424778f, 3.141593f),
-                new Quaternion(0.9238795f, -4.494751E-08f, 2.774478E-08f, 0.3826835f),
+                new QuaternionF(0.9238795f, -4.494751E-08f, 2.774478E-08f, 0.3826835f),
                 new float4x4(1f, -1.042871E-07f, 1.686433E-08f, 0f, -6.181723E-08f, -0.7071067f, -0.7071068f, 0f, 8.5667E-08f, 0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 3.141593f)
             };
@@ -6729,7 +6729,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: 180",
                 new float3(1.570796f, -9.424778f, 3.141593f),
-                new Quaternion(0.7071068f, -3.934078E-08f, 3.934078E-08f, 0.7071068f),
+                new QuaternionF(0.7071068f, -3.934078E-08f, 3.934078E-08f, 0.7071068f),
                 new float4x4(1f, -1.112725E-07f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 1.112725E-07f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, -1.112725E-07f, 0f)
             };
@@ -6738,7 +6738,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: 180",
                 new float3(3.141593f, -9.424778f, 3.141593f),
-                new Quaternion(-4.371139E-08f, -1.192488E-08f, 4.371139E-08f, 1f),
+                new QuaternionF(-4.371139E-08f, -1.192488E-08f, 4.371139E-08f, 1f),
                 new float4x4(1f, -8.742278E-08f, -2.384976E-08f, 0f, 8.742278E-08f, 1f, 8.742278E-08f, 0f, 2.384975E-08f, -8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, -2.384976E-08f, 8.742278E-08f)
             };
@@ -6747,7 +6747,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: 180",
                 new float3(4.712389f, -9.424778f, 3.141593f),
-                new Quaternion(-0.7071068f, 2.247646E-08f, 2.247646E-08f, 0.7071068f),
+                new QuaternionF(-0.7071068f, 2.247646E-08f, 2.247646E-08f, 0.7071068f),
                 new float4x4(1f, -6.357302E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -6.357302E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 6.357302E-08f, 0f)
             };
@@ -6756,7 +6756,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: 180",
                 new float3(6.283185f, -9.424778f, 3.141593f),
-                new Quaternion(-1f, 4.371139E-08f, -1.192488E-08f, -8.742278E-08f),
+                new QuaternionF(-1f, 4.371139E-08f, -1.192488E-08f, -8.742278E-08f),
                 new float4x4(1f, -8.742278E-08f, 2.384976E-08f, 0f, -8.742278E-08f, -1f, -1.748456E-07f, 0f, 2.384978E-08f, 1.748456E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 3.141593f)
             };
@@ -6765,7 +6765,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: 180",
                 new float3(10.21018f, -9.424778f, 3.141593f),
-                new Quaternion(0.3826836f, -5.710478E-09f, -3.582059E-08f, -0.9238794f),
+                new QuaternionF(0.3826836f, -5.710478E-09f, -3.582059E-08f, -0.9238794f),
                 new float4x4(1f, -7.055844E-08f, -1.686432E-08f, 0f, 6.181721E-08f, 0.7071065f, 0.707107f, 0f, -3.79675E-08f, -0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, -2.384976E-08f, 8.742278E-08f)
             };
@@ -6774,7 +6774,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: 180",
                 new float3(-1.570796f, -9.424778f, 3.141593f),
-                new Quaternion(0.7071068f, -2.247646E-08f, -2.247646E-08f, -0.7071068f),
+                new QuaternionF(0.7071068f, -2.247646E-08f, -2.247646E-08f, -0.7071068f),
                 new float4x4(1f, -6.357302E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -6.357302E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 6.357302E-08f, 0f)
             };
@@ -6783,7 +6783,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: 180",
                 new float3(-9.424778f, -9.424778f, 3.141593f),
-                new Quaternion(1.192488E-08f, -1.192488E-08f, 4.371139E-08f, 1f),
+                new QuaternionF(1.192488E-08f, -1.192488E-08f, 4.371139E-08f, 1f),
                 new float4x4(1f, -8.742278E-08f, -2.384976E-08f, 0f, 8.742278E-08f, 1f, -2.384976E-08f, 0f, 2.384976E-08f, 2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 8.742278E-08f)
             };
@@ -6792,7 +6792,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: 270",
                 new float3(0f, 0f, 4.712389f),
-                new Quaternion(0f, 0f, 0.7071068f, -0.7071068f),
+                new QuaternionF(0f, 0f, 0.7071068f, -0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, 0f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 4.712389f)
             };
@@ -6801,7 +6801,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: 270",
                 new float3(0.001745329f, 0f, 4.712389f),
-                new Quaternion(-0.000617067f, -0.000617067f, 0.7071065f, -0.7071065f),
+                new QuaternionF(-0.000617067f, -0.000617067f, 0.7071065f, -0.7071065f),
                 new float4x4(-4.62876E-08f, 1f, 0f, 0f, -0.9999985f, -4.62876E-08f, -0.001745328f, 0f, -0.001745328f, 0f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0f, 4.712389f)
             };
@@ -6810,7 +6810,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: 270",
                 new float3(0.01745329f, 0f, 4.712389f),
-                new Quaternion(-0.006170592f, -0.006170592f, 0.7070798f, -0.7070798f),
+                new QuaternionF(-0.006170592f, -0.006170592f, 0.7070798f, -0.7070798f),
                 new float4x4(8.192001E-08f, 0.9999999f, 0f, 0f, -0.9998476f, 8.192001E-08f, -0.01745241f, 0f, -0.01745241f, 0f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0f, 4.712389f)
             };
@@ -6819,7 +6819,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: 270",
                 new float3(0.7853982f, 0f, 4.712389f),
-                new Quaternion(-0.2705981f, -0.2705981f, 0.6532815f, -0.6532815f),
+                new QuaternionF(-0.2705981f, -0.2705981f, 0.6532815f, -0.6532815f),
                 new float4x4(8.940697E-08f, 0.9999999f, 0f, 0f, -0.7071067f, 8.940697E-08f, -0.7071068f, 0f, -0.7071068f, 0f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0f, 4.712389f)
             };
@@ -6828,7 +6828,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: 270",
                 new float3(1.570796f, 0f, 4.712389f),
-                new Quaternion(-0.5f, -0.5f, 0.5f, -0.5f),
+                new QuaternionF(-0.5f, -0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -6837,7 +6837,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: 270",
                 new float3(3.141593f, 0f, 4.712389f),
-                new Quaternion(-0.7071068f, -0.7071068f, -3.090862E-08f, 3.090862E-08f),
+                new QuaternionF(-0.7071068f, -0.7071068f, -3.090862E-08f, 3.090862E-08f),
                 new float4x4(5.960464E-08f, 0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 8.742278E-08f, 0f, 8.742278E-08f, 0f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 3.141593f, 1.570796f)
             };
@@ -6846,7 +6846,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: 270",
                 new float3(4.712389f, 0f, 4.712389f),
-                new Quaternion(-0.5f, -0.5f, -0.5f, 0.5f),
+                new QuaternionF(-0.5f, -0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -6855,7 +6855,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: 270",
                 new float3(6.283185f, 0f, 4.712389f),
-                new Quaternion(6.181724E-08f, 6.181724E-08f, -0.7071068f, 0.7071068f),
+                new QuaternionF(6.181724E-08f, 6.181724E-08f, -0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, 0f, 0f, -0.9999999f, 5.960464E-08f, -1.748456E-07f, 0f, -1.748456E-07f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0f, 4.712389f)
             };
@@ -6864,7 +6864,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: 270",
                 new float3(10.21018f, 0f, 4.712389f),
-                new Quaternion(0.6532814f, 0.6532814f, 0.2705982f, -0.2705982f),
+                new QuaternionF(0.6532814f, 0.6532814f, 0.2705982f, -0.2705982f),
                 new float4x4(7.450581E-08f, 0.9999999f, 0f, 0f, 0.7071064f, 7.450581E-08f, 0.707107f, 0f, 0.707107f, 0f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 1.570796f)
             };
@@ -6873,7 +6873,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: 270",
                 new float3(-1.570796f, 0f, 4.712389f),
-                new Quaternion(0.5f, 0.5f, 0.5f, -0.5f),
+                new QuaternionF(0.5f, 0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -6882,7 +6882,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: 270",
                 new float3(-9.424778f, 0f, 4.712389f),
-                new Quaternion(-0.7071068f, -0.7071068f, 8.432163E-09f, -8.432163E-09f),
+                new QuaternionF(-0.7071068f, -0.7071068f, 8.432163E-09f, -8.432163E-09f),
                 new float4x4(5.960464E-08f, 0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, -2.384976E-08f, 0f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 1.570796f)
             };
@@ -6891,7 +6891,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: 270",
                 new float3(0f, 0.001745329f, 4.712389f),
-                new Quaternion(0.000617067f, -0.000617067f, 0.7071065f, -0.7071065f),
+                new QuaternionF(0.000617067f, -0.000617067f, 0.7071065f, -0.7071065f),
                 new float4x4(-4.62876E-08f, 0.9999985f, 0.001745328f, 0f, -1f, -4.62876E-08f, 0f, 0f, 0f, -0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.001745329f, 4.712389f)
             };
@@ -6900,7 +6900,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: 270",
                 new float3(0.001745329f, 0.001745329f, 4.712389f),
-                new Quaternion(0f, -0.001234133f, 0.7071068f, -0.7071058f),
+                new QuaternionF(0f, -0.001234133f, 0.7071068f, -0.7071058f),
                 new float4x4(-3.16538E-06f, 0.9999986f, 0.001745326f, 0f, -0.9999986f, -1.192093E-07f, -0.001745328f, 0f, -0.001745326f, -0.001745328f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 4.712389f)
             };
@@ -6909,7 +6909,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: 270",
                 new float3(0.01745329f, 0.001745329f, 4.712389f),
-                new Quaternion(-0.005553547f, -0.006787634f, 0.707085f, -0.7070742f),
+                new QuaternionF(-0.005553547f, -0.006787634f, 0.707085f, -0.7070742f),
                 new float4x4(-3.039354E-05f, 0.9999985f, 0.001745063f, 0f, -0.9998477f, 6.664777E-08f, -0.01745241f, 0f, -0.01745238f, -0.001745328f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.00174533f, 4.712389f)
             };
@@ -6918,7 +6918,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: 270",
                 new float3(0.7853982f, 0.001745329f, 4.712389f),
-                new Quaternion(-0.2700279f, -0.2711681f, 0.6535174f, -0.6530451f),
+                new QuaternionF(-0.2700279f, -0.2711681f, 0.6535174f, -0.6530451f),
                 new float4x4(-0.001234129f, 0.9999985f, 0.001234084f, 0f, -0.7071067f, -1.490116E-08f, -0.7071068f, 0f, -0.7071058f, -0.001745313f, 0.7071056f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 0.001745302f, 4.712389f)
             };
@@ -6927,7 +6927,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: 270",
                 new float3(1.570796f, 0.001745329f, 4.712389f),
-                new Quaternion(-0.4995635f, -0.5004361f, 0.5004361f, -0.4995635f),
+                new QuaternionF(-0.4995635f, -0.5004361f, 0.5004361f, -0.4995635f),
                 new float4x4(-0.001745224f, 0.9999985f, 0f, 0f, 0f, 2.980232E-08f, -1f, 0f, -0.9999985f, -0.001745254f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.572542f, 0f)
             };
@@ -6936,7 +6936,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: 270",
                 new float3(3.141593f, 0.001745329f, 4.712389f),
-                new Quaternion(-0.7071065f, -0.7071065f, 0.0006170361f, 0.0006170979f),
+                new QuaternionF(-0.7071065f, -0.7071065f, 0.0006170361f, 0.0006170979f),
                 new float4x4(-4.621131E-08f, 0.9999985f, -0.001745328f, 0f, 1f, -4.621131E-08f, 8.73697E-08f, 0f, 8.73697E-08f, -0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.73697E-08f, 3.143338f, 1.570796f)
             };
@@ -6945,7 +6945,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: 270",
                 new float3(4.712389f, 0.001745329f, 4.712389f),
-                new Quaternion(-0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
+                new QuaternionF(-0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
                 new float4x4(0.001745284f, 0.9999985f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, 0.9999985f, -0.001745254f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.714134f, 0f)
             };
@@ -6954,7 +6954,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: 270",
                 new float3(6.283185f, 0.001745329f, 4.712389f),
-                new Quaternion(-0.0006170052f, 0.0006171288f, -0.7071065f, 0.7071065f),
+                new QuaternionF(-0.0006170052f, 0.0006171288f, -0.7071065f, 0.7071065f),
                 new float4x4(-4.644016E-08f, 0.9999985f, 0.001745328f, 0f, -1f, -4.613503E-08f, -1.747976E-07f, 0f, -1.747976E-07f, -0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.747976E-07f, 0.001745329f, 4.712389f)
             };
@@ -6963,7 +6963,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: 270",
                 new float3(10.21018f, 0.001745329f, 4.712389f),
-                new Quaternion(0.6535173f, 0.653045f, 0.270028f, -0.2711681f),
+                new QuaternionF(0.6535173f, 0.653045f, 0.270028f, -0.2711681f),
                 new float4x4(0.001234248f, 0.9999983f, -0.001234084f, 0f, 0.7071065f, 7.450581E-08f, 0.7071069f, 0f, 0.7071059f, -0.001745313f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 1.570796f)
             };
@@ -6972,7 +6972,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: 270",
                 new float3(-1.570796f, 0.001745329f, 4.712389f),
-                new Quaternion(0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
+                new QuaternionF(0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
                 new float4x4(0.001745284f, 0.9999985f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, 0.9999985f, -0.001745254f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.714134f, 0f)
             };
@@ -6981,7 +6981,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: 270",
                 new float3(-9.424778f, 0.001745329f, 4.712389f),
-                new Quaternion(-0.7071065f, -0.7071065f, 0.0006170754f, 0.0006170585f),
+                new QuaternionF(-0.7071065f, -0.7071065f, 0.0006170754f, 0.0006170585f),
                 new float4x4(-4.63084E-08f, 0.9999985f, -0.001745328f, 0f, 1f, -4.63084E-08f, -2.392335E-08f, 0f, -2.392335E-08f, -0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.392335E-08f, 3.143338f, 1.570796f)
             };
@@ -6990,7 +6990,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: 270",
                 new float3(0f, 0.01745329f, 4.712389f),
-                new Quaternion(0.006170592f, -0.006170592f, 0.7070798f, -0.7070798f),
+                new QuaternionF(0.006170592f, -0.006170592f, 0.7070798f, -0.7070798f),
                 new float4x4(8.192001E-08f, 0.9998476f, 0.01745241f, 0f, -0.9999999f, 8.192001E-08f, 0f, 0f, 0f, -0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.01745329f, 4.712389f)
             };
@@ -6999,7 +6999,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: 270",
                 new float3(0.001745329f, 0.01745329f, 4.712389f),
-                new Quaternion(0.005553547f, -0.006787634f, 0.707085f, -0.7070742f),
+                new QuaternionF(0.005553547f, -0.006787634f, 0.707085f, -0.7070742f),
                 new float4x4(-3.039354E-05f, 0.9998477f, 0.01745238f, 0f, -0.9999985f, 6.664777E-08f, -0.001745328f, 0f, -0.001745063f, -0.01745241f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.01745329f, 4.712389f)
             };
@@ -7008,7 +7008,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: 270",
                 new float3(0.01745329f, 0.01745329f, 4.712389f),
-                new Quaternion(0f, -0.01234071f, 0.7071067f, -0.7069991f),
+                new QuaternionF(0f, -0.01234071f, 0.7071067f, -0.7069991f),
                 new float4x4(-0.0003044076f, 0.9998476f, 0.01744975f, 0f, -0.9998476f, 1.788139E-07f, -0.0174524f, 0f, -0.01744975f, -0.0174524f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.01745329f, 4.712389f)
             };
@@ -7017,7 +7017,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: 270",
                 new float3(0.7853982f, 0.01745329f, 4.712389f),
-                new Quaternion(-0.2648869f, -0.2762886f, 0.655618f, -0.6508952f),
+                new QuaternionF(-0.2648869f, -0.2762886f, 0.655618f, -0.6508952f),
                 new float4x4(-0.01234062f, 0.9998477f, 0.01234072f, 0f, -0.7071067f, 1.043081E-07f, -0.7071067f, 0f, -0.7069991f, -0.01745239f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853981f, 0.01745331f, 4.712389f)
             };
@@ -7026,7 +7026,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: 270",
                 new float3(1.570796f, 0.01745329f, 4.712389f),
-                new Quaternion(-0.4956177f, -0.5043442f, 0.5043442f, -0.4956177f),
+                new QuaternionF(-0.4956177f, -0.5043442f, 0.5043442f, -0.4956177f),
                 new float4x4(-0.01745212f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, -0.9999998f, 0f, -0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.58825f, 0f)
             };
@@ -7035,7 +7035,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: 270",
                 new float3(3.141593f, 0.01745329f, 4.712389f),
-                new Quaternion(-0.7070798f, -0.7070798f, 0.006170562f, 0.006170623f),
+                new QuaternionF(-0.7070798f, -0.7070798f, 0.006170562f, 0.006170623f),
                 new float4x4(8.268398E-08f, 0.9998476f, -0.0174524f, 0f, 0.9999999f, 8.268398E-08f, 8.6613E-08f, 0f, 8.6613E-08f, -0.0174524f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.6613E-08f, 3.159046f, 1.570796f)
             };
@@ -7044,7 +7044,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: 270",
                 new float3(4.712389f, 0.01745329f, 4.712389f),
-                new Quaternion(-0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
+                new QuaternionF(-0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
                 new float4x4(0.01745254f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.729842f, 0f)
             };
@@ -7053,7 +7053,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: 270",
                 new float3(6.283185f, 0.01745329f, 4.712389f),
-                new Quaternion(-0.00617053f, 0.006170654f, -0.7070798f, 0.7070798f),
+                new QuaternionF(-0.00617053f, 0.006170654f, -0.7070798f, 0.7070798f),
                 new float4x4(8.039206E-08f, 0.9998476f, 0.01745241f, 0f, -0.9999999f, 8.344796E-08f, -1.750886E-07f, 0f, -1.750886E-07f, -0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 0.01745329f, 4.712389f)
             };
@@ -7062,7 +7062,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: 270",
                 new float3(10.21018f, 0.01745329f, 4.712389f),
-                new Quaternion(0.6556179f, 0.6508952f, 0.264887f, -0.2762887f),
+                new QuaternionF(0.6556179f, 0.6508952f, 0.264887f, -0.2762887f),
                 new float4x4(0.01234069f, 0.9998477f, -0.01234072f, 0f, 0.7071065f, 1.490116E-07f, 0.707107f, 0f, 0.7069993f, -0.01745236f, -0.7069987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 1.570796f)
             };
@@ -7071,7 +7071,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: 270",
                 new float3(-1.570796f, 0.01745329f, 4.712389f),
-                new Quaternion(0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
+                new QuaternionF(0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
                 new float4x4(0.01745254f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.729842f, 0f)
             };
@@ -7080,7 +7080,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: 270",
                 new float3(-9.424778f, 0.01745329f, 4.712389f),
-                new Quaternion(-0.7070798f, -0.7070798f, 0.006170601f, 0.006170584f),
+                new QuaternionF(-0.7070798f, -0.7070798f, 0.006170601f, 0.006170584f),
                 new float4x4(8.171628E-08f, 0.9998476f, -0.0174524f, 0f, 0.9999999f, 8.171628E-08f, -2.328306E-08f, 0f, -2.328306E-08f, -0.0174524f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.328306E-08f, 3.159046f, 1.570796f)
             };
@@ -7089,7 +7089,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: 270",
                 new float3(0f, 0.7853982f, 4.712389f),
-                new Quaternion(0.2705981f, -0.2705981f, 0.6532815f, -0.6532815f),
+                new QuaternionF(0.2705981f, -0.2705981f, 0.6532815f, -0.6532815f),
                 new float4x4(8.940697E-08f, 0.7071067f, 0.7071068f, 0f, -0.9999999f, 8.940697E-08f, 0f, 0f, 0f, -0.7071068f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853982f, 4.712389f)
             };
@@ -7098,7 +7098,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: 270",
                 new float3(0.001745329f, 0.7853982f, 4.712389f),
-                new Quaternion(0.2700279f, -0.2711681f, 0.6535174f, -0.6530451f),
+                new QuaternionF(0.2700279f, -0.2711681f, 0.6535174f, -0.6530451f),
                 new float4x4(-0.001234129f, 0.7071067f, 0.7071058f, 0f, -0.9999985f, -1.490116E-08f, -0.001745313f, 0f, -0.001234084f, -0.7071068f, 0.7071056f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745344f, 0.7853982f, 4.712389f)
             };
@@ -7107,7 +7107,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: 270",
                 new float3(0.01745329f, 0.7853982f, 4.712389f),
-                new Quaternion(0.2648869f, -0.2762886f, 0.655618f, -0.6508952f),
+                new QuaternionF(0.2648869f, -0.2762886f, 0.655618f, -0.6508952f),
                 new float4x4(-0.01234062f, 0.7071067f, 0.7069991f, 0f, -0.9998477f, 1.043081E-07f, -0.01745239f, 0f, -0.01234072f, -0.7071067f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 0.7853982f, 4.712389f)
             };
@@ -7116,7 +7116,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: 270",
                 new float3(0.7853982f, 0.7853982f, 4.712389f),
-                new Quaternion(0f, -0.5f, 0.7071068f, -0.4999999f),
+                new QuaternionF(0f, -0.5f, 0.7071068f, -0.4999999f),
                 new float4x4(-0.4999999f, 0.7071067f, 0.4999999f, 0f, -0.7071067f, 5.960464E-08f, -0.7071068f, 0f, -0.4999999f, -0.7071068f, 0.5f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0.7853982f, 4.712389f)
             };
@@ -7125,7 +7125,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: 270",
                 new float3(1.570796f, 0.7853982f, 4.712389f),
-                new Quaternion(-0.270598f, -0.6532815f, 0.6532815f, -0.270598f),
+                new QuaternionF(-0.270598f, -0.6532815f, 0.6532815f, -0.270598f),
                 new float4x4(-0.7071066f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, -0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 2.356194f, 0f)
             };
@@ -7134,7 +7134,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: 270",
                 new float3(3.141593f, 0.7853982f, 4.712389f),
-                new Quaternion(-0.6532815f, -0.6532815f, 0.270598f, 0.2705981f),
+                new QuaternionF(-0.6532815f, -0.6532815f, 0.270598f, 0.2705981f),
                 new float4x4(1.192093E-07f, 0.7071067f, -0.7071067f, 0f, 0.9999999f, 1.192093E-07f, 8.940697E-08f, 0f, 8.940697E-08f, -0.7071067f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-5.960464E-08f, 3.926991f, 1.570796f)
             };
@@ -7143,7 +7143,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: 270",
                 new float3(4.712389f, 0.7853982f, 4.712389f),
-                new Quaternion(-0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
+                new QuaternionF(-0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -7152,7 +7152,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: 270",
                 new float3(6.283185f, 0.7853982f, 4.712389f),
-                new Quaternion(-0.270598f, 0.2705981f, -0.6532815f, 0.6532815f),
+                new QuaternionF(-0.270598f, 0.2705981f, -0.6532815f, 0.6532815f),
                 new float4x4(2.980232E-08f, 0.7071067f, 0.7071067f, 0f, -0.9999999f, 1.490116E-07f, -1.490116E-07f, 0f, -1.490116E-07f, -0.7071067f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 0.7853982f, 4.712389f)
             };
@@ -7161,7 +7161,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: 270",
                 new float3(10.21018f, 0.7853982f, 4.712389f),
-                new Quaternion(0.7071067f, 0.4999999f, 1.043081E-07f, -0.5000001f),
+                new QuaternionF(0.7071067f, 0.4999999f, 1.043081E-07f, -0.5000001f),
                 new float4x4(0.5000003f, 0.7071066f, -0.4999998f, 0f, 0.7071064f, 1.788139E-07f, 0.7071069f, 0f, 0.5000001f, -0.7071066f, -0.4999995f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 1.570796f)
             };
@@ -7170,7 +7170,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: 270",
                 new float3(-1.570796f, 0.7853982f, 4.712389f),
-                new Quaternion(0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
+                new QuaternionF(0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -7179,7 +7179,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: 270",
                 new float3(-9.424778f, 0.7853982f, 4.712389f),
-                new Quaternion(-0.6532815f, -0.6532815f, 0.2705981f, 0.2705981f),
+                new QuaternionF(-0.6532815f, -0.6532815f, 0.2705981f, 0.2705981f),
                 new float4x4(8.940697E-08f, 0.7071067f, -0.7071068f, 0f, 0.9999999f, 8.940697E-08f, 0f, 0f, 0f, -0.7071068f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 1.570796f)
             };
@@ -7188,7 +7188,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: 270",
                 new float3(0f, 1.570796f, 4.712389f),
-                new Quaternion(0.5f, -0.5f, 0.5f, -0.5f),
+                new QuaternionF(0.5f, -0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 4.712389f)
             };
@@ -7197,7 +7197,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: 270",
                 new float3(0.001745329f, 1.570796f, 4.712389f),
-                new Quaternion(0.4995635f, -0.5004361f, 0.5004361f, -0.4995635f),
+                new QuaternionF(0.4995635f, -0.5004361f, 0.5004361f, -0.4995635f),
                 new float4x4(-0.001745224f, 0f, 0.9999985f, 0f, -0.9999985f, 2.980232E-08f, -0.001745254f, 0f, 0f, -1f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745255f, 1.570796f, 4.712389f)
             };
@@ -7206,7 +7206,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: 270",
                 new float3(0.01745329f, 1.570796f, 4.712389f),
-                new Quaternion(0.4956177f, -0.5043442f, 0.5043442f, -0.4956177f),
+                new QuaternionF(0.4956177f, -0.5043442f, 0.5043442f, -0.4956177f),
                 new float4x4(-0.01745212f, 0f, 0.9998475f, 0f, -0.9998475f, 2.086163E-07f, -0.01745233f, 0f, 0f, -0.9999998f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745322f, 1.570796f, 4.712389f)
             };
@@ -7215,7 +7215,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: 270",
                 new float3(0.7853982f, 1.570796f, 4.712389f),
-                new Quaternion(0.270598f, -0.6532815f, 0.6532815f, -0.270598f),
+                new QuaternionF(0.270598f, -0.6532815f, 0.6532815f, -0.270598f),
                 new float4x4(-0.7071066f, 0f, 0.7071066f, 0f, -0.7071066f, 1.490116E-07f, -0.7071067f, 0f, 0f, -0.9999999f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 1.570796f, 4.712389f)
             };
@@ -7224,7 +7224,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: 270",
                 new float3(1.570796f, 1.570796f, 4.712389f),
-                new Quaternion(0f, -0.7071067f, 0.7071067f, 0f),
+                new QuaternionF(0f, -0.7071067f, 0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 3.141593f, 0f)
             };
@@ -7233,7 +7233,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: 270",
                 new float3(3.141593f, 1.570796f, 4.712389f),
-                new Quaternion(-0.5f, -0.4999999f, 0.4999999f, 0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, 0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.788139E-07f, 4.712389f, 1.570796f)
             };
@@ -7242,7 +7242,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: 270",
                 new float3(4.712389f, 1.570796f, 4.712389f),
-                new Quaternion(-0.7071067f, 0f, 0f, 0.7071067f),
+                new QuaternionF(-0.7071067f, 0f, 0f, 0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0f, 0f)
             };
@@ -7251,7 +7251,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: 270",
                 new float3(6.283185f, 1.570796f, 4.712389f),
-                new Quaternion(-0.4999999f, 0.5f, -0.5f, 0.4999999f),
+                new QuaternionF(-0.4999999f, 0.5f, -0.5f, 0.4999999f),
                 new float4x4(0f, 0f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, -1.192093E-07f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 1.570796f, 4.712389f)
             };
@@ -7260,7 +7260,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: 270",
                 new float3(10.21018f, 1.570796f, 4.712389f),
-                new Quaternion(0.6532815f, 0.2705979f, -0.2705979f, -0.6532815f),
+                new QuaternionF(0.6532815f, 0.2705979f, -0.2705979f, -0.6532815f),
                 new float4x4(0.7071072f, 0f, -0.7071064f, 0f, 0.7071064f, 1.043081E-07f, 0.7071071f, 0f, 0f, -0.9999999f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 1.570796f)
             };
@@ -7269,7 +7269,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: 270",
                 new float3(-1.570796f, 1.570796f, 4.712389f),
-                new Quaternion(0.7071067f, 0f, 0f, -0.7071067f),
+                new QuaternionF(0.7071067f, 0f, 0f, -0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0f, 0f)
             };
@@ -7278,7 +7278,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: 270",
                 new float3(-9.424778f, 1.570796f, 4.712389f),
-                new Quaternion(-0.5f, -0.5f, 0.5f, 0.5f),
+                new QuaternionF(-0.5f, -0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 1.570796f)
             };
@@ -7287,7 +7287,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: 270",
                 new float3(0f, 3.141593f, 4.712389f),
-                new Quaternion(0.7071068f, -0.7071068f, -3.090862E-08f, 3.090862E-08f),
+                new QuaternionF(0.7071068f, -0.7071068f, -3.090862E-08f, 3.090862E-08f),
                 new float4x4(5.960464E-08f, -0.9999999f, -8.742278E-08f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 8.742278E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 4.712389f)
             };
@@ -7296,7 +7296,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: 270",
                 new float3(0.001745329f, 3.141593f, 4.712389f),
-                new Quaternion(0.7071065f, -0.7071065f, 0.0006170361f, 0.0006170979f),
+                new QuaternionF(0.7071065f, -0.7071065f, 0.0006170361f, 0.0006170979f),
                 new float4x4(-4.621131E-08f, -1f, -8.73697E-08f, 0f, -0.9999985f, -4.621131E-08f, -0.001745328f, 0f, 0.001745328f, 8.73697E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 4.712389f)
             };
@@ -7305,7 +7305,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: 270",
                 new float3(0.01745329f, 3.141593f, 4.712389f),
-                new Quaternion(0.7070798f, -0.7070798f, 0.006170562f, 0.006170623f),
+                new QuaternionF(0.7070798f, -0.7070798f, 0.006170562f, 0.006170623f),
                 new float4x4(8.268398E-08f, -0.9999999f, -8.6613E-08f, 0f, -0.9998476f, 8.268398E-08f, -0.0174524f, 0f, 0.0174524f, 8.6613E-08f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 4.712389f)
             };
@@ -7314,7 +7314,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: 270",
                 new float3(0.7853982f, 3.141593f, 4.712389f),
-                new Quaternion(0.6532815f, -0.6532815f, 0.270598f, 0.2705981f),
+                new QuaternionF(0.6532815f, -0.6532815f, 0.270598f, 0.2705981f),
                 new float4x4(1.192093E-07f, -0.9999999f, -8.940697E-08f, 0f, -0.7071067f, 1.192093E-07f, -0.7071067f, 0f, 0.7071067f, 8.940697E-08f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 3.141593f, 4.712389f)
             };
@@ -7323,7 +7323,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: 270",
                 new float3(1.570796f, 3.141593f, 4.712389f),
-                new Quaternion(0.5f, -0.4999999f, 0.4999999f, 0.5f),
+                new QuaternionF(0.5f, -0.4999999f, 0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -7332,7 +7332,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: 270",
                 new float3(3.141593f, 3.141593f, 4.712389f),
-                new Quaternion(0f, 6.181724E-08f, 0.7071068f, 0.7071068f),
+                new QuaternionF(0f, 6.181724E-08f, 0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, 8.742278E-08f, 0f, 0.9999999f, 5.960464E-08f, 8.742278E-08f, 0f, -8.742278E-08f, 8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 8.742278E-08f, 1.570796f)
             };
@@ -7341,7 +7341,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: 270",
                 new float3(4.712389f, 3.141593f, 4.712389f),
-                new Quaternion(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -7350,7 +7350,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: 270",
                 new float3(6.283185f, 3.141593f, 4.712389f),
-                new Quaternion(-0.7071068f, 0.7071068f, -3.090862E-08f, -9.272586E-08f),
+                new QuaternionF(-0.7071068f, 0.7071068f, -3.090862E-08f, -9.272586E-08f),
                 new float4x4(5.960464E-08f, -0.9999999f, -8.742277E-08f, 0f, -0.9999999f, 5.960464E-08f, -1.748456E-07f, 0f, 1.748456E-07f, 8.742277E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 4.712389f)
             };
@@ -7359,7 +7359,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: 270",
                 new float3(10.21018f, 3.141593f, 4.712389f),
-                new Quaternion(0.2705981f, -0.2705982f, -0.6532814f, -0.6532814f),
+                new QuaternionF(0.2705981f, -0.2705982f, -0.6532814f, -0.6532814f),
                 new float4x4(4.470348E-08f, -0.9999999f, 5.960464E-08f, 0f, 0.7071064f, 1.192093E-07f, 0.707107f, 0f, -0.707107f, 5.960464E-08f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.264406E-07f, 1.570796f)
             };
@@ -7368,7 +7368,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: 270",
                 new float3(-1.570796f, 3.141593f, 4.712389f),
-                new Quaternion(0.4999999f, -0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -7377,7 +7377,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: 270",
                 new float3(-9.424778f, 3.141593f, 4.712389f),
-                new Quaternion(3.934078E-08f, 2.247646E-08f, 0.7071068f, 0.7071068f),
+                new QuaternionF(3.934078E-08f, 2.247646E-08f, 0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, 8.742278E-08f, 0f, 0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, 2.384976E-08f, 8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742278E-08f, 1.570796f)
             };
@@ -7386,7 +7386,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: 270",
                 new float3(0f, 4.712389f, 4.712389f),
-                new Quaternion(0.5f, -0.5f, -0.5f, 0.5f),
+                new QuaternionF(0.5f, -0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 4.712389f)
             };
@@ -7395,7 +7395,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: 270",
                 new float3(0.001745329f, 4.712389f, 4.712389f),
-                new Quaternion(0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
+                new QuaternionF(0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
                 new float4x4(0.001745284f, 0f, -0.9999985f, 0f, -0.9999985f, 2.980232E-08f, -0.001745254f, 0f, 0f, 1f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745255f, 4.712389f, 4.712389f)
             };
@@ -7404,7 +7404,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: 270",
                 new float3(0.01745329f, 4.712389f, 4.712389f),
-                new Quaternion(0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
+                new QuaternionF(0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
                 new float4x4(0.01745254f, 0f, -0.9998475f, 0f, -0.9998475f, 2.086163E-07f, -0.01745233f, 0f, 0f, 0.9999998f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745322f, 4.712389f, 4.712389f)
             };
@@ -7413,7 +7413,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: 270",
                 new float3(0.7853982f, 4.712389f, 4.712389f),
-                new Quaternion(0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
+                new QuaternionF(0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
                 new float4x4(0.7071069f, 0f, -0.7071066f, 0f, -0.7071066f, 1.490116E-07f, -0.7071067f, 0f, 0f, 0.9999999f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 4.712389f)
             };
@@ -7422,7 +7422,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: 270",
                 new float3(1.570796f, 4.712389f, 4.712389f),
-                new Quaternion(0.7071067f, 0f, 0f, 0.7071067f),
+                new QuaternionF(0.7071067f, 0f, 0f, 0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 0f, 0f)
             };
@@ -7431,7 +7431,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: 270",
                 new float3(3.141593f, 4.712389f, 4.712389f),
-                new Quaternion(0.4999999f, 0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(0.4999999f, 0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.788139E-07f, 1.570796f, 1.570796f)
             };
@@ -7440,7 +7440,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: 270",
                 new float3(4.712389f, 4.712389f, 4.712389f),
-                new Quaternion(0f, 0.7071067f, 0.7071067f, 0f),
+                new QuaternionF(0f, 0.7071067f, 0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -7449,7 +7449,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: 270",
                 new float3(6.283185f, 4.712389f, 4.712389f),
-                new Quaternion(-0.5f, 0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(-0.5f, 0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, -1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 4.712389f, 4.712389f)
             };
@@ -7458,7 +7458,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: 270",
                 new float3(10.21018f, 4.712389f, 4.712389f),
-                new Quaternion(-0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
+                new QuaternionF(-0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
                 new float4x4(-0.7071069f, 0f, 0.7071064f, 0f, 0.7071064f, 1.043081E-07f, 0.7071071f, 0f, 0f, 0.9999999f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 1.570796f)
             };
@@ -7467,7 +7467,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: 270",
                 new float3(-1.570796f, 4.712389f, 4.712389f),
-                new Quaternion(0f, -0.7071067f, -0.7071067f, 0f),
+                new QuaternionF(0f, -0.7071067f, -0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -7476,7 +7476,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: 270",
                 new float3(-9.424778f, 4.712389f, 4.712389f),
-                new Quaternion(0.5f, 0.5f, 0.5f, 0.5f),
+                new QuaternionF(0.5f, 0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 1.570796f)
             };
@@ -7485,7 +7485,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: 270",
                 new float3(0f, 6.283185f, 4.712389f),
-                new Quaternion(-6.181724E-08f, 6.181724E-08f, -0.7071068f, 0.7071068f),
+                new QuaternionF(-6.181724E-08f, 6.181724E-08f, -0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, 1.748456E-07f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, -1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.748456E-07f, 4.712389f)
             };
@@ -7494,7 +7494,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: 270",
                 new float3(0.001745329f, 6.283185f, 4.712389f),
-                new Quaternion(0.0006170052f, 0.0006171288f, -0.7071065f, 0.7071065f),
+                new QuaternionF(0.0006170052f, 0.0006171288f, -0.7071065f, 0.7071065f),
                 new float4x4(-4.644016E-08f, 1f, 1.747976E-07f, 0f, -0.9999985f, -4.613503E-08f, -0.001745328f, 0f, -0.001745328f, -1.747976E-07f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.747979E-07f, 4.712389f)
             };
@@ -7503,7 +7503,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: 270",
                 new float3(0.01745329f, 6.283185f, 4.712389f),
-                new Quaternion(0.00617053f, 0.006170654f, -0.7070798f, 0.7070798f),
+                new QuaternionF(0.00617053f, 0.006170654f, -0.7070798f, 0.7070798f),
                 new float4x4(8.039206E-08f, 0.9999999f, 1.750886E-07f, 0f, -0.9998476f, 8.344796E-08f, -0.01745241f, 0f, -0.01745241f, -1.750886E-07f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.751153E-07f, 4.712389f)
             };
@@ -7512,7 +7512,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: 270",
                 new float3(0.7853982f, 6.283185f, 4.712389f),
-                new Quaternion(0.270598f, 0.2705981f, -0.6532815f, 0.6532815f),
+                new QuaternionF(0.270598f, 0.2705981f, -0.6532815f, 0.6532815f),
                 new float4x4(2.980232E-08f, 0.9999999f, 1.490116E-07f, 0f, -0.7071067f, 1.490116E-07f, -0.7071067f, 0f, -0.7071067f, -1.490116E-07f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 2.107342E-07f, 4.712389f)
             };
@@ -7521,7 +7521,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: 270",
                 new float3(1.570796f, 6.283185f, 4.712389f),
-                new Quaternion(0.4999999f, 0.5f, -0.5f, 0.4999999f),
+                new QuaternionF(0.4999999f, 0.5f, -0.5f, 0.4999999f),
                 new float4x4(0f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -7530,7 +7530,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: 270",
                 new float3(3.141593f, 6.283185f, 4.712389f),
-                new Quaternion(0.7071068f, 0.7071068f, -3.090862E-08f, -9.272586E-08f),
+                new QuaternionF(0.7071068f, 0.7071068f, -3.090862E-08f, -9.272586E-08f),
                 new float4x4(5.960464E-08f, 0.9999999f, -1.748456E-07f, 0f, 0.9999999f, 5.960464E-08f, 8.742277E-08f, 0f, 8.742277E-08f, -1.748456E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 3.141593f, 1.570796f)
             };
@@ -7539,7 +7539,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: 270",
                 new float3(4.712389f, 6.283185f, 4.712389f),
-                new Quaternion(0.5f, 0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(0.5f, 0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -7548,7 +7548,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: 270",
                 new float3(6.283185f, 6.283185f, 4.712389f),
-                new Quaternion(0f, -1.236345E-07f, 0.7071068f, -0.7071068f),
+                new QuaternionF(0f, -1.236345E-07f, 0.7071068f, -0.7071068f),
                 new float4x4(5.960461E-08f, 0.9999999f, 1.748456E-07f, 0f, -0.9999999f, 5.960464E-08f, -1.748456E-07f, 0f, -1.748456E-07f, -1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.748456E-07f, 4.712389f)
             };
@@ -7557,7 +7557,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: 270",
                 new float3(10.21018f, 6.283185f, 4.712389f),
-                new Quaternion(-0.6532814f, -0.6532814f, -0.2705981f, 0.2705982f),
+                new QuaternionF(-0.6532814f, -0.6532814f, -0.2705981f, 0.2705982f),
                 new float4x4(1.490116E-07f, 0.9999999f, -1.788139E-07f, 0f, 0.7071064f, 1.490116E-07f, 0.707107f, 0f, 0.707107f, -1.788139E-07f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 1.570796f)
             };
@@ -7566,7 +7566,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: 270",
                 new float3(-1.570796f, 6.283185f, 4.712389f),
-                new Quaternion(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -7575,7 +7575,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: 270",
                 new float3(-9.424778f, 6.283185f, 4.712389f),
-                new Quaternion(0.7071068f, 0.7071068f, -7.02494E-08f, -5.338508E-08f),
+                new QuaternionF(0.7071068f, 0.7071068f, -7.02494E-08f, -5.338508E-08f),
                 new float4x4(5.960463E-08f, 0.9999999f, -1.748456E-07f, 0f, 0.9999999f, 5.960463E-08f, -2.384976E-08f, 0f, -2.384976E-08f, -1.748456E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 1.570796f)
             };
@@ -7584,7 +7584,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: 270",
                 new float3(0f, 10.21018f, 4.712389f),
-                new Quaternion(-0.6532814f, 0.6532814f, 0.2705982f, -0.2705982f),
+                new QuaternionF(-0.6532814f, 0.6532814f, 0.2705982f, -0.2705982f),
                 new float4x4(7.450581E-08f, -0.7071064f, -0.707107f, 0f, -0.9999999f, 7.450581E-08f, 0f, 0f, 0f, 0.707107f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 4.712389f)
             };
@@ -7593,7 +7593,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: 270",
                 new float3(0.001745329f, 10.21018f, 4.712389f),
-                new Quaternion(-0.6535173f, 0.653045f, 0.270028f, -0.2711681f),
+                new QuaternionF(-0.6535173f, 0.653045f, 0.270028f, -0.2711681f),
                 new float4x4(0.001234248f, -0.7071065f, -0.7071059f, 0f, -0.9999983f, 7.450581E-08f, -0.001745313f, 0f, 0.001234084f, 0.7071069f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745314f, 3.926991f, 4.712389f)
             };
@@ -7602,7 +7602,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: 270",
                 new float3(0.01745329f, 10.21018f, 4.712389f),
-                new Quaternion(-0.6556179f, 0.6508952f, 0.264887f, -0.2762887f),
+                new QuaternionF(-0.6556179f, 0.6508952f, 0.264887f, -0.2762887f),
                 new float4x4(0.01234069f, -0.7071065f, -0.7069993f, 0f, -0.9998477f, 1.490116E-07f, -0.01745236f, 0f, 0.01234072f, 0.707107f, -0.7069987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 3.926991f, 4.712389f)
             };
@@ -7611,7 +7611,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: 270",
                 new float3(0.7853982f, 10.21018f, 4.712389f),
-                new Quaternion(-0.7071067f, 0.4999999f, 1.043081E-07f, -0.5000001f),
+                new QuaternionF(-0.7071067f, 0.4999999f, 1.043081E-07f, -0.5000001f),
                 new float4x4(0.5000003f, -0.7071064f, -0.5000001f, 0f, -0.7071066f, 1.788139E-07f, -0.7071066f, 0f, 0.4999998f, 0.7071069f, -0.4999995f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.926991f, 4.712389f)
             };
@@ -7620,7 +7620,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: 270",
                 new float3(1.570796f, 10.21018f, 4.712389f),
-                new Quaternion(-0.6532815f, 0.2705979f, -0.2705979f, -0.6532815f),
+                new QuaternionF(-0.6532815f, 0.2705979f, -0.2705979f, -0.6532815f),
                 new float4x4(0.7071072f, -0.7071064f, 0f, 0f, 0f, 1.043081E-07f, -0.9999999f, 0f, 0.7071064f, 0.7071071f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 5.497787f, 0f)
             };
@@ -7629,7 +7629,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: 270",
                 new float3(3.141593f, 10.21018f, 4.712389f),
-                new Quaternion(-0.2705981f, -0.2705982f, -0.6532814f, -0.6532814f),
+                new QuaternionF(-0.2705981f, -0.2705982f, -0.6532814f, -0.6532814f),
                 new float4x4(4.470348E-08f, -0.7071064f, 0.707107f, 0f, 0.9999999f, 1.192093E-07f, 5.960464E-08f, 0f, -5.960464E-08f, 0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.940697E-08f, 0.7853987f, 1.570796f)
             };
@@ -7638,7 +7638,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: 270",
                 new float3(4.712389f, 10.21018f, 4.712389f),
-                new Quaternion(0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
+                new QuaternionF(0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
                 new float4x4(-0.7071069f, -0.7071064f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7071064f, 0.7071071f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 2.356195f, 0f)
             };
@@ -7647,7 +7647,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: 270",
                 new float3(6.283185f, 10.21018f, 4.712389f),
-                new Quaternion(0.6532814f, -0.6532814f, -0.2705981f, 0.2705982f),
+                new QuaternionF(0.6532814f, -0.6532814f, -0.2705981f, 0.2705982f),
                 new float4x4(1.490116E-07f, -0.7071064f, -0.707107f, 0f, -0.9999999f, 1.490116E-07f, -1.788139E-07f, 0f, 1.788139E-07f, 0.707107f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 3.926991f, 4.712389f)
             };
@@ -7656,7 +7656,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: 270",
                 new float3(10.21018f, 10.21018f, 4.712389f),
-                new Quaternion(0f, 0.5000002f, 0.7071068f, 0.4999998f),
+                new QuaternionF(0f, 0.5000002f, 0.7071068f, 0.4999998f),
                 new float4x4(-0.5000003f, -0.7071065f, 0.5f, 0f, 0.7071065f, 5.960464E-08f, 0.707107f, 0f, -0.5f, 0.707107f, 0.4999996f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853985f, 1.570796f)
             };
@@ -7665,7 +7665,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: 270",
                 new float3(-1.570796f, 10.21018f, 4.712389f),
-                new Quaternion(-0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
+                new QuaternionF(-0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
                 new float4x4(-0.7071069f, -0.7071064f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7071064f, 0.7071071f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 2.356195f, 0f)
             };
@@ -7674,7 +7674,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: 270",
                 new float3(-9.424778f, 10.21018f, 4.712389f),
-                new Quaternion(-0.2705982f, -0.2705982f, -0.6532814f, -0.6532814f),
+                new QuaternionF(-0.2705982f, -0.2705982f, -0.6532814f, -0.6532814f),
                 new float4x4(7.450581E-08f, -0.7071064f, 0.707107f, 0f, 0.9999999f, 7.450581E-08f, 0f, 0f, 0f, 0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853986f, 1.570796f)
             };
@@ -7683,7 +7683,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: 270",
                 new float3(0f, -1.570796f, 4.712389f),
-                new Quaternion(-0.5f, 0.5f, 0.5f, -0.5f),
+                new QuaternionF(-0.5f, 0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 4.712389f)
             };
@@ -7692,7 +7692,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: 270",
                 new float3(0.001745329f, -1.570796f, 4.712389f),
-                new Quaternion(-0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
+                new QuaternionF(-0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
                 new float4x4(0.001745284f, 0f, -0.9999985f, 0f, -0.9999985f, 2.980232E-08f, -0.001745254f, 0f, 0f, 1f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745255f, 4.712389f, 4.712389f)
             };
@@ -7701,7 +7701,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: 270",
                 new float3(0.01745329f, -1.570796f, 4.712389f),
-                new Quaternion(-0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
+                new QuaternionF(-0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
                 new float4x4(0.01745254f, 0f, -0.9998475f, 0f, -0.9998475f, 2.086163E-07f, -0.01745233f, 0f, 0f, 0.9999998f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745322f, 4.712389f, 4.712389f)
             };
@@ -7710,7 +7710,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: 270",
                 new float3(0.7853982f, -1.570796f, 4.712389f),
-                new Quaternion(-0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
+                new QuaternionF(-0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
                 new float4x4(0.7071069f, 0f, -0.7071066f, 0f, -0.7071066f, 1.490116E-07f, -0.7071067f, 0f, 0f, 0.9999999f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 4.712389f)
             };
@@ -7719,7 +7719,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: 270",
                 new float3(1.570796f, -1.570796f, 4.712389f),
-                new Quaternion(-0.7071067f, 0f, 0f, -0.7071067f),
+                new QuaternionF(-0.7071067f, 0f, 0f, -0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 0f, 0f)
             };
@@ -7728,7 +7728,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: 270",
                 new float3(3.141593f, -1.570796f, 4.712389f),
-                new Quaternion(-0.4999999f, -0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(-0.4999999f, -0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.788139E-07f, 1.570796f, 1.570796f)
             };
@@ -7737,7 +7737,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: 270",
                 new float3(4.712389f, -1.570796f, 4.712389f),
-                new Quaternion(0f, -0.7071067f, -0.7071067f, 0f),
+                new QuaternionF(0f, -0.7071067f, -0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -7746,7 +7746,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: 270",
                 new float3(6.283185f, -1.570796f, 4.712389f),
-                new Quaternion(0.5f, -0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(0.5f, -0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, -1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 4.712389f, 4.712389f)
             };
@@ -7755,7 +7755,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: 270",
                 new float3(10.21018f, -1.570796f, 4.712389f),
-                new Quaternion(0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
+                new QuaternionF(0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
                 new float4x4(-0.7071069f, 0f, 0.7071064f, 0f, 0.7071064f, 1.043081E-07f, 0.7071071f, 0f, 0f, 0.9999999f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 1.570796f)
             };
@@ -7764,7 +7764,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: 270",
                 new float3(-1.570796f, -1.570796f, 4.712389f),
-                new Quaternion(0f, 0.7071067f, 0.7071067f, 0f),
+                new QuaternionF(0f, 0.7071067f, 0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -7773,7 +7773,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: 270",
                 new float3(-9.424778f, -1.570796f, 4.712389f),
-                new Quaternion(-0.5f, -0.5f, -0.5f, -0.5f),
+                new QuaternionF(-0.5f, -0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 1.570796f)
             };
@@ -7782,7 +7782,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: 270",
                 new float3(0f, -9.424778f, 4.712389f),
-                new Quaternion(0.7071068f, -0.7071068f, 8.432163E-09f, -8.432163E-09f),
+                new QuaternionF(0.7071068f, -0.7071068f, 8.432163E-09f, -8.432163E-09f),
                 new float4x4(5.960464E-08f, -0.9999999f, 2.384976E-08f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, -2.384976E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 4.712389f)
             };
@@ -7791,7 +7791,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: 270",
                 new float3(0.001745329f, -9.424778f, 4.712389f),
-                new Quaternion(0.7071065f, -0.7071065f, 0.0006170754f, 0.0006170585f),
+                new QuaternionF(0.7071065f, -0.7071065f, 0.0006170754f, 0.0006170585f),
                 new float4x4(-4.63084E-08f, -1f, 2.392335E-08f, 0f, -0.9999985f, -4.63084E-08f, -0.001745328f, 0f, 0.001745328f, -2.392335E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 4.712389f)
             };
@@ -7800,7 +7800,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: 270",
                 new float3(0.01745329f, -9.424778f, 4.712389f),
-                new Quaternion(0.7070798f, -0.7070798f, 0.006170601f, 0.006170584f),
+                new QuaternionF(0.7070798f, -0.7070798f, 0.006170601f, 0.006170584f),
                 new float4x4(8.171628E-08f, -0.9999999f, 2.328306E-08f, 0f, -0.9998476f, 8.171628E-08f, -0.0174524f, 0f, 0.0174524f, -2.328306E-08f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 4.712389f)
             };
@@ -7809,7 +7809,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: 270",
                 new float3(0.7853982f, -9.424778f, 4.712389f),
-                new Quaternion(0.6532815f, -0.6532815f, 0.2705981f, 0.2705981f),
+                new QuaternionF(0.6532815f, -0.6532815f, 0.2705981f, 0.2705981f),
                 new float4x4(8.940697E-08f, -0.9999999f, 0f, 0f, -0.7071067f, 8.940697E-08f, -0.7071068f, 0f, 0.7071068f, 0f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 3.141593f, 4.712389f)
             };
@@ -7818,7 +7818,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: 270",
                 new float3(1.570796f, -9.424778f, 4.712389f),
-                new Quaternion(0.5f, -0.5f, 0.5f, 0.5f),
+                new QuaternionF(0.5f, -0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -7827,7 +7827,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: 270",
                 new float3(3.141593f, -9.424778f, 4.712389f),
-                new Quaternion(-3.934078E-08f, 2.247646E-08f, 0.7071068f, 0.7071068f),
+                new QuaternionF(-3.934078E-08f, 2.247646E-08f, 0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, -2.384976E-08f, 0f, 0.9999999f, 5.960464E-08f, 8.742278E-08f, 0f, -8.742278E-08f, -2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, -2.384976E-08f, 1.570796f)
             };
@@ -7836,7 +7836,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: 270",
                 new float3(4.712389f, -9.424778f, 4.712389f),
-                new Quaternion(-0.5f, 0.5f, 0.5f, 0.5f),
+                new QuaternionF(-0.5f, 0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -7845,7 +7845,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: 270",
                 new float3(6.283185f, -9.424778f, 4.712389f),
-                new Quaternion(-0.7071068f, 0.7071068f, -7.02494E-08f, -5.338508E-08f),
+                new QuaternionF(-0.7071068f, 0.7071068f, -7.02494E-08f, -5.338508E-08f),
                 new float4x4(5.960463E-08f, -0.9999999f, 2.384976E-08f, 0f, -0.9999999f, 5.960463E-08f, -1.748456E-07f, 0f, 1.748456E-07f, -2.384976E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 4.712389f)
             };
@@ -7854,7 +7854,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: 270",
                 new float3(10.21018f, -9.424778f, 4.712389f),
-                new Quaternion(0.2705982f, -0.2705982f, -0.6532814f, -0.6532814f),
+                new QuaternionF(0.2705982f, -0.2705982f, -0.6532814f, -0.6532814f),
                 new float4x4(7.450581E-08f, -0.9999999f, 0f, 0f, 0.7071064f, 7.450581E-08f, 0.707107f, 0f, -0.707107f, 0f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0f, 1.570796f)
             };
@@ -7863,7 +7863,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: 270",
                 new float3(-1.570796f, -9.424778f, 4.712389f),
-                new Quaternion(0.5f, -0.5f, -0.5f, -0.5f),
+                new QuaternionF(0.5f, -0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -7872,7 +7872,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: 270",
                 new float3(-9.424778f, -9.424778f, 4.712389f),
-                new Quaternion(0f, -1.686433E-08f, 0.7071068f, 0.7071068f),
+                new QuaternionF(0f, -1.686433E-08f, 0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, -2.384976E-08f, 0f, 0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, 2.384976E-08f, -2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 1.570796f)
             };
@@ -7881,7 +7881,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: 360",
                 new float3(0f, 0f, 6.283185f),
-                new Quaternion(0f, 0f, -8.742278E-08f, -1f),
+                new QuaternionF(0f, 0f, -8.742278E-08f, -1f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 1.748456E-07f)
             };
@@ -7890,7 +7890,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: 360",
                 new float3(0.001745329f, 0f, 6.283185f),
-                new Quaternion(-0.0008726645f, 7.629075E-11f, -8.742275E-08f, -0.9999996f),
+                new QuaternionF(-0.0008726645f, 7.629075E-11f, -8.742275E-08f, -0.9999996f),
                 new float4x4(1f, -1.748456E-07f, 1.387779E-17f, 0f, 1.748453E-07f, 0.9999985f, -0.001745328f, 0f, 3.051629E-10f, 0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.387781E-17f, 1.748456E-07f)
             };
@@ -7899,7 +7899,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: 360",
                 new float3(0.01745329f, 0f, 6.283185f),
-                new Quaternion(-0.008726535f, 7.62898E-10f, -8.741944E-08f, -0.9999619f),
+                new QuaternionF(-0.008726535f, 7.62898E-10f, -8.741944E-08f, -0.9999619f),
                 new float4x4(1f, -1.748455E-07f, -1.110223E-16f, 0f, 1.748189E-07f, 0.9998477f, -0.01745241f, 0f, 3.051476E-09f, 0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, -1.110392E-16f, 1.748455E-07f)
             };
@@ -7908,7 +7908,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: 360",
                 new float3(0.7853982f, 0f, 6.283185f),
-                new Quaternion(-0.3826835f, 3.345525E-08f, -8.076811E-08f, -0.9238795f),
+                new QuaternionF(-0.3826835f, 3.345525E-08f, -8.076811E-08f, -0.9238795f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 1.236345E-07f, 0.7071067f, -0.7071068f, 0f, 1.236345E-07f, 0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0f, 1.748456E-07f)
             };
@@ -7917,7 +7917,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: 360",
                 new float3(1.570796f, 0f, 6.283185f),
-                new Quaternion(-0.7071068f, 6.181724E-08f, -6.181724E-08f, -0.7071068f),
+                new QuaternionF(-0.7071068f, 6.181724E-08f, -6.181724E-08f, -0.7071068f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 1.748456E-07f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, -1.748456E-07f, 0f)
             };
@@ -7926,7 +7926,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: 360",
                 new float3(3.141593f, 0f, 6.283185f),
-                new Quaternion(-1f, 8.742278E-08f, 3.821371E-15f, 4.371139E-08f),
+                new QuaternionF(-1f, 8.742278E-08f, 3.821371E-15f, 4.371139E-08f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, -1.748456E-07f, -1f, 8.742278E-08f, 0f, -1.528548E-14f, -8.742278E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 3.141593f)
             };
@@ -7935,7 +7935,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: 360",
                 new float3(4.712389f, 0f, 6.283185f),
-                new Quaternion(-0.7071068f, 6.181724E-08f, 6.181724E-08f, 0.7071068f),
+                new QuaternionF(-0.7071068f, 6.181724E-08f, 6.181724E-08f, 0.7071068f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.748456E-07f, 0f)
             };
@@ -7944,7 +7944,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: 360",
                 new float3(6.283185f, 0f, 6.283185f),
-                new Quaternion(8.742278E-08f, -7.642742E-15f, 8.742278E-08f, 1f),
+                new QuaternionF(8.742278E-08f, -7.642742E-15f, 8.742278E-08f, 1f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 1.748456E-07f, 1f, -1.748456E-07f, 0f, 3.057097E-14f, 1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0f, 1.748456E-07f)
             };
@@ -7953,7 +7953,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: 360",
                 new float3(10.21018f, 0f, 6.283185f),
-                new Quaternion(0.9238794f, -8.07681E-08f, -3.345526E-08f, -0.3826836f),
+                new QuaternionF(0.9238794f, -8.07681E-08f, -3.345526E-08f, -0.3826836f),
                 new float4x4(1f, -1.748455E-07f, 0f, 0f, -1.236344E-07f, -0.7071065f, 0.707107f, 0f, -1.236345E-07f, -0.707107f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.141593f)
             };
@@ -7962,7 +7962,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: 360",
                 new float3(-1.570796f, 0f, 6.283185f),
-                new Quaternion(0.7071068f, -6.181724E-08f, -6.181724E-08f, -0.7071068f),
+                new QuaternionF(0.7071068f, -6.181724E-08f, -6.181724E-08f, -0.7071068f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.748456E-07f, 0f)
             };
@@ -7971,7 +7971,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: 360",
                 new float3(-9.424778f, 0f, 6.283185f),
-                new Quaternion(-1f, 8.742278E-08f, -1.042506E-15f, -1.192488E-08f),
+                new QuaternionF(-1f, 8.742278E-08f, -1.042506E-15f, -1.192488E-08f),
                 new float4x4(1f, -1.748456E-07f, 0f, 0f, -1.748456E-07f, -1f, -2.384976E-08f, 0f, 4.170025E-15f, 2.384976E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.141593f)
             };
@@ -7980,7 +7980,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: 360",
                 new float3(0f, 0.001745329f, 6.283185f),
-                new Quaternion(-7.629075E-11f, -0.0008726645f, -8.742275E-08f, -0.9999996f),
+                new QuaternionF(-7.629075E-11f, -0.0008726645f, -8.742275E-08f, -0.9999996f),
                 new float4x4(0.9999985f, -1.748453E-07f, 0.001745328f, 0f, 1.748456E-07f, 1f, 1.387779E-17f, 0f, -0.001745328f, 3.051629E-10f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.387779E-17f, 0.001745329f, 1.748456E-07f)
             };
@@ -7989,7 +7989,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: 360",
                 new float3(0.001745329f, 0.001745329f, 6.283185f),
-                new Quaternion(-0.0008726643f, -0.0008726642f, 6.741206E-07f, -0.9999993f),
+                new QuaternionF(-0.0008726643f, -0.0008726642f, 6.741206E-07f, -0.9999993f),
                 new float4x4(0.9999985f, 2.871326E-06f, 0.001745326f, 0f, 1.748454E-07f, 0.9999985f, -0.001745328f, 0f, -0.001745328f, 0.001745326f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 1.748456E-07f)
             };
@@ -7998,7 +7998,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: 360",
                 new float3(0.01745329f, 0.001745329f, 6.283185f),
-                new Quaternion(-0.008726533f, -0.0008726305f, 7.527919E-06f, -0.9999616f),
+                new QuaternionF(-0.008726533f, -0.0008726305f, 7.527919E-06f, -0.9999616f),
                 new float4x4(0.9999985f, 3.028534E-05f, 0.001745063f, 0f, 1.748185E-07f, 0.9998477f, -0.01745241f, 0f, -0.001745325f, 0.01745238f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.001745329f, 1.748452E-07f)
             };
@@ -8007,7 +8007,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: 360",
                 new float3(0.7853982f, 0.001745329f, 6.283185f),
-                new Quaternion(-0.3826833f, -0.0008062034f, 0.0003338735f, -0.9238791f),
+                new QuaternionF(-0.3826833f, -0.0008062034f, 0.0003338735f, -0.9238791f),
                 new float4x4(0.9999985f, 0.001233959f, 0.001234133f, 0f, 1.236913E-07f, 0.7071068f, -0.7071068f, 0f, -0.001745205f, 0.7071057f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.001745329f, 1.749259E-07f)
             };
@@ -8016,7 +8016,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: 360",
                 new float3(1.570796f, 0.001745329f, 6.283185f),
-                new Quaternion(-0.7071065f, -0.0006170052f, 0.0006170052f, -0.7071065f),
+                new QuaternionF(-0.7071065f, -0.0006170052f, 0.0006170052f, -0.7071065f),
                 new float4x4(0.9999985f, 0.001745154f, 0f, 0f, 0f, -4.613503E-08f, -1f, 0f, -0.001745154f, 0.9999985f, -4.613503E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.001745154f, 0f)
             };
@@ -8025,7 +8025,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: 360",
                 new float3(3.141593f, 0.001745329f, 6.283185f),
-                new Quaternion(-0.9999996f, 8.746089E-08f, 0.0008726645f, 4.363508E-08f),
+                new QuaternionF(-0.9999996f, 8.746089E-08f, 0.0008726645f, 4.363508E-08f),
                 new float4x4(0.9999985f, -1.749979E-07f, -0.001745328f, 0f, -1.748456E-07f, -1f, 8.742278E-08f, 0f, -0.001745328f, -8.711749E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.143338f, 3.141593f)
             };
@@ -8034,7 +8034,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: 360",
                 new float3(4.712389f, 0.001745329f, 6.283185f),
-                new Quaternion(-0.7071065f, 0.0006171288f, 0.0006171288f, 0.7071065f),
+                new QuaternionF(-0.7071065f, 0.0006171288f, 0.0006171288f, 0.7071065f),
                 new float4x4(0.9999985f, -0.001745503f, 0f, 0f, 0f, -4.644016E-08f, 1f, 0f, -0.001745503f, -0.9999985f, -4.644016E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.001745504f, 0f)
             };
@@ -8043,7 +8043,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: 360",
                 new float3(6.283185f, 0.001745329f, 6.283185f),
-                new Quaternion(8.749904E-08f, 0.0008726645f, 8.734646E-08f, 0.9999996f),
+                new QuaternionF(8.749904E-08f, 0.0008726645f, 8.734646E-08f, 0.9999996f),
                 new float4x4(0.9999985f, -1.745401E-07f, 0.001745328f, 0f, 1.748456E-07f, 1f, -1.748456E-07f, 0f, -0.001745328f, 1.751505E-07f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0.001745329f, 1.748456E-07f)
             };
@@ -8052,7 +8052,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: 360",
                 new float3(10.21018f, 0.001745329f, 6.283185f),
-                new Quaternion(0.9238791f, -0.0003340352f, -0.0008062703f, -0.3826835f),
+                new QuaternionF(0.9238791f, -0.0003340352f, -0.0008062703f, -0.3826835f),
                 new float4x4(0.9999985f, -0.001234309f, -0.001234133f, 0f, -1.236331E-07f, -0.7071065f, 0.707107f, 0f, -0.001745452f, -0.7071059f, -0.7071054f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 3.141593f)
             };
@@ -8061,7 +8061,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: 360",
                 new float3(-1.570796f, 0.001745329f, 6.283185f),
-                new Quaternion(0.7071065f, -0.0006171288f, -0.0006171288f, -0.7071065f),
+                new QuaternionF(0.7071065f, -0.0006171288f, -0.0006171288f, -0.7071065f),
                 new float4x4(0.9999985f, -0.001745503f, 0f, 0f, 0f, -4.644016E-08f, 1f, 0f, -0.001745503f, -0.9999985f, -4.644016E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.001745504f, 0f)
             };
@@ -8070,7 +8070,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: 360",
                 new float3(-9.424778f, 0.001745329f, 6.283185f),
-                new Quaternion(-0.9999996f, 8.741234E-08f, 0.0008726645f, -1.200117E-08f),
+                new QuaternionF(-0.9999996f, 8.741234E-08f, 0.0008726645f, -1.200117E-08f),
                 new float4x4(0.9999985f, -1.748037E-07f, -0.001745328f, 0f, -1.748456E-07f, -1f, -2.384976E-08f, 0f, -0.001745328f, 2.415489E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.143338f, 3.141593f)
             };
@@ -8079,7 +8079,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: 360",
                 new float3(0f, 0.01745329f, 6.283185f),
-                new Quaternion(-7.62898E-10f, -0.008726535f, -8.741944E-08f, -0.9999619f),
+                new QuaternionF(-7.62898E-10f, -0.008726535f, -8.741944E-08f, -0.9999619f),
                 new float4x4(0.9998477f, -1.748189E-07f, 0.01745241f, 0f, 1.748455E-07f, 1f, -1.110223E-16f, 0f, -0.01745241f, 3.051476E-09f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.110223E-16f, 0.01745329f, 1.748455E-07f)
             };
@@ -8088,7 +8088,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: 360",
                 new float3(0.001745329f, 0.01745329f, 6.283185f),
-                new Quaternion(-0.000872632f, -0.008726533f, 7.527919E-06f, -0.9999616f),
+                new QuaternionF(-0.000872632f, -0.008726533f, 7.527919E-06f, -0.9999616f),
                 new float4x4(0.9998477f, 3.028536E-05f, 0.01745238f, 0f, 1.748449E-07f, 0.9999985f, -0.001745328f, 0f, -0.01745241f, 0.001745066f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.01745329f, 1.748452E-07f)
             };
@@ -8097,7 +8097,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: 360",
                 new float3(0.01745329f, 0.01745329f, 6.283185f),
-                new Quaternion(-0.008726204f, -0.008726202f, 7.606501E-05f, -0.9999238f),
+                new QuaternionF(-0.008726204f, -0.008726202f, 7.606501E-05f, -0.9999238f),
                 new float4x4(0.9998477f, 0.0003044117f, 0.01744975f, 0f, 1.747976E-07f, 0.9998477f, -0.01745241f, 0f, -0.0174524f, 0.01744975f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.0174533f, 0.01745329f, 1.748533E-07f)
             };
@@ -8106,7 +8106,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: 360",
                 new float3(0.7853982f, 0.01745329f, 6.283185f),
-                new Quaternion(-0.3826689f, -0.008062233f, 0.00333942f, -0.9238443f),
+                new QuaternionF(-0.3826689f, -0.008062233f, 0.00333942f, -0.9238443f),
                 new float4x4(0.9998477f, 0.01234054f, 0.01234071f, 0f, 1.234002E-07f, 0.7071068f, -0.7071068f, 0f, -0.01745228f, 0.7069991f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.01745329f, 1.745143E-07f)
             };
@@ -8115,7 +8115,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: 360",
                 new float3(1.570796f, 0.01745329f, 6.283185f),
-                new Quaternion(-0.7070798f, -0.00617053f, 0.00617053f, -0.7070798f),
+                new QuaternionF(-0.7070798f, -0.00617053f, 0.00617053f, -0.7070798f),
                 new float4x4(0.9998477f, 0.01745223f, 0f, 0f, 0f, 8.344796E-08f, -0.9999999f, 0f, -0.01745223f, 0.9998476f, 8.344796E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.01745312f, 0f)
             };
@@ -8124,7 +8124,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: 360",
                 new float3(3.141593f, 0.01745329f, 6.283185f),
-                new Quaternion(-0.9999619f, 8.780089E-08f, 0.008726535f, 4.294682E-08f),
+                new QuaternionF(-0.9999619f, 8.780089E-08f, 0.008726535f, 4.294682E-08f),
                 new float4x4(0.9998477f, -1.763446E-07f, -0.01745241f, 0f, -1.748455E-07f, -0.9999999f, 8.742277E-08f, 0f, -0.01745241f, -8.435799E-08f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.159046f, 3.141593f)
             };
@@ -8133,7 +8133,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: 360",
                 new float3(4.712389f, 0.01745329f, 6.283185f),
-                new Quaternion(-0.7070798f, 0.006170654f, 0.006170654f, 0.7070798f),
+                new QuaternionF(-0.7070798f, 0.006170654f, 0.006170654f, 0.7070798f),
                 new float4x4(0.9998477f, -0.01745258f, 0f, 0f, 0f, 8.039206E-08f, 0.9999999f, 0f, -0.01745258f, -0.9998476f, 8.039206E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01745347f, 0f)
             };
@@ -8142,7 +8142,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: 360",
                 new float3(6.283185f, 0.01745329f, 6.283185f),
-                new Quaternion(8.818234E-08f, 0.008726535f, 8.665655E-08f, 0.9999619f),
+                new QuaternionF(8.818234E-08f, 0.008726535f, 8.665655E-08f, 0.9999619f),
                 new float4x4(0.9998477f, -1.717674E-07f, 0.01745241f, 0f, 1.748455E-07f, 1f, -1.748455E-07f, 0f, -0.01745241f, 1.778704E-07f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 0.01745329f, 1.748455E-07f)
             };
@@ -8151,7 +8151,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: 360",
                 new float3(10.21018f, 0.01745329f, 6.283185f),
-                new Quaternion(0.9238443f, -0.003339583f, -0.0080623f, -0.382669f),
+                new QuaternionF(0.9238443f, -0.003339583f, -0.0080623f, -0.382669f),
                 new float4x4(0.9998477f, -0.01234089f, -0.01234071f, 0f, -1.238659E-07f, -0.7071065f, 0.707107f, 0f, -0.01745253f, -0.7069994f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 3.141593f)
             };
@@ -8160,7 +8160,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: 360",
                 new float3(-1.570796f, 0.01745329f, 6.283185f),
-                new Quaternion(0.7070798f, -0.006170654f, -0.006170654f, -0.7070798f),
+                new QuaternionF(0.7070798f, -0.006170654f, -0.006170654f, -0.7070798f),
                 new float4x4(0.9998477f, -0.01745258f, 0f, 0f, 0f, 8.039206E-08f, 0.9999999f, 0f, -0.01745258f, -0.9998476f, 8.039206E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.01745347f, 0f)
             };
@@ -8169,7 +8169,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: 360",
                 new float3(-9.424778f, 0.01745329f, 6.283185f),
-                new Quaternion(-0.9999619f, 8.731538E-08f, 0.008726535f, -1.268732E-08f),
+                new QuaternionF(-0.9999619f, 8.731538E-08f, 0.008726535f, -1.268732E-08f),
                 new float4x4(0.9998477f, -1.744027E-07f, -0.01745241f, 0f, -1.748455E-07f, -0.9999999f, -2.384976E-08f, 0f, -0.01745241f, 2.689761E-08f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.159046f, 3.141593f)
             };
@@ -8178,7 +8178,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: 360",
                 new float3(0f, 0.7853982f, 6.283185f),
-                new Quaternion(-3.345525E-08f, -0.3826835f, -8.076811E-08f, -0.9238795f),
+                new QuaternionF(-3.345525E-08f, -0.3826835f, -8.076811E-08f, -0.9238795f),
                 new float4x4(0.7071067f, -1.236345E-07f, 0.7071068f, 0f, 1.748456E-07f, 1f, 0f, 0f, -0.7071068f, 1.236345E-07f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853982f, 1.748456E-07f)
             };
@@ -8187,7 +8187,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: 360",
                 new float3(0.001745329f, 0.7853982f, 6.283185f),
-                new Quaternion(-0.0008062703f, -0.3826833f, 0.0003338735f, -0.9238791f),
+                new QuaternionF(-0.0008062703f, -0.3826833f, 0.0003338735f, -0.9238791f),
                 new float4x4(0.7071068f, 0.00123401f, 0.7071057f, 0f, 1.74914E-07f, 0.9999985f, -0.001745328f, 0f, -0.7071068f, 0.001234257f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.7853982f, 1.749143E-07f)
             };
@@ -8196,7 +8196,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: 360",
                 new float3(0.01745329f, 0.7853982f, 6.283185f),
-                new Quaternion(-0.0080623f, -0.3826689f, 0.00333942f, -0.9238443f),
+                new QuaternionF(-0.0080623f, -0.3826689f, 0.00333942f, -0.9238443f),
                 new float4x4(0.7071068f, 0.01234059f, 0.7069991f, 0f, 1.74623E-07f, 0.9998477f, -0.01745241f, 0f, -0.7071068f, 0.01234084f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.7853982f, 1.746496E-07f)
             };
@@ -8205,7 +8205,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: 360",
                 new float3(0.7853982f, 0.7853982f, 6.283185f),
-                new Quaternion(-0.3535534f, -0.3535534f, 0.1464466f, -0.8535534f),
+                new QuaternionF(-0.3535534f, -0.3535534f, 0.1464466f, -0.8535534f),
                 new float4x4(0.7071068f, 0.4999999f, 0.5f, 0f, 1.341105E-07f, 0.7071067f, -0.7071068f, 0f, -0.7071067f, 0.5000001f, 0.4999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.7853982f, 1.896608E-07f)
             };
@@ -8214,7 +8214,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: 360",
                 new float3(1.570796f, 0.7853982f, 6.283185f),
-                new Quaternion(-0.6532815f, -0.270598f, 0.270598f, -0.6532815f),
+                new QuaternionF(-0.6532815f, -0.270598f, 0.270598f, -0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, -0.7071066f, 0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.7853981f, 0f)
             };
@@ -8223,7 +8223,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: 360",
                 new float3(3.141593f, 0.7853982f, 6.283185f),
-                new Quaternion(-0.9238795f, 9.749574E-08f, 0.3826835f, 6.928804E-09f),
+                new QuaternionF(-0.9238795f, 9.749574E-08f, 0.3826835f, 6.928804E-09f),
                 new float4x4(0.7071067f, -1.854517E-07f, -0.7071068f, 0f, -1.748455E-07f, -1f, 8.742277E-08f, 0f, -0.7071068f, 6.181725E-08f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.926991f, 3.141593f)
             };
@@ -8232,7 +8232,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: 360",
                 new float3(4.712389f, 0.7853982f, 6.283185f),
-                new Quaternion(-0.6532815f, 0.2705981f, 0.2705981f, 0.6532815f),
+                new QuaternionF(-0.6532815f, 0.2705981f, 0.2705981f, 0.6532815f),
                 new float4x4(0.7071066f, -0.7071069f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, -0.7071069f, -0.7071066f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853984f, 0f)
             };
@@ -8241,7 +8241,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: 360",
                 new float3(6.283185f, 0.7853982f, 6.283185f),
-                new Quaternion(1.142234E-07f, 0.3826835f, 4.731286E-08f, 0.9238795f),
+                new QuaternionF(1.142234E-07f, 0.3826835f, 4.731286E-08f, 0.9238795f),
                 new float4x4(0.7071067f, 2.131628E-14f, 0.7071068f, 0f, 1.748456E-07f, 1f, -1.748455E-07f, 0f, -0.7071068f, 2.472689E-07f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 0.7853982f, 1.748456E-07f)
             };
@@ -8250,7 +8250,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: 360",
                 new float3(10.21018f, 0.7853982f, 6.283185f),
-                new Quaternion(0.8535533f, -0.1464468f, -0.3535534f, -0.3535535f),
+                new QuaternionF(0.8535533f, -0.1464468f, -0.3535534f, -0.3535535f),
                 new float4x4(0.7071066f, -0.5000004f, -0.4999998f, 0f, -1.490116E-07f, -0.7071065f, 0.7071071f, 0f, -0.7071069f, -0.5f, -0.4999998f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 3.141593f)
             };
@@ -8259,7 +8259,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: 360",
                 new float3(-1.570796f, 0.7853982f, 6.283185f),
-                new Quaternion(0.6532815f, -0.2705981f, -0.2705981f, -0.6532815f),
+                new QuaternionF(0.6532815f, -0.2705981f, -0.2705981f, -0.6532815f),
                 new float4x4(0.7071066f, -0.7071069f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, -0.7071069f, -0.7071066f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853984f, 0f)
             };
@@ -8268,7 +8268,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: 360",
                 new float3(-9.424778f, 0.7853982f, 6.283185f),
-                new Quaternion(-0.9238795f, 7.620466E-08f, 0.3826835f, -4.44724E-08f),
+                new QuaternionF(-0.9238795f, 7.620466E-08f, 0.3826835f, -4.44724E-08f),
                 new float4x4(0.7071067f, -1.067701E-07f, -0.7071068f, 0f, -1.748456E-07f, -1f, -2.384976E-08f, 0f, -0.7071068f, 1.404988E-07f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.926991f, 3.141593f)
             };
@@ -8277,7 +8277,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: 360",
                 new float3(0f, 1.570796f, 6.283185f),
-                new Quaternion(-6.181724E-08f, -0.7071068f, -6.181724E-08f, -0.7071068f),
+                new QuaternionF(-6.181724E-08f, -0.7071068f, -6.181724E-08f, -0.7071068f),
                 new float4x4(5.960464E-08f, 0f, 0.9999999f, 0f, 1.748456E-07f, 1f, 0f, 0f, -0.9999999f, 1.748456E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 1.748456E-07f)
             };
@@ -8286,7 +8286,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: 360",
                 new float3(0.001745329f, 1.570796f, 6.283185f),
-                new Quaternion(-0.0006171288f, -0.7071065f, 0.0006170052f, -0.7071065f),
+                new QuaternionF(-0.0006171288f, -0.7071065f, 0.0006170052f, -0.7071065f),
                 new float4x4(-4.613503E-08f, 0.001745328f, 0.9999985f, 0f, 1.747976E-07f, 0.9999985f, -0.001745328f, 0f, -1f, 1.747976E-07f, -4.644016E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.570796f, 1.747979E-07f)
             };
@@ -8295,7 +8295,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: 360",
                 new float3(0.01745329f, 1.570796f, 6.283185f),
-                new Quaternion(-0.006170654f, -0.7070798f, 0.00617053f, -0.7070798f),
+                new QuaternionF(-0.006170654f, -0.7070798f, 0.00617053f, -0.7070798f),
                 new float4x4(8.344796E-08f, 0.01745241f, 0.9998476f, 0f, 1.750886E-07f, 0.9998477f, -0.01745241f, 0f, -0.9999999f, 1.750886E-07f, 8.039206E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.570796f, 1.751153E-07f)
             };
@@ -8304,7 +8304,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: 360",
                 new float3(0.7853982f, 1.570796f, 6.283185f),
-                new Quaternion(-0.2705981f, -0.6532815f, 0.270598f, -0.6532815f),
+                new QuaternionF(-0.2705981f, -0.6532815f, 0.270598f, -0.6532815f),
                 new float4x4(1.490116E-07f, 0.7071067f, 0.7071067f, 0f, 1.490116E-07f, 0.7071068f, -0.7071067f, 0f, -0.9999999f, 1.490116E-07f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 1.570796f, 2.107342E-07f)
             };
@@ -8313,7 +8313,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: 360",
                 new float3(1.570796f, 1.570796f, 6.283185f),
-                new Quaternion(-0.5f, -0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -8322,7 +8322,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: 360",
                 new float3(3.141593f, 1.570796f, 6.283185f),
-                new Quaternion(-0.7071068f, 9.272586E-08f, 0.7071068f, -3.090862E-08f),
+                new QuaternionF(-0.7071068f, 9.272586E-08f, 0.7071068f, -3.090862E-08f),
                 new float4x4(5.960463E-08f, -8.742277E-08f, -0.9999999f, 0f, -1.748456E-07f, -0.9999999f, 8.742277E-08f, 0f, -0.9999999f, 1.748456E-07f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 4.712389f, 3.141593f)
             };
@@ -8331,7 +8331,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: 360",
                 new float3(4.712389f, 1.570796f, 6.283185f),
-                new Quaternion(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -8340,7 +8340,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: 360",
                 new float3(6.283185f, 1.570796f, 6.283185f),
-                new Quaternion(1.236345E-07f, 0.7071068f, 0f, 0.7071068f),
+                new QuaternionF(1.236345E-07f, 0.7071068f, 0f, 0.7071068f),
                 new float4x4(5.960464E-08f, 1.748456E-07f, 0.9999999f, 0f, 1.748456E-07f, 1f, -1.748456E-07f, 0f, -0.9999999f, 1.748456E-07f, 5.960461E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.570796f, 1.748456E-07f)
             };
@@ -8349,7 +8349,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: 360",
                 new float3(10.21018f, 1.570796f, 6.283185f),
-                new Quaternion(0.6532814f, -0.2705982f, -0.6532814f, -0.2705981f),
+                new QuaternionF(0.6532814f, -0.2705982f, -0.6532814f, -0.2705981f),
                 new float4x4(1.490116E-08f, -0.707107f, -0.7071064f, 0f, -1.788139E-07f, -0.7071064f, 0.707107f, 0f, -0.9999999f, 1.788139E-07f, 1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 3.141593f)
             };
@@ -8358,7 +8358,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: 360",
                 new float3(-1.570796f, 1.570796f, 6.283185f),
-                new Quaternion(0.4999999f, -0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -8367,7 +8367,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: 360",
                 new float3(-9.424778f, 1.570796f, 6.283185f),
-                new Quaternion(-0.7071068f, 5.338508E-08f, 0.7071068f, -7.02494E-08f),
+                new QuaternionF(-0.7071068f, 5.338508E-08f, 0.7071068f, -7.02494E-08f),
                 new float4x4(5.960464E-08f, 2.384976E-08f, -0.9999999f, 0f, -1.748456E-07f, -0.9999999f, -2.384976E-08f, 0f, -0.9999999f, 1.748456E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 4.712389f, 3.141593f)
             };
@@ -8376,7 +8376,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: 360",
                 new float3(0f, 3.141593f, 6.283185f),
-                new Quaternion(-8.742278E-08f, -1f, 3.821371E-15f, 4.371139E-08f),
+                new QuaternionF(-8.742278E-08f, -1f, 3.821371E-15f, 4.371139E-08f),
                 new float4x4(-1f, 1.748456E-07f, -8.742278E-08f, 0f, 1.748456E-07f, 1f, 0f, 0f, 8.742278E-08f, -1.528548E-14f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 1.748456E-07f)
             };
@@ -8385,7 +8385,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: 360",
                 new float3(0.001745329f, 3.141593f, 6.283185f),
-                new Quaternion(-8.738461E-08f, -0.9999996f, 0.0008726645f, 4.363508E-08f),
+                new QuaternionF(-8.738461E-08f, -0.9999996f, 0.0008726645f, 4.363508E-08f),
                 new float4x4(-1f, 1.74693E-07f, -8.742266E-08f, 0f, 1.748453E-07f, 0.9999985f, -0.001745328f, 0f, 8.711762E-08f, -0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 1.748456E-07f)
             };
@@ -8394,7 +8394,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: 360",
                 new float3(0.01745329f, 3.141593f, 6.283185f),
-                new Quaternion(-8.7038E-08f, -0.9999619f, 0.008726535f, 4.294682E-08f),
+                new QuaternionF(-8.7038E-08f, -0.9999619f, 0.008726535f, 4.294682E-08f),
                 new float4x4(-0.9999999f, 1.733198E-07f, -8.740946E-08f, 0f, 1.748189E-07f, 0.9998477f, -0.01745241f, 0f, 8.437129E-08f, -0.01745241f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 1.748455E-07f)
             };
@@ -8403,7 +8403,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: 360",
                 new float3(0.7853982f, 3.141593f, 6.283185f),
-                new Quaternion(-6.404048E-08f, -0.9238795f, 0.3826835f, 6.928804E-09f),
+                new QuaternionF(-6.404048E-08f, -0.9238795f, 0.3826835f, 6.928804E-09f),
                 new float4x4(-1f, 1.130283E-07f, -6.181723E-08f, 0f, 1.236345E-07f, 0.7071067f, -0.7071068f, 0f, -3.621171E-08f, -0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 1.748456E-07f)
             };
@@ -8412,7 +8412,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: 360",
                 new float3(1.570796f, 3.141593f, 6.283185f),
-                new Quaternion(-3.090862E-08f, -0.7071068f, 0.7071068f, -3.090862E-08f),
+                new QuaternionF(-3.090862E-08f, -0.7071068f, 0.7071068f, -3.090862E-08f),
                 new float4x4(-0.9999999f, 8.742278E-08f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, -8.742278E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.141593f, 0f)
             };
@@ -8421,7 +8421,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: 360",
                 new float3(3.141593f, 3.141593f, 6.283185f),
-                new Quaternion(4.371139E-08f, 4.371138E-08f, 1f, -8.742278E-08f),
+                new QuaternionF(4.371139E-08f, 4.371138E-08f, 1f, -8.742278E-08f),
                 new float4x4(-1f, 1.748456E-07f, 8.742278E-08f, 0f, -1.748456E-07f, -1f, 8.742278E-08f, 0f, 8.742279E-08f, 8.742276E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 8.742278E-08f, 3.141593f)
             };
@@ -8430,7 +8430,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: 360",
                 new float3(4.712389f, 3.141593f, 6.283185f),
-                new Quaternion(9.272586E-08f, 0.7071068f, 0.7071068f, -9.272586E-08f),
+                new QuaternionF(9.272586E-08f, 0.7071068f, 0.7071068f, -9.272586E-08f),
                 new float4x4(-0.9999999f, 2.622683E-07f, 0f, 0f, 0f, 5.960463E-08f, 0.9999999f, 0f, 2.622683E-07f, 0.9999999f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -8439,7 +8439,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: 360",
                 new float3(6.283185f, 3.141593f, 6.283185f),
-                new Quaternion(8.742277E-08f, 1f, -8.742278E-08f, -4.371138E-08f),
+                new QuaternionF(8.742277E-08f, 1f, -8.742278E-08f, -4.371138E-08f),
                 new float4x4(-1f, 1.748455E-07f, -8.742278E-08f, 0f, 1.748456E-07f, 1f, -1.748456E-07f, 0f, 8.742275E-08f, -1.748456E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 1.748456E-07f)
             };
@@ -8448,7 +8448,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: 360",
                 new float3(10.21018f, 3.141593f, 6.283185f),
-                new Quaternion(-7.383932E-08f, -0.3826836f, -0.9238794f, 9.749574E-08f),
+                new QuaternionF(-7.383932E-08f, -0.3826836f, -0.9238794f, 9.749574E-08f),
                 new float4x4(-0.9999999f, 2.366628E-07f, 6.181721E-08f, 0f, -1.236344E-07f, -0.7071065f, 0.707107f, 0f, 2.110573E-07f, 0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 8.742278E-08f, 3.141593f)
             };
@@ -8457,7 +8457,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: 360",
                 new float3(-1.570796f, 3.141593f, 6.283185f),
-                new Quaternion(-9.272586E-08f, -0.7071068f, -0.7071068f, 9.272586E-08f),
+                new QuaternionF(-9.272586E-08f, -0.7071068f, -0.7071068f, 9.272586E-08f),
                 new float4x4(-0.9999999f, 2.622683E-07f, 0f, 0f, 0f, 5.960463E-08f, 0.9999999f, 0f, 2.622683E-07f, 0.9999999f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -8466,7 +8466,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: 360",
                 new float3(-9.424778f, 3.141593f, 6.283185f),
-                new Quaternion(4.371139E-08f, -1.192488E-08f, 1f, -8.742278E-08f),
+                new QuaternionF(4.371139E-08f, -1.192488E-08f, 1f, -8.742278E-08f),
                 new float4x4(-1f, 1.748456E-07f, 8.742278E-08f, 0f, -1.748456E-07f, -1f, -2.384976E-08f, 0f, 8.742278E-08f, -2.384978E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742278E-08f, 3.141593f)
             };
@@ -8475,7 +8475,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: 360",
                 new float3(0f, 4.712389f, 6.283185f),
-                new Quaternion(-6.181724E-08f, -0.7071068f, 6.181724E-08f, 0.7071068f),
+                new QuaternionF(-6.181724E-08f, -0.7071068f, 6.181724E-08f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0f, -0.9999999f, 0f, 1.748456E-07f, 1f, 0f, 0f, 0.9999999f, -1.748456E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 1.748456E-07f)
             };
@@ -8484,7 +8484,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: 360",
                 new float3(0.001745329f, 4.712389f, 6.283185f),
-                new Quaternion(0.0006170052f, -0.7071065f, 0.0006171288f, 0.7071065f),
+                new QuaternionF(0.0006170052f, -0.7071065f, 0.0006171288f, 0.7071065f),
                 new float4x4(-4.644016E-08f, -0.001745328f, -0.9999985f, 0f, 1.747976E-07f, 0.9999985f, -0.001745328f, 0f, 1f, -1.747976E-07f, -4.613503E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 1.747979E-07f)
             };
@@ -8493,7 +8493,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: 360",
                 new float3(0.01745329f, 4.712389f, 6.283185f),
-                new Quaternion(0.00617053f, -0.7070798f, 0.006170654f, 0.7070798f),
+                new QuaternionF(0.00617053f, -0.7070798f, 0.006170654f, 0.7070798f),
                 new float4x4(8.039206E-08f, -0.01745241f, -0.9998476f, 0f, 1.750886E-07f, 0.9998477f, -0.01745241f, 0f, 0.9999999f, -1.750886E-07f, 8.344796E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 1.751153E-07f)
             };
@@ -8502,7 +8502,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: 360",
                 new float3(0.7853982f, 4.712389f, 6.283185f),
-                new Quaternion(0.270598f, -0.6532815f, 0.2705981f, 0.6532815f),
+                new QuaternionF(0.270598f, -0.6532815f, 0.2705981f, 0.6532815f),
                 new float4x4(2.980232E-08f, -0.7071067f, -0.7071067f, 0f, 1.490116E-07f, 0.7071068f, -0.7071067f, 0f, 0.9999999f, -1.490116E-07f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 4.712389f, 2.107342E-07f)
             };
@@ -8511,7 +8511,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: 360",
                 new float3(1.570796f, 4.712389f, 6.283185f),
-                new Quaternion(0.4999999f, -0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -8520,7 +8520,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: 360",
                 new float3(3.141593f, 4.712389f, 6.283185f),
-                new Quaternion(0.7071068f, -3.090862E-08f, 0.7071068f, -9.272586E-08f),
+                new QuaternionF(0.7071068f, -3.090862E-08f, 0.7071068f, -9.272586E-08f),
                 new float4x4(5.960464E-08f, 8.742277E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, 8.742277E-08f, 0f, 0.9999999f, -1.748456E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 1.570796f, 3.141593f)
             };
@@ -8529,7 +8529,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: 360",
                 new float3(4.712389f, 4.712389f, 6.283185f),
-                new Quaternion(0.5f, 0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(0.5f, 0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -8538,7 +8538,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: 360",
                 new float3(6.283185f, 4.712389f, 6.283185f),
-                new Quaternion(0f, 0.7071068f, -1.236345E-07f, -0.7071068f),
+                new QuaternionF(0f, 0.7071068f, -1.236345E-07f, -0.7071068f),
                 new float4x4(5.960461E-08f, -1.748456E-07f, -0.9999999f, 0f, 1.748456E-07f, 1f, -1.748456E-07f, 0f, 0.9999999f, -1.748456E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 4.712389f, 1.748456E-07f)
             };
@@ -8547,7 +8547,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: 360",
                 new float3(10.21018f, 4.712389f, 6.283185f),
-                new Quaternion(-0.6532814f, -0.2705981f, -0.6532814f, 0.2705982f),
+                new QuaternionF(-0.6532814f, -0.2705981f, -0.6532814f, 0.2705982f),
                 new float4x4(1.490116E-07f, 0.707107f, 0.7071064f, 0f, -1.788139E-07f, -0.7071064f, 0.707107f, 0f, 0.9999999f, -1.788139E-07f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.141593f)
             };
@@ -8556,7 +8556,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: 360",
                 new float3(-1.570796f, 4.712389f, 6.283185f),
-                new Quaternion(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -8565,7 +8565,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: 360",
                 new float3(-9.424778f, 4.712389f, 6.283185f),
-                new Quaternion(0.7071068f, -7.02494E-08f, 0.7071068f, -5.338508E-08f),
+                new QuaternionF(0.7071068f, -7.02494E-08f, 0.7071068f, -5.338508E-08f),
                 new float4x4(5.960463E-08f, -2.384976E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, -2.384976E-08f, 0f, 0.9999999f, -1.748456E-07f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 1.570796f, 3.141593f)
             };
@@ -8574,7 +8574,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: 360",
                 new float3(0f, 6.283185f, 6.283185f),
-                new Quaternion(7.642742E-15f, 8.742278E-08f, 8.742278E-08f, 1f),
+                new QuaternionF(7.642742E-15f, 8.742278E-08f, 8.742278E-08f, 1f),
                 new float4x4(1f, -1.748456E-07f, 1.748456E-07f, 0f, 1.748456E-07f, 1f, 0f, 0f, -1.748456E-07f, 3.057097E-14f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.748456E-07f, 1.748456E-07f)
             };
@@ -8583,7 +8583,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: 360",
                 new float3(0.001745329f, 6.283185f, 6.283185f),
-                new Quaternion(0.0008726645f, 8.734646E-08f, 8.734646E-08f, 0.9999996f),
+                new QuaternionF(0.0008726645f, 8.734646E-08f, 8.734646E-08f, 0.9999996f),
                 new float4x4(1f, -1.745404E-07f, 1.748453E-07f, 0f, 1.748453E-07f, 0.9999985f, -0.001745328f, 0f, -1.745404E-07f, 0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.748456E-07f, 1.748456E-07f)
             };
@@ -8592,7 +8592,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: 360",
                 new float3(0.01745329f, 6.283185f, 6.283185f),
-                new Quaternion(0.008726535f, 8.665655E-08f, 8.665655E-08f, 0.9999619f),
+                new QuaternionF(0.008726535f, 8.665655E-08f, 8.665655E-08f, 0.9999619f),
                 new float4x4(1f, -1.717941E-07f, 1.748189E-07f, 0f, 1.748189E-07f, 0.9998477f, -0.01745241f, 0f, -1.717941E-07f, 0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.748455E-07f, 1.748455E-07f)
             };
@@ -8601,7 +8601,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: 360",
                 new float3(0.7853982f, 6.283185f, 6.283185f),
-                new Quaternion(0.3826835f, 4.731286E-08f, 4.731286E-08f, 0.9238795f),
+                new QuaternionF(0.3826835f, 4.731286E-08f, 4.731286E-08f, 0.9238795f),
                 new float4x4(1f, -5.121106E-08f, 1.236345E-07f, 0f, 1.236345E-07f, 0.7071067f, -0.7071068f, 0f, -5.121106E-08f, 0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 1.748456E-07f, 1.748456E-07f)
             };
@@ -8610,7 +8610,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: 360",
                 new float3(1.570796f, 6.283185f, 6.283185f),
-                new Quaternion(0.7071068f, 0f, 0f, 0.7071068f),
+                new QuaternionF(0.7071068f, 0f, 0f, 0.7071068f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0f, 0f)
             };
@@ -8619,7 +8619,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: 360",
                 new float3(3.141593f, 6.283185f, 6.283185f),
-                new Quaternion(1f, -8.742278E-08f, -8.742278E-08f, -4.371138E-08f),
+                new QuaternionF(1f, -8.742278E-08f, -8.742278E-08f, -4.371138E-08f),
                 new float4x4(1f, -1.748456E-07f, -1.748456E-07f, 0f, -1.748456E-07f, -1f, 8.742278E-08f, 0f, -1.748456E-07f, -8.742275E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 3.141593f)
             };
@@ -8628,7 +8628,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: 360",
                 new float3(4.712389f, 6.283185f, 6.283185f),
-                new Quaternion(0.7071068f, -1.236345E-07f, -1.236345E-07f, -0.7071068f),
+                new QuaternionF(0.7071068f, -1.236345E-07f, -1.236345E-07f, -0.7071068f),
                 new float4x4(1f, -3.496911E-07f, 0f, 0f, 0f, 5.960461E-08f, 0.9999999f, 0f, -3.496911E-07f, -0.9999999f, 5.960461E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.496911E-07f, 0f)
             };
@@ -8637,7 +8637,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: 360",
                 new float3(6.283185f, 6.283185f, 6.283185f),
-                new Quaternion(-8.742278E-08f, -8.742277E-08f, -8.742277E-08f, -1f),
+                new QuaternionF(-8.742278E-08f, -8.742277E-08f, -8.742277E-08f, -1f),
                 new float4x4(1f, -1.748455E-07f, 1.748456E-07f, 0f, 1.748456E-07f, 1f, -1.748456E-07f, 0f, -1.748455E-07f, 1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.748456E-07f, 1.748456E-07f)
             };
@@ -8646,7 +8646,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: 360",
                 new float3(10.21018f, 6.283185f, 6.283185f),
-                new Quaternion(-0.9238794f, 1.142234E-07f, 1.142234E-07f, 0.3826836f),
+                new QuaternionF(-0.9238794f, 1.142234E-07f, 1.142234E-07f, 0.3826836f),
                 new float4x4(1f, -2.984801E-07f, -1.236344E-07f, 0f, -1.236344E-07f, -0.7071065f, 0.707107f, 0f, -2.984801E-07f, -0.707107f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 3.141593f)
             };
@@ -8655,7 +8655,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: 360",
                 new float3(-1.570796f, 6.283185f, 6.283185f),
-                new Quaternion(-0.7071068f, 1.236345E-07f, 1.236345E-07f, 0.7071068f),
+                new QuaternionF(-0.7071068f, 1.236345E-07f, 1.236345E-07f, 0.7071068f),
                 new float4x4(1f, -3.496911E-07f, 0f, 0f, 0f, 5.960461E-08f, 0.9999999f, 0f, -3.496911E-07f, -0.9999999f, 5.960461E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.496911E-07f, 0f)
             };
@@ -8664,7 +8664,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: 360",
                 new float3(-9.424778f, 6.283185f, 6.283185f),
-                new Quaternion(1f, -8.742278E-08f, -8.742278E-08f, 1.192489E-08f),
+                new QuaternionF(1f, -8.742278E-08f, -8.742278E-08f, 1.192489E-08f),
                 new float4x4(1f, -1.748456E-07f, -1.748456E-07f, 0f, -1.748456E-07f, -1f, -2.384976E-08f, 0f, -1.748456E-07f, 2.384979E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 3.141593f)
             };
@@ -8673,7 +8673,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: 360",
                 new float3(0f, 10.21018f, 6.283185f),
-                new Quaternion(8.07681E-08f, 0.9238794f, -3.345526E-08f, -0.3826836f),
+                new QuaternionF(8.07681E-08f, 0.9238794f, -3.345526E-08f, -0.3826836f),
                 new float4x4(-0.7071065f, 1.236344E-07f, -0.707107f, 0f, 1.748455E-07f, 1f, 0f, 0f, 0.707107f, -1.236345E-07f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 1.748455E-07f)
             };
@@ -8682,7 +8682,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: 360",
                 new float3(0.001745329f, 10.21018f, 6.283185f),
-                new Quaternion(-0.0003338736f, 0.9238791f, -0.0008062703f, -0.3826835f),
+                new QuaternionF(-0.0003338736f, 0.9238791f, -0.0008062703f, -0.3826835f),
                 new float4x4(-0.7071065f, -0.00123401f, -0.7071059f, 0f, 1.748558E-07f, 0.9999985f, -0.001745328f, 0f, 0.707107f, -0.001234257f, -0.7071054f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.926991f, 1.748561E-07f)
             };
@@ -8691,7 +8691,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: 360",
                 new float3(0.01745329f, 10.21018f, 6.283185f),
-                new Quaternion(-0.003339421f, 0.9238443f, -0.0080623f, -0.382669f),
+                new QuaternionF(-0.003339421f, 0.9238443f, -0.0080623f, -0.382669f),
                 new float4x4(-0.7071065f, -0.0123406f, -0.7069994f, 0f, 1.74623E-07f, 0.9998477f, -0.01745241f, 0f, 0.707107f, -0.01234083f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.926991f, 1.746496E-07f)
             };
@@ -8700,7 +8700,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: 360",
                 new float3(0.7853982f, 10.21018f, 6.283185f),
-                new Quaternion(-0.1464466f, 0.8535533f, -0.3535534f, -0.3535535f),
+                new QuaternionF(-0.1464466f, 0.8535533f, -0.3535534f, -0.3535535f),
                 new float4x4(-0.7071065f, -0.5000001f, -0.5000001f, 0f, 1.043081E-07f, 0.7071068f, -0.7071068f, 0f, 0.7071069f, -0.4999999f, -0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 3.926991f, 1.685874E-07f)
             };
@@ -8709,7 +8709,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: 360",
                 new float3(1.570796f, 10.21018f, 6.283185f),
-                new Quaternion(-0.2705981f, 0.6532814f, -0.6532814f, -0.2705981f),
+                new QuaternionF(-0.2705981f, 0.6532814f, -0.6532814f, -0.2705981f),
                 new float4x4(-0.7071064f, -0.7071068f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, 0.7071068f, -0.7071065f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.926991f, 0f)
             };
@@ -8718,7 +8718,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: 360",
                 new float3(3.141593f, 10.21018f, 6.283185f),
-                new Quaternion(-0.3826836f, -6.92879E-09f, -0.9238794f, 9.749574E-08f),
+                new QuaternionF(-0.3826836f, -6.92879E-09f, -0.9238794f, 9.749574E-08f),
                 new float4x4(-0.7071065f, 1.854517E-07f, 0.707107f, 0f, -1.748456E-07f, -0.9999999f, 8.742278E-08f, 0f, 0.707107f, -6.18173E-08f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 0.7853985f, 3.141593f)
             };
@@ -8727,7 +8727,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: 360",
                 new float3(4.712389f, 10.21018f, 6.283185f),
-                new Quaternion(-0.2705982f, -0.6532814f, -0.6532814f, 0.2705982f),
+                new QuaternionF(-0.2705982f, -0.6532814f, -0.6532814f, 0.2705982f),
                 new float4x4(-0.7071064f, 0.7071072f, 0f, 0f, 0f, 1.490116E-08f, 1f, 0f, 0.7071072f, 0.7071064f, 1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -8736,7 +8736,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: 360",
                 new float3(6.283185f, 10.21018f, 6.283185f),
-                new Quaternion(-4.731284E-08f, -0.9238794f, 1.142234E-07f, 0.3826836f),
+                new QuaternionF(-4.731284E-08f, -0.9238794f, 1.142234E-07f, 0.3826836f),
                 new float4x4(-0.7071065f, -9.237056E-14f, -0.707107f, 0f, 1.748456E-07f, 1f, -1.748455E-07f, 0f, 0.707107f, -2.472689E-07f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 3.926991f, 1.748456E-07f)
             };
@@ -8745,7 +8745,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: 360",
                 new float3(10.21018f, 10.21018f, 6.283185f),
-                new Quaternion(0.3535535f, 0.3535535f, 0.8535532f, -0.1464468f),
+                new QuaternionF(0.3535535f, 0.3535535f, 0.8535532f, -0.1464468f),
                 new float4x4(-0.7071064f, 0.5000005f, 0.5f, 0f, -1.490116E-07f, -0.7071065f, 0.707107f, 0f, 0.7071071f, 0.4999999f, 0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853984f, 3.141593f)
             };
@@ -8754,7 +8754,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: 360",
                 new float3(-1.570796f, 10.21018f, 6.283185f),
-                new Quaternion(0.2705982f, 0.6532814f, 0.6532814f, -0.2705982f),
+                new QuaternionF(0.2705982f, 0.6532814f, 0.6532814f, -0.2705982f),
                 new float4x4(-0.7071064f, 0.7071072f, 0f, 0f, 0f, 1.490116E-08f, 1f, 0f, 0.7071072f, 0.7071064f, 1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -8763,7 +8763,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: 360",
                 new float3(-9.424778f, 10.21018f, 6.283185f),
-                new Quaternion(-0.3826836f, 4.447242E-08f, -0.9238794f, 7.620465E-08f),
+                new QuaternionF(-0.3826836f, 4.447242E-08f, -0.9238794f, 7.620465E-08f),
                 new float4x4(-0.7071065f, 1.067701E-07f, 0.707107f, 0f, -1.748455E-07f, -0.9999999f, -2.384976E-08f, 0f, 0.707107f, -1.404988E-07f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 0.7853985f, 3.141593f)
             };
@@ -8772,7 +8772,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: 360",
                 new float3(0f, -1.570796f, 6.283185f),
-                new Quaternion(6.181724E-08f, 0.7071068f, -6.181724E-08f, -0.7071068f),
+                new QuaternionF(6.181724E-08f, 0.7071068f, -6.181724E-08f, -0.7071068f),
                 new float4x4(5.960464E-08f, 0f, -0.9999999f, 0f, 1.748456E-07f, 1f, 0f, 0f, 0.9999999f, -1.748456E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 1.748456E-07f)
             };
@@ -8781,7 +8781,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: 360",
                 new float3(0.001745329f, -1.570796f, 6.283185f),
-                new Quaternion(-0.0006170052f, 0.7071065f, -0.0006171288f, -0.7071065f),
+                new QuaternionF(-0.0006170052f, 0.7071065f, -0.0006171288f, -0.7071065f),
                 new float4x4(-4.644016E-08f, -0.001745328f, -0.9999985f, 0f, 1.747976E-07f, 0.9999985f, -0.001745328f, 0f, 1f, -1.747976E-07f, -4.613503E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 1.747979E-07f)
             };
@@ -8790,7 +8790,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: 360",
                 new float3(0.01745329f, -1.570796f, 6.283185f),
-                new Quaternion(-0.00617053f, 0.7070798f, -0.006170654f, -0.7070798f),
+                new QuaternionF(-0.00617053f, 0.7070798f, -0.006170654f, -0.7070798f),
                 new float4x4(8.039206E-08f, -0.01745241f, -0.9998476f, 0f, 1.750886E-07f, 0.9998477f, -0.01745241f, 0f, 0.9999999f, -1.750886E-07f, 8.344796E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 1.751153E-07f)
             };
@@ -8799,7 +8799,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: 360",
                 new float3(0.7853982f, -1.570796f, 6.283185f),
-                new Quaternion(-0.270598f, 0.6532815f, -0.2705981f, -0.6532815f),
+                new QuaternionF(-0.270598f, 0.6532815f, -0.2705981f, -0.6532815f),
                 new float4x4(2.980232E-08f, -0.7071067f, -0.7071067f, 0f, 1.490116E-07f, 0.7071068f, -0.7071067f, 0f, 0.9999999f, -1.490116E-07f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 4.712389f, 2.107342E-07f)
             };
@@ -8808,7 +8808,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: 360",
                 new float3(1.570796f, -1.570796f, 6.283185f),
-                new Quaternion(-0.4999999f, 0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(-0.4999999f, 0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -8817,7 +8817,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: 360",
                 new float3(3.141593f, -1.570796f, 6.283185f),
-                new Quaternion(-0.7071068f, 3.090862E-08f, -0.7071068f, 9.272586E-08f),
+                new QuaternionF(-0.7071068f, 3.090862E-08f, -0.7071068f, 9.272586E-08f),
                 new float4x4(5.960464E-08f, 8.742277E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, 8.742277E-08f, 0f, 0.9999999f, -1.748456E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 1.570796f, 3.141593f)
             };
@@ -8826,7 +8826,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: 360",
                 new float3(4.712389f, -1.570796f, 6.283185f),
-                new Quaternion(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -8835,7 +8835,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: 360",
                 new float3(6.283185f, -1.570796f, 6.283185f),
-                new Quaternion(0f, -0.7071068f, 1.236345E-07f, 0.7071068f),
+                new QuaternionF(0f, -0.7071068f, 1.236345E-07f, 0.7071068f),
                 new float4x4(5.960461E-08f, -1.748456E-07f, -0.9999999f, 0f, 1.748456E-07f, 1f, -1.748456E-07f, 0f, 0.9999999f, -1.748456E-07f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 4.712389f, 1.748456E-07f)
             };
@@ -8844,7 +8844,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: 360",
                 new float3(10.21018f, -1.570796f, 6.283185f),
-                new Quaternion(0.6532814f, 0.2705981f, 0.6532814f, -0.2705982f),
+                new QuaternionF(0.6532814f, 0.2705981f, 0.6532814f, -0.2705982f),
                 new float4x4(1.490116E-07f, 0.707107f, 0.7071064f, 0f, -1.788139E-07f, -0.7071064f, 0.707107f, 0f, 0.9999999f, -1.788139E-07f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 3.141593f)
             };
@@ -8853,7 +8853,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: 360",
                 new float3(-1.570796f, -1.570796f, 6.283185f),
-                new Quaternion(0.5f, 0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(0.5f, 0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -8862,7 +8862,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: 360",
                 new float3(-9.424778f, -1.570796f, 6.283185f),
-                new Quaternion(-0.7071068f, 7.02494E-08f, -0.7071068f, 5.338508E-08f),
+                new QuaternionF(-0.7071068f, 7.02494E-08f, -0.7071068f, 5.338508E-08f),
                 new float4x4(5.960463E-08f, -2.384976E-08f, 0.9999999f, 0f, -1.748456E-07f, -0.9999999f, -2.384976E-08f, 0f, 0.9999999f, -1.748456E-07f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 1.570796f, 3.141593f)
             };
@@ -8871,7 +8871,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: 360",
                 new float3(0f, -9.424778f, 6.283185f),
-                new Quaternion(-8.742278E-08f, -1f, -1.042506E-15f, -1.192488E-08f),
+                new QuaternionF(-8.742278E-08f, -1f, -1.042506E-15f, -1.192488E-08f),
                 new float4x4(-1f, 1.748456E-07f, 2.384976E-08f, 0f, 1.748456E-07f, 1f, 0f, 0f, -2.384976E-08f, 4.170025E-15f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 1.748456E-07f)
             };
@@ -8880,7 +8880,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: 360",
                 new float3(0.001745329f, -9.424778f, 6.283185f),
-                new Quaternion(-8.743316E-08f, -0.9999996f, 0.0008726645f, -1.200117E-08f),
+                new QuaternionF(-8.743316E-08f, -0.9999996f, 0.0008726645f, -1.200117E-08f),
                 new float4x4(-1f, 1.748872E-07f, 2.384973E-08f, 0f, 1.748453E-07f, 0.9999985f, -0.001745328f, 0f, -2.415493E-08f, -0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 1.748456E-07f)
             };
@@ -8889,7 +8889,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: 360",
                 new float3(0.01745329f, -9.424778f, 6.283185f),
-                new Quaternion(-8.752351E-08f, -0.9999619f, 0.008726535f, -1.268732E-08f),
+                new QuaternionF(-8.752351E-08f, -0.9999619f, 0.008726535f, -1.268732E-08f),
                 new float4x4(-0.9999999f, 1.752618E-07f, 2.384613E-08f, 0f, 1.748189E-07f, 0.9998477f, -0.01745241f, 0f, -2.690124E-08f, -0.01745241f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 1.748456E-07f)
             };
@@ -8898,7 +8898,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: 360",
                 new float3(0.7853982f, -9.424778f, 6.283185f),
-                new Quaternion(-8.533156E-08f, -0.9238795f, 0.3826835f, -4.44724E-08f),
+                new QuaternionF(-8.533156E-08f, -0.9238795f, 0.3826835f, -4.44724E-08f),
                 new float4x4(-1f, 1.917099E-07f, 1.686433E-08f, 0f, 1.236345E-07f, 0.7071067f, -0.7071068f, 0f, -1.474842E-07f, -0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 1.748455E-07f)
             };
@@ -8907,7 +8907,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: 360",
                 new float3(1.570796f, -9.424778f, 6.283185f),
-                new Quaternion(-7.02494E-08f, -0.7071068f, 0.7071068f, -7.02494E-08f),
+                new QuaternionF(-7.02494E-08f, -0.7071068f, 0.7071068f, -7.02494E-08f),
                 new float4x4(-0.9999999f, 1.986953E-07f, 0f, 0f, 0f, 5.960463E-08f, -0.9999999f, 0f, -1.986953E-07f, -0.9999999f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.141593f, 0f)
             };
@@ -8916,7 +8916,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: 360",
                 new float3(3.141593f, -9.424778f, 6.283185f),
-                new Quaternion(-1.192488E-08f, 4.371139E-08f, 1f, -8.742278E-08f),
+                new QuaternionF(-1.192488E-08f, 4.371139E-08f, 1f, -8.742278E-08f),
                 new float4x4(-1f, 1.748456E-07f, -2.384976E-08f, 0f, -1.748456E-07f, -1f, 8.742278E-08f, 0f, -2.384975E-08f, 8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, -2.384976E-08f, 3.141593f)
             };
@@ -8925,7 +8925,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: 360",
                 new float3(4.712389f, -9.424778f, 6.283185f),
-                new Quaternion(5.338508E-08f, 0.7071068f, 0.7071068f, -5.338508E-08f),
+                new QuaternionF(5.338508E-08f, 0.7071068f, 0.7071068f, -5.338508E-08f),
                 new float4x4(-0.9999999f, 1.509958E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 1.509958E-07f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -8934,7 +8934,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: 360",
                 new float3(6.283185f, -9.424778f, 6.283185f),
-                new Quaternion(8.742278E-08f, 1f, -8.742278E-08f, 1.192489E-08f),
+                new QuaternionF(8.742278E-08f, 1f, -8.742278E-08f, 1.192489E-08f),
                 new float4x4(-1f, 1.748456E-07f, 2.384976E-08f, 0f, 1.748456E-07f, 1f, -1.748456E-07f, 0f, -2.384979E-08f, -1.748456E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 1.748456E-07f)
             };
@@ -8943,7 +8943,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: 360",
                 new float3(10.21018f, -9.424778f, 6.283185f),
-                new Quaternion(-2.243811E-08f, -0.3826836f, -0.9238794f, 7.620465E-08f),
+                new QuaternionF(-2.243811E-08f, -0.3826836f, -0.9238794f, 7.620465E-08f),
                 new float4x4(-0.9999999f, 1.579812E-07f, -1.686433E-08f, 0f, -1.236344E-07f, -0.7071065f, 0.707107f, 0f, 9.978476E-08f, 0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, -2.384977E-08f, 3.141593f)
             };
@@ -8952,7 +8952,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: 360",
                 new float3(-1.570796f, -9.424778f, 6.283185f),
-                new Quaternion(-5.338508E-08f, -0.7071068f, -0.7071068f, 5.338508E-08f),
+                new QuaternionF(-5.338508E-08f, -0.7071068f, -0.7071068f, 5.338508E-08f),
                 new float4x4(-0.9999999f, 1.509958E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 1.509958E-07f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -8961,7 +8961,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: 360",
                 new float3(-9.424778f, -9.424778f, 6.283185f),
-                new Quaternion(-1.192488E-08f, -1.192488E-08f, 1f, -8.742278E-08f),
+                new QuaternionF(-1.192488E-08f, -1.192488E-08f, 1f, -8.742278E-08f),
                 new float4x4(-1f, 1.748456E-07f, -2.384976E-08f, 0f, -1.748456E-07f, -1f, -2.384976E-08f, 0f, -2.384976E-08f, -2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 3.141593f)
             };
@@ -8970,7 +8970,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: 585",
                 new float3(0f, 0f, 10.21018f),
-                new Quaternion(0f, 0f, -0.9238794f, 0.3826836f),
+                new QuaternionF(0f, 0f, -0.9238794f, 0.3826836f),
                 new float4x4(-0.7071065f, 0.707107f, 0f, 0f, -0.707107f, -0.7071065f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 3.926991f)
             };
@@ -8979,7 +8979,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: 585",
                 new float3(0.001745329f, 0f, 10.21018f),
-                new Quaternion(0.0003339544f, 0.0008062368f, -0.9238791f, 0.3826835f),
+                new QuaternionF(0.0003339544f, 0.0008062368f, -0.9238791f, 0.3826835f),
                 new float4x4(-0.7071065f, 0.707107f, 0f, 0f, -0.7071059f, -0.7071054f, -0.001745328f, 0f, -0.001234134f, -0.001234133f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0f, 3.926991f)
             };
@@ -8988,7 +8988,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: 585",
                 new float3(0.01745329f, 0f, 10.21018f),
-                new Quaternion(0.003339502f, 0.008062267f, -0.9238443f, 0.382669f),
+                new QuaternionF(0.003339502f, 0.008062267f, -0.9238443f, 0.382669f),
                 new float4x4(-0.7071065f, 0.707107f, -4.656613E-10f, 0f, -0.7069994f, -0.7069988f, -0.01745241f, 0f, -0.01234072f, -0.01234071f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, -4.657322E-10f, 3.926991f)
             };
@@ -8997,7 +8997,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: 585",
                 new float3(0.7853982f, 0f, 10.21018f),
-                new Quaternion(0.1464467f, 0.3535534f, -0.8535533f, 0.3535535f),
+                new QuaternionF(0.1464467f, 0.3535534f, -0.8535533f, 0.3535535f),
                 new float4x4(-0.7071065f, 0.7071071f, -2.980232E-08f, 0f, -0.5000001f, -0.4999997f, -0.7071068f, 0f, -0.5000002f, -0.4999998f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, -4.214685E-08f, 3.926991f)
             };
@@ -9006,7 +9006,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: 585",
                 new float3(1.570796f, 0f, 10.21018f),
-                new Quaternion(0.2705982f, 0.6532814f, -0.6532814f, 0.2705982f),
+                new QuaternionF(0.2705982f, 0.6532814f, -0.6532814f, 0.2705982f),
                 new float4x4(-0.7071064f, 0.707107f, 0f, 0f, 0f, 7.450581E-08f, -0.9999999f, 0f, -0.707107f, -0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 2.356194f, 0f)
             };
@@ -9015,7 +9015,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: 585",
                 new float3(3.141593f, 0f, 10.21018f),
-                new Quaternion(0.3826836f, 0.9238794f, 4.038405E-08f, -1.672763E-08f),
+                new QuaternionF(0.3826836f, 0.9238794f, 4.038405E-08f, -1.672763E-08f),
                 new float4x4(-0.7071065f, 0.707107f, 0f, 0f, 0.707107f, 0.7071065f, 8.742277E-08f, 0f, 6.181726E-08f, 6.181721E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.141593f, 0.7853985f)
             };
@@ -9024,7 +9024,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: 585",
                 new float3(4.712389f, 0f, 10.21018f),
-                new Quaternion(0.2705982f, 0.6532814f, 0.6532814f, -0.2705982f),
+                new QuaternionF(0.2705982f, 0.6532814f, 0.6532814f, -0.2705982f),
                 new float4x4(-0.7071064f, 0.707107f, 0f, 0f, 0f, 7.450581E-08f, 0.9999999f, 0f, 0.707107f, 0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -9033,7 +9033,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: 585",
                 new float3(6.283185f, 0f, 10.21018f),
-                new Quaternion(-3.345526E-08f, -8.07681E-08f, 0.9238794f, -0.3826836f),
+                new QuaternionF(-3.345526E-08f, -8.07681E-08f, 0.9238794f, -0.3826836f),
                 new float4x4(-0.7071065f, 0.707107f, 0f, 0f, -0.707107f, -0.7071065f, -1.748455E-07f, 0f, -1.236345E-07f, -1.236344E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 0f, 3.926991f)
             };
@@ -9042,7 +9042,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: 585",
                 new float3(10.21018f, 0f, 10.21018f),
-                new Quaternion(-0.3535535f, -0.8535532f, -0.3535535f, 0.1464467f),
+                new QuaternionF(-0.3535535f, -0.8535532f, -0.3535535f, 0.1464467f),
                 new float4x4(-0.7071064f, 0.707107f, -2.980232E-08f, 0f, 0.5f, 0.4999997f, 0.707107f, 0f, 0.5000004f, 0.5f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 0.7853986f)
             };
@@ -9051,7 +9051,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: 585",
                 new float3(-1.570796f, 0f, 10.21018f),
-                new Quaternion(-0.2705982f, -0.6532814f, -0.6532814f, 0.2705982f),
+                new QuaternionF(-0.2705982f, -0.6532814f, -0.6532814f, 0.2705982f),
                 new float4x4(-0.7071064f, 0.707107f, 0f, 0f, 0f, 7.450581E-08f, 0.9999999f, 0f, 0.707107f, 0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -9060,7 +9060,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: 585",
                 new float3(-9.424778f, 0f, 10.21018f),
-                new Quaternion(0.3826836f, 0.9238794f, -1.101715E-08f, 4.563456E-09f),
+                new QuaternionF(0.3826836f, 0.9238794f, -1.101715E-08f, 4.563456E-09f),
                 new float4x4(-0.7071065f, 0.707107f, 0f, 0f, 0.707107f, 0.7071065f, -2.384976E-08f, 0f, -1.686433E-08f, -1.686432E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 0.7853985f)
             };
@@ -9069,7 +9069,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: 585",
                 new float3(0f, 0.001745329f, 10.21018f),
-                new Quaternion(-0.0008062368f, 0.0003339544f, -0.9238791f, 0.3826835f),
+                new QuaternionF(-0.0008062368f, 0.0003339544f, -0.9238791f, 0.3826835f),
                 new float4x4(-0.7071054f, 0.7071059f, 0.001745328f, 0f, -0.707107f, -0.7071065f, 0f, 0f, 0.001234133f, -0.001234134f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.001745329f, 3.926991f)
             };
@@ -9078,7 +9078,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: 585",
                 new float3(0.001745329f, 0.001745329f, 10.21018f),
-                new Quaternion(-0.0004722822f, 0.001140191f, -0.9238791f, 0.3826826f),
+                new QuaternionF(-0.0004722822f, 0.001140191f, -0.9238791f, 0.3826826f),
                 new float4x4(-0.7071078f, 0.7071038f, 0.001745326f, 0f, -0.707106f, -0.7071056f, -0.001745328f, 0f, 9.895302E-10f, -0.002468265f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 3.926991f)
             };
@@ -9087,7 +9087,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: 585",
                 new float3(0.01745329f, 0.001745329f, 10.21018f),
-                new Quaternion(0.002533295f, 0.008396205f, -0.9238468f, 0.3826618f),
+                new QuaternionF(0.002533295f, 0.008396205f, -0.9238468f, 0.3826618f),
                 new float4x4(-0.7071269f, 0.7070844f, 0.001745062f, 0f, -0.7069993f, -0.7069988f, -0.01745241f, 0f, -0.01110657f, -0.01357483f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.0174533f, 0.001745329f, 3.926991f)
             };
@@ -9096,7 +9096,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: 585",
                 new float3(0.7853982f, 0.001745329f, 10.21018f),
-                new Quaternion(0.1457018f, 0.3538618f, -0.8536807f, 0.3532449f),
+                new QuaternionF(0.1457018f, 0.3538618f, -0.8536807f, 0.3532449f),
                 new float4x4(-0.7079779f, 0.7062333f, 0.001234144f, 0f, -0.5000001f, -0.4999996f, -0.7071068f, 0f, -0.4987653f, -0.5012332f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0.001745344f, 3.926991f)
             };
@@ -9105,7 +9105,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: 585",
                 new float3(1.570796f, 0.001745329f, 10.21018f),
-                new Quaternion(0.270028f, 0.6535174f, -0.6535174f, 0.270028f),
+                new QuaternionF(0.270028f, 0.6535174f, -0.6535174f, 0.270028f),
                 new float4x4(-0.7083398f, 0.7058719f, 0f, 0f, 0f, -1.341105E-07f, -1f, 0f, -0.7058719f, -0.7083397f, -1.341105E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 2.357939f, 0f)
             };
@@ -9114,7 +9114,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: 585",
                 new float3(3.141593f, 0.001745329f, 10.21018f),
-                new Quaternion(0.3826835f, 0.9238791f, -0.000333914f, -0.0008062535f),
+                new QuaternionF(0.3826835f, 0.9238791f, -0.000333914f, -0.0008062535f),
                 new float4x4(-0.7071054f, 0.7071059f, -0.001745328f, 0f, 0.707107f, 0.7071065f, 8.742791E-08f, 0f, 0.001234195f, -0.001234072f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742791E-08f, 3.143338f, 0.7853985f)
             };
@@ -9123,7 +9123,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: 585",
                 new float3(4.712389f, 0.001745329f, 10.21018f),
-                new Quaternion(0.2711682f, 0.6530451f, 0.6530451f, -0.2711682f),
+                new QuaternionF(0.2711682f, 0.6530451f, 0.6530451f, -0.2711682f),
                 new float4x4(-0.7058713f, 0.7083402f, 0f, 0f, 0f, -2.980232E-08f, 1f, 0f, 0.7083402f, 0.7058713f, -2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.928736f, 0f)
             };
@@ -9132,7 +9132,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: 585",
                 new float3(6.283185f, 0.001745329f, 10.21018f),
-                new Quaternion(0.0008062033f, -0.0003340352f, 0.9238791f, -0.3826835f),
+                new QuaternionF(0.0008062033f, -0.0003340352f, 0.9238791f, -0.3826835f),
                 new float4x4(-0.7071054f, 0.7071059f, 0.001745328f, 0f, -0.707107f, -0.7071065f, -1.748558E-07f, 0f, 0.001234009f, -0.001234258f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748558E-07f, 0.001745329f, 3.926991f)
             };
@@ -9141,7 +9141,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: 585",
                 new float3(10.21018f, 0.001745329f, 10.21018f),
-                new Quaternion(-0.3538619f, -0.8534251f, -0.3532448f, 0.1471916f),
+                new QuaternionF(-0.3538619f, -0.8534251f, -0.3532448f, 0.1471916f),
                 new float4x4(-0.7062325f, 0.7079786f, -0.001234129f, 0f, 0.5f, 0.4999996f, 0.707107f, 0f, 0.5012338f, 0.4987651f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 0.7853985f)
             };
@@ -9150,7 +9150,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: 585",
                 new float3(-1.570796f, 0.001745329f, 10.21018f),
-                new Quaternion(-0.2711682f, -0.6530451f, -0.6530451f, 0.2711682f),
+                new QuaternionF(-0.2711682f, -0.6530451f, -0.6530451f, 0.2711682f),
                 new float4x4(-0.7058713f, 0.7083402f, 0f, 0f, 0f, -2.980232E-08f, 1f, 0f, 0.7083402f, 0.7058713f, -2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.928736f, 0f)
             };
@@ -9159,7 +9159,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: 585",
                 new float3(-9.424778f, 0.001745329f, 10.21018f),
-                new Quaternion(0.3826835f, 0.9238791f, -0.0003339654f, -0.0008062323f),
+                new QuaternionF(0.3826835f, 0.9238791f, -0.0003339654f, -0.0008062323f),
                 new float4x4(-0.7071054f, 0.7071059f, -0.001745328f, 0f, 0.707107f, 0.7071065f, -2.386514E-08f, 0f, 0.001234116f, -0.001234151f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.386514E-08f, 3.143338f, 0.7853985f)
             };
@@ -9168,7 +9168,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: 585",
                 new float3(0f, 0.01745329f, 10.21018f),
-                new Quaternion(-0.008062267f, 0.003339502f, -0.9238443f, 0.382669f),
+                new QuaternionF(-0.008062267f, 0.003339502f, -0.9238443f, 0.382669f),
                 new float4x4(-0.7069988f, 0.7069994f, 0.01745241f, 0f, -0.707107f, -0.7071065f, -4.656613E-10f, 0f, 0.01234071f, -0.01234072f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.656613E-10f, 0.01745329f, 3.926991f)
             };
@@ -9177,7 +9177,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: 585",
                 new float3(0.001745329f, 0.01745329f, 10.21018f),
-                new Quaternion(-0.007728322f, 0.004145707f, -0.9238468f, 0.3826618f),
+                new QuaternionF(-0.007728322f, 0.004145707f, -0.9238468f, 0.3826618f),
                 new float4x4(-0.7070203f, 0.7069778f, 0.01745238f, 0f, -0.7071059f, -0.7071054f, -0.001745329f, 0f, 0.01110676f, -0.01357467f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.00174533f, 0.01745329f, 3.926991f)
             };
@@ -9186,7 +9186,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: 585",
                 new float3(0.01745329f, 0.01745329f, 10.21018f),
-                new Quaternion(-0.004722585f, 0.01140133f, -0.9238382f, 0.3825841f),
+                new QuaternionF(-0.004722585f, 0.01140133f, -0.9238382f, 0.3825841f),
                 new float4x4(-0.707214f, 0.7067839f, 0.01744975f, 0f, -0.7069993f, -0.7069986f, -0.0174524f, 0f, 1.871027E-06f, -0.02467955f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.01745329f, 3.926991f)
             };
@@ -9195,7 +9195,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: 585",
                 new float3(0.7853982f, 0.01745329f, 10.21018f),
-                new Quaternion(0.1389925f, 0.3566252f, -0.8547988f, 0.3504548f),
+                new QuaternionF(0.1389925f, 0.3566252f, -0.8547988f, 0.3504548f),
                 new float4x4(-0.7157251f, 0.6982732f, 0.01234074f, 0f, -0.5000002f, -0.4999999f, -0.7071068f, 0f, -0.4875833f, -0.5122644f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.01745333f, 3.926991f)
             };
@@ -9204,7 +9204,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: 585",
                 new float3(1.570796f, 0.01745329f, 10.21018f),
-                new Quaternion(0.264887f, 0.6556179f, -0.6556179f, 0.264887f),
+                new QuaternionF(0.264887f, 0.6556179f, -0.6556179f, 0.264887f),
                 new float4x4(-0.7193393f, 0.6946586f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, -0.6946586f, -0.7193394f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 2.373647f, 0f)
             };
@@ -9213,7 +9213,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: 585",
                 new float3(3.141593f, 0.01745329f, 10.21018f),
-                new Quaternion(0.382669f, 0.9238443f, -0.003339462f, -0.008062284f),
+                new QuaternionF(0.382669f, 0.9238443f, -0.003339462f, -0.008062284f),
                 new float4x4(-0.7069988f, 0.7069994f, -0.01745241f, 0f, 0.707107f, 0.7071065f, 8.707866E-08f, 0f, 0.01234077f, -0.01234066f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.707866E-08f, 3.159046f, 0.7853985f)
             };
@@ -9222,7 +9222,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: 585",
                 new float3(4.712389f, 0.01745329f, 10.21018f),
-                new Quaternion(0.2762887f, 0.6508952f, 0.6508952f, -0.2762887f),
+                new QuaternionF(0.2762887f, 0.6508952f, 0.6508952f, -0.2762887f),
                 new float4x4(-0.6946582f, 0.71934f, 0f, 0f, 0f, -2.980232E-08f, 1f, 0f, 0.71934f, 0.6946582f, -2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.944444f, 0f)
             };
@@ -9231,7 +9231,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: 585",
                 new float3(6.283185f, 0.01745329f, 10.21018f),
-                new Quaternion(0.008062233f, -0.003339583f, 0.9238443f, -0.382669f),
+                new QuaternionF(0.008062233f, -0.003339583f, 0.9238443f, -0.382669f),
                 new float4x4(-0.7069988f, 0.7069994f, 0.01745241f, 0f, -0.707107f, -0.7071065f, -1.750886E-07f, 0f, 0.01234059f, -0.01234084f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 0.01745329f, 3.926991f)
             };
@@ -9240,7 +9240,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: 585",
                 new float3(10.21018f, 0.01745329f, 10.21018f),
-                new Quaternion(-0.3566253f, -0.8522428f, -0.3504548f, 0.1538897f),
+                new QuaternionF(-0.3566253f, -0.8522428f, -0.3504548f, 0.1538897f),
                 new float4x4(-0.6982726f, 0.7157255f, -0.01234069f, 0f, 0.5f, 0.4999996f, 0.7071071f, 0f, 0.512265f, 0.4875832f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 0.7853985f)
             };
@@ -9249,7 +9249,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: 585",
                 new float3(-1.570796f, 0.01745329f, 10.21018f),
-                new Quaternion(-0.2762887f, -0.6508952f, -0.6508952f, 0.2762887f),
+                new QuaternionF(-0.2762887f, -0.6508952f, -0.6508952f, 0.2762887f),
                 new float4x4(-0.6946582f, 0.71934f, 0f, 0f, 0f, -2.980232E-08f, 1f, 0f, 0.71934f, 0.6946582f, -2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.944444f, 0f)
             };
@@ -9258,7 +9258,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: 585",
                 new float3(-9.424778f, 0.01745329f, 10.21018f),
-                new Quaternion(0.382669f, 0.9238443f, -0.003339513f, -0.008062262f),
+                new QuaternionF(0.382669f, 0.9238443f, -0.003339513f, -0.008062262f),
                 new float4x4(-0.7069988f, 0.7069994f, -0.01745241f, 0f, 0.707107f, 0.7071065f, -2.374873E-08f, 0f, 0.01234069f, -0.01234074f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.374873E-08f, 3.159046f, 0.7853985f)
             };
@@ -9267,7 +9267,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: 585",
                 new float3(0f, 0.7853982f, 10.21018f),
-                new Quaternion(-0.3535534f, 0.1464467f, -0.8535533f, 0.3535535f),
+                new QuaternionF(-0.3535534f, 0.1464467f, -0.8535533f, 0.3535535f),
                 new float4x4(-0.4999997f, 0.5000001f, 0.7071068f, 0f, -0.7071071f, -0.7071065f, -2.980232E-08f, 0f, 0.4999998f, -0.5000002f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.980232E-08f, 0.7853982f, 3.926991f)
             };
@@ -9276,7 +9276,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: 585",
                 new float3(0.001745329f, 0.7853982f, 10.21018f),
-                new Quaternion(-0.3532447f, 0.1471915f, -0.8536807f, 0.3532449f),
+                new QuaternionF(-0.3532447f, 0.1471915f, -0.8536807f, 0.3532449f),
                 new float4x4(-0.5008723f, 0.4991274f, 0.7071057f, 0f, -0.7071059f, -0.7071052f, -0.001745343f, 0f, 0.4991271f, -0.5008729f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.7853982f, 3.926991f)
             };
@@ -9285,7 +9285,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: 585",
                 new float3(0.01745329f, 0.7853982f, 10.21018f),
-                new Quaternion(-0.3504546f, 0.1538897f, -0.8547988f, 0.3504548f),
+                new QuaternionF(-0.3504546f, 0.1538897f, -0.8547988f, 0.3504548f),
                 new float4x4(-0.5087261f, 0.491274f, 0.7069992f, 0f, -0.7069994f, -0.7069989f, -0.0174524f, 0f, 0.4912737f, -0.5087264f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.7853982f, 3.926991f)
             };
@@ -9294,7 +9294,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: 585",
                 new float3(0.7853982f, 0.7853982f, 10.21018f),
-                new Quaternion(-0.1913416f, 0.4619398f, -0.8446231f, 0.1913418f),
+                new QuaternionF(-0.1913416f, 0.4619398f, -0.8446231f, 0.1913418f),
                 new float4x4(-0.8535533f, 0.1464469f, 0.5f, 0f, -0.5000001f, -0.4999998f, -0.7071068f, 0f, 0.1464463f, -0.8535534f, 0.5f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0.7853982f, 3.926991f)
             };
@@ -9303,7 +9303,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: 585",
                 new float3(1.570796f, 0.7853982f, 10.21018f),
-                new Quaternion(1.043081E-07f, 0.7071067f, -0.7071067f, 1.043081E-07f),
+                new QuaternionF(1.043081E-07f, 0.7071067f, -0.7071067f, 1.043081E-07f),
                 new float4x4(-0.9999996f, 2.950279E-07f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, -2.950279E-07f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 3.141592f, 0f)
             };
@@ -9312,7 +9312,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: 585",
                 new float3(3.141593f, 0.7853982f, 10.21018f),
-                new Quaternion(0.3535536f, 0.8535533f, -0.1464466f, -0.3535534f),
+                new QuaternionF(0.3535536f, 0.8535533f, -0.1464466f, -0.3535534f),
                 new float4x4(-0.4999997f, 0.5000002f, -0.7071068f, 0f, 0.707107f, 0.7071065f, 1.192093E-07f, 0f, 0.4999999f, -0.5000002f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.192093E-07f, 3.926991f, 0.7853985f)
             };
@@ -9321,7 +9321,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: 585",
                 new float3(4.712389f, 0.7853982f, 10.21018f),
-                new Quaternion(0.5000001f, 0.4999999f, 0.4999999f, -0.5000001f),
+                new QuaternionF(0.5000001f, 0.4999999f, 0.4999999f, -0.5000001f),
                 new float4x4(5.960464E-07f, 0.9999998f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0.9999998f, -4.172325E-07f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -9330,7 +9330,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: 585",
                 new float3(6.283185f, 0.7853982f, 10.21018f),
-                new Quaternion(0.3535534f, -0.1464468f, 0.8535533f, -0.3535535f),
+                new QuaternionF(0.3535534f, -0.1464468f, 0.8535533f, -0.3535535f),
                 new float4x4(-0.4999998f, 0.5000001f, 0.7071068f, 0f, -0.707107f, -0.7071064f, -1.788139E-07f, 0f, 0.4999997f, -0.5000003f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 0.7853982f, 3.926991f)
             };
@@ -9339,7 +9339,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: 585",
                 new float3(10.21018f, 0.7853982f, 10.21018f),
-                new Quaternion(-0.4619399f, -0.7325376f, -0.1913418f, 0.4619398f),
+                new QuaternionF(-0.4619399f, -0.7325376f, -0.1913418f, 0.4619398f),
                 new float4x4(-0.1464461f, 0.8535535f, -0.4999999f, 0f, 0.5f, 0.4999996f, 0.7071069f, 0f, 0.8535534f, -0.1464469f, -0.4999998f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 0.7853985f)
             };
@@ -9348,7 +9348,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: 585",
                 new float3(-1.570796f, 0.7853982f, 10.21018f),
-                new Quaternion(-0.5000001f, -0.4999999f, -0.4999999f, 0.5000001f),
+                new QuaternionF(-0.5000001f, -0.4999999f, -0.4999999f, 0.5000001f),
                 new float4x4(5.960464E-07f, 0.9999998f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0.9999998f, -4.172325E-07f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -9357,7 +9357,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: 585",
                 new float3(-9.424778f, 0.7853982f, 10.21018f),
-                new Quaternion(0.3535535f, 0.8535533f, -0.1464467f, -0.3535534f),
+                new QuaternionF(0.3535535f, 0.8535533f, -0.1464467f, -0.3535534f),
                 new float4x4(-0.4999998f, 0.5000001f, -0.7071068f, 0f, 0.7071071f, 0.7071065f, -5.960464E-08f, 0f, 0.4999998f, -0.5000002f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.960464E-08f, 3.926991f, 0.7853986f)
             };
@@ -9366,7 +9366,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: 585",
                 new float3(0f, 1.570796f, 10.21018f),
-                new Quaternion(-0.6532814f, 0.2705982f, -0.6532814f, 0.2705982f),
+                new QuaternionF(-0.6532814f, 0.2705982f, -0.6532814f, 0.2705982f),
                 new float4x4(7.450581E-08f, 0f, 0.9999999f, 0f, -0.707107f, -0.7071064f, 0f, 0f, 0.7071064f, -0.707107f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 3.926991f)
             };
@@ -9375,7 +9375,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: 585",
                 new float3(0.001745329f, 1.570796f, 10.21018f),
-                new Quaternion(-0.6530451f, 0.2711682f, -0.6535174f, 0.270028f),
+                new QuaternionF(-0.6530451f, 0.2711682f, -0.6535174f, 0.270028f),
                 new float4x4(-0.001234263f, -0.001234114f, 0.9999986f, 0f, -0.7071061f, -0.7071056f, -0.001745313f, 0f, 0.7071066f, -0.7071071f, -2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745314f, 1.570796f, 3.926991f)
             };
@@ -9384,7 +9384,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: 585",
                 new float3(0.01745329f, 1.570796f, 10.21018f),
-                new Quaternion(-0.6508952f, 0.2762887f, -0.6556179f, 0.264887f),
+                new QuaternionF(-0.6508952f, 0.2762887f, -0.6556179f, 0.264887f),
                 new float4x4(-0.01234058f, -0.01234072f, 0.9998477f, 0f, -0.7069993f, -0.7069987f, -0.01745236f, 0f, 0.7071065f, -0.707107f, -2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 1.570796f, 3.926991f)
             };
@@ -9393,7 +9393,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: 585",
                 new float3(0.7853982f, 1.570796f, 10.21018f),
-                new Quaternion(-0.4999999f, 0.5000001f, -0.7071067f, 1.043081E-07f),
+                new QuaternionF(-0.4999999f, 0.5000001f, -0.7071067f, 1.043081E-07f),
                 new float4x4(-0.4999999f, -0.4999998f, 0.7071066f, 0f, -0.5000001f, -0.4999995f, -0.7071066f, 0f, 0.7071064f, -0.7071069f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 1.570796f, 3.926991f)
             };
@@ -9402,7 +9402,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: 585",
                 new float3(1.570796f, 1.570796f, 10.21018f),
-                new Quaternion(-0.2705979f, 0.6532815f, -0.6532815f, -0.2705979f),
+                new QuaternionF(-0.2705979f, 0.6532815f, -0.6532815f, -0.2705979f),
                 new float4x4(-0.7071066f, -0.7071064f, 0f, 0f, 0f, 2.533197E-07f, -0.9999998f, 0f, 0.7071064f, -0.7071068f, 2.533197E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 3.926991f, 0f)
             };
@@ -9411,7 +9411,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: 585",
                 new float3(3.141593f, 1.570796f, 10.21018f),
-                new Quaternion(0.2705982f, 0.6532814f, -0.2705981f, -0.6532814f),
+                new QuaternionF(0.2705982f, 0.6532814f, -0.2705981f, -0.6532814f),
                 new float4x4(1.192093E-07f, 5.960464E-08f, -0.9999999f, 0f, 0.707107f, 0.7071065f, 5.960464E-08f, 0f, 0.7071064f, -0.707107f, 4.470348E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.940697E-08f, 4.712389f, 0.7853987f)
             };
@@ -9420,7 +9420,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: 585",
                 new float3(4.712389f, 1.570796f, 10.21018f),
-                new Quaternion(0.6532815f, 0.2705979f, 0.2705979f, -0.6532815f),
+                new QuaternionF(0.6532815f, 0.2705979f, 0.2705979f, -0.6532815f),
                 new float4x4(0.7071071f, 0.7071064f, 0f, 0f, 0f, 2.533197E-07f, 0.9999998f, 0f, 0.7071064f, -0.7071068f, 2.533197E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 5.497787f, 0f)
             };
@@ -9429,7 +9429,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: 585",
                 new float3(6.283185f, 1.570796f, 10.21018f),
-                new Quaternion(0.6532814f, -0.2705982f, 0.6532814f, -0.2705981f),
+                new QuaternionF(0.6532814f, -0.2705982f, 0.6532814f, -0.2705981f),
                 new float4x4(1.490116E-08f, -1.788139E-07f, 0.9999999f, 0f, -0.707107f, -0.7071064f, -1.788139E-07f, 0f, 0.7071064f, -0.707107f, 1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 1.570796f, 3.926991f)
             };
@@ -9438,7 +9438,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: 585",
                 new float3(10.21018f, 1.570796f, 10.21018f),
-                new Quaternion(-0.5000002f, -0.4999998f, 0f, 0.7071067f),
+                new QuaternionF(-0.5000002f, -0.4999998f, 0f, 0.7071067f),
                 new float4x4(0.5000005f, 0.4999999f, -0.7071064f, 0f, 0.4999999f, 0.4999996f, 0.7071069f, 0f, 0.7071064f, -0.7071069f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 0.7853987f)
             };
@@ -9447,7 +9447,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: 585",
                 new float3(-1.570796f, 1.570796f, 10.21018f),
-                new Quaternion(-0.6532815f, -0.2705979f, -0.2705979f, 0.6532815f),
+                new QuaternionF(-0.6532815f, -0.2705979f, -0.2705979f, 0.6532815f),
                 new float4x4(0.7071071f, 0.7071064f, 0f, 0f, 0f, 2.533197E-07f, 0.9999998f, 0f, 0.7071064f, -0.7071068f, 2.533197E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 5.497787f, 0f)
             };
@@ -9456,7 +9456,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: 585",
                 new float3(-9.424778f, 1.570796f, 10.21018f),
-                new Quaternion(0.2705982f, 0.6532814f, -0.2705982f, -0.6532814f),
+                new QuaternionF(0.2705982f, 0.6532814f, -0.2705982f, -0.6532814f),
                 new float4x4(7.450581E-08f, 0f, -0.9999999f, 0f, 0.707107f, 0.7071065f, 0f, 0f, 0.7071064f, -0.707107f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 0.7853986f)
             };
@@ -9465,7 +9465,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: 585",
                 new float3(0f, 3.141593f, 10.21018f),
-                new Quaternion(-0.9238794f, 0.3826836f, 4.038405E-08f, -1.672763E-08f),
+                new QuaternionF(-0.9238794f, 0.3826836f, 4.038405E-08f, -1.672763E-08f),
                 new float4x4(0.7071065f, -0.707107f, -8.742277E-08f, 0f, -0.707107f, -0.7071065f, 0f, 0f, -6.181721E-08f, 6.181726E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 3.926991f)
             };
@@ -9474,7 +9474,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: 585",
                 new float3(0.001745329f, 3.141593f, 10.21018f),
-                new Quaternion(-0.9238791f, 0.3826835f, -0.000333914f, -0.0008062535f),
+                new QuaternionF(-0.9238791f, 0.3826835f, -0.000333914f, -0.0008062535f),
                 new float4x4(0.7071065f, -0.707107f, -8.742791E-08f, 0f, -0.7071059f, -0.7071054f, -0.001745328f, 0f, 0.001234072f, 0.001234195f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 3.926991f)
             };
@@ -9483,7 +9483,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: 585",
                 new float3(0.01745329f, 3.141593f, 10.21018f),
-                new Quaternion(-0.9238443f, 0.382669f, -0.003339462f, -0.008062284f),
+                new QuaternionF(-0.9238443f, 0.382669f, -0.003339462f, -0.008062284f),
                 new float4x4(0.7071065f, -0.707107f, -8.707866E-08f, 0f, -0.7069994f, -0.7069988f, -0.01745241f, 0f, 0.01234066f, 0.01234077f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 3.926991f)
             };
@@ -9492,7 +9492,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: 585",
                 new float3(0.7853982f, 3.141593f, 10.21018f),
-                new Quaternion(-0.8535533f, 0.3535535f, -0.1464466f, -0.3535534f),
+                new QuaternionF(-0.8535533f, 0.3535535f, -0.1464466f, -0.3535534f),
                 new float4x4(0.7071066f, -0.7071069f, -5.960464E-08f, 0f, -0.5000001f, -0.4999997f, -0.7071068f, 0f, 0.5000001f, 0.4999999f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 3.141593f, 3.926991f)
             };
@@ -9501,7 +9501,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: 585",
                 new float3(1.570796f, 3.141593f, 10.21018f),
-                new Quaternion(-0.6532814f, 0.2705981f, -0.2705981f, -0.6532814f),
+                new QuaternionF(-0.6532814f, 0.2705981f, -0.2705981f, -0.6532814f),
                 new float4x4(0.7071066f, -0.7071069f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.7071069f, 0.7071065f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 5.497787f, 0f)
             };
@@ -9510,7 +9510,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: 585",
                 new float3(3.141593f, 3.141593f, 10.21018f),
-                new Quaternion(2.365642E-08f, -5.711168E-08f, -0.3826836f, -0.9238794f),
+                new QuaternionF(2.365642E-08f, -5.711168E-08f, -0.3826836f, -0.9238794f),
                 new float4x4(0.7071065f, -0.707107f, 8.742277E-08f, 0f, 0.707107f, 0.7071065f, 8.742278E-08f, 0f, -1.236345E-07f, 4.618528E-14f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 8.742277E-08f, 0.7853985f)
             };
@@ -9519,7 +9519,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: 585",
                 new float3(4.712389f, 3.141593f, 10.21018f),
-                new Quaternion(0.6532814f, -0.2705982f, -0.2705982f, -0.6532814f),
+                new QuaternionF(0.6532814f, -0.2705982f, -0.2705982f, -0.6532814f),
                 new float4x4(0.7071065f, -0.7071071f, 0f, 0f, 0f, 4.470348E-08f, 0.9999999f, 0f, -0.7071071f, -0.7071064f, 4.470348E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853988f, 0f)
             };
@@ -9528,7 +9528,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: 585",
                 new float3(6.283185f, 3.141593f, 10.21018f),
-                new Quaternion(0.9238794f, -0.3826836f, -6.92879E-09f, 9.749574E-08f),
+                new QuaternionF(0.9238794f, -0.3826836f, -6.92879E-09f, 9.749574E-08f),
                 new float4x4(0.7071065f, -0.707107f, -8.742278E-08f, 0f, -0.707107f, -0.7071065f, -1.748456E-07f, 0f, 6.18173E-08f, 1.854517E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 3.926991f)
             };
@@ -9537,7 +9537,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: 585",
                 new float3(10.21018f, 3.141593f, 10.21018f),
-                new Quaternion(-0.3535535f, 0.1464468f, 0.3535535f, 0.8535532f),
+                new QuaternionF(-0.3535535f, 0.1464468f, 0.3535535f, 0.8535532f),
                 new float4x4(0.7071065f, -0.7071071f, 8.940697E-08f, 0f, 0.5f, 0.4999997f, 0.7071069f, 0f, -0.5000004f, -0.4999999f, 0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.264406E-07f, 0.7853985f)
             };
@@ -9546,7 +9546,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: 585",
                 new float3(-1.570796f, 3.141593f, 10.21018f),
-                new Quaternion(-0.6532814f, 0.2705982f, 0.2705982f, 0.6532814f),
+                new QuaternionF(-0.6532814f, 0.2705982f, 0.2705982f, 0.6532814f),
                 new float4x4(0.7071065f, -0.7071071f, 0f, 0f, 0f, 4.470348E-08f, 0.9999999f, 0f, -0.7071071f, -0.7071064f, 4.470348E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853988f, 0f)
             };
@@ -9555,7 +9555,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: 585",
                 new float3(-9.424778f, 3.141593f, 10.21018f),
-                new Quaternion(-2.774478E-08f, -3.582059E-08f, -0.3826836f, -0.9238794f),
+                new QuaternionF(-2.774478E-08f, -3.582059E-08f, -0.3826836f, -0.9238794f),
                 new float4x4(0.7071065f, -0.707107f, 8.742277E-08f, 0f, 0.707107f, 0.7071065f, -2.384976E-08f, 0f, -4.495288E-08f, 7.868158E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742277E-08f, 0.7853985f)
             };
@@ -9564,7 +9564,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: 585",
                 new float3(0f, 4.712389f, 10.21018f),
-                new Quaternion(-0.6532814f, 0.2705982f, 0.6532814f, -0.2705982f),
+                new QuaternionF(-0.6532814f, 0.2705982f, 0.6532814f, -0.2705982f),
                 new float4x4(7.450581E-08f, 0f, -0.9999999f, 0f, -0.707107f, -0.7071064f, 0f, 0f, -0.7071064f, 0.707107f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 3.926991f)
             };
@@ -9573,7 +9573,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: 585",
                 new float3(0.001745329f, 4.712389f, 10.21018f),
-                new Quaternion(-0.6535174f, 0.270028f, 0.6530451f, -0.2711682f),
+                new QuaternionF(-0.6535174f, 0.270028f, 0.6530451f, -0.2711682f),
                 new float4x4(0.001234099f, 0.001234114f, -0.9999986f, 0f, -0.7071061f, -0.7071056f, -0.001745313f, 0f, -0.7071066f, 0.7071071f, -1.341105E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745314f, 4.712389f, 3.926991f)
             };
@@ -9582,7 +9582,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: 585",
                 new float3(0.01745329f, 4.712389f, 10.21018f),
-                new Quaternion(-0.6556179f, 0.264887f, 0.6508952f, -0.2762887f),
+                new QuaternionF(-0.6556179f, 0.264887f, 0.6508952f, -0.2762887f),
                 new float4x4(0.01234069f, 0.01234072f, -0.9998477f, 0f, -0.7069993f, -0.7069987f, -0.01745236f, 0f, -0.7071065f, 0.707107f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 4.712389f, 3.926991f)
             };
@@ -9591,7 +9591,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: 585",
                 new float3(0.7853982f, 4.712389f, 10.21018f),
-                new Quaternion(-0.7071067f, 1.043081E-07f, 0.4999999f, -0.5000001f),
+                new QuaternionF(-0.7071067f, 1.043081E-07f, 0.4999999f, -0.5000001f),
                 new float4x4(0.5000003f, 0.4999998f, -0.7071066f, 0f, -0.5000001f, -0.4999995f, -0.7071066f, 0f, -0.7071064f, 0.7071069f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 4.712389f, 3.926991f)
             };
@@ -9600,7 +9600,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: 585",
                 new float3(1.570796f, 4.712389f, 10.21018f),
-                new Quaternion(-0.6532815f, -0.2705979f, 0.2705979f, -0.6532815f),
+                new QuaternionF(-0.6532815f, -0.2705979f, 0.2705979f, -0.6532815f),
                 new float4x4(0.7071071f, 0.7071064f, 0f, 0f, 0f, 2.533197E-07f, -0.9999998f, 0f, -0.7071064f, 0.7071068f, 2.533197E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 0.7853978f, 0f)
             };
@@ -9609,7 +9609,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: 585",
                 new float3(3.141593f, 4.712389f, 10.21018f),
-                new Quaternion(-0.2705981f, -0.6532814f, -0.2705982f, -0.6532814f),
+                new QuaternionF(-0.2705981f, -0.6532814f, -0.2705982f, -0.6532814f),
                 new float4x4(4.470348E-08f, -5.960464E-08f, 0.9999999f, 0f, 0.707107f, 0.7071065f, 5.960464E-08f, 0f, -0.7071064f, 0.707107f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.940697E-08f, 1.570796f, 0.7853987f)
             };
@@ -9618,7 +9618,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: 585",
                 new float3(4.712389f, 4.712389f, 10.21018f),
-                new Quaternion(0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
+                new QuaternionF(0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
                 new float4x4(-0.7071066f, -0.7071064f, 0f, 0f, 0f, 2.533197E-07f, 0.9999998f, 0f, -0.7071064f, 0.7071068f, 2.533197E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 2.356195f, 0f)
             };
@@ -9627,7 +9627,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: 585",
                 new float3(6.283185f, 4.712389f, 10.21018f),
-                new Quaternion(0.6532814f, -0.2705981f, -0.6532814f, 0.2705982f),
+                new QuaternionF(0.6532814f, -0.2705981f, -0.6532814f, 0.2705982f),
                 new float4x4(1.490116E-07f, 1.788139E-07f, -0.9999999f, 0f, -0.707107f, -0.7071064f, -1.788139E-07f, 0f, -0.7071064f, 0.707107f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 4.712389f, 3.926991f)
             };
@@ -9636,7 +9636,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: 585",
                 new float3(10.21018f, 4.712389f, 10.21018f),
-                new Quaternion(0f, 0.7071067f, 0.5000002f, 0.4999998f),
+                new QuaternionF(0f, 0.7071067f, 0.5000002f, 0.4999998f),
                 new float4x4(-0.5000002f, -0.4999999f, 0.7071064f, 0f, 0.4999999f, 0.4999996f, 0.7071069f, 0f, -0.7071064f, 0.7071069f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 0.7853987f)
             };
@@ -9645,7 +9645,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: 585",
                 new float3(-1.570796f, 4.712389f, 10.21018f),
-                new Quaternion(-0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
+                new QuaternionF(-0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
                 new float4x4(-0.7071066f, -0.7071064f, 0f, 0f, 0f, 2.533197E-07f, 0.9999998f, 0f, -0.7071064f, 0.7071068f, 2.533197E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 2.356195f, 0f)
             };
@@ -9654,7 +9654,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: 585",
                 new float3(-9.424778f, 4.712389f, 10.21018f),
-                new Quaternion(-0.2705982f, -0.6532814f, -0.2705982f, -0.6532814f),
+                new QuaternionF(-0.2705982f, -0.6532814f, -0.2705982f, -0.6532814f),
                 new float4x4(7.450581E-08f, 0f, 0.9999999f, 0f, 0.707107f, 0.7071065f, 0f, 0f, -0.7071064f, 0.707107f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 0.7853986f)
             };
@@ -9663,7 +9663,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: 585",
                 new float3(0f, 6.283185f, 10.21018f),
-                new Quaternion(8.07681E-08f, -3.345526E-08f, 0.9238794f, -0.3826836f),
+                new QuaternionF(8.07681E-08f, -3.345526E-08f, 0.9238794f, -0.3826836f),
                 new float4x4(-0.7071065f, 0.707107f, 1.748455E-07f, 0f, -0.707107f, -0.7071065f, 0f, 0f, 1.236344E-07f, -1.236345E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.748455E-07f, 3.926991f)
             };
@@ -9672,7 +9672,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: 585",
                 new float3(0.001745329f, 6.283185f, 10.21018f),
-                new Quaternion(-0.0003338736f, -0.0008062703f, 0.9238791f, -0.3826835f),
+                new QuaternionF(-0.0003338736f, -0.0008062703f, 0.9238791f, -0.3826835f),
                 new float4x4(-0.7071065f, 0.707107f, 1.748558E-07f, 0f, -0.7071059f, -0.7071054f, -0.001745328f, 0f, -0.00123401f, -0.001234257f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.748561E-07f, 3.926991f)
             };
@@ -9681,7 +9681,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: 585",
                 new float3(0.01745329f, 6.283185f, 10.21018f),
-                new Quaternion(-0.003339421f, -0.0080623f, 0.9238443f, -0.382669f),
+                new QuaternionF(-0.003339421f, -0.0080623f, 0.9238443f, -0.382669f),
                 new float4x4(-0.7071065f, 0.707107f, 1.74623E-07f, 0f, -0.7069994f, -0.7069988f, -0.01745241f, 0f, -0.0123406f, -0.01234083f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.746496E-07f, 3.926991f)
             };
@@ -9690,7 +9690,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: 585",
                 new float3(0.7853982f, 6.283185f, 10.21018f),
-                new Quaternion(-0.1464466f, -0.3535534f, 0.8535533f, -0.3535535f),
+                new QuaternionF(-0.1464466f, -0.3535534f, 0.8535533f, -0.3535535f),
                 new float4x4(-0.7071065f, 0.7071069f, 1.043081E-07f, 0f, -0.5000001f, -0.4999997f, -0.7071068f, 0f, -0.5000001f, -0.4999999f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 1.685874E-07f, 3.926991f)
             };
@@ -9699,7 +9699,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: 585",
                 new float3(1.570796f, 6.283185f, 10.21018f),
-                new Quaternion(-0.2705981f, -0.6532814f, 0.6532814f, -0.2705981f),
+                new QuaternionF(-0.2705981f, -0.6532814f, 0.6532814f, -0.2705981f),
                 new float4x4(-0.7071064f, 0.7071068f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, -0.7071068f, -0.7071065f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 2.356194f, 0f)
             };
@@ -9708,7 +9708,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: 585",
                 new float3(3.141593f, 6.283185f, 10.21018f),
-                new Quaternion(-0.3826836f, -0.9238794f, -6.92879E-09f, 9.749574E-08f),
+                new QuaternionF(-0.3826836f, -0.9238794f, -6.92879E-09f, 9.749574E-08f),
                 new float4x4(-0.7071065f, 0.707107f, -1.748456E-07f, 0f, 0.707107f, 0.7071065f, 8.742278E-08f, 0f, 1.854517E-07f, -6.18173E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, 0.7853985f)
             };
@@ -9717,7 +9717,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: 585",
                 new float3(4.712389f, 6.283185f, 10.21018f),
-                new Quaternion(-0.2705982f, -0.6532814f, -0.6532814f, 0.2705982f),
+                new QuaternionF(-0.2705982f, -0.6532814f, -0.6532814f, 0.2705982f),
                 new float4x4(-0.7071064f, 0.7071072f, 0f, 0f, 0f, 1.490116E-08f, 1f, 0f, 0.7071072f, 0.7071064f, 1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -9726,7 +9726,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: 585",
                 new float3(6.283185f, 6.283185f, 10.21018f),
-                new Quaternion(-4.731284E-08f, 1.142234E-07f, -0.9238794f, 0.3826836f),
+                new QuaternionF(-4.731284E-08f, 1.142234E-07f, -0.9238794f, 0.3826836f),
                 new float4x4(-0.7071065f, 0.707107f, 1.748456E-07f, 0f, -0.707107f, -0.7071065f, -1.748455E-07f, 0f, -9.237056E-14f, -2.472689E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 1.748456E-07f, 3.926991f)
             };
@@ -9735,7 +9735,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: 585",
                 new float3(10.21018f, 6.283185f, 10.21018f),
-                new Quaternion(0.3535535f, 0.8535532f, 0.3535535f, -0.1464468f),
+                new QuaternionF(0.3535535f, 0.8535532f, 0.3535535f, -0.1464468f),
                 new float4x4(-0.7071064f, 0.7071071f, -1.490116E-07f, 0f, 0.5f, 0.4999997f, 0.707107f, 0f, 0.5000005f, 0.4999999f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 0.7853984f)
             };
@@ -9744,7 +9744,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: 585",
                 new float3(-1.570796f, 6.283185f, 10.21018f),
-                new Quaternion(0.2705982f, 0.6532814f, 0.6532814f, -0.2705982f),
+                new QuaternionF(0.2705982f, 0.6532814f, 0.6532814f, -0.2705982f),
                 new float4x4(-0.7071064f, 0.7071072f, 0f, 0f, 0f, 1.490116E-08f, 1f, 0f, 0.7071072f, 0.7071064f, 1.490116E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -9753,7 +9753,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: 585",
                 new float3(-9.424778f, 6.283185f, 10.21018f),
-                new Quaternion(-0.3826836f, -0.9238794f, 4.447242E-08f, 7.620465E-08f),
+                new QuaternionF(-0.3826836f, -0.9238794f, 4.447242E-08f, 7.620465E-08f),
                 new float4x4(-0.7071065f, 0.707107f, -1.748455E-07f, 0f, 0.707107f, 0.7071065f, -2.384976E-08f, 0f, 1.067701E-07f, -1.404988E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 0.7853985f)
             };
@@ -9762,7 +9762,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: 585",
                 new float3(0f, 10.21018f, 10.21018f),
-                new Quaternion(0.8535532f, -0.3535535f, -0.3535535f, 0.1464467f),
+                new QuaternionF(0.8535532f, -0.3535535f, -0.3535535f, 0.1464467f),
                 new float4x4(0.4999997f, -0.5f, -0.707107f, 0f, -0.707107f, -0.7071064f, -2.980232E-08f, 0f, -0.5f, 0.5000004f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 3.926991f)
             };
@@ -9771,7 +9771,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: 585",
                 new float3(0.001745329f, 10.21018f, 10.21018f),
-                new Quaternion(0.8536807f, -0.3532448f, -0.3532448f, 0.1471916f),
+                new QuaternionF(0.8536807f, -0.3532448f, -0.3532448f, 0.1471916f),
                 new float4x4(0.5008724f, -0.4991273f, -0.7071059f, 0f, -0.7071059f, -0.7071052f, -0.001745328f, 0f, -0.4991273f, 0.500873f, -0.7071052f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745344f, 3.926991f, 3.926991f)
             };
@@ -9780,7 +9780,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: 585",
                 new float3(0.01745329f, 10.21018f, 10.21018f),
-                new Quaternion(0.8547987f, -0.3504548f, -0.3504548f, 0.1538897f),
+                new QuaternionF(0.8547987f, -0.3504548f, -0.3504548f, 0.1538897f),
                 new float4x4(0.5087258f, -0.4912738f, -0.7069994f, 0f, -0.7069994f, -0.7069989f, -0.0174524f, 0f, -0.4912738f, 0.5087266f, -0.7069989f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.926991f, 3.926991f)
             };
@@ -9789,7 +9789,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: 585",
                 new float3(0.7853982f, 10.21018f, 10.21018f),
-                new Quaternion(0.8446231f, -0.1913418f, -0.1913418f, 0.4619398f),
+                new QuaternionF(0.8446231f, -0.1913418f, -0.1913418f, 0.4619398f),
                 new float4x4(0.8535533f, -0.1464466f, -0.5000001f, 0f, -0.5000001f, -0.4999996f, -0.7071068f, 0f, -0.1464466f, 0.8535535f, -0.4999996f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 3.926991f, 3.926991f)
             };
@@ -9798,7 +9798,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: 585",
                 new float3(1.570796f, 10.21018f, 10.21018f),
-                new Quaternion(0.7071067f, 0f, 0f, 0.7071067f),
+                new QuaternionF(0.7071067f, 0f, 0f, 0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 0f, 0f)
             };
@@ -9807,7 +9807,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: 585",
                 new float3(3.141593f, 10.21018f, 10.21018f),
-                new Quaternion(0.1464467f, 0.3535535f, 0.3535535f, 0.8535532f),
+                new QuaternionF(0.1464467f, 0.3535535f, 0.3535535f, 0.8535532f),
                 new float4x4(0.4999996f, -0.5000001f, 0.707107f, 0f, 0.707107f, 0.7071065f, 1.192093E-07f, 0f, -0.5000001f, 0.5000003f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.940697E-08f, 0.7853985f, 0.7853985f)
             };
@@ -9816,7 +9816,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: 585",
                 new float3(4.712389f, 10.21018f, 10.21018f),
-                new Quaternion(-0.4999998f, 0.5000002f, 0.5000002f, 0.4999998f),
+                new QuaternionF(-0.4999998f, 0.5000002f, 0.5000002f, 0.4999998f),
                 new float4x4(-7.152557E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 8.34465E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570797f, 0f)
             };
@@ -9825,7 +9825,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: 585",
                 new float3(6.283185f, 10.21018f, 10.21018f),
-                new Quaternion(-0.8535532f, 0.3535535f, 0.3535535f, -0.1464468f),
+                new QuaternionF(-0.8535532f, 0.3535535f, 0.3535535f, -0.1464468f),
                 new float4x4(0.4999998f, -0.4999999f, -0.7071069f, 0f, -0.7071069f, -0.7071064f, -1.788139E-07f, 0f, -0.4999999f, 0.5000004f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 3.926991f, 3.926991f)
             };
@@ -9834,7 +9834,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: 585",
                 new float3(10.21018f, 10.21018f, 10.21018f),
-                new Quaternion(0.1913417f, -0.4619399f, -0.4619399f, -0.7325375f),
+                new QuaternionF(0.1913417f, -0.4619399f, -0.4619399f, -0.7325375f),
                 new float4x4(0.146446f, -0.8535534f, 0.4999999f, 0f, 0.4999999f, 0.4999997f, 0.7071069f, 0f, -0.8535534f, 0.1464471f, 0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853985f, 0.7853985f)
             };
@@ -9843,7 +9843,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: 585",
                 new float3(-1.570796f, 10.21018f, 10.21018f),
-                new Quaternion(0.4999998f, -0.5000002f, -0.5000002f, -0.4999998f),
+                new QuaternionF(0.4999998f, -0.5000002f, -0.5000002f, -0.4999998f),
                 new float4x4(-7.152557E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 8.34465E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570797f, 0f)
             };
@@ -9852,7 +9852,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: 585",
                 new float3(-9.424778f, 10.21018f, 10.21018f),
-                new Quaternion(0.1464467f, 0.3535535f, 0.3535535f, 0.8535532f),
+                new QuaternionF(0.1464467f, 0.3535535f, 0.3535535f, 0.8535532f),
                 new float4x4(0.4999997f, -0.4999999f, 0.707107f, 0f, 0.707107f, 0.7071065f, -5.960464E-08f, 0f, -0.4999999f, 0.5000004f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.980232E-08f, 0.7853985f, 0.7853985f)
             };
@@ -9861,7 +9861,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: 585",
                 new float3(0f, -1.570796f, 10.21018f),
-                new Quaternion(0.6532814f, -0.2705982f, -0.6532814f, 0.2705982f),
+                new QuaternionF(0.6532814f, -0.2705982f, -0.6532814f, 0.2705982f),
                 new float4x4(7.450581E-08f, 0f, -0.9999999f, 0f, -0.707107f, -0.7071064f, 0f, 0f, -0.7071064f, 0.707107f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 3.926991f)
             };
@@ -9870,7 +9870,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: 585",
                 new float3(0.001745329f, -1.570796f, 10.21018f),
-                new Quaternion(0.6535174f, -0.270028f, -0.6530451f, 0.2711682f),
+                new QuaternionF(0.6535174f, -0.270028f, -0.6530451f, 0.2711682f),
                 new float4x4(0.001234099f, 0.001234114f, -0.9999986f, 0f, -0.7071061f, -0.7071056f, -0.001745313f, 0f, -0.7071066f, 0.7071071f, -1.341105E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745314f, 4.712389f, 3.926991f)
             };
@@ -9879,7 +9879,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: 585",
                 new float3(0.01745329f, -1.570796f, 10.21018f),
-                new Quaternion(0.6556179f, -0.264887f, -0.6508952f, 0.2762887f),
+                new QuaternionF(0.6556179f, -0.264887f, -0.6508952f, 0.2762887f),
                 new float4x4(0.01234069f, 0.01234072f, -0.9998477f, 0f, -0.7069993f, -0.7069987f, -0.01745236f, 0f, -0.7071065f, 0.707107f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 4.712389f, 3.926991f)
             };
@@ -9888,7 +9888,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: 585",
                 new float3(0.7853982f, -1.570796f, 10.21018f),
-                new Quaternion(0.7071067f, -1.043081E-07f, -0.4999999f, 0.5000001f),
+                new QuaternionF(0.7071067f, -1.043081E-07f, -0.4999999f, 0.5000001f),
                 new float4x4(0.5000003f, 0.4999998f, -0.7071066f, 0f, -0.5000001f, -0.4999995f, -0.7071066f, 0f, -0.7071064f, 0.7071069f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 4.712389f, 3.926991f)
             };
@@ -9897,7 +9897,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: 585",
                 new float3(1.570796f, -1.570796f, 10.21018f),
-                new Quaternion(0.6532815f, 0.2705979f, -0.2705979f, 0.6532815f),
+                new QuaternionF(0.6532815f, 0.2705979f, -0.2705979f, 0.6532815f),
                 new float4x4(0.7071071f, 0.7071064f, 0f, 0f, 0f, 2.533197E-07f, -0.9999998f, 0f, -0.7071064f, 0.7071068f, 2.533197E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 0.7853978f, 0f)
             };
@@ -9906,7 +9906,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: 585",
                 new float3(3.141593f, -1.570796f, 10.21018f),
-                new Quaternion(0.2705981f, 0.6532814f, 0.2705982f, 0.6532814f),
+                new QuaternionF(0.2705981f, 0.6532814f, 0.2705982f, 0.6532814f),
                 new float4x4(4.470348E-08f, -5.960464E-08f, 0.9999999f, 0f, 0.707107f, 0.7071065f, 5.960464E-08f, 0f, -0.7071064f, 0.707107f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.940697E-08f, 1.570796f, 0.7853987f)
             };
@@ -9915,7 +9915,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: 585",
                 new float3(4.712389f, -1.570796f, 10.21018f),
-                new Quaternion(-0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
+                new QuaternionF(-0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
                 new float4x4(-0.7071066f, -0.7071064f, 0f, 0f, 0f, 2.533197E-07f, 0.9999998f, 0f, -0.7071064f, 0.7071068f, 2.533197E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 2.356195f, 0f)
             };
@@ -9924,7 +9924,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: 585",
                 new float3(6.283185f, -1.570796f, 10.21018f),
-                new Quaternion(-0.6532814f, 0.2705981f, 0.6532814f, -0.2705982f),
+                new QuaternionF(-0.6532814f, 0.2705981f, 0.6532814f, -0.2705982f),
                 new float4x4(1.490116E-07f, 1.788139E-07f, -0.9999999f, 0f, -0.707107f, -0.7071064f, -1.788139E-07f, 0f, -0.7071064f, 0.707107f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 4.712389f, 3.926991f)
             };
@@ -9933,7 +9933,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: 585",
                 new float3(10.21018f, -1.570796f, 10.21018f),
-                new Quaternion(0f, -0.7071067f, -0.5000002f, -0.4999998f),
+                new QuaternionF(0f, -0.7071067f, -0.5000002f, -0.4999998f),
                 new float4x4(-0.5000002f, -0.4999999f, 0.7071064f, 0f, 0.4999999f, 0.4999996f, 0.7071069f, 0f, -0.7071064f, 0.7071069f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 0.7853987f)
             };
@@ -9942,7 +9942,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: 585",
                 new float3(-1.570796f, -1.570796f, 10.21018f),
-                new Quaternion(0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
+                new QuaternionF(0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
                 new float4x4(-0.7071066f, -0.7071064f, 0f, 0f, 0f, 2.533197E-07f, 0.9999998f, 0f, -0.7071064f, 0.7071068f, 2.533197E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 2.356195f, 0f)
             };
@@ -9951,7 +9951,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: 585",
                 new float3(-9.424778f, -1.570796f, 10.21018f),
-                new Quaternion(0.2705982f, 0.6532814f, 0.2705982f, 0.6532814f),
+                new QuaternionF(0.2705982f, 0.6532814f, 0.2705982f, 0.6532814f),
                 new float4x4(7.450581E-08f, 0f, 0.9999999f, 0f, 0.707107f, 0.7071065f, 0f, 0f, -0.7071064f, 0.707107f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 0.7853986f)
             };
@@ -9960,7 +9960,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: 585",
                 new float3(0f, -9.424778f, 10.21018f),
-                new Quaternion(-0.9238794f, 0.3826836f, -1.101715E-08f, 4.563456E-09f),
+                new QuaternionF(-0.9238794f, 0.3826836f, -1.101715E-08f, 4.563456E-09f),
                 new float4x4(0.7071065f, -0.707107f, 2.384976E-08f, 0f, -0.707107f, -0.7071065f, 0f, 0f, 1.686432E-08f, -1.686433E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 3.926991f)
             };
@@ -9969,7 +9969,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: 585",
                 new float3(0.001745329f, -9.424778f, 10.21018f),
-                new Quaternion(-0.9238791f, 0.3826835f, -0.0003339654f, -0.0008062323f),
+                new QuaternionF(-0.9238791f, 0.3826835f, -0.0003339654f, -0.0008062323f),
                 new float4x4(0.7071065f, -0.707107f, 2.386514E-08f, 0f, -0.7071059f, -0.7071054f, -0.001745328f, 0f, 0.001234151f, 0.001234116f, -0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 3.926991f)
             };
@@ -9978,7 +9978,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: 585",
                 new float3(0.01745329f, -9.424778f, 10.21018f),
-                new Quaternion(-0.9238443f, 0.382669f, -0.003339513f, -0.008062262f),
+                new QuaternionF(-0.9238443f, 0.382669f, -0.003339513f, -0.008062262f),
                 new float4x4(0.7071065f, -0.707107f, 2.374873E-08f, 0f, -0.7069994f, -0.7069988f, -0.01745241f, 0f, 0.01234074f, 0.01234069f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 3.926991f)
             };
@@ -9987,7 +9987,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: 585",
                 new float3(0.7853982f, -9.424778f, 10.21018f),
-                new Quaternion(-0.8535533f, 0.3535535f, -0.1464467f, -0.3535534f),
+                new QuaternionF(-0.8535533f, 0.3535535f, -0.1464467f, -0.3535534f),
                 new float4x4(0.7071065f, -0.7071071f, 5.960464E-08f, 0f, -0.5000001f, -0.4999998f, -0.7071068f, 0f, 0.5000002f, 0.4999998f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 3.926991f)
             };
@@ -9996,7 +9996,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: 585",
                 new float3(1.570796f, -9.424778f, 10.21018f),
-                new Quaternion(-0.6532814f, 0.2705982f, -0.2705982f, -0.6532814f),
+                new QuaternionF(-0.6532814f, 0.2705982f, -0.2705982f, -0.6532814f),
                 new float4x4(0.7071065f, -0.707107f, 0f, 0f, 0f, 7.450581E-08f, -0.9999999f, 0f, 0.707107f, 0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 5.497787f, 0f)
             };
@@ -10005,7 +10005,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: 585",
                 new float3(3.141593f, -9.424778f, 10.21018f),
-                new Quaternion(4.494751E-08f, -5.710478E-09f, -0.3826836f, -0.9238794f),
+                new QuaternionF(4.494751E-08f, -5.710478E-09f, -0.3826836f, -0.9238794f),
                 new float4x4(0.7071065f, -0.707107f, -2.384976E-08f, 0f, 0.707107f, 0.7071065f, 8.742277E-08f, 0f, -4.495294E-08f, -7.868154E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, -2.384976E-08f, 0.7853985f)
             };
@@ -10014,7 +10014,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: 585",
                 new float3(4.712389f, -9.424778f, 10.21018f),
-                new Quaternion(0.6532814f, -0.2705982f, -0.2705982f, -0.6532814f),
+                new QuaternionF(0.6532814f, -0.2705982f, -0.2705982f, -0.6532814f),
                 new float4x4(0.7071065f, -0.707107f, 0f, 0f, 0f, 7.450581E-08f, 0.9999999f, 0f, -0.707107f, -0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853986f, 0f)
             };
@@ -10023,7 +10023,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: 585",
                 new float3(6.283185f, -9.424778f, 10.21018f),
-                new Quaternion(0.9238794f, -0.3826836f, 4.447242E-08f, 7.620465E-08f),
+                new QuaternionF(0.9238794f, -0.3826836f, 4.447242E-08f, 7.620465E-08f),
                 new float4x4(0.7071065f, -0.707107f, 2.384976E-08f, 0f, -0.707107f, -0.7071065f, -1.748455E-07f, 0f, 1.404988E-07f, 1.067701E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 3.141593f, 3.926991f)
             };
@@ -10032,7 +10032,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: 585",
                 new float3(10.21018f, -9.424778f, 10.21018f),
-                new Quaternion(-0.3535535f, 0.1464467f, 0.3535535f, 0.8535532f),
+                new QuaternionF(-0.3535535f, 0.1464467f, 0.3535535f, 0.8535532f),
                 new float4x4(0.7071066f, -0.7071069f, 0f, 0f, 0.5f, 0.4999997f, 0.7071069f, 0f, -0.5000003f, -0.5f, 0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, -4.214686E-08f, 0.7853985f)
             };
@@ -10041,7 +10041,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: 585",
                 new float3(-1.570796f, -9.424778f, 10.21018f),
-                new Quaternion(-0.6532814f, 0.2705982f, 0.2705982f, 0.6532814f),
+                new QuaternionF(-0.6532814f, 0.2705982f, 0.2705982f, 0.6532814f),
                 new float4x4(0.7071065f, -0.707107f, 0f, 0f, 0f, 7.450581E-08f, 0.9999999f, 0f, -0.707107f, -0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853986f, 0f)
             };
@@ -10050,7 +10050,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: 585",
                 new float3(-9.424778f, -9.424778f, 10.21018f),
-                new Quaternion(-6.453696E-09f, 1.558061E-08f, -0.3826836f, -0.9238794f),
+                new QuaternionF(-6.453696E-09f, 1.558061E-08f, -0.3826836f, -0.9238794f),
                 new float4x4(0.7071065f, -0.707107f, -2.384976E-08f, 0f, 0.707107f, 0.7071065f, -2.384976E-08f, 0f, 3.372866E-08f, -1.24345E-14f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 0.7853985f)
             };
@@ -10059,7 +10059,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: -90",
                 new float3(0f, 0f, -1.570796f),
-                new Quaternion(0f, 0f, -0.7071068f, 0.7071068f),
+                new QuaternionF(0f, 0f, -0.7071068f, 0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, 0f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 4.712389f)
             };
@@ -10068,7 +10068,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: -90",
                 new float3(0.001745329f, 0f, -1.570796f),
-                new Quaternion(0.000617067f, 0.000617067f, -0.7071065f, 0.7071065f),
+                new QuaternionF(0.000617067f, 0.000617067f, -0.7071065f, 0.7071065f),
                 new float4x4(-4.62876E-08f, 1f, 0f, 0f, -0.9999985f, -4.62876E-08f, -0.001745328f, 0f, -0.001745328f, 0f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0f, 4.712389f)
             };
@@ -10077,7 +10077,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: -90",
                 new float3(0.01745329f, 0f, -1.570796f),
-                new Quaternion(0.006170592f, 0.006170592f, -0.7070798f, 0.7070798f),
+                new QuaternionF(0.006170592f, 0.006170592f, -0.7070798f, 0.7070798f),
                 new float4x4(8.192001E-08f, 0.9999999f, 0f, 0f, -0.9998476f, 8.192001E-08f, -0.01745241f, 0f, -0.01745241f, 0f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0f, 4.712389f)
             };
@@ -10086,7 +10086,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: -90",
                 new float3(0.7853982f, 0f, -1.570796f),
-                new Quaternion(0.2705981f, 0.2705981f, -0.6532815f, 0.6532815f),
+                new QuaternionF(0.2705981f, 0.2705981f, -0.6532815f, 0.6532815f),
                 new float4x4(8.940697E-08f, 0.9999999f, 0f, 0f, -0.7071067f, 8.940697E-08f, -0.7071068f, 0f, -0.7071068f, 0f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0f, 4.712389f)
             };
@@ -10095,7 +10095,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: -90",
                 new float3(1.570796f, 0f, -1.570796f),
-                new Quaternion(0.5f, 0.5f, -0.5f, 0.5f),
+                new QuaternionF(0.5f, 0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -10104,7 +10104,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: -90",
                 new float3(3.141593f, 0f, -1.570796f),
-                new Quaternion(0.7071068f, 0.7071068f, 3.090862E-08f, -3.090862E-08f),
+                new QuaternionF(0.7071068f, 0.7071068f, 3.090862E-08f, -3.090862E-08f),
                 new float4x4(5.960464E-08f, 0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 8.742278E-08f, 0f, 8.742278E-08f, 0f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 3.141593f, 1.570796f)
             };
@@ -10113,7 +10113,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: -90",
                 new float3(4.712389f, 0f, -1.570796f),
-                new Quaternion(0.5f, 0.5f, 0.5f, -0.5f),
+                new QuaternionF(0.5f, 0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -10122,7 +10122,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: -90",
                 new float3(6.283185f, 0f, -1.570796f),
-                new Quaternion(-6.181724E-08f, -6.181724E-08f, 0.7071068f, -0.7071068f),
+                new QuaternionF(-6.181724E-08f, -6.181724E-08f, 0.7071068f, -0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, 0f, 0f, -0.9999999f, 5.960464E-08f, -1.748456E-07f, 0f, -1.748456E-07f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0f, 4.712389f)
             };
@@ -10131,7 +10131,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: -90",
                 new float3(10.21018f, 0f, -1.570796f),
-                new Quaternion(-0.6532814f, -0.6532814f, -0.2705982f, 0.2705982f),
+                new QuaternionF(-0.6532814f, -0.6532814f, -0.2705982f, 0.2705982f),
                 new float4x4(7.450581E-08f, 0.9999999f, 0f, 0f, 0.7071064f, 7.450581E-08f, 0.707107f, 0f, 0.707107f, 0f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 1.570796f)
             };
@@ -10140,7 +10140,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: -90",
                 new float3(-1.570796f, 0f, -1.570796f),
-                new Quaternion(-0.5f, -0.5f, -0.5f, 0.5f),
+                new QuaternionF(-0.5f, -0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -10149,7 +10149,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: -90",
                 new float3(-9.424778f, 0f, -1.570796f),
-                new Quaternion(0.7071068f, 0.7071068f, -8.432163E-09f, 8.432163E-09f),
+                new QuaternionF(0.7071068f, 0.7071068f, -8.432163E-09f, 8.432163E-09f),
                 new float4x4(5.960464E-08f, 0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, -2.384976E-08f, 0f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 1.570796f)
             };
@@ -10158,7 +10158,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: -90",
                 new float3(0f, 0.001745329f, -1.570796f),
-                new Quaternion(-0.000617067f, 0.000617067f, -0.7071065f, 0.7071065f),
+                new QuaternionF(-0.000617067f, 0.000617067f, -0.7071065f, 0.7071065f),
                 new float4x4(-4.62876E-08f, 0.9999985f, 0.001745328f, 0f, -1f, -4.62876E-08f, 0f, 0f, 0f, -0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.001745329f, 4.712389f)
             };
@@ -10167,7 +10167,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: -90",
                 new float3(0.001745329f, 0.001745329f, -1.570796f),
-                new Quaternion(0f, 0.001234133f, -0.7071068f, 0.7071058f),
+                new QuaternionF(0f, 0.001234133f, -0.7071068f, 0.7071058f),
                 new float4x4(-3.16538E-06f, 0.9999986f, 0.001745326f, 0f, -0.9999986f, -1.192093E-07f, -0.001745328f, 0f, -0.001745326f, -0.001745328f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 4.712389f)
             };
@@ -10176,7 +10176,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: -90",
                 new float3(0.01745329f, 0.001745329f, -1.570796f),
-                new Quaternion(0.005553547f, 0.006787634f, -0.707085f, 0.7070742f),
+                new QuaternionF(0.005553547f, 0.006787634f, -0.707085f, 0.7070742f),
                 new float4x4(-3.039354E-05f, 0.9999985f, 0.001745063f, 0f, -0.9998477f, 6.664777E-08f, -0.01745241f, 0f, -0.01745238f, -0.001745328f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.00174533f, 4.712389f)
             };
@@ -10185,7 +10185,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: -90",
                 new float3(0.7853982f, 0.001745329f, -1.570796f),
-                new Quaternion(0.2700279f, 0.2711681f, -0.6535174f, 0.6530451f),
+                new QuaternionF(0.2700279f, 0.2711681f, -0.6535174f, 0.6530451f),
                 new float4x4(-0.001234129f, 0.9999985f, 0.001234084f, 0f, -0.7071067f, -1.490116E-08f, -0.7071068f, 0f, -0.7071058f, -0.001745313f, 0.7071056f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 0.001745302f, 4.712389f)
             };
@@ -10194,7 +10194,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: -90",
                 new float3(1.570796f, 0.001745329f, -1.570796f),
-                new Quaternion(0.4995635f, 0.5004361f, -0.5004361f, 0.4995635f),
+                new QuaternionF(0.4995635f, 0.5004361f, -0.5004361f, 0.4995635f),
                 new float4x4(-0.001745224f, 0.9999985f, 0f, 0f, 0f, 2.980232E-08f, -1f, 0f, -0.9999985f, -0.001745254f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.572542f, 0f)
             };
@@ -10203,7 +10203,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: -90",
                 new float3(3.141593f, 0.001745329f, -1.570796f),
-                new Quaternion(0.7071065f, 0.7071065f, -0.0006170361f, -0.0006170979f),
+                new QuaternionF(0.7071065f, 0.7071065f, -0.0006170361f, -0.0006170979f),
                 new float4x4(-4.621131E-08f, 0.9999985f, -0.001745328f, 0f, 1f, -4.621131E-08f, 8.73697E-08f, 0f, 8.73697E-08f, -0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.73697E-08f, 3.143338f, 1.570796f)
             };
@@ -10212,7 +10212,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: -90",
                 new float3(4.712389f, 0.001745329f, -1.570796f),
-                new Quaternion(0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
+                new QuaternionF(0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
                 new float4x4(0.001745284f, 0.9999985f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, 0.9999985f, -0.001745254f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.714134f, 0f)
             };
@@ -10221,7 +10221,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: -90",
                 new float3(6.283185f, 0.001745329f, -1.570796f),
-                new Quaternion(0.0006170052f, -0.0006171288f, 0.7071065f, -0.7071065f),
+                new QuaternionF(0.0006170052f, -0.0006171288f, 0.7071065f, -0.7071065f),
                 new float4x4(-4.644016E-08f, 0.9999985f, 0.001745328f, 0f, -1f, -4.613503E-08f, -1.747976E-07f, 0f, -1.747976E-07f, -0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.747976E-07f, 0.001745329f, 4.712389f)
             };
@@ -10230,7 +10230,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: -90",
                 new float3(10.21018f, 0.001745329f, -1.570796f),
-                new Quaternion(-0.6535173f, -0.653045f, -0.270028f, 0.2711681f),
+                new QuaternionF(-0.6535173f, -0.653045f, -0.270028f, 0.2711681f),
                 new float4x4(0.001234248f, 0.9999983f, -0.001234084f, 0f, 0.7071065f, 7.450581E-08f, 0.7071069f, 0f, 0.7071059f, -0.001745313f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, 1.570796f)
             };
@@ -10239,7 +10239,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: -90",
                 new float3(-1.570796f, 0.001745329f, -1.570796f),
-                new Quaternion(-0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
+                new QuaternionF(-0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
                 new float4x4(0.001745284f, 0.9999985f, 0f, 0f, 0f, 2.980232E-08f, 1f, 0f, 0.9999985f, -0.001745254f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.714134f, 0f)
             };
@@ -10248,7 +10248,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: -90",
                 new float3(-9.424778f, 0.001745329f, -1.570796f),
-                new Quaternion(0.7071065f, 0.7071065f, -0.0006170754f, -0.0006170585f),
+                new QuaternionF(0.7071065f, 0.7071065f, -0.0006170754f, -0.0006170585f),
                 new float4x4(-4.63084E-08f, 0.9999985f, -0.001745328f, 0f, 1f, -4.63084E-08f, -2.392335E-08f, 0f, -2.392335E-08f, -0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.392335E-08f, 3.143338f, 1.570796f)
             };
@@ -10257,7 +10257,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: -90",
                 new float3(0f, 0.01745329f, -1.570796f),
-                new Quaternion(-0.006170592f, 0.006170592f, -0.7070798f, 0.7070798f),
+                new QuaternionF(-0.006170592f, 0.006170592f, -0.7070798f, 0.7070798f),
                 new float4x4(8.192001E-08f, 0.9998476f, 0.01745241f, 0f, -0.9999999f, 8.192001E-08f, 0f, 0f, 0f, -0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.01745329f, 4.712389f)
             };
@@ -10266,7 +10266,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: -90",
                 new float3(0.001745329f, 0.01745329f, -1.570796f),
-                new Quaternion(-0.005553547f, 0.006787634f, -0.707085f, 0.7070742f),
+                new QuaternionF(-0.005553547f, 0.006787634f, -0.707085f, 0.7070742f),
                 new float4x4(-3.039354E-05f, 0.9998477f, 0.01745238f, 0f, -0.9999985f, 6.664777E-08f, -0.001745328f, 0f, -0.001745063f, -0.01745241f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.01745329f, 4.712389f)
             };
@@ -10275,7 +10275,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: -90",
                 new float3(0.01745329f, 0.01745329f, -1.570796f),
-                new Quaternion(0f, 0.01234071f, -0.7071067f, 0.7069991f),
+                new QuaternionF(0f, 0.01234071f, -0.7071067f, 0.7069991f),
                 new float4x4(-0.0003044076f, 0.9998476f, 0.01744975f, 0f, -0.9998476f, 1.788139E-07f, -0.0174524f, 0f, -0.01744975f, -0.0174524f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.01745329f, 4.712389f)
             };
@@ -10284,7 +10284,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: -90",
                 new float3(0.7853982f, 0.01745329f, -1.570796f),
-                new Quaternion(0.2648869f, 0.2762886f, -0.655618f, 0.6508952f),
+                new QuaternionF(0.2648869f, 0.2762886f, -0.655618f, 0.6508952f),
                 new float4x4(-0.01234062f, 0.9998477f, 0.01234072f, 0f, -0.7071067f, 1.043081E-07f, -0.7071067f, 0f, -0.7069991f, -0.01745239f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853981f, 0.01745331f, 4.712389f)
             };
@@ -10293,7 +10293,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: -90",
                 new float3(1.570796f, 0.01745329f, -1.570796f),
-                new Quaternion(0.4956177f, 0.5043442f, -0.5043442f, 0.4956177f),
+                new QuaternionF(0.4956177f, 0.5043442f, -0.5043442f, 0.4956177f),
                 new float4x4(-0.01745212f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, -0.9999998f, 0f, -0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.58825f, 0f)
             };
@@ -10302,7 +10302,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: -90",
                 new float3(3.141593f, 0.01745329f, -1.570796f),
-                new Quaternion(0.7070798f, 0.7070798f, -0.006170562f, -0.006170623f),
+                new QuaternionF(0.7070798f, 0.7070798f, -0.006170562f, -0.006170623f),
                 new float4x4(8.268398E-08f, 0.9998476f, -0.0174524f, 0f, 0.9999999f, 8.268398E-08f, 8.6613E-08f, 0f, 8.6613E-08f, -0.0174524f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.6613E-08f, 3.159046f, 1.570796f)
             };
@@ -10311,7 +10311,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: -90",
                 new float3(4.712389f, 0.01745329f, -1.570796f),
-                new Quaternion(0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
+                new QuaternionF(0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
                 new float4x4(0.01745254f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.729842f, 0f)
             };
@@ -10320,7 +10320,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: -90",
                 new float3(6.283185f, 0.01745329f, -1.570796f),
-                new Quaternion(0.00617053f, -0.006170654f, 0.7070798f, -0.7070798f),
+                new QuaternionF(0.00617053f, -0.006170654f, 0.7070798f, -0.7070798f),
                 new float4x4(8.039206E-08f, 0.9998476f, 0.01745241f, 0f, -0.9999999f, 8.344796E-08f, -1.750886E-07f, 0f, -1.750886E-07f, -0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.750886E-07f, 0.01745329f, 4.712389f)
             };
@@ -10329,7 +10329,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: -90",
                 new float3(10.21018f, 0.01745329f, -1.570796f),
-                new Quaternion(-0.6556179f, -0.6508952f, -0.264887f, 0.2762887f),
+                new QuaternionF(-0.6556179f, -0.6508952f, -0.264887f, 0.2762887f),
                 new float4x4(0.01234069f, 0.9998477f, -0.01234072f, 0f, 0.7071065f, 1.490116E-07f, 0.707107f, 0f, 0.7069993f, -0.01745236f, -0.7069987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, 1.570796f)
             };
@@ -10338,7 +10338,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: -90",
                 new float3(-1.570796f, 0.01745329f, -1.570796f),
-                new Quaternion(-0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
+                new QuaternionF(-0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
                 new float4x4(0.01745254f, 0.9998475f, 0f, 0f, 0f, 2.086163E-07f, 0.9999998f, 0f, 0.9998475f, -0.01745233f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.729842f, 0f)
             };
@@ -10347,7 +10347,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: -90",
                 new float3(-9.424778f, 0.01745329f, -1.570796f),
-                new Quaternion(0.7070798f, 0.7070798f, -0.006170601f, -0.006170584f),
+                new QuaternionF(0.7070798f, 0.7070798f, -0.006170601f, -0.006170584f),
                 new float4x4(8.171628E-08f, 0.9998476f, -0.0174524f, 0f, 0.9999999f, 8.171628E-08f, -2.328306E-08f, 0f, -2.328306E-08f, -0.0174524f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.328306E-08f, 3.159046f, 1.570796f)
             };
@@ -10356,7 +10356,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: -90",
                 new float3(0f, 0.7853982f, -1.570796f),
-                new Quaternion(-0.2705981f, 0.2705981f, -0.6532815f, 0.6532815f),
+                new QuaternionF(-0.2705981f, 0.2705981f, -0.6532815f, 0.6532815f),
                 new float4x4(8.940697E-08f, 0.7071067f, 0.7071068f, 0f, -0.9999999f, 8.940697E-08f, 0f, 0f, 0f, -0.7071068f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853982f, 4.712389f)
             };
@@ -10365,7 +10365,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: -90",
                 new float3(0.001745329f, 0.7853982f, -1.570796f),
-                new Quaternion(-0.2700279f, 0.2711681f, -0.6535174f, 0.6530451f),
+                new QuaternionF(-0.2700279f, 0.2711681f, -0.6535174f, 0.6530451f),
                 new float4x4(-0.001234129f, 0.7071067f, 0.7071058f, 0f, -0.9999985f, -1.490116E-08f, -0.001745313f, 0f, -0.001234084f, -0.7071068f, 0.7071056f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745344f, 0.7853982f, 4.712389f)
             };
@@ -10374,7 +10374,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: -90",
                 new float3(0.01745329f, 0.7853982f, -1.570796f),
-                new Quaternion(-0.2648869f, 0.2762886f, -0.655618f, 0.6508952f),
+                new QuaternionF(-0.2648869f, 0.2762886f, -0.655618f, 0.6508952f),
                 new float4x4(-0.01234062f, 0.7071067f, 0.7069991f, 0f, -0.9998477f, 1.043081E-07f, -0.01745239f, 0f, -0.01234072f, -0.7071067f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 0.7853982f, 4.712389f)
             };
@@ -10383,7 +10383,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: -90",
                 new float3(0.7853982f, 0.7853982f, -1.570796f),
-                new Quaternion(0f, 0.5f, -0.7071068f, 0.4999999f),
+                new QuaternionF(0f, 0.5f, -0.7071068f, 0.4999999f),
                 new float4x4(-0.4999999f, 0.7071067f, 0.4999999f, 0f, -0.7071067f, 5.960464E-08f, -0.7071068f, 0f, -0.4999999f, -0.7071068f, 0.5f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 0.7853982f, 4.712389f)
             };
@@ -10392,7 +10392,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: -90",
                 new float3(1.570796f, 0.7853982f, -1.570796f),
-                new Quaternion(0.270598f, 0.6532815f, -0.6532815f, 0.270598f),
+                new QuaternionF(0.270598f, 0.6532815f, -0.6532815f, 0.270598f),
                 new float4x4(-0.7071066f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, -0.9999999f, 0f, -0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 2.356194f, 0f)
             };
@@ -10401,7 +10401,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: -90",
                 new float3(3.141593f, 0.7853982f, -1.570796f),
-                new Quaternion(0.6532815f, 0.6532815f, -0.270598f, -0.2705981f),
+                new QuaternionF(0.6532815f, 0.6532815f, -0.270598f, -0.2705981f),
                 new float4x4(1.192093E-07f, 0.7071067f, -0.7071067f, 0f, 0.9999999f, 1.192093E-07f, 8.940697E-08f, 0f, 8.940697E-08f, -0.7071067f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-5.960464E-08f, 3.926991f, 1.570796f)
             };
@@ -10410,7 +10410,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: -90",
                 new float3(4.712389f, 0.7853982f, -1.570796f),
-                new Quaternion(0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
+                new QuaternionF(0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -10419,7 +10419,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: -90",
                 new float3(6.283185f, 0.7853982f, -1.570796f),
-                new Quaternion(0.270598f, -0.2705981f, 0.6532815f, -0.6532815f),
+                new QuaternionF(0.270598f, -0.2705981f, 0.6532815f, -0.6532815f),
                 new float4x4(2.980232E-08f, 0.7071067f, 0.7071067f, 0f, -0.9999999f, 1.490116E-07f, -1.490116E-07f, 0f, -1.490116E-07f, -0.7071067f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 0.7853982f, 4.712389f)
             };
@@ -10428,7 +10428,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: -90",
                 new float3(10.21018f, 0.7853982f, -1.570796f),
-                new Quaternion(-0.7071067f, -0.4999999f, -1.043081E-07f, 0.5000001f),
+                new QuaternionF(-0.7071067f, -0.4999999f, -1.043081E-07f, 0.5000001f),
                 new float4x4(0.5000003f, 0.7071066f, -0.4999998f, 0f, 0.7071064f, 1.788139E-07f, 0.7071069f, 0f, 0.5000001f, -0.7071066f, -0.4999995f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 1.570796f)
             };
@@ -10437,7 +10437,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: -90",
                 new float3(-1.570796f, 0.7853982f, -1.570796f),
-                new Quaternion(-0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
+                new QuaternionF(-0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
                 new float4x4(0.7071069f, 0.7071066f, 0f, 0f, 0f, 1.490116E-07f, 0.9999999f, 0f, 0.7071066f, -0.7071067f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 5.497787f, 0f)
             };
@@ -10446,7 +10446,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: -90",
                 new float3(-9.424778f, 0.7853982f, -1.570796f),
-                new Quaternion(0.6532815f, 0.6532815f, -0.2705981f, -0.2705981f),
+                new QuaternionF(0.6532815f, 0.6532815f, -0.2705981f, -0.2705981f),
                 new float4x4(8.940697E-08f, 0.7071067f, -0.7071068f, 0f, 0.9999999f, 8.940697E-08f, 0f, 0f, 0f, -0.7071068f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 1.570796f)
             };
@@ -10455,7 +10455,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: -90",
                 new float3(0f, 1.570796f, -1.570796f),
-                new Quaternion(-0.5f, 0.5f, -0.5f, 0.5f),
+                new QuaternionF(-0.5f, 0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 4.712389f)
             };
@@ -10464,7 +10464,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: -90",
                 new float3(0.001745329f, 1.570796f, -1.570796f),
-                new Quaternion(-0.4995635f, 0.5004361f, -0.5004361f, 0.4995635f),
+                new QuaternionF(-0.4995635f, 0.5004361f, -0.5004361f, 0.4995635f),
                 new float4x4(-0.001745224f, 0f, 0.9999985f, 0f, -0.9999985f, 2.980232E-08f, -0.001745254f, 0f, 0f, -1f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745255f, 1.570796f, 4.712389f)
             };
@@ -10473,7 +10473,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: -90",
                 new float3(0.01745329f, 1.570796f, -1.570796f),
-                new Quaternion(-0.4956177f, 0.5043442f, -0.5043442f, 0.4956177f),
+                new QuaternionF(-0.4956177f, 0.5043442f, -0.5043442f, 0.4956177f),
                 new float4x4(-0.01745212f, 0f, 0.9998475f, 0f, -0.9998475f, 2.086163E-07f, -0.01745233f, 0f, 0f, -0.9999998f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745322f, 1.570796f, 4.712389f)
             };
@@ -10482,7 +10482,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: -90",
                 new float3(0.7853982f, 1.570796f, -1.570796f),
-                new Quaternion(-0.270598f, 0.6532815f, -0.6532815f, 0.270598f),
+                new QuaternionF(-0.270598f, 0.6532815f, -0.6532815f, 0.270598f),
                 new float4x4(-0.7071066f, 0f, 0.7071066f, 0f, -0.7071066f, 1.490116E-07f, -0.7071067f, 0f, 0f, -0.9999999f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 1.570796f, 4.712389f)
             };
@@ -10491,7 +10491,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: -90",
                 new float3(1.570796f, 1.570796f, -1.570796f),
-                new Quaternion(0f, 0.7071067f, -0.7071067f, 0f),
+                new QuaternionF(0f, 0.7071067f, -0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 3.141593f, 0f)
             };
@@ -10500,7 +10500,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: -90",
                 new float3(3.141593f, 1.570796f, -1.570796f),
-                new Quaternion(0.5f, 0.4999999f, -0.4999999f, -0.5f),
+                new QuaternionF(0.5f, 0.4999999f, -0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.788139E-07f, 4.712389f, 1.570796f)
             };
@@ -10509,7 +10509,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: -90",
                 new float3(4.712389f, 1.570796f, -1.570796f),
-                new Quaternion(0.7071067f, 0f, 0f, -0.7071067f),
+                new QuaternionF(0.7071067f, 0f, 0f, -0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0f, 0f)
             };
@@ -10518,7 +10518,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: -90",
                 new float3(6.283185f, 1.570796f, -1.570796f),
-                new Quaternion(0.4999999f, -0.5f, 0.5f, -0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, 0.5f, -0.4999999f),
                 new float4x4(0f, 0f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, -1.192093E-07f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 1.570796f, 4.712389f)
             };
@@ -10527,7 +10527,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: -90",
                 new float3(10.21018f, 1.570796f, -1.570796f),
-                new Quaternion(-0.6532815f, -0.2705979f, 0.2705979f, 0.6532815f),
+                new QuaternionF(-0.6532815f, -0.2705979f, 0.2705979f, 0.6532815f),
                 new float4x4(0.7071072f, 0f, -0.7071064f, 0f, 0.7071064f, 1.043081E-07f, 0.7071071f, 0f, 0f, -0.9999999f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 1.570796f)
             };
@@ -10536,7 +10536,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: -90",
                 new float3(-1.570796f, 1.570796f, -1.570796f),
-                new Quaternion(-0.7071067f, 0f, 0f, 0.7071067f),
+                new QuaternionF(-0.7071067f, 0f, 0f, 0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, -0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 0f, 0f)
             };
@@ -10545,7 +10545,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: -90",
                 new float3(-9.424778f, 1.570796f, -1.570796f),
-                new Quaternion(0.5f, 0.5f, -0.5f, -0.5f),
+                new QuaternionF(0.5f, 0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 1.570796f)
             };
@@ -10554,7 +10554,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: -90",
                 new float3(0f, 3.141593f, -1.570796f),
-                new Quaternion(-0.7071068f, 0.7071068f, 3.090862E-08f, -3.090862E-08f),
+                new QuaternionF(-0.7071068f, 0.7071068f, 3.090862E-08f, -3.090862E-08f),
                 new float4x4(5.960464E-08f, -0.9999999f, -8.742278E-08f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 8.742278E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 4.712389f)
             };
@@ -10563,7 +10563,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: -90",
                 new float3(0.001745329f, 3.141593f, -1.570796f),
-                new Quaternion(-0.7071065f, 0.7071065f, -0.0006170361f, -0.0006170979f),
+                new QuaternionF(-0.7071065f, 0.7071065f, -0.0006170361f, -0.0006170979f),
                 new float4x4(-4.621131E-08f, -1f, -8.73697E-08f, 0f, -0.9999985f, -4.621131E-08f, -0.001745328f, 0f, 0.001745328f, 8.73697E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 4.712389f)
             };
@@ -10572,7 +10572,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: -90",
                 new float3(0.01745329f, 3.141593f, -1.570796f),
-                new Quaternion(-0.7070798f, 0.7070798f, -0.006170562f, -0.006170623f),
+                new QuaternionF(-0.7070798f, 0.7070798f, -0.006170562f, -0.006170623f),
                 new float4x4(8.268398E-08f, -0.9999999f, -8.6613E-08f, 0f, -0.9998476f, 8.268398E-08f, -0.0174524f, 0f, 0.0174524f, 8.6613E-08f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 4.712389f)
             };
@@ -10581,7 +10581,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: -90",
                 new float3(0.7853982f, 3.141593f, -1.570796f),
-                new Quaternion(-0.6532815f, 0.6532815f, -0.270598f, -0.2705981f),
+                new QuaternionF(-0.6532815f, 0.6532815f, -0.270598f, -0.2705981f),
                 new float4x4(1.192093E-07f, -0.9999999f, -8.940697E-08f, 0f, -0.7071067f, 1.192093E-07f, -0.7071067f, 0f, 0.7071067f, 8.940697E-08f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 3.141593f, 4.712389f)
             };
@@ -10590,7 +10590,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: -90",
                 new float3(1.570796f, 3.141593f, -1.570796f),
-                new Quaternion(-0.5f, 0.4999999f, -0.4999999f, -0.5f),
+                new QuaternionF(-0.5f, 0.4999999f, -0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -10599,7 +10599,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: -90",
                 new float3(3.141593f, 3.141593f, -1.570796f),
-                new Quaternion(0f, -6.181724E-08f, -0.7071068f, -0.7071068f),
+                new QuaternionF(0f, -6.181724E-08f, -0.7071068f, -0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, 8.742278E-08f, 0f, 0.9999999f, 5.960464E-08f, 8.742278E-08f, 0f, -8.742278E-08f, 8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 8.742278E-08f, 1.570796f)
             };
@@ -10608,7 +10608,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: -90",
                 new float3(4.712389f, 3.141593f, -1.570796f),
-                new Quaternion(0.4999999f, -0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(0.4999999f, -0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -10617,7 +10617,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: -90",
                 new float3(6.283185f, 3.141593f, -1.570796f),
-                new Quaternion(0.7071068f, -0.7071068f, 3.090862E-08f, 9.272586E-08f),
+                new QuaternionF(0.7071068f, -0.7071068f, 3.090862E-08f, 9.272586E-08f),
                 new float4x4(5.960464E-08f, -0.9999999f, -8.742277E-08f, 0f, -0.9999999f, 5.960464E-08f, -1.748456E-07f, 0f, 1.748456E-07f, 8.742277E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 4.712389f)
             };
@@ -10626,7 +10626,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: -90",
                 new float3(10.21018f, 3.141593f, -1.570796f),
-                new Quaternion(-0.2705981f, 0.2705982f, 0.6532814f, 0.6532814f),
+                new QuaternionF(-0.2705981f, 0.2705982f, 0.6532814f, 0.6532814f),
                 new float4x4(4.470348E-08f, -0.9999999f, 5.960464E-08f, 0f, 0.7071064f, 1.192093E-07f, 0.707107f, 0f, -0.707107f, 5.960464E-08f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.264406E-07f, 1.570796f)
             };
@@ -10635,7 +10635,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: -90",
                 new float3(-1.570796f, 3.141593f, -1.570796f),
-                new Quaternion(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(-0.4999999f, 0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -10644,7 +10644,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: -90",
                 new float3(-9.424778f, 3.141593f, -1.570796f),
-                new Quaternion(-3.934078E-08f, -2.247646E-08f, -0.7071068f, -0.7071068f),
+                new QuaternionF(-3.934078E-08f, -2.247646E-08f, -0.7071068f, -0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, 8.742278E-08f, 0f, 0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, 2.384976E-08f, 8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742278E-08f, 1.570796f)
             };
@@ -10653,7 +10653,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: -90",
                 new float3(0f, 4.712389f, -1.570796f),
-                new Quaternion(-0.5f, 0.5f, 0.5f, -0.5f),
+                new QuaternionF(-0.5f, 0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 4.712389f)
             };
@@ -10662,7 +10662,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: -90",
                 new float3(0.001745329f, 4.712389f, -1.570796f),
-                new Quaternion(-0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
+                new QuaternionF(-0.5004361f, 0.4995635f, 0.4995635f, -0.5004361f),
                 new float4x4(0.001745284f, 0f, -0.9999985f, 0f, -0.9999985f, 2.980232E-08f, -0.001745254f, 0f, 0f, 1f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745255f, 4.712389f, 4.712389f)
             };
@@ -10671,7 +10671,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: -90",
                 new float3(0.01745329f, 4.712389f, -1.570796f),
-                new Quaternion(-0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
+                new QuaternionF(-0.5043442f, 0.4956177f, 0.4956177f, -0.5043442f),
                 new float4x4(0.01745254f, 0f, -0.9998475f, 0f, -0.9998475f, 2.086163E-07f, -0.01745233f, 0f, 0f, 0.9999998f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745322f, 4.712389f, 4.712389f)
             };
@@ -10680,7 +10680,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: -90",
                 new float3(0.7853982f, 4.712389f, -1.570796f),
-                new Quaternion(-0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
+                new QuaternionF(-0.6532815f, 0.270598f, 0.270598f, -0.6532815f),
                 new float4x4(0.7071069f, 0f, -0.7071066f, 0f, -0.7071066f, 1.490116E-07f, -0.7071067f, 0f, 0f, 0.9999999f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 4.712389f)
             };
@@ -10689,7 +10689,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: -90",
                 new float3(1.570796f, 4.712389f, -1.570796f),
-                new Quaternion(-0.7071067f, 0f, 0f, -0.7071067f),
+                new QuaternionF(-0.7071067f, 0f, 0f, -0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 0f, 0f)
             };
@@ -10698,7 +10698,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: -90",
                 new float3(3.141593f, 4.712389f, -1.570796f),
-                new Quaternion(-0.4999999f, -0.5f, -0.5f, -0.4999999f),
+                new QuaternionF(-0.4999999f, -0.5f, -0.5f, -0.4999999f),
                 new float4x4(0f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.788139E-07f, 1.570796f, 1.570796f)
             };
@@ -10707,7 +10707,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: -90",
                 new float3(4.712389f, 4.712389f, -1.570796f),
-                new Quaternion(0f, -0.7071067f, -0.7071067f, 0f),
+                new QuaternionF(0f, -0.7071067f, -0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -10716,7 +10716,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: -90",
                 new float3(6.283185f, 4.712389f, -1.570796f),
-                new Quaternion(0.5f, -0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(0.5f, -0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, -1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 4.712389f, 4.712389f)
             };
@@ -10725,7 +10725,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: -90",
                 new float3(10.21018f, 4.712389f, -1.570796f),
-                new Quaternion(0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
+                new QuaternionF(0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
                 new float4x4(-0.7071069f, 0f, 0.7071064f, 0f, 0.7071064f, 1.043081E-07f, 0.7071071f, 0f, 0f, 0.9999999f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 1.570796f)
             };
@@ -10734,7 +10734,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: -90",
                 new float3(-1.570796f, 4.712389f, -1.570796f),
-                new Quaternion(0f, 0.7071067f, 0.7071067f, 0f),
+                new QuaternionF(0f, 0.7071067f, 0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -10743,7 +10743,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: -90",
                 new float3(-9.424778f, 4.712389f, -1.570796f),
-                new Quaternion(-0.5f, -0.5f, -0.5f, -0.5f),
+                new QuaternionF(-0.5f, -0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 1.570796f)
             };
@@ -10752,7 +10752,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: -90",
                 new float3(0f, 6.283185f, -1.570796f),
-                new Quaternion(6.181724E-08f, -6.181724E-08f, 0.7071068f, -0.7071068f),
+                new QuaternionF(6.181724E-08f, -6.181724E-08f, 0.7071068f, -0.7071068f),
                 new float4x4(5.960464E-08f, 0.9999999f, 1.748456E-07f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, -1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.748456E-07f, 4.712389f)
             };
@@ -10761,7 +10761,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: -90",
                 new float3(0.001745329f, 6.283185f, -1.570796f),
-                new Quaternion(-0.0006170052f, -0.0006171288f, 0.7071065f, -0.7071065f),
+                new QuaternionF(-0.0006170052f, -0.0006171288f, 0.7071065f, -0.7071065f),
                 new float4x4(-4.644016E-08f, 1f, 1.747976E-07f, 0f, -0.9999985f, -4.613503E-08f, -0.001745328f, 0f, -0.001745328f, -1.747976E-07f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.747979E-07f, 4.712389f)
             };
@@ -10770,7 +10770,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: -90",
                 new float3(0.01745329f, 6.283185f, -1.570796f),
-                new Quaternion(-0.00617053f, -0.006170654f, 0.7070798f, -0.7070798f),
+                new QuaternionF(-0.00617053f, -0.006170654f, 0.7070798f, -0.7070798f),
                 new float4x4(8.039206E-08f, 0.9999999f, 1.750886E-07f, 0f, -0.9998476f, 8.344796E-08f, -0.01745241f, 0f, -0.01745241f, -1.750886E-07f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.751153E-07f, 4.712389f)
             };
@@ -10779,7 +10779,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: -90",
                 new float3(0.7853982f, 6.283185f, -1.570796f),
-                new Quaternion(-0.270598f, -0.2705981f, 0.6532815f, -0.6532815f),
+                new QuaternionF(-0.270598f, -0.2705981f, 0.6532815f, -0.6532815f),
                 new float4x4(2.980232E-08f, 0.9999999f, 1.490116E-07f, 0f, -0.7071067f, 1.490116E-07f, -0.7071067f, 0f, -0.7071067f, -1.490116E-07f, 0.7071068f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853984f, 2.107342E-07f, 4.712389f)
             };
@@ -10788,7 +10788,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: -90",
                 new float3(1.570796f, 6.283185f, -1.570796f),
-                new Quaternion(-0.4999999f, -0.5f, 0.5f, -0.4999999f),
+                new QuaternionF(-0.4999999f, -0.5f, 0.5f, -0.4999999f),
                 new float4x4(0f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -10797,7 +10797,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: -90",
                 new float3(3.141593f, 6.283185f, -1.570796f),
-                new Quaternion(-0.7071068f, -0.7071068f, 3.090862E-08f, 9.272586E-08f),
+                new QuaternionF(-0.7071068f, -0.7071068f, 3.090862E-08f, 9.272586E-08f),
                 new float4x4(5.960464E-08f, 0.9999999f, -1.748456E-07f, 0f, 0.9999999f, 5.960464E-08f, 8.742277E-08f, 0f, 8.742277E-08f, -1.748456E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 3.141593f, 1.570796f)
             };
@@ -10806,7 +10806,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: -90",
                 new float3(4.712389f, 6.283185f, -1.570796f),
-                new Quaternion(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
+                new QuaternionF(-0.5f, -0.4999999f, -0.4999999f, 0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -10815,7 +10815,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: -90",
                 new float3(6.283185f, 6.283185f, -1.570796f),
-                new Quaternion(0f, 1.236345E-07f, -0.7071068f, 0.7071068f),
+                new QuaternionF(0f, 1.236345E-07f, -0.7071068f, 0.7071068f),
                 new float4x4(5.960461E-08f, 0.9999999f, 1.748456E-07f, 0f, -0.9999999f, 5.960464E-08f, -1.748456E-07f, 0f, -1.748456E-07f, -1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.748456E-07f, 4.712389f)
             };
@@ -10824,7 +10824,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: -90",
                 new float3(10.21018f, 6.283185f, -1.570796f),
-                new Quaternion(0.6532814f, 0.6532814f, 0.2705981f, -0.2705982f),
+                new QuaternionF(0.6532814f, 0.6532814f, 0.2705981f, -0.2705982f),
                 new float4x4(1.490116E-07f, 0.9999999f, -1.788139E-07f, 0f, 0.7071064f, 1.490116E-07f, 0.707107f, 0f, 0.707107f, -1.788139E-07f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, 1.570796f)
             };
@@ -10833,7 +10833,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: -90",
                 new float3(-1.570796f, 6.283185f, -1.570796f),
-                new Quaternion(0.5f, 0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(0.5f, 0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, -1.192093E-07f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -10842,7 +10842,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: -90",
                 new float3(-9.424778f, 6.283185f, -1.570796f),
-                new Quaternion(-0.7071068f, -0.7071068f, 7.02494E-08f, 5.338508E-08f),
+                new QuaternionF(-0.7071068f, -0.7071068f, 7.02494E-08f, 5.338508E-08f),
                 new float4x4(5.960463E-08f, 0.9999999f, -1.748456E-07f, 0f, 0.9999999f, 5.960463E-08f, -2.384976E-08f, 0f, -2.384976E-08f, -1.748456E-07f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, 1.570796f)
             };
@@ -10851,7 +10851,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: -90",
                 new float3(0f, 10.21018f, -1.570796f),
-                new Quaternion(0.6532814f, -0.6532814f, -0.2705982f, 0.2705982f),
+                new QuaternionF(0.6532814f, -0.6532814f, -0.2705982f, 0.2705982f),
                 new float4x4(7.450581E-08f, -0.7071064f, -0.707107f, 0f, -0.9999999f, 7.450581E-08f, 0f, 0f, 0f, 0.707107f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 4.712389f)
             };
@@ -10860,7 +10860,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: -90",
                 new float3(0.001745329f, 10.21018f, -1.570796f),
-                new Quaternion(0.6535173f, -0.653045f, -0.270028f, 0.2711681f),
+                new QuaternionF(0.6535173f, -0.653045f, -0.270028f, 0.2711681f),
                 new float4x4(0.001234248f, -0.7071065f, -0.7071059f, 0f, -0.9999983f, 7.450581E-08f, -0.001745313f, 0f, 0.001234084f, 0.7071069f, -0.7071053f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745314f, 3.926991f, 4.712389f)
             };
@@ -10869,7 +10869,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: -90",
                 new float3(0.01745329f, 10.21018f, -1.570796f),
-                new Quaternion(0.6556179f, -0.6508952f, -0.264887f, 0.2762887f),
+                new QuaternionF(0.6556179f, -0.6508952f, -0.264887f, 0.2762887f),
                 new float4x4(0.01234069f, -0.7071065f, -0.7069993f, 0f, -0.9998477f, 1.490116E-07f, -0.01745236f, 0f, 0.01234072f, 0.707107f, -0.7069987f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745328f, 3.926991f, 4.712389f)
             };
@@ -10878,7 +10878,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: -90",
                 new float3(0.7853982f, 10.21018f, -1.570796f),
-                new Quaternion(0.7071067f, -0.4999999f, -1.043081E-07f, 0.5000001f),
+                new QuaternionF(0.7071067f, -0.4999999f, -1.043081E-07f, 0.5000001f),
                 new float4x4(0.5000003f, -0.7071064f, -0.5000001f, 0f, -0.7071066f, 1.788139E-07f, -0.7071066f, 0f, 0.4999998f, 0.7071069f, -0.4999995f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.926991f, 4.712389f)
             };
@@ -10887,7 +10887,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: -90",
                 new float3(1.570796f, 10.21018f, -1.570796f),
-                new Quaternion(0.6532815f, -0.2705979f, 0.2705979f, 0.6532815f),
+                new QuaternionF(0.6532815f, -0.2705979f, 0.2705979f, 0.6532815f),
                 new float4x4(0.7071072f, -0.7071064f, 0f, 0f, 0f, 1.043081E-07f, -0.9999999f, 0f, 0.7071064f, 0.7071071f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 5.497787f, 0f)
             };
@@ -10896,7 +10896,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: -90",
                 new float3(3.141593f, 10.21018f, -1.570796f),
-                new Quaternion(0.2705981f, 0.2705982f, 0.6532814f, 0.6532814f),
+                new QuaternionF(0.2705981f, 0.2705982f, 0.6532814f, 0.6532814f),
                 new float4x4(4.470348E-08f, -0.7071064f, 0.707107f, 0f, 0.9999999f, 1.192093E-07f, 5.960464E-08f, 0f, -5.960464E-08f, 0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.940697E-08f, 0.7853987f, 1.570796f)
             };
@@ -10905,7 +10905,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: -90",
                 new float3(4.712389f, 10.21018f, -1.570796f),
-                new Quaternion(-0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
+                new QuaternionF(-0.2705979f, 0.6532815f, 0.6532815f, 0.2705979f),
                 new float4x4(-0.7071069f, -0.7071064f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7071064f, 0.7071071f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 2.356195f, 0f)
             };
@@ -10914,7 +10914,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: -90",
                 new float3(6.283185f, 10.21018f, -1.570796f),
-                new Quaternion(-0.6532814f, 0.6532814f, 0.2705981f, -0.2705982f),
+                new QuaternionF(-0.6532814f, 0.6532814f, 0.2705981f, -0.2705982f),
                 new float4x4(1.490116E-07f, -0.7071064f, -0.707107f, 0f, -0.9999999f, 1.490116E-07f, -1.788139E-07f, 0f, 1.788139E-07f, 0.707107f, -0.7071064f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.490116E-07f, 3.926991f, 4.712389f)
             };
@@ -10923,7 +10923,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: -90",
                 new float3(10.21018f, 10.21018f, -1.570796f),
-                new Quaternion(0f, -0.5000002f, -0.7071068f, -0.4999998f),
+                new QuaternionF(0f, -0.5000002f, -0.7071068f, -0.4999998f),
                 new float4x4(-0.5000003f, -0.7071065f, 0.5f, 0f, 0.7071065f, 5.960464E-08f, 0.707107f, 0f, -0.5f, 0.707107f, 0.4999996f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853985f, 1.570796f)
             };
@@ -10932,7 +10932,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: -90",
                 new float3(-1.570796f, 10.21018f, -1.570796f),
-                new Quaternion(0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
+                new QuaternionF(0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
                 new float4x4(-0.7071069f, -0.7071064f, 0f, 0f, 0f, 1.043081E-07f, 0.9999999f, 0f, -0.7071064f, 0.7071071f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 2.356195f, 0f)
             };
@@ -10941,7 +10941,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: -90",
                 new float3(-9.424778f, 10.21018f, -1.570796f),
-                new Quaternion(0.2705982f, 0.2705982f, 0.6532814f, 0.6532814f),
+                new QuaternionF(0.2705982f, 0.2705982f, 0.6532814f, 0.6532814f),
                 new float4x4(7.450581E-08f, -0.7071064f, 0.707107f, 0f, 0.9999999f, 7.450581E-08f, 0f, 0f, 0f, 0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853986f, 1.570796f)
             };
@@ -10950,7 +10950,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: -90",
                 new float3(0f, -1.570796f, -1.570796f),
-                new Quaternion(0.5f, -0.5f, -0.5f, 0.5f),
+                new QuaternionF(0.5f, -0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 4.712389f)
             };
@@ -10959,7 +10959,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: -90",
                 new float3(0.001745329f, -1.570796f, -1.570796f),
-                new Quaternion(0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
+                new QuaternionF(0.5004361f, -0.4995635f, -0.4995635f, 0.5004361f),
                 new float4x4(0.001745284f, 0f, -0.9999985f, 0f, -0.9999985f, 2.980232E-08f, -0.001745254f, 0f, 0f, 1f, 2.980232E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745255f, 4.712389f, 4.712389f)
             };
@@ -10968,7 +10968,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: -90",
                 new float3(0.01745329f, -1.570796f, -1.570796f),
-                new Quaternion(0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
+                new QuaternionF(0.5043442f, -0.4956177f, -0.4956177f, 0.5043442f),
                 new float4x4(0.01745254f, 0f, -0.9998475f, 0f, -0.9998475f, 2.086163E-07f, -0.01745233f, 0f, 0f, 0.9999998f, 2.086163E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745322f, 4.712389f, 4.712389f)
             };
@@ -10977,7 +10977,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: -90",
                 new float3(0.7853982f, -1.570796f, -1.570796f),
-                new Quaternion(0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
+                new QuaternionF(0.6532815f, -0.270598f, -0.270598f, 0.6532815f),
                 new float4x4(0.7071069f, 0f, -0.7071066f, 0f, -0.7071066f, 1.490116E-07f, -0.7071067f, 0f, 0f, 0.9999999f, 1.490116E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 4.712389f)
             };
@@ -10986,7 +10986,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: -90",
                 new float3(1.570796f, -1.570796f, -1.570796f),
-                new Quaternion(0.7071067f, 0f, 0f, 0.7071067f),
+                new QuaternionF(0.7071067f, 0f, 0f, 0.7071067f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 1.788139E-07f, -0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570451f, 0f, 0f)
             };
@@ -10995,7 +10995,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: -90",
                 new float3(3.141593f, -1.570796f, -1.570796f),
-                new Quaternion(0.4999999f, 0.5f, 0.5f, 0.4999999f),
+                new QuaternionF(0.4999999f, 0.5f, 0.5f, 0.4999999f),
                 new float4x4(0f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-1.788139E-07f, 1.570796f, 1.570796f)
             };
@@ -11004,7 +11004,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: -90",
                 new float3(4.712389f, -1.570796f, -1.570796f),
-                new Quaternion(0f, 0.7071067f, 0.7071067f, 0f),
+                new QuaternionF(0f, 0.7071067f, 0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -11013,7 +11013,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: -90",
                 new float3(6.283185f, -1.570796f, -1.570796f),
-                new Quaternion(-0.5f, 0.4999999f, 0.4999999f, -0.5f),
+                new QuaternionF(-0.5f, 0.4999999f, 0.4999999f, -0.5f),
                 new float4x4(2.384186E-07f, 0f, -0.9999999f, 0f, -0.9999999f, 1.192093E-07f, -1.192093E-07f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.788139E-07f, 4.712389f, 4.712389f)
             };
@@ -11022,7 +11022,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: -90",
                 new float3(10.21018f, -1.570796f, -1.570796f),
-                new Quaternion(-0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
+                new QuaternionF(-0.2705979f, -0.6532815f, -0.6532815f, -0.2705979f),
                 new float4x4(-0.7071069f, 0f, 0.7071064f, 0f, 0.7071064f, 1.043081E-07f, 0.7071071f, 0f, 0f, 0.9999999f, 1.043081E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 1.570796f)
             };
@@ -11031,7 +11031,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: -90",
                 new float3(-1.570796f, -1.570796f, -1.570796f),
-                new Quaternion(0f, -0.7071067f, -0.7071067f, 0f),
+                new QuaternionF(0f, -0.7071067f, -0.7071067f, 0f),
                 new float4x4(-0.9999996f, 0f, 0f, 0f, 0f, 1.788139E-07f, 0.9999998f, 0f, 0f, 0.9999998f, 1.788139E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712734f, 3.141593f, 0f)
             };
@@ -11040,7 +11040,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: -90",
                 new float3(-9.424778f, -1.570796f, -1.570796f),
-                new Quaternion(0.5f, 0.5f, 0.5f, 0.5f),
+                new QuaternionF(0.5f, 0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0f, 0.9999999f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0.9999999f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 1.570796f)
             };
@@ -11049,7 +11049,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: -90",
                 new float3(0f, -9.424778f, -1.570796f),
-                new Quaternion(-0.7071068f, 0.7071068f, -8.432163E-09f, 8.432163E-09f),
+                new QuaternionF(-0.7071068f, 0.7071068f, -8.432163E-09f, 8.432163E-09f),
                 new float4x4(5.960464E-08f, -0.9999999f, 2.384976E-08f, 0f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, -2.384976E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 4.712389f)
             };
@@ -11058,7 +11058,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: -90",
                 new float3(0.001745329f, -9.424778f, -1.570796f),
-                new Quaternion(-0.7071065f, 0.7071065f, -0.0006170754f, -0.0006170585f),
+                new QuaternionF(-0.7071065f, 0.7071065f, -0.0006170754f, -0.0006170585f),
                 new float4x4(-4.63084E-08f, -1f, 2.392335E-08f, 0f, -0.9999985f, -4.63084E-08f, -0.001745328f, 0f, 0.001745328f, -2.392335E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 4.712389f)
             };
@@ -11067,7 +11067,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: -90",
                 new float3(0.01745329f, -9.424778f, -1.570796f),
-                new Quaternion(-0.7070798f, 0.7070798f, -0.006170601f, -0.006170584f),
+                new QuaternionF(-0.7070798f, 0.7070798f, -0.006170601f, -0.006170584f),
                 new float4x4(8.171628E-08f, -0.9999999f, 2.328306E-08f, 0f, -0.9998476f, 8.171628E-08f, -0.0174524f, 0f, 0.0174524f, -2.328306E-08f, -0.9998475f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 4.712389f)
             };
@@ -11076,7 +11076,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: -90",
                 new float3(0.7853982f, -9.424778f, -1.570796f),
-                new Quaternion(-0.6532815f, 0.6532815f, -0.2705981f, -0.2705981f),
+                new QuaternionF(-0.6532815f, 0.6532815f, -0.2705981f, -0.2705981f),
                 new float4x4(8.940697E-08f, -0.9999999f, 0f, 0f, -0.7071067f, 8.940697E-08f, -0.7071068f, 0f, 0.7071068f, 0f, -0.7071066f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 3.141593f, 4.712389f)
             };
@@ -11085,7 +11085,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: -90",
                 new float3(1.570796f, -9.424778f, -1.570796f),
-                new Quaternion(-0.5f, 0.5f, -0.5f, -0.5f),
+                new QuaternionF(-0.5f, 0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -11094,7 +11094,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: -90",
                 new float3(3.141593f, -9.424778f, -1.570796f),
-                new Quaternion(3.934078E-08f, -2.247646E-08f, -0.7071068f, -0.7071068f),
+                new QuaternionF(3.934078E-08f, -2.247646E-08f, -0.7071068f, -0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, -2.384976E-08f, 0f, 0.9999999f, 5.960464E-08f, 8.742278E-08f, 0f, -8.742278E-08f, -2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, -2.384976E-08f, 1.570796f)
             };
@@ -11103,7 +11103,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: -90",
                 new float3(4.712389f, -9.424778f, -1.570796f),
-                new Quaternion(0.5f, -0.5f, -0.5f, -0.5f),
+                new QuaternionF(0.5f, -0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -11112,7 +11112,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: -90",
                 new float3(6.283185f, -9.424778f, -1.570796f),
-                new Quaternion(0.7071068f, -0.7071068f, 7.02494E-08f, 5.338508E-08f),
+                new QuaternionF(0.7071068f, -0.7071068f, 7.02494E-08f, 5.338508E-08f),
                 new float4x4(5.960463E-08f, -0.9999999f, 2.384976E-08f, 0f, -0.9999999f, 5.960463E-08f, -1.748456E-07f, 0f, 1.748456E-07f, -2.384976E-08f, -0.9999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 4.712389f)
             };
@@ -11121,7 +11121,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: -90",
                 new float3(10.21018f, -9.424778f, -1.570796f),
-                new Quaternion(-0.2705982f, 0.2705982f, 0.6532814f, 0.6532814f),
+                new QuaternionF(-0.2705982f, 0.2705982f, 0.6532814f, 0.6532814f),
                 new float4x4(7.450581E-08f, -0.9999999f, 0f, 0f, 0.7071064f, 7.450581E-08f, 0.707107f, 0f, -0.707107f, 0f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0f, 1.570796f)
             };
@@ -11130,7 +11130,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: -90",
                 new float3(-1.570796f, -9.424778f, -1.570796f),
-                new Quaternion(-0.5f, 0.5f, 0.5f, 0.5f),
+                new QuaternionF(-0.5f, 0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -11139,7 +11139,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: -90",
                 new float3(-9.424778f, -9.424778f, -1.570796f),
-                new Quaternion(0f, 1.686433E-08f, -0.7071068f, -0.7071068f),
+                new QuaternionF(0f, 1.686433E-08f, -0.7071068f, -0.7071068f),
                 new float4x4(5.960464E-08f, -0.9999999f, -2.384976E-08f, 0f, 0.9999999f, 5.960464E-08f, -2.384976E-08f, 0f, 2.384976E-08f, -2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, 1.570796f)
             };
@@ -11148,7 +11148,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0, Z: -540",
                 new float3(0f, 0f, -9.424778f),
-                new Quaternion(0f, 0f, 1f, 1.192488E-08f),
+                new QuaternionF(0f, 0f, 1f, 1.192488E-08f),
                 new float4x4(-1f, -2.384976E-08f, 0f, 0f, 2.384976E-08f, -1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0f, 3.141593f)
             };
@@ -11157,7 +11157,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0, Z: -540",
                 new float3(0.001745329f, 0f, -9.424778f),
-                new Quaternion(1.040642E-11f, -0.0008726645f, 0.9999996f, 1.192488E-08f),
+                new QuaternionF(1.040642E-11f, -0.0008726645f, 0.9999996f, 1.192488E-08f),
                 new float4x4(-1f, -2.384976E-08f, 0f, 0f, 2.384973E-08f, -0.9999986f, -0.001745328f, 0f, 4.162566E-11f, -0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0f, 3.141593f)
             };
@@ -11166,7 +11166,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0, Z: -540",
                 new float3(0.01745329f, 0f, -9.424778f),
-                new Quaternion(1.040629E-10f, -0.008726535f, 0.9999619f, 1.192443E-08f),
+                new QuaternionF(1.040629E-10f, -0.008726535f, 0.9999619f, 1.192443E-08f),
                 new float4x4(-0.9999999f, -2.384976E-08f, -1.387779E-17f, 0f, 2.384613E-08f, -0.9998477f, -0.01745241f, 0f, 4.162357E-10f, -0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, -1.38799E-17f, 3.141593f)
             };
@@ -11175,7 +11175,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0, Z: -540",
                 new float3(0.7853982f, 0f, -9.424778f),
-                new Quaternion(4.563455E-09f, -0.3826835f, 0.9238795f, 1.101715E-08f),
+                new QuaternionF(4.563455E-09f, -0.3826835f, 0.9238795f, 1.101715E-08f),
                 new float4x4(-1f, -2.384976E-08f, 0f, 0f, 1.686433E-08f, -0.7071067f, -0.7071068f, 0f, 1.686433E-08f, -0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0f, 3.141593f)
             };
@@ -11184,7 +11184,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0, Z: -540",
                 new float3(1.570796f, 0f, -9.424778f),
-                new Quaternion(8.432163E-09f, -0.7071068f, 0.7071068f, 8.432163E-09f),
+                new QuaternionF(8.432163E-09f, -0.7071068f, 0.7071068f, 8.432163E-09f),
                 new float4x4(-0.9999999f, -2.384976E-08f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 2.384976E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.141593f, 0f)
             };
@@ -11193,7 +11193,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0, Z: -540",
                 new float3(3.141593f, 0f, -9.424778f),
-                new Quaternion(1.192488E-08f, -1f, -4.371139E-08f, -5.212531E-16f),
+                new QuaternionF(1.192488E-08f, -1f, -4.371139E-08f, -5.212531E-16f),
                 new float4x4(-1f, -2.384976E-08f, 0f, 0f, -2.384976E-08f, 1f, 8.742278E-08f, 0f, -2.085012E-15f, 8.742278E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, -2.384976E-08f)
             };
@@ -11202,7 +11202,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0, Z: -540",
                 new float3(4.712389f, 0f, -9.424778f),
-                new Quaternion(8.432163E-09f, -0.7071068f, -0.7071068f, -8.432163E-09f),
+                new QuaternionF(8.432163E-09f, -0.7071068f, -0.7071068f, -8.432163E-09f),
                 new float4x4(-0.9999999f, -2.384976E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -2.384976E-08f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -11211,7 +11211,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0, Z: -540",
                 new float3(6.283185f, 0f, -9.424778f),
-                new Quaternion(-1.042506E-15f, 8.742278E-08f, -1f, -1.192488E-08f),
+                new QuaternionF(-1.042506E-15f, 8.742278E-08f, -1f, -1.192488E-08f),
                 new float4x4(-1f, -2.384976E-08f, 0f, 0f, 2.384976E-08f, -1f, -1.748456E-07f, 0f, 4.170025E-15f, -1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0f, 3.141593f)
             };
@@ -11220,7 +11220,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0, Z: -540",
                 new float3(10.21018f, 0f, -9.424778f),
-                new Quaternion(-1.101715E-08f, 0.9238794f, 0.3826836f, 4.563456E-09f),
+                new QuaternionF(-1.101715E-08f, 0.9238794f, 0.3826836f, 4.563456E-09f),
                 new float4x4(-0.9999999f, -2.384976E-08f, 0f, 0f, -1.686432E-08f, 0.7071065f, 0.707107f, 0f, -1.686433E-08f, 0.707107f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, -2.384976E-08f)
             };
@@ -11229,7 +11229,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0, Z: -540",
                 new float3(-1.570796f, 0f, -9.424778f),
-                new Quaternion(-8.432163E-09f, 0.7071068f, 0.7071068f, 8.432163E-09f),
+                new QuaternionF(-8.432163E-09f, 0.7071068f, 0.7071068f, 8.432163E-09f),
                 new float4x4(-0.9999999f, -2.384976E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -2.384976E-08f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -11238,7 +11238,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0, Z: -540",
                 new float3(-9.424778f, 0f, -9.424778f),
-                new Quaternion(1.192488E-08f, -1f, 1.192488E-08f, 1.422028E-16f),
+                new QuaternionF(1.192488E-08f, -1f, 1.192488E-08f, 1.422028E-16f),
                 new float4x4(-1f, -2.384976E-08f, 0f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, 5.688111E-16f, -2.384976E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, -2.384976E-08f)
             };
@@ -11247,7 +11247,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 0.1, Z: -540",
                 new float3(0f, 0.001745329f, -9.424778f),
-                new Quaternion(0.0008726645f, 1.040642E-11f, 0.9999996f, 1.192488E-08f),
+                new QuaternionF(0.0008726645f, 1.040642E-11f, 0.9999996f, 1.192488E-08f),
                 new float4x4(-0.9999986f, -2.384973E-08f, 0.001745328f, 0f, 2.384976E-08f, -1f, 0f, 0f, 0.001745328f, 4.162566E-11f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.001745329f, 3.141593f)
             };
@@ -11256,7 +11256,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 0.1, Z: -540",
                 new float3(0.001745329f, 0.001745329f, -9.424778f),
-                new Quaternion(0.0008726642f, -0.0008726642f, 0.9999993f, 7.734682E-07f),
+                new QuaternionF(0.0008726642f, -0.0008726642f, 0.9999993f, 7.734682E-07f),
                 new float4x4(-0.9999987f, -3.070021E-06f, 0.001745326f, 0f, 2.384968E-08f, -0.9999987f, -0.001745329f, 0f, 0.001745329f, -0.001745326f, 0.999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.001745329f, 3.141593f)
             };
@@ -11265,7 +11265,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 0.1, Z: -540",
                 new float3(0.01745329f, 0.001745329f, -9.424778f),
-                new Quaternion(0.0008726314f, -0.008726533f, 0.9999616f, 7.627262E-06f),
+                new QuaternionF(0.0008726314f, -0.008726533f, 0.9999616f, 7.627262E-06f),
                 new float4x4(-0.9999985f, -3.048403E-05f, 0.001745063f, 0f, 2.384513E-08f, -0.9998478f, -0.01745241f, 0f, 0.001745329f, -0.01745238f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.001745329f, 3.141593f)
             };
@@ -11274,7 +11274,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 0.1, Z: -540",
                 new float3(0.7853982f, 0.001745329f, -9.424778f),
-                new Quaternion(0.0008062414f, -0.3826833f, 0.9238791f, 0.0003339653f),
+                new QuaternionF(0.0008062414f, -0.3826833f, 0.9238791f, 0.0003339653f),
                 new float4x4(-0.9999985f, -0.001234157f, 0.001234133f, 0f, 1.688022E-08f, -0.7071067f, -0.7071068f, 0f, 0.001745345f, -0.7071057f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.001745329f, 3.141593f)
             };
@@ -11283,7 +11283,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 0.1, Z: -540",
                 new float3(1.570796f, 0.001745329f, -9.424778f),
-                new Quaternion(0.0006170754f, -0.7071065f, 0.7071065f, 0.0006170754f),
+                new QuaternionF(0.0006170754f, -0.7071065f, 0.7071065f, 0.0006170754f),
                 new float4x4(-0.9999986f, -0.001745352f, 0f, 0f, 0f, -4.63084E-08f, -1f, 0f, 0.001745352f, -0.9999985f, -4.63084E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.143338f, 0f)
             };
@@ -11292,7 +11292,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 0.1, Z: -540",
                 new float3(3.141593f, 0.001745329f, -9.424778f),
-                new Quaternion(1.188673E-08f, -0.9999996f, -4.372178E-08f, 0.0008726645f),
+                new QuaternionF(1.188673E-08f, -0.9999996f, -4.372178E-08f, 0.0008726645f),
                 new float4x4(-0.9999986f, -2.369714E-08f, -0.001745328f, 0f, -2.384976E-08f, 1f, 8.742278E-08f, 0f, 0.001745328f, 8.746428E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.143338f, -2.384976E-08f)
             };
@@ -11301,7 +11301,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 0.1, Z: -540",
                 new float3(4.712389f, 0.001745329f, -9.424778f),
-                new Quaternion(-0.0006170585f, -0.7071065f, -0.7071065f, 0.0006170585f),
+                new QuaternionF(-0.0006170585f, -0.7071065f, -0.7071065f, 0.0006170585f),
                 new float4x4(-0.9999986f, 0.001745304f, 0f, 0f, 0f, -4.626673E-08f, 1f, 0f, 0.001745304f, 0.9999985f, -4.626673E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.143338f, 0f)
             };
@@ -11310,7 +11310,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 0.1, Z: -540",
                 new float3(6.283185f, 0.001745329f, -9.424778f),
-                new Quaternion(-0.0008726645f, 8.741234E-08f, -0.9999996f, -1.200117E-08f),
+                new QuaternionF(-0.0008726645f, 8.741234E-08f, -0.9999996f, -1.200117E-08f),
                 new float4x4(-0.9999986f, -2.415489E-08f, 0.001745328f, 0f, 2.384976E-08f, -1f, -1.748456E-07f, 0f, 0.001745328f, -1.748037E-07f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0.001745329f, 3.141593f)
             };
@@ -11319,7 +11319,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 0.1, Z: -540",
                 new float3(10.21018f, 0.001745329f, -9.424778f),
-                new Quaternion(0.0003339434f, 0.9238791f, 0.3826835f, -0.0008062323f),
+                new QuaternionF(0.0003339434f, 0.9238791f, 0.3826835f, -0.0008062323f),
                 new float4x4(-0.9999985f, 0.00123411f, -0.001234133f, 0f, -1.688022E-08f, 0.7071065f, 0.707107f, 0f, 0.001745312f, 0.7071059f, -0.7071054f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.143338f, -2.387225E-08f)
             };
@@ -11328,7 +11328,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 0.1, Z: -540",
                 new float3(-1.570796f, 0.001745329f, -9.424778f),
-                new Quaternion(0.0006170585f, 0.7071065f, 0.7071065f, -0.0006170585f),
+                new QuaternionF(0.0006170585f, 0.7071065f, 0.7071065f, -0.0006170585f),
                 new float4x4(-0.9999986f, 0.001745304f, 0f, 0f, 0f, -4.626673E-08f, 1f, 0f, 0.001745304f, 0.9999985f, -4.626673E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.143338f, 0f)
             };
@@ -11337,7 +11337,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 0.1, Z: -540",
                 new float3(-9.424778f, 0.001745329f, -9.424778f),
-                new Quaternion(1.193528E-08f, -0.9999996f, 1.191447E-08f, 0.0008726645f),
+                new QuaternionF(1.193528E-08f, -0.9999996f, 1.191447E-08f, 0.0008726645f),
                 new float4x4(-0.9999986f, -2.389135E-08f, -0.001745328f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, 0.001745328f, -2.38081E-08f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.143338f, -2.384976E-08f)
             };
@@ -11346,7 +11346,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 1, Z: -540",
                 new float3(0f, 0.01745329f, -9.424778f),
-                new Quaternion(0.008726535f, 1.040629E-10f, 0.9999619f, 1.192443E-08f),
+                new QuaternionF(0.008726535f, 1.040629E-10f, 0.9999619f, 1.192443E-08f),
                 new float4x4(-0.9998477f, -2.384613E-08f, 0.01745241f, 0f, 2.384976E-08f, -0.9999999f, -1.387779E-17f, 0f, 0.01745241f, 4.162357E-10f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.387779E-17f, 0.01745329f, 3.141593f)
             };
@@ -11355,7 +11355,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 1, Z: -540",
                 new float3(0.001745329f, 0.01745329f, -9.424778f),
-                new Quaternion(0.008726533f, -0.0008726311f, 0.9999616f, 7.627262E-06f),
+                new QuaternionF(0.008726533f, -0.0008726311f, 0.9999616f, 7.627262E-06f),
                 new float4x4(-0.9998478f, -3.048403E-05f, 0.01745238f, 0f, 2.384968E-08f, -0.9999985f, -0.001745328f, 0f, 0.01745241f, -0.001745062f, 0.9998462f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.01745329f, 3.141593f)
             };
@@ -11364,7 +11364,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 1, Z: -540",
                 new float3(0.01745329f, 0.01745329f, -9.424778f),
-                new Quaternion(0.008726203f, -0.008726203f, 0.9999238f, 7.616435E-05f),
+                new QuaternionF(0.008726203f, -0.008726203f, 0.9999238f, 7.616435E-05f),
                 new float4x4(-0.9998476f, -0.0003046103f, 0.01744975f, 0f, 2.386514E-08f, -0.9998476f, -0.01745241f, 0f, 0.01745241f, -0.01744975f, 0.9996954f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.0174533f, 0.01745329f, 3.141593f)
             };
@@ -11373,7 +11373,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 1, Z: -540",
                 new float3(0.7853982f, 0.01745329f, -9.424778f),
-                new Quaternion(0.008062271f, -0.3826689f, 0.9238443f, 0.003339512f),
+                new QuaternionF(0.008062271f, -0.3826689f, 0.9238443f, 0.003339512f),
                 new float4x4(-0.9998477f, -0.01234074f, 0.01234071f, 0f, 1.676381E-08f, -0.7071068f, -0.7071068f, 0f, 0.01745242f, -0.7069991f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.01745329f, 3.141593f)
             };
@@ -11382,7 +11382,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 1, Z: -540",
                 new float3(1.570796f, 0.01745329f, -9.424778f),
-                new Quaternion(0.006170601f, -0.7070798f, 0.7070798f, 0.006170601f),
+                new QuaternionF(0.006170601f, -0.7070798f, 0.7070798f, 0.006170601f),
                 new float4x4(-0.9998475f, -0.01745243f, 0f, 0f, 0f, 8.171628E-08f, -0.9999999f, 0f, 0.01745243f, -0.9998476f, 8.171628E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.159046f, 0f)
             };
@@ -11391,7 +11391,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 1, Z: -540",
                 new float3(3.141593f, 0.01745329f, -9.424778f),
-                new Quaternion(1.154298E-08f, -0.9999619f, -4.381378E-08f, 0.008726535f),
+                new QuaternionF(1.154298E-08f, -0.9999619f, -4.381378E-08f, 0.008726535f),
                 new float4x4(-0.9998477f, -2.232039E-08f, -0.01745241f, 0f, -2.384976E-08f, 1f, 8.742277E-08f, 0f, 0.01745241f, 8.782569E-08f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.159046f, -2.384976E-08f)
             };
@@ -11400,7 +11400,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 1, Z: -540",
                 new float3(4.712389f, 0.01745329f, -9.424778f),
-                new Quaternion(-0.006170584f, -0.7070798f, -0.7070798f, 0.006170584f),
+                new QuaternionF(-0.006170584f, -0.7070798f, -0.7070798f, 0.006170584f),
                 new float4x4(-0.9998475f, 0.01745238f, 0f, 0f, 0f, 8.213101E-08f, 0.9999999f, 0f, 0.01745238f, 0.9998476f, 8.213101E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.159046f, 0f)
             };
@@ -11409,7 +11409,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 1, Z: -540",
                 new float3(6.283185f, 0.01745329f, -9.424778f),
-                new Quaternion(-0.008726535f, 8.731538E-08f, -0.9999619f, -1.268732E-08f),
+                new QuaternionF(-0.008726535f, 8.731538E-08f, -0.9999619f, -1.268732E-08f),
                 new float4x4(-0.9998477f, -2.689761E-08f, 0.01745241f, 0f, 2.384976E-08f, -0.9999999f, -1.748455E-07f, 0f, 0.01745241f, -1.744027E-07f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 0.01745329f, 3.141593f)
             };
@@ -11418,7 +11418,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 1, Z: -540",
                 new float3(10.21018f, 0.01745329f, -9.424778f),
-                new Quaternion(0.003339491f, 0.9238443f, 0.382669f, -0.008062262f),
+                new QuaternionF(0.003339491f, 0.9238443f, 0.382669f, -0.008062262f),
                 new float4x4(-0.9998477f, 0.0123407f, -0.01234071f, 0f, -1.676381E-08f, 0.7071065f, 0.707107f, 0f, 0.01745239f, 0.7069994f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.159046f, -2.370761E-08f)
             };
@@ -11427,7 +11427,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 1, Z: -540",
                 new float3(-1.570796f, 0.01745329f, -9.424778f),
-                new Quaternion(0.006170584f, 0.7070798f, 0.7070798f, -0.006170584f),
+                new QuaternionF(0.006170584f, 0.7070798f, 0.7070798f, -0.006170584f),
                 new float4x4(-0.9998475f, 0.01745238f, 0f, 0f, 0f, 8.213101E-08f, 0.9999999f, 0f, 0.01745238f, 0.9998476f, 8.213101E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.159046f, 0f)
             };
@@ -11436,7 +11436,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 1, Z: -540",
                 new float3(-9.424778f, 0.01745329f, -9.424778f),
-                new Quaternion(1.202849E-08f, -0.9999619f, 1.182036E-08f, 0.008726535f),
+                new QuaternionF(1.202849E-08f, -0.9999619f, 1.182036E-08f, 0.008726535f),
                 new float4x4(-0.9998477f, -2.426236E-08f, -0.01745241f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, 0.01745241f, -2.342989E-08f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.159046f, -2.384976E-08f)
             };
@@ -11445,7 +11445,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 45, Z: -540",
                 new float3(0f, 0.7853982f, -9.424778f),
-                new Quaternion(0.3826835f, 4.563455E-09f, 0.9238795f, 1.101715E-08f),
+                new QuaternionF(0.3826835f, 4.563455E-09f, 0.9238795f, 1.101715E-08f),
                 new float4x4(-0.7071067f, -1.686433E-08f, 0.7071068f, 0f, 2.384976E-08f, -1f, 0f, 0f, 0.7071068f, 1.686433E-08f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 0.7853982f, 3.141593f)
             };
@@ -11454,7 +11454,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 45, Z: -540",
                 new float3(0.001745329f, 0.7853982f, -9.424778f),
-                new Quaternion(0.3826833f, -0.0008062323f, 0.9238791f, 0.0003339653f),
+                new QuaternionF(0.3826833f, -0.0008062323f, 0.9238791f, 0.0003339653f),
                 new float4x4(-0.7071067f, -0.00123415f, 0.7071057f, 0f, 2.380693E-08f, -0.9999985f, -0.001745328f, 0f, 0.7071068f, -0.001234117f, 0.7071057f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 0.7853982f, 3.141593f)
             };
@@ -11463,7 +11463,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 45, Z: -540",
                 new float3(0.01745329f, 0.7853982f, -9.424778f),
-                new Quaternion(0.3826689f, -0.008062262f, 0.9238443f, 0.003339512f),
+                new QuaternionF(0.3826689f, -0.008062262f, 0.9238443f, 0.003339512f),
                 new float4x4(-0.7071068f, -0.01234073f, 0.7069991f, 0f, 2.374873E-08f, -0.9998477f, -0.0174524f, 0f, 0.7071068f, -0.0123407f, 0.7069991f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 0.7853982f, 3.141593f)
             };
@@ -11472,7 +11472,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 45, Z: -540",
                 new float3(0.7853982f, 0.7853982f, -9.424778f),
-                new Quaternion(0.3535534f, -0.3535534f, 0.8535534f, 0.1464466f),
+                new QuaternionF(0.3535534f, -0.3535534f, 0.8535534f, 0.1464466f),
                 new float4x4(-0.7071067f, -0.5000001f, 0.5f, 0f, 2.980232E-08f, -0.7071067f, -0.7071068f, 0f, 0.7071068f, -0.5f, 0.4999999f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 0.7853982f, 3.141593f)
             };
@@ -11481,7 +11481,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 45, Z: -540",
                 new float3(1.570796f, 0.7853982f, -9.424778f),
-                new Quaternion(0.2705981f, -0.6532815f, 0.6532815f, 0.2705981f),
+                new QuaternionF(0.2705981f, -0.6532815f, 0.6532815f, 0.2705981f),
                 new float4x4(-0.7071066f, -0.7071068f, 0f, 0f, 0f, 8.940697E-08f, -0.9999999f, 0f, 0.7071068f, -0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.926991f, 0f)
             };
@@ -11490,7 +11490,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 45, Z: -540",
                 new float3(3.141593f, 0.7853982f, -9.424778f),
-                new Quaternion(-5.710473E-09f, -0.9238795f, -4.494751E-08f, 0.3826835f),
+                new QuaternionF(-5.710473E-09f, -0.9238795f, -4.494751E-08f, 0.3826835f),
                 new float4x4(-0.7071067f, 4.495291E-08f, -0.7071068f, 0f, -2.384976E-08f, 1f, 8.742277E-08f, 0f, 0.7071068f, 7.868156E-08f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 3.926991f, -2.384976E-08f)
             };
@@ -11499,7 +11499,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 45, Z: -540",
                 new float3(4.712389f, 0.7853982f, -9.424778f),
-                new Quaternion(-0.2705981f, -0.6532815f, -0.6532815f, 0.2705981f),
+                new QuaternionF(-0.2705981f, -0.6532815f, -0.6532815f, 0.2705981f),
                 new float4x4(-0.7071066f, 0.7071068f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.7071068f, 0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -11508,7 +11508,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 45, Z: -540",
                 new float3(6.283185f, 0.7853982f, -9.424778f),
-                new Quaternion(-0.3826835f, 7.620466E-08f, -0.9238795f, -4.44724E-08f),
+                new QuaternionF(-0.3826835f, 7.620466E-08f, -0.9238795f, -4.44724E-08f),
                 new float4x4(-0.7071067f, -1.404988E-07f, 0.7071068f, 0f, 2.384976E-08f, -1f, -1.748456E-07f, 0f, 0.7071068f, -1.067701E-07f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 0.7853982f, 3.141593f)
             };
@@ -11517,7 +11517,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 45, Z: -540",
                 new float3(10.21018f, 0.7853982f, -9.424778f),
-                new Quaternion(0.1464467f, 0.8535533f, 0.3535535f, -0.3535534f),
+                new QuaternionF(0.1464467f, 0.8535533f, 0.3535535f, -0.3535534f),
                 new float4x4(-0.7071067f, 0.5000002f, -0.4999998f, 0f, 0f, 0.7071065f, 0.707107f, 0f, 0.7071068f, 0.5000002f, -0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.926991f, 0f)
             };
@@ -11526,7 +11526,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 45, Z: -540",
                 new float3(-1.570796f, 0.7853982f, -9.424778f),
-                new Quaternion(0.2705981f, 0.6532815f, 0.6532815f, -0.2705981f),
+                new QuaternionF(0.2705981f, 0.6532815f, 0.6532815f, -0.2705981f),
                 new float4x4(-0.7071066f, 0.7071068f, 0f, 0f, 0f, 8.940697E-08f, 0.9999999f, 0f, 0.7071068f, 0.7071067f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.926991f, 0f)
             };
@@ -11535,7 +11535,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 45, Z: -540",
                 new float3(-9.424778f, 0.7853982f, -9.424778f),
-                new Quaternion(1.558061E-08f, -0.9238795f, 6.453698E-09f, 0.3826835f),
+                new QuaternionF(1.558061E-08f, -0.9238795f, 6.453698E-09f, 0.3826835f),
                 new float4x4(-0.7071067f, -3.372865E-08f, -0.7071068f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, 0.7071068f, 2.664535E-15f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.926991f, -2.384976E-08f)
             };
@@ -11544,7 +11544,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 90, Z: -540",
                 new float3(0f, 1.570796f, -9.424778f),
-                new Quaternion(0.7071068f, 8.432163E-09f, 0.7071068f, 8.432163E-09f),
+                new QuaternionF(0.7071068f, 8.432163E-09f, 0.7071068f, 8.432163E-09f),
                 new float4x4(5.960464E-08f, 0f, 0.9999999f, 0f, 2.384976E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.570796f, 3.141593f)
             };
@@ -11553,7 +11553,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 90, Z: -540",
                 new float3(0.001745329f, 1.570796f, -9.424778f),
-                new Quaternion(0.7071065f, -0.0006170585f, 0.7071065f, 0.0006170754f),
+                new QuaternionF(0.7071065f, -0.0006170585f, 0.7071065f, 0.0006170754f),
                 new float4x4(-4.626673E-08f, -0.001745328f, 0.9999985f, 0f, 2.392335E-08f, -0.9999986f, -0.001745328f, 0f, 1f, 2.392335E-08f, -4.626673E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.570796f, 3.141593f)
             };
@@ -11562,7 +11562,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 90, Z: -540",
                 new float3(0.01745329f, 1.570796f, -9.424778f),
-                new Quaternion(0.7070798f, -0.006170584f, 0.7070798f, 0.006170601f),
+                new QuaternionF(0.7070798f, -0.006170584f, 0.7070798f, 0.006170601f),
                 new float4x4(8.213101E-08f, -0.0174524f, 0.9998476f, 0f, 2.328306E-08f, -0.9998475f, -0.0174524f, 0f, 0.9999999f, 2.328306E-08f, 8.213101E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.570796f, 3.141593f)
             };
@@ -11571,7 +11571,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 90, Z: -540",
                 new float3(0.7853982f, 1.570796f, -9.424778f),
-                new Quaternion(0.6532815f, -0.2705981f, 0.6532815f, 0.2705981f),
+                new QuaternionF(0.6532815f, -0.2705981f, 0.6532815f, 0.2705981f),
                 new float4x4(8.940697E-08f, -0.7071068f, 0.7071067f, 0f, 0f, -0.7071066f, -0.7071068f, 0f, 0.9999999f, 0f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 1.570796f, 3.141593f)
             };
@@ -11580,7 +11580,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 90, Z: -540",
                 new float3(1.570796f, 1.570796f, -9.424778f),
-                new Quaternion(0.5f, -0.5f, 0.5f, 0.5f),
+                new QuaternionF(0.5f, -0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 4.712389f, 0f)
             };
@@ -11589,7 +11589,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 90, Z: -540",
                 new float3(3.141593f, 1.570796f, -9.424778f),
-                new Quaternion(-2.247646E-08f, -0.7071068f, -3.934078E-08f, 0.7071068f),
+                new QuaternionF(-2.247646E-08f, -0.7071068f, -3.934078E-08f, 0.7071068f),
                 new float4x4(5.960464E-08f, 8.742278E-08f, -0.9999999f, 0f, -2.384976E-08f, 1f, 8.742278E-08f, 0f, 0.9999999f, 2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 4.712389f, -2.384976E-08f)
             };
@@ -11598,7 +11598,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 90, Z: -540",
                 new float3(4.712389f, 1.570796f, -9.424778f),
-                new Quaternion(-0.5f, -0.5f, -0.5f, 0.5f),
+                new QuaternionF(-0.5f, -0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -11607,7 +11607,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 90, Z: -540",
                 new float3(6.283185f, 1.570796f, -9.424778f),
-                new Quaternion(-0.7071068f, 5.338508E-08f, -0.7071068f, -7.02494E-08f),
+                new QuaternionF(-0.7071068f, 5.338508E-08f, -0.7071068f, -7.02494E-08f),
                 new float4x4(5.960464E-08f, -1.748456E-07f, 0.9999999f, 0f, 2.384976E-08f, -0.9999999f, -1.748456E-07f, 0f, 0.9999999f, 2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.570796f, 3.141593f)
             };
@@ -11616,7 +11616,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 90, Z: -540",
                 new float3(10.21018f, 1.570796f, -9.424778f),
-                new Quaternion(0.2705982f, 0.6532814f, 0.2705982f, -0.6532814f),
+                new QuaternionF(0.2705982f, 0.6532814f, 0.2705982f, -0.6532814f),
                 new float4x4(7.450581E-08f, 0.707107f, -0.7071064f, 0f, 0f, 0.7071065f, 0.707107f, 0f, 0.9999999f, 0f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 4.712389f, 0f)
             };
@@ -11625,7 +11625,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 90, Z: -540",
                 new float3(-1.570796f, 1.570796f, -9.424778f),
-                new Quaternion(0.5f, 0.5f, 0.5f, -0.5f),
+                new QuaternionF(0.5f, 0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, 0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 4.712389f, 0f)
             };
@@ -11634,7 +11634,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 90, Z: -540",
                 new float3(-9.424778f, 1.570796f, -9.424778f),
-                new Quaternion(1.686433E-08f, -0.7071068f, 0f, 0.7071068f),
+                new QuaternionF(1.686433E-08f, -0.7071068f, 0f, 0.7071068f),
                 new float4x4(5.960464E-08f, -2.384976E-08f, -0.9999999f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, 0.9999999f, 2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 4.712389f, -2.384976E-08f)
             };
@@ -11643,7 +11643,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 180, Z: -540",
                 new float3(0f, 3.141593f, -9.424778f),
-                new Quaternion(1f, 1.192488E-08f, -4.371139E-08f, -5.212531E-16f),
+                new QuaternionF(1f, 1.192488E-08f, -4.371139E-08f, -5.212531E-16f),
                 new float4x4(1f, 2.384976E-08f, -8.742278E-08f, 0f, 2.384976E-08f, -1f, 0f, 0f, -8.742278E-08f, -2.085012E-15f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 3.141593f)
             };
@@ -11652,7 +11652,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 180, Z: -540",
                 new float3(0.001745329f, 3.141593f, -9.424778f),
-                new Quaternion(0.9999996f, 1.196302E-08f, -4.372178E-08f, 0.0008726645f),
+                new QuaternionF(0.9999996f, 1.196302E-08f, -4.372178E-08f, 0.0008726645f),
                 new float4x4(1f, 2.400234E-08f, -8.742265E-08f, 0f, 2.384973E-08f, -0.9999986f, -0.001745328f, 0f, -8.746441E-08f, 0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 3.141593f)
             };
@@ -11661,7 +11661,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 180, Z: -540",
                 new float3(0.01745329f, 3.141593f, -9.424778f),
-                new Quaternion(0.9999619f, 1.230588E-08f, -4.381378E-08f, 0.008726535f),
+                new QuaternionF(0.9999619f, 1.230588E-08f, -4.381378E-08f, 0.008726535f),
                 new float4x4(1f, 2.53755E-08f, -8.740945E-08f, 0f, 2.384613E-08f, -0.9998477f, -0.01745241f, 0f, -8.783901E-08f, 0.01745241f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 3.141593f)
             };
@@ -11670,7 +11670,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 180, Z: -540",
                 new float3(0.7853982f, 3.141593f, -9.424778f),
-                new Quaternion(0.9238795f, 2.774478E-08f, -4.494751E-08f, 0.3826835f),
+                new QuaternionF(0.9238795f, 2.774478E-08f, -4.494751E-08f, 0.3826835f),
                 new float4x4(1f, 8.5667E-08f, -6.181723E-08f, 0f, 1.686433E-08f, -0.7071067f, -0.7071068f, 0f, -1.042871E-07f, 0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 3.141593f)
             };
@@ -11679,7 +11679,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 180, Z: -540",
                 new float3(1.570796f, 3.141593f, -9.424778f),
-                new Quaternion(0.7071068f, 3.934078E-08f, -3.934078E-08f, 0.7071068f),
+                new QuaternionF(0.7071068f, 3.934078E-08f, -3.934078E-08f, 0.7071068f),
                 new float4x4(1f, 1.112725E-07f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, -1.112725E-07f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.112725E-07f, 0f)
             };
@@ -11688,7 +11688,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 180, Z: -540",
                 new float3(3.141593f, 3.141593f, -9.424778f),
-                new Quaternion(-4.371139E-08f, 4.371139E-08f, -1.192488E-08f, 1f),
+                new QuaternionF(-4.371139E-08f, 4.371139E-08f, -1.192488E-08f, 1f),
                 new float4x4(1f, 2.384975E-08f, 8.742278E-08f, 0f, -2.384976E-08f, 1f, 8.742278E-08f, 0f, -8.742278E-08f, -8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 8.742278E-08f, -2.384976E-08f)
             };
@@ -11697,7 +11697,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 180, Z: -540",
                 new float3(4.712389f, 3.141593f, -9.424778f),
-                new Quaternion(-0.7071068f, 2.247646E-08f, 2.247646E-08f, 0.7071068f),
+                new QuaternionF(-0.7071068f, 2.247646E-08f, 2.247646E-08f, 0.7071068f),
                 new float4x4(1f, -6.357302E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -6.357302E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 6.357302E-08f, 0f)
             };
@@ -11706,7 +11706,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 180, Z: -540",
                 new float3(6.283185f, 3.141593f, -9.424778f),
-                new Quaternion(-1f, -1.192488E-08f, 4.371139E-08f, -8.742278E-08f),
+                new QuaternionF(-1f, -1.192488E-08f, 4.371139E-08f, -8.742278E-08f),
                 new float4x4(1f, 2.384978E-08f, -8.742278E-08f, 0f, 2.384976E-08f, -1f, -1.748456E-07f, 0f, -8.742278E-08f, 1.748456E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 3.141593f)
             };
@@ -11715,7 +11715,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 180, Z: -540",
                 new float3(10.21018f, 3.141593f, -9.424778f),
-                new Quaternion(0.3826836f, -3.582059E-08f, -5.710478E-09f, -0.9238794f),
+                new QuaternionF(0.3826836f, -3.582059E-08f, -5.710478E-09f, -0.9238794f),
                 new float4x4(1f, -3.79675E-08f, 6.181721E-08f, 0f, -1.686432E-08f, 0.7071065f, 0.707107f, 0f, -7.055844E-08f, -0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 8.742278E-08f, -2.384976E-08f)
             };
@@ -11724,7 +11724,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 180, Z: -540",
                 new float3(-1.570796f, 3.141593f, -9.424778f),
-                new Quaternion(0.7071068f, -2.247646E-08f, -2.247646E-08f, -0.7071068f),
+                new QuaternionF(0.7071068f, -2.247646E-08f, -2.247646E-08f, -0.7071068f),
                 new float4x4(1f, -6.357302E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, -6.357302E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 6.357302E-08f, 0f)
             };
@@ -11733,7 +11733,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 180, Z: -540",
                 new float3(-9.424778f, 3.141593f, -9.424778f),
-                new Quaternion(1.192488E-08f, 4.371139E-08f, -1.192488E-08f, 1f),
+                new QuaternionF(1.192488E-08f, 4.371139E-08f, -1.192488E-08f, 1f),
                 new float4x4(1f, 2.384976E-08f, 8.742278E-08f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, -8.742278E-08f, 2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 8.742278E-08f, -2.384976E-08f)
             };
@@ -11742,7 +11742,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 270, Z: -540",
                 new float3(0f, 4.712389f, -9.424778f),
-                new Quaternion(0.7071068f, 8.432163E-09f, -0.7071068f, -8.432163E-09f),
+                new QuaternionF(0.7071068f, 8.432163E-09f, -0.7071068f, -8.432163E-09f),
                 new float4x4(5.960464E-08f, 0f, -0.9999999f, 0f, 2.384976E-08f, -0.9999999f, 0f, 0f, -0.9999999f, -2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 3.141593f)
             };
@@ -11751,7 +11751,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 270, Z: -540",
                 new float3(0.001745329f, 4.712389f, -9.424778f),
-                new Quaternion(0.7071065f, 0.0006170754f, -0.7071065f, 0.0006170585f),
+                new QuaternionF(0.7071065f, 0.0006170754f, -0.7071065f, 0.0006170585f),
                 new float4x4(-4.63084E-08f, 0.001745328f, -0.9999985f, 0f, 2.392335E-08f, -0.9999986f, -0.001745328f, 0f, -1f, -2.392335E-08f, -4.63084E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 3.141593f)
             };
@@ -11760,7 +11760,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 270, Z: -540",
                 new float3(0.01745329f, 4.712389f, -9.424778f),
-                new Quaternion(0.7070798f, 0.006170601f, -0.7070798f, 0.006170584f),
+                new QuaternionF(0.7070798f, 0.006170601f, -0.7070798f, 0.006170584f),
                 new float4x4(8.171628E-08f, 0.0174524f, -0.9998476f, 0f, 2.328306E-08f, -0.9998475f, -0.0174524f, 0f, -0.9999999f, -2.328306E-08f, 8.171628E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 3.141593f)
             };
@@ -11769,7 +11769,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 270, Z: -540",
                 new float3(0.7853982f, 4.712389f, -9.424778f),
-                new Quaternion(0.6532815f, 0.2705981f, -0.6532815f, 0.2705981f),
+                new QuaternionF(0.6532815f, 0.2705981f, -0.6532815f, 0.2705981f),
                 new float4x4(8.940697E-08f, 0.7071068f, -0.7071067f, 0f, 0f, -0.7071066f, -0.7071068f, 0f, -0.9999999f, 0f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 3.141593f)
             };
@@ -11778,7 +11778,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 270, Z: -540",
                 new float3(1.570796f, 4.712389f, -9.424778f),
-                new Quaternion(0.5f, 0.5f, -0.5f, 0.5f),
+                new QuaternionF(0.5f, 0.5f, -0.5f, 0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -11787,7 +11787,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 270, Z: -540",
                 new float3(3.141593f, 4.712389f, -9.424778f),
-                new Quaternion(-3.934078E-08f, 0.7071068f, 2.247646E-08f, 0.7071068f),
+                new QuaternionF(-3.934078E-08f, 0.7071068f, 2.247646E-08f, 0.7071068f),
                 new float4x4(5.960464E-08f, -8.742278E-08f, 0.9999999f, 0f, -2.384976E-08f, 1f, 8.742278E-08f, 0f, -0.9999999f, -2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 1.570796f, -2.384976E-08f)
             };
@@ -11796,7 +11796,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 270, Z: -540",
                 new float3(4.712389f, 4.712389f, -9.424778f),
-                new Quaternion(-0.5f, 0.5f, 0.5f, 0.5f),
+                new QuaternionF(-0.5f, 0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -11805,7 +11805,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 270, Z: -540",
                 new float3(6.283185f, 4.712389f, -9.424778f),
-                new Quaternion(-0.7071068f, -7.02494E-08f, 0.7071068f, -5.338508E-08f),
+                new QuaternionF(-0.7071068f, -7.02494E-08f, 0.7071068f, -5.338508E-08f),
                 new float4x4(5.960463E-08f, 1.748456E-07f, -0.9999999f, 0f, 2.384976E-08f, -0.9999999f, -1.748456E-07f, 0f, -0.9999999f, -2.384976E-08f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 4.712389f, 3.141593f)
             };
@@ -11814,7 +11814,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 270, Z: -540",
                 new float3(10.21018f, 4.712389f, -9.424778f),
-                new Quaternion(0.2705982f, -0.6532814f, -0.2705982f, -0.6532814f),
+                new QuaternionF(0.2705982f, -0.6532814f, -0.2705982f, -0.6532814f),
                 new float4x4(7.450581E-08f, -0.707107f, 0.7071064f, 0f, 0f, 0.7071065f, 0.707107f, 0f, -0.9999999f, 0f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 0f)
             };
@@ -11823,7 +11823,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 270, Z: -540",
                 new float3(-1.570796f, 4.712389f, -9.424778f),
-                new Quaternion(0.5f, -0.5f, -0.5f, -0.5f),
+                new QuaternionF(0.5f, -0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -11832,7 +11832,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 270, Z: -540",
                 new float3(-9.424778f, 4.712389f, -9.424778f),
-                new Quaternion(0f, 0.7071068f, -1.686433E-08f, 0.7071068f),
+                new QuaternionF(0f, 0.7071068f, -1.686433E-08f, 0.7071068f),
                 new float4x4(5.960464E-08f, 2.384976E-08f, 0.9999999f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, -0.9999999f, -2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 1.570796f, -2.384976E-08f)
             };
@@ -11841,7 +11841,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 360, Z: -540",
                 new float3(0f, 6.283185f, -9.424778f),
-                new Quaternion(-8.742278E-08f, -1.042506E-15f, -1f, -1.192488E-08f),
+                new QuaternionF(-8.742278E-08f, -1.042506E-15f, -1f, -1.192488E-08f),
                 new float4x4(-1f, -2.384976E-08f, 1.748456E-07f, 0f, 2.384976E-08f, -1f, 0f, 0f, 1.748456E-07f, 4.170025E-15f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 1.748456E-07f, 3.141593f)
             };
@@ -11850,7 +11850,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 360, Z: -540",
                 new float3(0.001745329f, 6.283185f, -9.424778f),
-                new Quaternion(-8.743316E-08f, 0.0008726645f, -0.9999996f, -1.200117E-08f),
+                new QuaternionF(-8.743316E-08f, 0.0008726645f, -0.9999996f, -1.200117E-08f),
                 new float4x4(-1f, -2.415493E-08f, 1.748453E-07f, 0f, 2.384973E-08f, -0.9999986f, -0.001745328f, 0f, 1.748872E-07f, -0.001745328f, 0.9999985f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 1.748456E-07f, 3.141593f)
             };
@@ -11859,7 +11859,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 360, Z: -540",
                 new float3(0.01745329f, 6.283185f, -9.424778f),
-                new Quaternion(-8.752351E-08f, 0.008726535f, -0.9999619f, -1.268732E-08f),
+                new QuaternionF(-8.752351E-08f, 0.008726535f, -0.9999619f, -1.268732E-08f),
                 new float4x4(-0.9999999f, -2.690124E-08f, 1.748189E-07f, 0f, 2.384613E-08f, -0.9998477f, -0.01745241f, 0f, 1.752618E-07f, -0.01745241f, 0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 1.748456E-07f, 3.141593f)
             };
@@ -11868,7 +11868,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 360, Z: -540",
                 new float3(0.7853982f, 6.283185f, -9.424778f),
-                new Quaternion(-8.533156E-08f, 0.3826835f, -0.9238795f, -4.44724E-08f),
+                new QuaternionF(-8.533156E-08f, 0.3826835f, -0.9238795f, -4.44724E-08f),
                 new float4x4(-1f, -1.474842E-07f, 1.236345E-07f, 0f, 1.686433E-08f, -0.7071067f, -0.7071068f, 0f, 1.917099E-07f, -0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 1.748455E-07f, 3.141593f)
             };
@@ -11877,7 +11877,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 360, Z: -540",
                 new float3(1.570796f, 6.283185f, -9.424778f),
-                new Quaternion(-7.02494E-08f, 0.7071068f, -0.7071068f, -7.02494E-08f),
+                new QuaternionF(-7.02494E-08f, 0.7071068f, -0.7071068f, -7.02494E-08f),
                 new float4x4(-0.9999999f, -1.986953E-07f, 0f, 0f, 0f, 5.960463E-08f, -0.9999999f, 0f, 1.986953E-07f, -0.9999999f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 3.141593f, 0f)
             };
@@ -11886,7 +11886,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 360, Z: -540",
                 new float3(3.141593f, 6.283185f, -9.424778f),
-                new Quaternion(-1.192488E-08f, 1f, 4.371139E-08f, -8.742278E-08f),
+                new QuaternionF(-1.192488E-08f, 1f, 4.371139E-08f, -8.742278E-08f),
                 new float4x4(-1f, -2.384975E-08f, -1.748456E-07f, 0f, -2.384976E-08f, 1f, 8.742278E-08f, 0f, 1.748456E-07f, 8.742278E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, 3.141593f, -2.384976E-08f)
             };
@@ -11895,7 +11895,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 360, Z: -540",
                 new float3(4.712389f, 6.283185f, -9.424778f),
-                new Quaternion(5.338508E-08f, 0.7071068f, 0.7071068f, -5.338508E-08f),
+                new QuaternionF(5.338508E-08f, 0.7071068f, 0.7071068f, -5.338508E-08f),
                 new float4x4(-0.9999999f, 1.509958E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 1.509958E-07f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -11904,7 +11904,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 360, Z: -540",
                 new float3(6.283185f, 6.283185f, -9.424778f),
-                new Quaternion(8.742278E-08f, -8.742278E-08f, 1f, 1.192489E-08f),
+                new QuaternionF(8.742278E-08f, -8.742278E-08f, 1f, 1.192489E-08f),
                 new float4x4(-1f, -2.384979E-08f, 1.748456E-07f, 0f, 2.384976E-08f, -1f, -1.748456E-07f, 0f, 1.748456E-07f, -1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 1.748456E-07f, 3.141593f)
             };
@@ -11913,7 +11913,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 360, Z: -540",
                 new float3(10.21018f, 6.283185f, -9.424778f),
-                new Quaternion(-2.243811E-08f, -0.9238794f, -0.3826836f, 7.620465E-08f),
+                new QuaternionF(-2.243811E-08f, -0.9238794f, -0.3826836f, 7.620465E-08f),
                 new float4x4(-0.9999999f, 9.978476E-08f, -1.236344E-07f, 0f, -1.686433E-08f, 0.7071065f, 0.707107f, 0f, 1.579812E-07f, 0.707107f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 3.141593f, -2.384977E-08f)
             };
@@ -11922,7 +11922,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 360, Z: -540",
                 new float3(-1.570796f, 6.283185f, -9.424778f),
-                new Quaternion(-5.338508E-08f, -0.7071068f, -0.7071068f, 5.338508E-08f),
+                new QuaternionF(-5.338508E-08f, -0.7071068f, -0.7071068f, 5.338508E-08f),
                 new float4x4(-0.9999999f, 1.509958E-07f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 1.509958E-07f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 3.141593f, 0f)
             };
@@ -11931,7 +11931,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 360, Z: -540",
                 new float3(-9.424778f, 6.283185f, -9.424778f),
-                new Quaternion(-1.192488E-08f, 1f, -1.192488E-08f, -8.742278E-08f),
+                new QuaternionF(-1.192488E-08f, 1f, -1.192488E-08f, -8.742278E-08f),
                 new float4x4(-1f, -2.384976E-08f, -1.748456E-07f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, 1.748456E-07f, -2.384976E-08f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 3.141593f, -2.384976E-08f)
             };
@@ -11940,7 +11940,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: 585, Z: -540",
                 new float3(0f, 10.21018f, -9.424778f),
-                new Quaternion(-0.9238794f, -1.101715E-08f, 0.3826836f, 4.563456E-09f),
+                new QuaternionF(-0.9238794f, -1.101715E-08f, 0.3826836f, 4.563456E-09f),
                 new float4x4(0.7071065f, 1.686432E-08f, -0.707107f, 0f, 2.384976E-08f, -0.9999999f, 0f, 0f, -0.707107f, -1.686433E-08f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.926991f, 3.141593f)
             };
@@ -11949,7 +11949,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: 585, Z: -540",
                 new float3(0.001745329f, 10.21018f, -9.424778f),
-                new Quaternion(-0.9238791f, -0.0003339654f, 0.3826835f, -0.0008062323f),
+                new QuaternionF(-0.9238791f, -0.0003339654f, 0.3826835f, -0.0008062323f),
                 new float4x4(0.7071065f, 0.001234151f, -0.7071059f, 0f, 2.386514E-08f, -0.9999985f, -0.001745328f, 0f, -0.707107f, 0.001234116f, -0.7071054f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.926991f, 3.141593f)
             };
@@ -11958,7 +11958,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: 585, Z: -540",
                 new float3(0.01745329f, 10.21018f, -9.424778f),
-                new Quaternion(-0.9238443f, -0.003339513f, 0.382669f, -0.008062262f),
+                new QuaternionF(-0.9238443f, -0.003339513f, 0.382669f, -0.008062262f),
                 new float4x4(0.7071065f, 0.01234074f, -0.7069994f, 0f, 2.374873E-08f, -0.9998477f, -0.01745241f, 0f, -0.707107f, 0.01234069f, -0.7069988f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.926991f, 3.141593f)
             };
@@ -11967,7 +11967,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: 585, Z: -540",
                 new float3(0.7853982f, 10.21018f, -9.424778f),
-                new Quaternion(-0.8535533f, -0.1464467f, 0.3535535f, -0.3535534f),
+                new QuaternionF(-0.8535533f, -0.1464467f, 0.3535535f, -0.3535534f),
                 new float4x4(0.7071065f, 0.5000002f, -0.5000001f, 0f, 5.960464E-08f, -0.7071067f, -0.7071068f, 0f, -0.7071071f, 0.4999998f, -0.4999998f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.926991f, 3.141593f)
             };
@@ -11976,7 +11976,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: 585, Z: -540",
                 new float3(1.570796f, 10.21018f, -9.424778f),
-                new Quaternion(-0.6532814f, -0.2705982f, 0.2705982f, -0.6532814f),
+                new QuaternionF(-0.6532814f, -0.2705982f, 0.2705982f, -0.6532814f),
                 new float4x4(0.7071065f, 0.707107f, 0f, 0f, 0f, 7.450581E-08f, -0.9999999f, 0f, -0.707107f, 0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0.7853986f, 0f)
             };
@@ -11985,7 +11985,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: 585, Z: -540",
                 new float3(3.141593f, 10.21018f, -9.424778f),
-                new Quaternion(4.494751E-08f, -0.3826836f, -5.710478E-09f, -0.9238794f),
+                new QuaternionF(4.494751E-08f, -0.3826836f, -5.710478E-09f, -0.9238794f),
                 new float4x4(0.7071065f, -4.495294E-08f, 0.707107f, 0f, -2.384976E-08f, 1f, 8.742277E-08f, 0f, -0.707107f, -7.868154E-08f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742277E-08f, 0.7853985f, -2.384976E-08f)
             };
@@ -11994,7 +11994,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: 585, Z: -540",
                 new float3(4.712389f, 10.21018f, -9.424778f),
-                new Quaternion(0.6532814f, -0.2705982f, -0.2705982f, -0.6532814f),
+                new QuaternionF(0.6532814f, -0.2705982f, -0.2705982f, -0.6532814f),
                 new float4x4(0.7071065f, -0.707107f, 0f, 0f, 0f, 7.450581E-08f, 0.9999999f, 0f, -0.707107f, -0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853986f, 0f)
             };
@@ -12003,7 +12003,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: 585, Z: -540",
                 new float3(6.283185f, 10.21018f, -9.424778f),
-                new Quaternion(0.9238794f, 4.447242E-08f, -0.3826836f, 7.620465E-08f),
+                new QuaternionF(0.9238794f, 4.447242E-08f, -0.3826836f, 7.620465E-08f),
                 new float4x4(0.7071065f, 1.404988E-07f, -0.707107f, 0f, 2.384976E-08f, -0.9999999f, -1.748455E-07f, 0f, -0.707107f, 1.067701E-07f, -0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748455E-07f, 3.926991f, 3.141593f)
             };
@@ -12012,7 +12012,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: 585, Z: -540",
                 new float3(10.21018f, 10.21018f, -9.424778f),
-                new Quaternion(-0.3535535f, 0.3535535f, 0.1464467f, 0.8535532f),
+                new QuaternionF(-0.3535535f, 0.3535535f, 0.1464467f, 0.8535532f),
                 new float4x4(0.7071066f, -0.5000003f, 0.5f, 0f, 0f, 0.7071066f, 0.7071069f, 0f, -0.7071069f, -0.5f, 0.4999997f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 0.7853985f, -4.214686E-08f)
             };
@@ -12021,7 +12021,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: 585, Z: -540",
                 new float3(-1.570796f, 10.21018f, -9.424778f),
-                new Quaternion(-0.6532814f, 0.2705982f, 0.2705982f, 0.6532814f),
+                new QuaternionF(-0.6532814f, 0.2705982f, 0.2705982f, 0.6532814f),
                 new float4x4(0.7071065f, -0.707107f, 0f, 0f, 0f, 7.450581E-08f, 0.9999999f, 0f, -0.707107f, -0.7071064f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 0.7853986f, 0f)
             };
@@ -12030,7 +12030,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: 585, Z: -540",
                 new float3(-9.424778f, 10.21018f, -9.424778f),
-                new Quaternion(-6.453696E-09f, -0.3826836f, 1.558061E-08f, -0.9238794f),
+                new QuaternionF(-6.453696E-09f, -0.3826836f, 1.558061E-08f, -0.9238794f),
                 new float4x4(0.7071065f, 3.372866E-08f, 0.707107f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, -0.707107f, -1.24345E-14f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 0.7853985f, -2.384976E-08f)
             };
@@ -12039,7 +12039,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -90, Z: -540",
                 new float3(0f, -1.570796f, -9.424778f),
-                new Quaternion(-0.7071068f, -8.432163E-09f, 0.7071068f, 8.432163E-09f),
+                new QuaternionF(-0.7071068f, -8.432163E-09f, 0.7071068f, 8.432163E-09f),
                 new float4x4(5.960464E-08f, 0f, -0.9999999f, 0f, 2.384976E-08f, -0.9999999f, 0f, 0f, -0.9999999f, -2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 4.712389f, 3.141593f)
             };
@@ -12048,7 +12048,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -90, Z: -540",
                 new float3(0.001745329f, -1.570796f, -9.424778f),
-                new Quaternion(-0.7071065f, -0.0006170754f, 0.7071065f, -0.0006170585f),
+                new QuaternionF(-0.7071065f, -0.0006170754f, 0.7071065f, -0.0006170585f),
                 new float4x4(-4.63084E-08f, 0.001745328f, -0.9999985f, 0f, 2.392335E-08f, -0.9999986f, -0.001745328f, 0f, -1f, -2.392335E-08f, -4.63084E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 4.712389f, 3.141593f)
             };
@@ -12057,7 +12057,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -90, Z: -540",
                 new float3(0.01745329f, -1.570796f, -9.424778f),
-                new Quaternion(-0.7070798f, -0.006170601f, 0.7070798f, -0.006170584f),
+                new QuaternionF(-0.7070798f, -0.006170601f, 0.7070798f, -0.006170584f),
                 new float4x4(8.171628E-08f, 0.0174524f, -0.9998476f, 0f, 2.328306E-08f, -0.9998475f, -0.0174524f, 0f, -0.9999999f, -2.328306E-08f, 8.171628E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 4.712389f, 3.141593f)
             };
@@ -12066,7 +12066,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -90, Z: -540",
                 new float3(0.7853982f, -1.570796f, -9.424778f),
-                new Quaternion(-0.6532815f, -0.2705981f, 0.6532815f, -0.2705981f),
+                new QuaternionF(-0.6532815f, -0.2705981f, 0.6532815f, -0.2705981f),
                 new float4x4(8.940697E-08f, 0.7071068f, -0.7071067f, 0f, 0f, -0.7071066f, -0.7071068f, 0f, -0.9999999f, 0f, 8.940697E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853983f, 4.712389f, 3.141593f)
             };
@@ -12075,7 +12075,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -90, Z: -540",
                 new float3(1.570796f, -1.570796f, -9.424778f),
-                new Quaternion(-0.5f, -0.5f, 0.5f, -0.5f),
+                new QuaternionF(-0.5f, -0.5f, 0.5f, -0.5f),
                 new float4x4(1.192093E-07f, 0.9999999f, 0f, 0f, 0f, 1.192093E-07f, -0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 1.570796f, 0f)
             };
@@ -12084,7 +12084,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -90, Z: -540",
                 new float3(3.141593f, -1.570796f, -9.424778f),
-                new Quaternion(3.934078E-08f, -0.7071068f, -2.247646E-08f, -0.7071068f),
+                new QuaternionF(3.934078E-08f, -0.7071068f, -2.247646E-08f, -0.7071068f),
                 new float4x4(5.960464E-08f, -8.742278E-08f, 0.9999999f, 0f, -2.384976E-08f, 1f, 8.742278E-08f, 0f, -0.9999999f, -2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742279E-08f, 1.570796f, -2.384976E-08f)
             };
@@ -12093,7 +12093,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -90, Z: -540",
                 new float3(4.712389f, -1.570796f, -9.424778f),
-                new Quaternion(0.5f, -0.5f, -0.5f, -0.5f),
+                new QuaternionF(0.5f, -0.5f, -0.5f, -0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -12102,7 +12102,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -90, Z: -540",
                 new float3(6.283185f, -1.570796f, -9.424778f),
-                new Quaternion(0.7071068f, 7.02494E-08f, -0.7071068f, 5.338508E-08f),
+                new QuaternionF(0.7071068f, 7.02494E-08f, -0.7071068f, 5.338508E-08f),
                 new float4x4(5.960463E-08f, 1.748456E-07f, -0.9999999f, 0f, 2.384976E-08f, -0.9999999f, -1.748456E-07f, 0f, -0.9999999f, -2.384976E-08f, 5.960463E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 4.712389f, 3.141593f)
             };
@@ -12111,7 +12111,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -90, Z: -540",
                 new float3(10.21018f, -1.570796f, -9.424778f),
-                new Quaternion(-0.2705982f, 0.6532814f, 0.2705982f, 0.6532814f),
+                new QuaternionF(-0.2705982f, 0.6532814f, 0.2705982f, 0.6532814f),
                 new float4x4(7.450581E-08f, -0.707107f, 0.7071064f, 0f, 0f, 0.7071065f, 0.707107f, 0f, -0.9999999f, 0f, 7.450581E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, 1.570796f, 0f)
             };
@@ -12120,7 +12120,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -90, Z: -540",
                 new float3(-1.570796f, -1.570796f, -9.424778f),
-                new Quaternion(-0.5f, 0.5f, 0.5f, 0.5f),
+                new QuaternionF(-0.5f, 0.5f, 0.5f, 0.5f),
                 new float4x4(1.192093E-07f, -0.9999999f, 0f, 0f, 0f, 1.192093E-07f, 0.9999999f, 0f, -0.9999999f, 0f, 1.192093E-07f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, 1.570796f, 0f)
             };
@@ -12129,7 +12129,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -90, Z: -540",
                 new float3(-9.424778f, -1.570796f, -9.424778f),
-                new Quaternion(0f, -0.7071068f, 1.686433E-08f, -0.7071068f),
+                new QuaternionF(0f, -0.7071068f, 1.686433E-08f, -0.7071068f),
                 new float4x4(5.960464E-08f, 2.384976E-08f, 0.9999999f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, -0.9999999f, -2.384976E-08f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, 1.570796f, -2.384976E-08f)
             };
@@ -12138,7 +12138,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0, Y: -540, Z: -540",
                 new float3(0f, -9.424778f, -9.424778f),
-                new Quaternion(1f, 1.192488E-08f, 1.192488E-08f, 1.422028E-16f),
+                new QuaternionF(1f, 1.192488E-08f, 1.192488E-08f, 1.422028E-16f),
                 new float4x4(1f, 2.384976E-08f, 2.384976E-08f, 0f, 2.384976E-08f, -1f, 0f, 0f, 2.384976E-08f, 5.688111E-16f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0f, 3.141593f, 3.141593f)
             };
@@ -12147,7 +12147,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 0.1, Y: -540, Z: -540",
                 new float3(0.001745329f, -9.424778f, -9.424778f),
-                new Quaternion(0.9999996f, 1.191447E-08f, 1.191447E-08f, 0.0008726645f),
+                new QuaternionF(0.9999996f, 1.191447E-08f, 1.191447E-08f, 0.0008726645f),
                 new float4x4(1f, 2.380814E-08f, 2.384972E-08f, 0f, 2.384972E-08f, -0.9999986f, -0.001745328f, 0f, 2.380814E-08f, 0.001745328f, -0.9999986f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.001745329f, 3.141593f, 3.141593f)
             };
@@ -12156,7 +12156,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 1, Y: -540, Z: -540",
                 new float3(0.01745329f, -9.424778f, -9.424778f),
-                new Quaternion(0.9999619f, 1.182036E-08f, 1.182036E-08f, 0.008726535f),
+                new QuaternionF(0.9999619f, 1.182036E-08f, 1.182036E-08f, 0.008726535f),
                 new float4x4(1f, 2.343353E-08f, 2.384613E-08f, 0f, 2.384613E-08f, -0.9998477f, -0.01745241f, 0f, 2.343353E-08f, 0.01745241f, -0.9998477f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.01745329f, 3.141593f, 3.141593f)
             };
@@ -12165,7 +12165,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 45, Y: -540, Z: -540",
                 new float3(0.7853982f, -9.424778f, -9.424778f),
-                new Quaternion(0.9238795f, 6.453698E-09f, 6.453698E-09f, 0.3826835f),
+                new QuaternionF(0.9238795f, 6.453698E-09f, 6.453698E-09f, 0.3826835f),
                 new float4x4(1f, 6.985432E-09f, 1.686433E-08f, 0f, 1.686433E-08f, -0.7071067f, -0.7071068f, 0f, 6.985432E-09f, 0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f),
                 new float3(0.7853982f, 3.141593f, 3.141593f)
             };
@@ -12174,7 +12174,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 90, Y: -540, Z: -540",
                 new float3(1.570796f, -9.424778f, -9.424778f),
-                new Quaternion(0.7071068f, 0f, 0f, 0.7071068f),
+                new QuaternionF(0.7071068f, 0f, 0f, 0.7071068f),
                 new float4x4(1f, 0f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.570796f, 0f, 0f)
             };
@@ -12183,7 +12183,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 180, Y: -540, Z: -540",
                 new float3(3.141593f, -9.424778f, -9.424778f),
-                new Quaternion(-4.371139E-08f, -1.192488E-08f, -1.192488E-08f, 1f),
+                new QuaternionF(-4.371139E-08f, -1.192488E-08f, -1.192488E-08f, 1f),
                 new float4x4(1f, 2.384976E-08f, -2.384976E-08f, 0f, -2.384976E-08f, 1f, 8.742278E-08f, 0f, 2.384976E-08f, -8.742278E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(-8.742278E-08f, -2.384976E-08f, -2.384976E-08f)
             };
@@ -12192,7 +12192,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 270, Y: -540, Z: -540",
                 new float3(4.712389f, -9.424778f, -9.424778f),
-                new Quaternion(-0.7071068f, -1.686433E-08f, -1.686433E-08f, 0.7071068f),
+                new QuaternionF(-0.7071068f, -1.686433E-08f, -1.686433E-08f, 0.7071068f),
                 new float4x4(1f, 4.769952E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 4.769952E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, -4.769952E-08f, 0f)
             };
@@ -12201,7 +12201,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 360, Y: -540, Z: -540",
                 new float3(6.283185f, -9.424778f, -9.424778f),
-                new Quaternion(-1f, -1.192488E-08f, -1.192488E-08f, -8.742278E-08f),
+                new QuaternionF(-1f, -1.192488E-08f, -1.192488E-08f, -8.742278E-08f),
                 new float4x4(1f, 2.384976E-08f, 2.384976E-08f, 0f, 2.384976E-08f, -1f, -1.748456E-07f, 0f, 2.384976E-08f, 1.748456E-07f, -1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(1.748456E-07f, 3.141593f, 3.141593f)
             };
@@ -12210,7 +12210,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: 585, Y: -540, Z: -540",
                 new float3(10.21018f, -9.424778f, -9.424778f),
-                new Quaternion(0.3826836f, 1.558061E-08f, 1.558061E-08f, -0.9238794f),
+                new QuaternionF(0.3826836f, 1.558061E-08f, 1.558061E-08f, -0.9238794f),
                 new float4x4(1f, 4.07141E-08f, -1.686432E-08f, 0f, -1.686432E-08f, 0.7071065f, 0.707107f, 0f, 4.07141E-08f, -0.707107f, 0.7071065f, 0f, 0f, 0f, 0f, 1f),
                 new float3(5.497787f, -2.384976E-08f, -2.384976E-08f)
             };
@@ -12219,7 +12219,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -90, Y: -540, Z: -540",
                 new float3(-1.570796f, -9.424778f, -9.424778f),
-                new Quaternion(0.7071068f, 1.686433E-08f, 1.686433E-08f, -0.7071068f),
+                new QuaternionF(0.7071068f, 1.686433E-08f, 1.686433E-08f, -0.7071068f),
                 new float4x4(1f, 4.769952E-08f, 0f, 0f, 0f, 5.960464E-08f, 0.9999999f, 0f, 4.769952E-08f, -0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f),
                 new float3(4.712389f, -4.769952E-08f, 0f)
             };
@@ -12228,7 +12228,7 @@ namespace Fusee.Tests.Math.Core
             {
                 "X: -540, Y: -540, Z: -540",
                 new float3(-9.424778f, -9.424778f, -9.424778f),
-                new Quaternion(1.192488E-08f, -1.192488E-08f, -1.192488E-08f, 1f),
+                new QuaternionF(1.192488E-08f, -1.192488E-08f, -1.192488E-08f, 1f),
                 new float4x4(1f, 2.384976E-08f, -2.384976E-08f, 0f, -2.384976E-08f, 1f, -2.384976E-08f, 0f, 2.384976E-08f, 2.384976E-08f, 1f, 0f, 0f, 0f, 0f, 1f),
                 new float3(2.384976E-08f, -2.384976E-08f, -2.384976E-08f)
             };

@@ -1,5 +1,4 @@
-﻿using Fusee.Base.Common;
-using System;
+﻿using System;
 
 namespace Fusee.Engine.Common
 {
@@ -37,7 +36,12 @@ namespace Fusee.Engine.Common
         /// Specify a two-dimensional texture image. Images require a texel coordinate in the shader - only the value at the specified location will be loaded.
         /// Used in Compute Shaders.
         /// </summary>
-        Image2D
+        Image2D,
+
+        /// <summary>
+        /// A texture with a number of layers which are being used to generate a sampled texture
+        /// </summary>
+        TextureMultisample
     }
 
     /// <summary>
@@ -64,7 +68,7 @@ namespace Fusee.Engine.Common
     }
 
     /// <summary>
-    /// Depth textures can be sampled in one of two ways. 
+    /// Depth textures can be sampled in one of two ways.
     /// They can be sampled as a normal texture, which simply retrieves the depth value, this will return a vec4 containing a single floating-point value,
     /// or they can be fetched in comparison mode. The result of the comparison depends on the comparison function set in the texture. If the function succeeds, the resulting value is 1.0f; if it fails, it is 0.0f.
     /// see: https://www.khronos.org/opengl/wiki/Sampler_Object
@@ -87,7 +91,7 @@ namespace Fusee.Engine.Common
     public enum TextureFilterMode
     {
         /// <summary>
-        /// Default texture filtering method. When set, the pixel which center is closest to the texture coordinate is selected. 
+        /// Default texture filtering method. When set, the pixel which center is closest to the texture coordinate is selected.
         /// </summary>
         Nearest,
         /// <summary>
@@ -99,7 +103,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         NearestMipmapNearest,
         /// <summary>
-        /// Takes the nearest mipmap level and samples using linear interpolation. 
+        /// Takes the nearest mipmap level and samples using linear interpolation.
         /// </summary>
         LinearMipmapNearest,
         /// <summary>
@@ -116,7 +120,7 @@ namespace Fusee.Engine.Common
     /// Collection of members all texture types need to implement.
     /// All textures must be IDisposable.
     /// </summary>
-    public interface ITextureBase : IImageBase, IDisposable
+    public interface ITextureBase : IDisposable
     {
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.

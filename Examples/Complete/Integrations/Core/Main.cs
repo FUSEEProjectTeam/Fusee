@@ -5,6 +5,8 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -14,7 +16,7 @@ namespace Fusee.Examples.Integrations.Core
     public class Main : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -30,42 +32,65 @@ namespace Fusee.Examples.Integrations.Core
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
 
+        private Transform _camPivotTransform;
+
         private bool _keys;
 
         public event EventHandler<FusEvent> FusToWpfEvents;
-
         private Transform rocketTransform;
 
-        // Init is called on startup.
-        public override void Init()
+        private async Task Load()
         {
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Integrations Example");
+            Console.WriteLine("Loading scene ...");
+
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
-
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("RocketFus.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
+            rocketTransform = _rocketScene.Children[0].GetTransform();
+
+            _camPivotTransform = new Transform();
+            var camNode = new SceneNode()
+            {
+                Name = "CamPivoteNode",
+                Children = new ChildList()
+                {
+                    new SceneNode()
+                    {
+                        Name = "MainCam",
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform() { Translation = new float3(0, 2, -10) },
+                            new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy) { BackgroundColor = float4.One }
+                        }
+                    }
+                },
+                Components = new List<SceneComponent>()
+                {
+                    _camPivotTransform
+                }
+            };
+            _rocketScene.Children.Add(camNode);
+
+            FusToWpfEvents?.Invoke(this, new StartupInfoEvent(VSync));
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
-
-            rocketTransform = _rocketScene.Children[0].GetTransform();
-
-            FusToWpfEvents?.Invoke(this, new StartupInfoEvent(VSync));
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override async Task InitAsync()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            await Load();
+            await base.InitAsync();
+        }
 
-            RC.Viewport(0, 0, Width, Height);
+        public override void Update()
+        {
+            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -76,26 +101,26 @@ namespace Fusee.Examples.Integrations.Core
             if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
                 else
                 {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTimeUpdate);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -103,35 +128,24 @@ namespace Fusee.Examples.Integrations.Core
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
+        }
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-
-            var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-
-            // Render the scene loaded in Init()
-            RC.View = view;
-            RC.Projection = perspective;
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
             _sceneRenderer.Render(RC);
+            FusToWpfEvents?.Invoke(this, new FpsEvent(FramesPerSecondAverage));
 
-            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
-            RC.Projection = orthographic;
+            _guiRenderer.Render(RC);
 
+            //Constantly check for interactive objects.
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            FusToWpfEvents?.Invoke(this, new FpsEvent(Time.FramesPerSecondAverage));
-
-            _guiRenderer.Render(RC);
-
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 

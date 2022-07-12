@@ -539,14 +539,12 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 Normalize(double3 vec)
         {
-            if (vec.Length > M.EpsilonDouble)
-            {
-                var scale = 1.0 / vec.Length;
+            if (vec.Length <= M.EpsilonDouble) return Zero;
+            var scale = 1.0 / vec.Length;
+            vec.x *= scale;
+            vec.y *= scale;
+            vec.z *= scale;
 
-                vec.x *= scale;
-                vec.y *= scale;
-                vec.z *= scale;
-            }
 
             return vec;
         }
@@ -586,6 +584,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 NormalizeFast(double3 vec)
         {
+            if (vec.Length <= M.EpsilonDouble) return Zero;
             var scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
             vec.x *= scale;
             vec.y *= scale;
@@ -679,7 +678,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static double3 Lerp(double3 a, double3 b, double3 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;
@@ -705,7 +704,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 Barycentric(double3 a, double3 b, double3 c, double u, double v)
         {
-            return u * a + v * b + (1.0 - u - v) * c;
+            return u * a + v * b + (1.0f - u - v) * c;
         }
 
         /// <summary>
@@ -790,7 +789,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="euler">The angles used for the rotation.</param>
         /// <param name="vec">The vector to rotate.</param>
-        /// <param name="inDegrees">Optional: Whether the angles are given in degrees (true) or radians (false). Defautl is radians.</param>
+        /// <param name="inDegrees">Optional: Whether the angles are given in degrees (true) or radians (false). Default is radians.</param>
         /// <returns>The rotated vector.</returns>
         public static double3 Rotate(double3 euler, double3 vec, bool inDegrees = false)
         {
@@ -1200,10 +1199,10 @@ namespace Fusee.Math.Core
         #region public override int GetHashCode()
 
         /// <summary>
-        /// Returns the hashcode for this instance.
+        /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A System.Int32 containing the unique hashcode for this instance.
+        /// A System.Int32 containing the unique hash code for this instance.
         /// </returns>
         public override int GetHashCode()
         {

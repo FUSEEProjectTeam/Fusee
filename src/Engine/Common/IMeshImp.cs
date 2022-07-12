@@ -153,14 +153,25 @@ namespace Fusee.Engine.Common
         /// Implementation Tasks: Gets a value indicating whether [Tangents Set].
         /// </summary>
         bool TangentsSet { get; }
+
+        /// <summary>
+        /// Implementation Tasks: Invalidates the tangents of the mesh, e.g. reset the buffer object by setting it to 0.
+        /// </summary>
+        void InvalidateTangents();
+
         /// <summary>
         /// Implementation Tasks: Gets a value indicating whether [BiTangents Set].
         /// </summary>
         bool BiTangentsSet { get; }
 
         /// <summary>
+        /// Implementation Tasks: Invalidates the bitangents of the mesh, e.g. reset the buffer object by setting it to 0.
+        /// </summary>
+        void InvalidateBiTangents();
+
+        /// <summary>
         ///     Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
         /// </summary>
-        OpenGLPrimitiveType MeshType { get; set; }
+        PrimitiveType MeshType { get; set; }
     }
 }

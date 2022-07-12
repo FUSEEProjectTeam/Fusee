@@ -10,8 +10,6 @@ namespace Fusee.Jometri
     /// </summary>
     public class CreatePrimitiveGeometry
     {
-        #region Creating Primitives  
-
         /// <summary>
         /// Creates and returns a Cuboid as DCEL with the given dimensions, centered in the world coordinate system.
         /// </summary>
@@ -582,14 +580,5 @@ namespace Fusee.Jometri
 
             return pyramid;
         }
-        #endregion
-
-        /*private static int[] CopyArray(int[] source)
-        {
-            var result = new int[source.Length];
-            Buffer.BlockCopy(source, 0, result, 0, source.Length * sizeof(int));
-            return result;
-
-        }*/
     }
 }

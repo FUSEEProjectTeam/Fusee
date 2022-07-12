@@ -298,7 +298,7 @@ namespace Fusee.Math.Core
         #endregion public int[] ToArray()
 
         /// <summary>
-        /// Converts this int4 - which is interpreted as a color - from sRgb space to linear color space.       
+        /// Converts this int4 - which is interpreted as a color - from sRgb space to linear color space.
         /// </summary>
         /// <returns></returns>
         public int4 LinearColorFromSRgb()
@@ -474,6 +474,8 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static float4 Normalize(int4 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return float4.Zero;
+
             float scale = 1.0f / vec.Length;
 
             return new float4()
@@ -496,6 +498,8 @@ namespace Fusee.Math.Core
         /// <returns>The scaled vector.</returns>
         public static float4 Normalize1(int4 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return float4.Zero;
+
             float scale = 1.0f / vec.Length1;
 
             return new float4()
@@ -518,6 +522,8 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static float4 NormalizeFast(int4 vec)
         {
+            if (vec.Length <= M.EpsilonFloat) return float4.Zero;
+
             float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
             return new float4()
             {
@@ -592,7 +598,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         public static float4 Lerp(int4 a, int4 b, float4 blend)
         {
             return new float4()

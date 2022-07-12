@@ -1,151 +1,208 @@
-using System.Drawing;
-using Xunit;
-using Xunit.Abstractions;
+using NUnit.Framework;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using System.Diagnostics;
+using System.IO;
 
 namespace Fusee.Tests.Render.Desktop
 {
+
+    [SetUpFixture]
+    public class SetupTrace
+    {
+        [OneTimeSetUp]
+        public void StartTest()
+        {
+            Trace.Listeners.Add(new ConsoleTraceListener());
+        }
+
+        [OneTimeTearDown]
+        public void EndTest()
+        {
+            Trace.Flush();
+        }
+    }
+
     public class RenderTests
     {
-        private readonly ITestOutputHelper output;
-
-        public RenderTests(ITestOutputHelper output)
-        {
-            this.output = output;
-        }
-
-        [Fact]
+        [Test]
         public void AdvancedUITest()
         {
-            Program.Example = new Fusee.Examples.AdvancedUI.Core.AdvancedUI() { rnd = new System.Random(12345) };
-            Program.Init("AdvancedUITest.png");
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "AdvancedUI.png");
+            var testImagePath = Path.Combine(Program.FilePath, "AdvancedUI.png");
 
-            var referenceIm = new Bitmap(@"References\AdvancedUI.png");
-            var testIm = new Bitmap("AdvancedUITest.png");
+            var result = CompareImage(referenceImagePath, testImagePath);
 
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
-        //[Fact]
-        //public void BoneAnimationTest()
-        //{
-        //    Program.Example = new Fusee.Examples.Bone.Core.Bone();
-        //    Program.Init("BoneAnimationTest.png");
+        [Test]
+        public void CameraTest()
+        {
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "Camera.png");
+            var testImagePath = Path.Combine(Program.FilePath, "Camera.png");
 
-        //    var referenceIm = new Bitmap(@"References\BoneAnimation.png");
-        //    var testIm = new Bitmap("BoneAnimationTest.png");
+            var result = CompareImage(referenceImagePath, testImagePath);
 
-        //    var percent = CompareImage(referenceIm, testIm);
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
+        }
 
-        //    Assert.InRange(percent, 0.99f, 1f);
-        //    output.WriteLine(percent.ToString());
-        //}
+        [Test]
+        public void FractalTest()
+        {
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "Fractal.png");
+            var testImagePath = Path.Combine(Program.FilePath, "Fractal.png");
 
-        [Fact]
+            var result = CompareImage(referenceImagePath, testImagePath);
+
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
+        }
+
+        [Test]
+        public void DeferredTest()
+        {
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "Deferred.png");
+            var testImagePath = Path.Combine(Program.FilePath, "Deferred.png");
+
+            var result = CompareImage(referenceImagePath, testImagePath);
+
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
+        }
+
+        [Test]
         public void GeometryEditingTest()
         {
-            Program.Example = new Fusee.Examples.GeometryEditing.Core.GeometryEditing();
-            Program.Init("GeometryEditingTest.png");
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "GeometryEditing.png");
+            var testImagePath = Path.Combine(Program.FilePath, "GeometryEditing.png");
 
-            var referenceIm = new Bitmap(@"References\GeometryEditing.png");
-            var testIm = new Bitmap("GeometryEditingTest.png");
+            var result = CompareImage(referenceImagePath, testImagePath);
 
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
-        [Fact]
+        [Test]
+        public void LabyrinthTest()
+        {
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "Labyrinth.png");
+            var testImagePath = Path.Combine(Program.FilePath, "Labyrinth.png");
+
+            var result = CompareImage(referenceImagePath, testImagePath);
+
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
+        }
+
+        [Test]
+        public void MaterialsTest()
+        {
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "Materials.png");
+            var testImagePath = Path.Combine(Program.FilePath, "Materials.png");
+
+            var result = CompareImage(referenceImagePath, testImagePath);
+
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
+        }
+
+        [Test]
         public void MeshingAroundTest()
         {
-            Program.Example = new Fusee.Examples.MeshingAround.Core.MeshingAround();
-            Program.Init("MeshingAroundTest.png");
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "MeshingAround.png");
+            var testImagePath = Path.Combine(Program.FilePath, "MeshingAround.png");
 
-            var referenceIm = new Bitmap(@"References\MeshingAround.png");
-            var testIm = new Bitmap("MeshingAroundTest.png");
+            var result = CompareImage(referenceImagePath, testImagePath);
 
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
-        [Fact]
+        [Test]
         public void PickingTest()
         {
-            Program.Example = new Fusee.Examples.Picking.Core.Picking();
-            Program.Init("PickingTest.png");
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "Picking.png");
+            var testImagePath = Path.Combine(Program.FilePath, "Picking.png");
 
-            var referenceIm = new Bitmap(@"References\Picking.png");
-            var testIm = new Bitmap("PickingTest.png");
+            var result = CompareImage(referenceImagePath, testImagePath);
 
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
-        [Fact]
+        [Test]
+        public void PointCloudPotree2Test()
+        {
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "PointCloudPotree2.png");
+            var testImagePath = Path.Combine(Program.FilePath, "PointCloudPotree2.png");
+
+            var result = CompareImage(referenceImagePath, testImagePath);
+
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
+        }
+
+        [Test]
+        public void RenderContextOnlyTest()
+        {
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "RenderContextOnly.png");
+            var testImagePath = Path.Combine(Program.FilePath, "RenderContextOnly.png");
+
+            var result = CompareImage(referenceImagePath, testImagePath);
+
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
+        }
+
+        [Test]
+        public void RenderLayerTest()
+        {
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "RenderLayer.png");
+            var testImagePath = Path.Combine(Program.FilePath, "RenderLayer.png");
+
+            var result = CompareImage(referenceImagePath, testImagePath);
+
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
+        }
+
+        [Test]
         public void SimpleTest()
         {
-            Program.Example = new Fusee.Examples.Simple.Core.Simple();
-            Program.Init("SimpleTest.png");
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "Simple.png");
+            var testImagePath = Path.Combine(Program.FilePath, "Simple.png");
 
-            var referenceIm = new Bitmap(@"References\Simple.png");
-            var testIm = new Bitmap("SimpleTest.png");
+            var result = CompareImage(referenceImagePath, testImagePath);
 
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.98f, 1f);
-            output.WriteLine(percent.ToString());
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
-        //[Fact]
-        //public void SimpleDeferredTest()
-        //{
-        //    Program.Example = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
-        //    Program.Init("SimpleDeferredTest.png");
-
-        //    var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
-        //    var testIm = new Bitmap("SimpleDeferredTest.png");
-
-        //    var percent = CompareImage(referenceIm, testIm);
-
-        //    Assert.InRange(percent, 0.01f, 1f);
-        //    output.WriteLine(percent.ToString());
-        //}
-
-        [Fact]
+        [Test]
         public void ThreeDFontTest()
         {
-            Program.Example = new Fusee.Examples.ThreeDFont.Core.ThreeDFont();
-            Program.Init("ThreeDFontTest.png");
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "ThreeDFont.png");
+            var testImagePath = Path.Combine(Program.FilePath, "ThreeDFont.png");
 
-            var referenceIm = new Bitmap(@"References\ThreeDFont.png");
-            var testIm = new Bitmap("ThreeDFontTest.png");
+            var result = CompareImage(referenceImagePath, testImagePath);
 
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
-        [Fact]
+        [Test]
         public void UITest()
         {
-            Program.Example = new Fusee.Examples.UI.Core.UI();
-            Program.Init("UITest.png");
+            var referenceImagePath = Path.Combine(Program.FilePath, "References", "UI.png");
+            var testImagePath = Path.Combine(Program.FilePath, "UI.png");
 
-            var referenceIm = new Bitmap(@"References\UI.png");
-            var testIm = new Bitmap("UITest.png");
+            var result = CompareImage(referenceImagePath, testImagePath);
 
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
+            TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
+            Assert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         /// <summary>
@@ -154,20 +211,51 @@ namespace Fusee.Tests.Render.Desktop
         /// <param name="referenceIm">The reference image to compare to.</param>
         /// <param name="testIm">The image that is to be compared.</param>
         /// <returns>The percentage of pixels not the same in the two images.</returns>
-        private static float CompareImage(Bitmap referenceIm, Bitmap testIm)
+        private static (float averageDifference, float maximumDifference, int differentPixelCount, int pixelCount) CompareImage(string referenceImagePath, string testImagePath)
         {
-            var count = 0;
+            var countDiff = 0;
 
-            for (int x = 0; x < System.Math.Min(referenceIm.Width, testIm.Width); x++)
+            var maxDiff = 0.0f;
+            var meanDiff = 0.0f;
+
+            if (!File.Exists(referenceImagePath) || !File.Exists(testImagePath))
+            { return (999, 999, 999, 999); }
+
+            Image<Rgba32> referenceIm = Image.Load(referenceImagePath) as Image<Rgba32>;
+            Image<Rgba32> testIm = Image.Load(testImagePath) as Image<Rgba32>;
+
+            if (referenceIm.Width != testIm.Width || referenceIm.Height != testIm.Height)
+            { return (999, 999, 999, 999); }
+
+            for (int x = 0; x < System.MathF.Min(referenceIm.Width, testIm.Width); x++)
             {
-                for (int y = 0; y < System.Math.Min(referenceIm.Height, testIm.Height); y++)
+                for (int y = 0; y < System.MathF.Min(referenceIm.Height, testIm.Height); y++)
                 {
-                    if (!testIm.GetPixel(x, y).Equals(referenceIm.GetPixel(x, y)))
-                        count++;
+                    var diffR = System.MathF.Abs(testIm[x, y].R - referenceIm[x, y].R);
+                    var diffG = System.MathF.Abs(testIm[x, y].G - referenceIm[x, y].G);
+                    var diffB = System.MathF.Abs(testIm[x, y].B - referenceIm[x, y].B);
+
+                    var diff = ((diffR + diffG + diffB) / 3f) / 255f;
+
+                    if (!(diff == 0.0f))
+                    {
+                        countDiff++;
+                        if (maxDiff < diff)
+                            maxDiff = diff;
+
+                        if (meanDiff == 0.0f)
+                        {
+                            meanDiff = diff;
+                        }
+                        else
+                        {
+                            meanDiff = (meanDiff + diff) / 2f;
+                        }
+                    }
                 }
             }
 
-            return 1 - ((float)count / (referenceIm.Height * referenceIm.Width));
+            return (meanDiff, maxDiff, countDiff, referenceIm.Width * referenceIm.Height);
         }
     }
 }

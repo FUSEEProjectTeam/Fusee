@@ -1,9 +1,6 @@
 ﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 namespace Fusee.Engine.Core
 {

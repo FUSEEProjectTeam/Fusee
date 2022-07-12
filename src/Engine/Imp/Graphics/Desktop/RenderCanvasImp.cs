@@ -1,15 +1,24 @@
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Diagnostics;
-using System.Drawing;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Image = OpenTK.Windowing.Common.Input.Image;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
-using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
+
+// friend: Fusee.Tests.Render.Desktop
+[assembly: InternalsVisibleTo("Fusee.Tests.Render.Desktop")]
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
+
     /// <summary>
     /// This is a default render canvas implementation creating its own rendering window.
     /// </summary>
@@ -156,7 +165,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public bool Focused => _gameWindow.IsFocused;
 
-        // Some tryptichon related Fields.
+        #region Tryptichon related Fields.
 
         /// <summary>
         /// Activates (true) or deactivates (false) the video wall feature.
@@ -185,6 +194,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             set => _videoWallMonitorsHor = value;
         }
 
+        #endregion
+
         internal RenderCanvasGameWindow _gameWindow;
 
         #endregion
@@ -193,16 +204,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        public RenderCanvasImp() : this(null)
+        public RenderCanvasImp() : this(null, false)
         {
+
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        /// <param name="appIcon">The icon for the render window.</param>
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
-        public RenderCanvasImp(Icon appIcon, bool isMultithreaded = false)
+        /// <param name="icon">The window icon to use</param>
+        /// <param name="startVisible">Define if window is visible from the start, default: true.</param>
+        public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false, bool startVisible = true)
         {
             //TODO: Select correct monitor
             MonitorInfo mon = Monitors.GetMonitors()[0];
@@ -218,11 +231,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible);
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible);
             }
 
             WindowHandle = new WindowHandle()
@@ -231,9 +244,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
 
             _gameWindow.CenterWindow();
+
             if (_gameWindow.IsMultiThreaded)
                 _gameWindow.Context.MakeNoneCurrent();
+
+            // convert icon to OpenTKImage
+            if (icon != null)
+            {
+                var res = new Span<Rgba32>(new Rgba32[width * height]);
+                var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(icon.PixelData, icon.Width, icon.Height);
+                pxData.Mutate(x => x.AutoOrient());
+                pxData.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+
+                pxData.CopyPixelDataTo(res);
+
+                var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
+                _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, resBytes.ToArray()) });
+            }
         }
+
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
@@ -259,6 +289,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
 
             _gameWindow.IsVisible = false;
+
             if (_gameWindow.IsMultiThreaded)
                 _gameWindow.Context.MakeNoneCurrent();
         }
@@ -350,8 +381,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             if (_gameWindow != null)
             {
+                NativeWindow.ProcessWindowEvents(true);
                 _gameWindow.Close();
-                _gameWindow.ProcessEvents();
                 _gameWindow.Dispose();
             }
         }
@@ -413,19 +444,22 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="width">The width of the window, and therefore image to render.</param>
         /// <param name="height">The height of the window, and therefore image to render.</param>
         /// <returns></returns>
-        public Bitmap ShootCurrentFrame(int width, int height)
+        public SixLabors.ImageSharp.Image ShootCurrentFrame(int width, int height)
         {
-            DoInit();
-            DoRender();
-            DoResize(width, height);
+            var mem = new byte[width * height * 4];
 
-            var bmp = new Bitmap(this.Width, this.Height, SDPixelFormat.Format32bppArgb);
-            var mem = bmp.LockBits(new System.Drawing.Rectangle(0, 0, Width, Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, SDPixelFormat.Format32bppArgb);
-            GL.PixelStore(PixelStoreParameter.PackRowLength, mem.Stride / 4);
-            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, mem.Scan0);
-            bmp.UnlockBits(mem);
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-            return bmp;
+            //_gameWindow.Context.MakeCurrent();
+
+            GL.Flush();
+            //GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
+            GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+            //GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+
+            var img = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(mem, width, height);
+
+            img.Mutate(x => x.AutoOrient());
+            img.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+            return img;
         }
 
         #endregion
@@ -536,6 +570,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private readonly RenderCanvasImp _renderCanvasImp;
 
         /// <summary>
+        /// True if the GameWindow/ the application uses multiple threads.
+        /// With OpenTK 4.7 we need to use the "new" modifier to hide the GameWindow.IsMultithreaded property, which became obsolete in this version.
+        /// </summary>
+        public new bool IsMultiThreaded { get; private set; } = false;
+
+        /// <summary>
         /// Gets the delta time.
         /// The delta time is the time that was required to render the last frame in milliseconds.
         /// This value can be used to determine the frames per second of the application.
@@ -589,9 +629,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="height">The height.</param>
         /// <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false)
-            : base(new GameWindowSettings { IsMultiThreaded = isMultithreaded }, new NativeWindowSettings { Size = new OpenTK.Mathematics.Vector2i(width, height), Profile = OpenTK.Windowing.Common.ContextProfile.Core, Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible })
+        /// <param name="startVisible">Should the window be visible from the start, default: true.</param>
+        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false, bool startVisible = true)
+            : base(new GameWindowSettings { IsMultiThreaded = isMultithreaded }, new NativeWindowSettings
+            {
+                Size = new OpenTK.Mathematics.Vector2i(width, height),
+                Profile = OpenTK.Windowing.Common.ContextProfile.Core,
+                Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible,
+                StartVisible = startVisible
+            })
         {
+            IsMultiThreaded = isMultithreaded;
             _renderCanvasImp = renderCanvasImp;
             _renderCanvasImp.BaseWidth = width;
             _renderCanvasImp.BaseHeight = height;
@@ -613,11 +661,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
             }
-
-            GL.ClearColor(Color.MidnightBlue);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.CullFace);
 
             // Use VSync!
             VSync = OpenTK.Windowing.Common.VSyncMode.On;

@@ -162,14 +162,8 @@ namespace Fusee.Examples.Materials.Core
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            RC.Viewport(0, 0, Width, Height);
-
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -179,22 +173,22 @@ namespace Fusee.Examples.Materials.Core
             if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -MovementSpeed * Mouse.XVel * DeltaTime;
-                _angleVelVert = -MovementSpeed * Mouse.YVel * DeltaTime;
+                _angleVelHorz = -MovementSpeed * Mouse.XVel * DeltaTimeUpdate;
+                _angleVelVert = -MovementSpeed * Mouse.YVel * DeltaTimeUpdate;
             }
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -MovementSpeed * touchVel.x * DeltaTime;
-                _angleVelVert = -MovementSpeed * touchVel.y * DeltaTime;
+                _angleVelHorz = -MovementSpeed * touchVel.x * DeltaTimeUpdate;
+                _angleVelVert = -MovementSpeed * touchVel.y * DeltaTimeUpdate;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = MovementSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = MovementSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = MovementSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = MovementSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
             }
 
@@ -203,7 +197,12 @@ namespace Fusee.Examples.Materials.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 5);
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 5);
+        }
+
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
             _sceneRenderer.Render(RC);
 
             _guiRenderer.Render(RC);

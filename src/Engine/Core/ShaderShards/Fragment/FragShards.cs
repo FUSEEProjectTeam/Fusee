@@ -5,18 +5,42 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
     /// <summary>
-    /// Contains pre-defined Shader Shards = 
-    /// content of the Fragment Shader's method that lets us change values of the "out"-struct that is used for the lighting calculation. 
+    /// Contains pre-defined Shader Shards =
+    /// content of the Fragment Shader's method that lets us change values of the "out"-struct that is used for the lighting calculation.
     /// </summary>
     public static class FragShards
     {
+
+        private static List<string> ColorModeSwitch() => new()
+        {
+            "vec4 resColor;",
+            $"switch({UniformNameDeclarations.ColorMode})",
+            @"{
+      case 0:
+         resColor = IN.Albedo;
+         break;
+      case 1:
+         resColor = vColor;
+         break;
+      case 2:
+         resColor = vColor1;
+         break;
+      case 3:
+         resColor = vColor2;
+         break;
+    }"
+        };
+
+
         /// <summary>
         /// Returns a default method body for a given lighting calculation.
         /// <param name="surfInput">The surface input class. Needed to receive the shading model and texture setup.</param>
         /// </summary>
-        internal static List<string> SurfOutBody(SurfaceInput surfInput)
+        internal static List<string> SurfOutBody(SurfaceEffectInput surfInput)
         {
             var res = new List<string>();
+
+            res.AddRange(ColorModeSwitch());
 
             switch (surfInput.ShadingModel)
             {
@@ -56,13 +80,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 res.Add($"vec4 texCol = texture(IN.AlbedoTex, {VaryingNameDeclarations.TextureCoordinates} * IN.TexTiles);");
                 res.Add($"texCol = vec4(DecodeSRGB(texCol.rgb), texCol.a);");
                 res.Add("float linearLuminance = (0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b);");
-                res.Add($"vec3 mix = mix(IN.Albedo.rgb * linearLuminance, texCol.xyz, IN.AlbedoMix);");
+                res.Add($"vec3 mix = mix(resColor.rgb * linearLuminance, texCol.xyz, IN.AlbedoMix);");
                 res.Add($"OUT.albedo = vec4(mix, texCol.a);");
             }
             else
             {
                 if (surfInput.ShadingModel != ShadingModel.Edl)
-                    res.Add("OUT.albedo = IN.Albedo;");
+                    res.Add("OUT.albedo = resColor;");
                 else
                 {
                     res.Add("if(ColorMode == 0)");
@@ -71,7 +95,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     res.Add("}");
                     res.Add("else");
                     res.Add("{");
-                    res.Add("   OUT.albedo = IN.Albedo;");
+                    res.Add("   OUT.albedo = resColor;");
                     res.Add("}");
                 }
             }
@@ -89,7 +113,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             if (surfInput.ShadingModel != ShadingModel.BRDF) return res;
 
             if (surfInput.TextureSetup.HasFlag(TextureSetup.ThicknessMap))
-                res.Add($"OUT.{SurfaceOut.Thickness.Item2} = texture(IN.ThicknessMap, { VaryingNameDeclarations.TextureCoordinates}).r;");
+                res.Add($"OUT.{SurfaceOut.Thickness.Item2} = texture(IN.ThicknessMap, {VaryingNameDeclarations.TextureCoordinates}).r;");
             else
                 res.Add($"OUT.{SurfaceOut.Thickness.Item2} = 1.0;");
             return res;
@@ -101,6 +125,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         internal static List<string> SurfOutBody(ShadingModel shadingModel, TextureSetup texSetup)
         {
             var res = new List<string>();
+
+            res.AddRange(ColorModeSwitch());
 
             switch (shadingModel)
             {
@@ -136,32 +162,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 res.Add($"vec4 texCol = texture(IN.AlbedoTex, {VaryingNameDeclarations.TextureCoordinates} * IN.TexTiles);");
                 res.Add($"texCol = vec4(DecodeSRGB(texCol.rgb), texCol.a);");
                 res.Add("float linearLuminance = (0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b);");
-                res.Add($"vec3 mix = mix(IN.Albedo.rgb * linearLuminance, texCol.xyz, IN.AlbedoMix);");
+                res.Add($"vec3 mix = mix(resColor.rgb * linearLuminance, texCol.xyz, IN.AlbedoMix);");
                 res.Add($"OUT.albedo = vec4(mix, texCol.a);");
             }
             else
             {
-                if (shadingModel != ShadingModel.Edl)
-                    res.Add("OUT.albedo = IN.Albedo;");
-                else
-                {
-                    res.Add("if(ColorMode == 0)");
-                    res.Add("{");
-                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color};");
-                    res.Add("}");
-                    res.Add("else if(ColorMode == 1)");
-                    res.Add("{");
-                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color1};");
-                    res.Add("}");
-                    res.Add("else if(ColorMode == 2)");
-                    res.Add("{");
-                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color2};");
-                    res.Add("}");
-                    res.Add("else if(ColorMode == 3)");
-                    res.Add("{");
-                    res.Add("   OUT.albedo = IN.Albedo;");
-                    res.Add("}");
-                }
+                res.Add("OUT.albedo = resColor;");
             }
 
             if (texSetup.HasFlag(TextureSetup.NormalMap))
@@ -178,7 +184,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             if (shadingModel != ShadingModel.BRDF) return res;
 
             if (texSetup.HasFlag(TextureSetup.ThicknessMap))
-                res.Add($"OUT.{SurfaceOut.Thickness.Item2} = texture(IN.ThicknessMap, { VaryingNameDeclarations.TextureCoordinates}).r;");
+                res.Add($"OUT.{SurfaceOut.Thickness.Item2} = texture(IN.ThicknessMap, {VaryingNameDeclarations.TextureCoordinates}).r;");
             else
                 res.Add($"OUT.{SurfaceOut.Thickness.Item2} = 1.0;");
             return res;

@@ -10,7 +10,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {         
+        {
             var program = new Fusee.Base.Imp.Blazor.BlazorProgramm();
             var main = new Main();
             program.Start(main, (IJSInProcessRuntime)JS);

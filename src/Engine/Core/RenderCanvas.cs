@@ -58,7 +58,7 @@ namespace Fusee.Engine.Core
         /// <value>
         ///     Use the render context (<see cref="RenderContext" />) to fill the render canvas with 3d contents.
         /// </value>
-        protected RenderContext RC { get; private set; }
+        public RenderContext RC { get; private set; }
 
         #endregion
 
@@ -180,6 +180,8 @@ namespace Fusee.Engine.Core
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
             RC.SetRenderStateSet(RenderStateSet.Default);
+            RC.GetWindowHeight = () => CanvasImplementor.Height;
+            RC.GetWindowWidth = () => CanvasImplementor.Width;
 
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
@@ -199,7 +201,10 @@ namespace Fusee.Engine.Core
                 if (!IsLoaded) return;
 
                 Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
+                Input.Instance.PreUpdate();
                 Update();
+                // post-rendering
+                Input.Instance.PostUpdate();
             };
 
             CanvasImplementor.Render += delegate
@@ -209,15 +214,11 @@ namespace Fusee.Engine.Core
                 if (IsShuttingDown) return;
 
                 // pre-rendering
-                Input.Instance.PreRender();
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
 
                 // rendering
                 if (Width != 0 || Height != 0)
                     RenderAFrame();
-
-                // post-rendering
-                Input.Instance.PostRender();
             };
 
             CanvasImplementor.Resize += delegate

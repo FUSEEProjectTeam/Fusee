@@ -1,8 +1,10 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Imp.Blazor;
+using Fusee.Engine.Imp.SharedAll;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -38,6 +40,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         private uint _blendDstAlpha;
 
         private bool _isCullEnabled;
+        private WebGLFramebuffer _lastBoundFbo;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
@@ -49,6 +52,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             _shaderParam2TexUnit = new Dictionary<WebGLUniformLocation, int>();
 
             gl2 = ((RenderCanvasImp)renderCanvasImp)._gl;
+
+            gl2.Enable(CULL_FACE);
+            gl2.CullFace(BACK);
 
             gl2.Enable(DEPTH_TEST);
             gl2.Enable(SCISSOR_TEST);
@@ -86,7 +92,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     magFilter = (int)LINEAR;
                     break;
                 case TextureFilterMode.NearestMipmapLinear:
-                    minFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    minFilter = (int)LINEAR;// TODO(mr): NEAREST_MIPMAP_LINEAR; breaks everything with invalid enum, don't know WHY?
                     magFilter = (int)LINEAR;
                     break;
                 case TextureFilterMode.LinearMipmapLinear:
@@ -130,13 +136,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             };
         }
 
-        private static TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
+        private static TexturePixelInfo GetTexturePixelInfo(ImagePixelFormat pxFormat)
         {
             uint internalFormat;
             uint format;
             uint pxType;
 
-            switch (tex.PixelFormat.ColorFormat)
+            //The wrong row alignment will lead to malformed textures.
+            //See https://www.khronos.org/opengl/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
+            //and https://www.khronos.org/opengl/wiki/Pixel_Transfer#Pixel_layout
+            int rowAlignment = 4;
+
+            switch (pxFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = RGBA;
@@ -147,11 +158,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     internalFormat = RGB;
                     format = RGB;
                     pxType = UNSIGNED_BYTE;
+                    rowAlignment = 1;
                     break;
                 case ColorFormat.Intensity:
                     internalFormat = R8;
                     format = RED;
                     pxType = UNSIGNED_BYTE;
+                    rowAlignment = 1;
                     break;
                 case ColorFormat.Depth24:
                     internalFormat = DEPTH_COMPONENT24;
@@ -167,19 +180,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     internalFormat = RGBA8UI;
                     format = RGBA;
                     pxType = UNSIGNED_INT;
+                    rowAlignment = 1;
                     break;
                 case ColorFormat.fRGB32:
                     throw new NotSupportedException("WebGL 2.0: fRGB32 not supported");
-                    //internalFormat = RGB32F;
-                    //format = RGB;
-                    //pxType = FLOAT;
-                    break;
+                //internalFormat = RGB32F;
+                //format = RGB;
+                //pxType = FLOAT;
                 case ColorFormat.fRGB16:
                     throw new NotSupportedException("WebGL 2.0: fRGB16 not supported");
-                    //internalFormat = RGB16F;
-                    //format = RGB;
-                    //pxType = HALF_FLOAT;
-                    break;
+                //internalFormat = RGB16F;
+                //format = RGB;
+                //pxType = HALF_FLOAT;
                 case ColorFormat.fRGBA16:
                     internalFormat = RGBA16F;
                     format = RGBA;
@@ -191,19 +203,20 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     pxType = FLOAT;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {tex.PixelFormat.ColorFormat}");
+                    throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {pxFormat.ColorFormat}");
             }
 
             return new TexturePixelInfo()
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType
+                PxType = pxType,
+                RowAlignment = rowAlignment
 
             };
         }
 
-        private static Array GetEmptyArray(ITextureBase tex)
+        private static Array GetEmptyArray(IWritableTexture tex)
         {
             return tex.PixelFormat.ColorFormat switch
             {
@@ -235,7 +248,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int magFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             var data = GetEmptyArray(img);
 
@@ -255,7 +268,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 throw new ArgumentException($"Create Texture gl2 error {err}, Format {img.PixelFormat.ColorFormat}, BPP {img.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
 
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             return texID;
         }
@@ -276,11 +289,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var maxFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            gl2.PixelStorei(UNPACK_ALIGNMENT, pxInfo.RowAlignment);
+            gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
 
-            if (img.DoGenerateMipMaps && img.PixelFormat.ColorFormat != ColorFormat.Intensity)
+            if (img.DoGenerateMipMaps && img.ImageData.PixelFormat.ColorFormat != ColorFormat.Intensity)
                 gl2.GenerateMipmap(TEXTURE_2D);
 
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, minFilter);
@@ -291,10 +305,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             uint err = gl2.GetError();
             if (err != 0)
-                throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {img.PixelFormat.ColorFormat}, BPP {img.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
+                throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {img.ImageData.PixelFormat.ColorFormat}, BPP {img.ImageData.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
 
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
             return texID;
         }
 
@@ -305,6 +319,21 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableTexture img)
         {
+            if (img is not WritableTexture wt)
+            {
+                throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
+            }
+
+            return CreateTexture(wt);
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(WritableTexture img)
+        {
             WebGLTexture id = gl2.CreateTexture();
             gl2.BindTexture(TEXTURE_2D, id);
 
@@ -313,7 +342,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var magFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             Array imgData = GetEmptyArray(img);
 
@@ -330,7 +359,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, glWrapMode);
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             uint err = gl2.GetError();
             if (err != 0)
@@ -352,13 +381,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            TexturePixelInfo info = GetTexturePixelInfo(img);
+            TexturePixelInfo info = GetTexturePixelInfo(img.ImageData.PixelFormat);
             uint format = info.Format;
             uint pxType = info.PxType;
 
-            // copy the bytes from img to GPU texture
-            int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
-            IEnumerator<ScanLine> scanlines = img.ScanLines(startX, startY, width, height);
+            // copy the bytes from image to GPU texture
+            int bytesTotal = width * height * img.ImageData.PixelFormat.BytesPerPixel;
+            IEnumerator<ScanLine> scanlines = img.ImageData.ScanLines(startX, startY, width, height);
             byte[] bytes = new byte[bytesTotal];
             int offset = 0;
             do
@@ -372,7 +401,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             } while (scanlines.MoveNext());
 
-            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
+            gl2.PixelStorei(UNPACK_ALIGNMENT, pxInfo.RowAlignment);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexId);
             gl2.TexSubImage2D(TEXTURE_2D, 0, startX, startY, width, height, format, pxType, bytes);
 
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
@@ -417,9 +448,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 gl2.DeleteRenderbuffer(texHandle.DepthRenderBufferHandle);
             }
 
-            if (texHandle.TexHandle != null)
+            if (texHandle.TexId != null)
             {
-                gl2.DeleteTexture(texHandle.TexHandle);
+                gl2.DeleteTexture(texHandle.TexId);
             }
         }
 
@@ -475,16 +506,20 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
             gl2.BindAttribLocation(program, (uint)AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.ColorAttribLocation, UniformNameDeclarations.VertexColor);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.Color1AttribLocation, UniformNameDeclarations.VertexColor1);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.Color2AttribLocation, UniformNameDeclarations.VertexColor2);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.TangentAttribLocation, UniformNameDeclarations.Tangent);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.InstancedColor, UniformNameDeclarations.InstanceColor);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.InstancedModelMat1, UniformNameDeclarations.InstanceModelMat);
 
             gl2.LinkProgram(program);
 
-            return new ShaderHandleImp { Handle = program };
+            return new ShaderHandle { Handle = program };
         }
 
         /// <inheritdoc />
@@ -496,7 +531,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             if (sp == null) return;
 
-            WebGLProgram program = ((ShaderHandleImp)sp).Handle;
+            WebGLProgram program = ((ShaderHandle)sp).Handle;
 
             // wait for all threads to be finished
             gl2.Finish();
@@ -516,7 +551,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             _textureCountPerShader = 0;
             _shaderParam2TexUnit.Clear();
 
-            gl2.UseProgram(((ShaderHandleImp)program).Handle);
+            gl2.UseProgram(((ShaderHandle)program).Handle);
         }
 
         /// <summary>
@@ -536,22 +571,22 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="shaderProgram">The shader program.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
+        public IUniformHandle GetShaderParam(IShaderHandle shaderProgram, string paramName)
         {
-            WebGLUniformLocation h = gl2.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, paramName);
-            return (h == null) ? null : new ShaderParam { handle = h };
+            WebGLUniformLocation h = gl2.GetUniformLocation(((ShaderHandle)shaderProgram).Handle, paramName);
+            return (h == null) ? null : new UniformHandle { handle = h };
         }
 
         /// <summary>
-        /// Gets the float parameter value inside a shader program by using a <see cref="IShaderParam" /> as search reference.
+        /// Gets the float parameter value inside a shader program by using a <see cref="IUniformHandle" /> as search reference.
         /// Do not use this function in frequent updates as it transfers information from the graphics card to the cpu which takes time.
         /// </summary>
         /// <param name="program">The shader program.</param>
         /// <param name="param">The parameter.</param>
         /// <returns>The current parameter's value.</returns>
-        public float GetParamValue(IShaderHandle program, IShaderParam param)
+        public float GetParamValue(IShaderHandle program, IUniformHandle param)
         {
-            float f = (float)gl2.GetUniform(((ShaderHandleImp)program).Handle, ((ShaderParam)param).handle);
+            float f = (float)gl2.GetUniform(((ShaderHandle)program).Handle, ((UniformHandle)param).handle);
             return f;
         }
 
@@ -562,10 +597,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
+        public IList<IActiveUniform> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
-            ShaderHandleImp sProg = (ShaderHandleImp)shaderProgram;
-            List<ShaderParamInfo> paramList = new();
+            ShaderHandle sProg = (ShaderHandle)shaderProgram;
+            List<IActiveUniform> paramList = new();
 
             int nParams = gl2.GetProgramParameter(sProg.Handle, ACTIVE_UNIFORMS);
 
@@ -573,30 +608,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 WebGLActiveInfo activeInfo = gl2.GetActiveUniform(sProg.Handle, i);
 
-                ShaderParamInfo paramInfo = new()
+                var paramInfo = new ActiveUniform()
                 {
                     Name = activeInfo.Name,
-                    Size = activeInfo.Size
+                    Size = activeInfo.Size,
+                    HasValueChanged = true
                 };
-                uint uType = activeInfo.Type;//activeInfo.GlType;
+                //uint uType = activeInfo.Type;//activeInfo.GlType;
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
-
-                paramInfo.Type = uType switch
-                {
-                    INT => typeof(int),
-                    FLOAT => typeof(float),
-                    FLOAT_VEC2 => typeof(float2),
-                    FLOAT_VEC3 => typeof(float3),
-                    FLOAT_VEC4 => typeof(float4),
-                    FLOAT_MAT4 => typeof(float4x4),
-                    INT_VEC2 => typeof(float2),
-                    INT_VEC3 => typeof(float3),
-                    INT_VEC4 => typeof(float4),
-                    SAMPLER_2D or UNSIGNED_INT_SAMPLER_2D or INT_SAMPLER_2D or SAMPLER_2D_SHADOW => typeof(ITextureBase),
-                    SAMPLER_CUBE_SHADOW or SAMPLER_CUBE => typeof(IWritableCubeMap),
-                    SAMPLER_2D_ARRAY or SAMPLER_2D_ARRAY_SHADOW => typeof(IWritableArrayTexture),
-                    _ => throw new ArgumentOutOfRangeException($"Argument {paramInfo.Type} of {paramInfo.Name} not recognized, size {paramInfo.Size}"),
-                };
                 paramList.Add(paramInfo);
             }
             return paramList;
@@ -607,9 +626,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float val)
+        public void SetShaderParam(IUniformHandle param, float val)
         {
-            gl2.Uniform1f(((ShaderParam)param).handle, val);
+            gl2.Uniform1f(((UniformHandle)param).handle, val);
         }
 
         /// <summary>
@@ -617,27 +636,28 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float2 val)
+        public void SetShaderParam(IUniformHandle param, float2 val)
         {
-            gl2.Uniform2f(((ShaderParam)param).handle, val.x, val.y);
+            gl2.Uniform2f(((UniformHandle)param).handle, val.x, val.y);
         }
 
 
         /// <summary>
-        /// Sets a <see cref="float2[]" /> shader parameter.
+        /// Sets a <see cref="float2" /> array as shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float2[] val)
+        public void SetShaderParam(IUniformHandle param, float2[] val)
         {
-            var res = new List<float>(val.Length * 2);
+            var res = new float[val.Length * 2];
 
             for (var i = 0; i < val.Length; i++)
             {
-                res.AddRange(val[i].ToArray());
+                res[i * 2] = val[i].x;
+                res[i * 2 + 1] = val[i].y;
             }
 
-            gl2.Uniform2fv(((ShaderParam)param).handle, res.ToArray(), 0, (uint)res.Count);
+            gl2.Uniform2fv(((UniformHandle)param).handle, res, 0, (uint)res.Length);
         }
 
 
@@ -646,9 +666,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float3 val)
+        public void SetShaderParam(IUniformHandle param, float3 val)
         {
-            gl2.Uniform3f(((ShaderParam)param).handle, val.x, val.y, val.z);
+            gl2.Uniform3f(((UniformHandle)param).handle, val.x, val.y, val.z);
         }
 
         /// <summary>
@@ -656,14 +676,16 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float3[] val)
+        public void SetShaderParam(IUniformHandle param, float3[] val)
         {
-            var res = new List<float>(val.Length * 3);
+            var res = new float[val.Length * 3];
             for (var i = 0; i < val.Length; i++)
             {
-                res.AddRange(val[i].ToArray());
+                res[i] = val[i].x;
+                res[i + 1] = val[i].y;
+                res[i + 2] = val[i].z;
             }
-            gl2.Uniform3fv(((ShaderParam)param).handle, res.ToArray(), 0, (uint)res.Count);
+            gl2.Uniform3fv(((UniformHandle)param).handle, res, 0, (uint)res.Length);
         }
 
         /// <summary>
@@ -671,9 +693,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4 val)
+        public void SetShaderParam(IUniformHandle param, float4 val)
         {
-            gl2.Uniform4f(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
+            gl2.Uniform4f(((UniformHandle)param).handle, val.x, val.y, val.z, val.w);
         }
 
 
@@ -682,9 +704,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4x4 val)
+        public void SetShaderParam(IUniformHandle param, float4x4 val)
         {
-            gl2.UniformMatrix4fv(((ShaderParam)param).handle, true, val.ToArray());
+            gl2.UniformMatrix4fv(((UniformHandle)param).handle, true, val.ToArray());
 
         }
 
@@ -693,16 +715,19 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4[] val)
+        public void SetShaderParam(IUniformHandle param, float4[] val)
         {
-            var res = new List<float>(val.Length * 4);
+            var res = new float[val.Length * 4];
 
             for (var i = 0; i < val.Length; i++)
             {
-                res.AddRange(val[i].ToArray());
+                res[i * 4] = val[i].x;
+                res[i * 4 + 1] = val[i].y;
+                res[i * 4 + 2] = val[i].z;
+                res[i * 4 + 3] = val[i].w;
             }
 
-            gl2.Uniform4fv(((ShaderParam)param).handle, res.ToArray(), 0, (uint)res.Count);
+            gl2.Uniform4fv(((UniformHandle)param).handle, res, 0, (uint)res.Length);
         }
 
         /// <summary>
@@ -710,26 +735,39 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4x4[] val)
+        public void SetShaderParam(IUniformHandle param, float4x4[] val)
         {
             float4[] tmpArray = new float4[val.Length * 4];
 
             for (int i = 0; i < val.Length; i++)
             {
-                tmpArray[i * 4 + 0] = val[i].Column1;
+                tmpArray[i * 4] = val[i].Column1;
                 tmpArray[i * 4 + 1] = val[i].Column2;
                 tmpArray[i * 4 + 2] = val[i].Column3;
                 tmpArray[i * 4 + 3] = val[i].Column4;
             }
 
-            var res = new List<float>(tmpArray.Length * 4);
+            var res = new float[tmpArray.Length * 4];
 
             for (var i = 0; i < tmpArray.Length; i++)
             {
-                res.AddRange(tmpArray[i].ToArray());
+                res[i * 4] = tmpArray[i].x;
+                res[i * 4 + 1] = tmpArray[i].y;
+                res[i * 4 + 2] = tmpArray[i].z;
+                res[i * 4 + 3] = tmpArray[i].w;
             }
 
-            gl2.UniformMatrix4fv(((ShaderParam)param).handle, false, res.ToArray(), 0, (uint)res.Count);
+            gl2.UniformMatrix4fv(((UniformHandle)param).handle, false, res.ToArray(), 0, (uint)res.Length);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="int2" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IUniformHandle param, int2 val)
+        {
+            gl2.Uniform2i(((UniformHandle)param).handle, val.x, val.y);
         }
 
         /// <summary>
@@ -737,9 +775,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, int val)
+        public void SetShaderParam(IUniformHandle param, int val)
         {
-            gl2.Uniform1i(((ShaderParam)param).handle, val);
+            gl2.Uniform1i(((UniformHandle)param).handle, val);
         }
 
         private void BindTextureByTarget(ITextureHandle texId, TextureType texTarget)
@@ -750,17 +788,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     Diagnostics.Error("OpenTK ES31 does not support Texture1D.");
                     break;
                 case TextureType.Texture2D:
-                    gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.Texture3D:
-                    gl2.BindTexture(TEXTURE_3D, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_3D, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.TextureCubeMap:
-                    gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.ArrayTexture:
                     //Console.WriteLine("Binding array tex");
-                    gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.Image2D:
                 default:
@@ -774,10 +812,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="param">The shader parameter, associated with this texture.</param>
         /// <param name="texId">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
+        public void SetActiveAndBindTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget)
         {
 
-            WebGLUniformLocation iParam = ((ShaderParam)param).handle;
+            WebGLUniformLocation iParam = ((UniformHandle)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
             {
                 _textureCountPerShader++;
@@ -796,9 +834,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texId">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="texUnit">The texture unit.</param>
-        public void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget, out int texUnit)
+        public void SetActiveAndBindTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget, out int texUnit)
         {
-            WebGLUniformLocation iParam = ((ShaderParam)param).handle;
+            WebGLUniformLocation iParam = ((UniformHandle)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
             {
                 _textureCountPerShader++;
@@ -816,9 +854,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
         /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
+        public void SetActiveAndBindTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget)
         {
-            WebGLUniformLocation iParam = ((ShaderParam)param).handle;
+            WebGLUniformLocation iParam = ((UniformHandle)param).handle;
             int[] texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
@@ -845,9 +883,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="texUnitArray">The texture units.</param>
-        public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray)
+        public void SetActiveAndBindTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray)
         {
-            WebGLUniformLocation iParam = ((ShaderParam)param).handle;
+            WebGLUniformLocation iParam = ((UniformHandle)param).handle;
             texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
@@ -875,10 +913,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
+        public void SetShaderParamTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget)
         {
             SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);
-            gl2.Uniform1i(((ShaderParam)param).handle, texUnit);
+            gl2.Uniform1i(((UniformHandle)param).handle, texUnit);
         }
 
         /// <summary>
@@ -887,10 +925,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
+        public void SetShaderParamTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget)
         {
             SetActiveAndBindTextureArray(param, texIds, texTarget, out int[] texUnitArray);
-            gl2.Uniform1i(((ShaderParam)param).handle, texUnitArray[0]);
+            gl2.Uniform1i(((UniformHandle)param).handle, texUnitArray[0]);
         }
 
         #endregion
@@ -997,8 +1035,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int vertsBytes = attributes.Length * 3 * sizeof(float);
             WebGLBuffer handle = gl2.CreateBuffer();
 
+            float[] attribFlat = new float[attributes.Length * 3];
+            int i = 0;
+            foreach (float3 v in attributes)
+            {
+                attribFlat[i] = v.x;
+                attribFlat[i + 1] = v.y;
+                attribFlat[i + 2] = v.z;
+                i += 3;
+            }
+
             gl2.BindBuffer(ARRAY_BUFFER, handle);
-            gl2.BufferData(ARRAY_BUFFER, attributes, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, attribFlat, STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != vertsBytes)
             {
@@ -1050,15 +1098,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).VertexBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, 3, FLOAT, false, 0, 0);
 
             float[] verticesFlat = new float[vertices.Length * 3];
-
-            //{
-            ////fixed(float3* pBytes = &vertices[0])
-            //{
-            //Marshal.Copy((IntPtr)(pBytes), verticesFlat, 0, verticesFlat.Length);
-            //}
-            //}
             int i = 0;
             foreach (float3 v in vertices)
             {
@@ -1074,6 +1116,145 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
 
+        }
+
+        /// <summary>
+        /// Creates or updates the instance transform buffer. Positions, scales and rotations become the instance model matrices.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="InstanceDataImp"/>.</param>
+        /// <param name="instancePositions">The positions of the instances.</param>
+        /// <param name="instanceRotations">The rotations of the instances.</param>
+        /// <param name="instanceScales">The scales of the instances.</param>
+        public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
+        {
+            var vao = ((InstanceDataImp)instanceImp).VertexArrayObject;
+            if (vao == null)
+            {
+                throw new ApplicationException("Create the VAO first!");
+            }
+
+            var sizeOfFloat4 = sizeof(float) * 4;
+            var sizeOfMat = sizeOfFloat4 * 4;
+            var amount = instanceImp.Amount;
+            int matBytes = amount * sizeOfMat;
+
+            var modelMats = new float4x4[amount];
+
+            for (int i = 0; i < amount; i++)
+            {
+                var mat = float4x4.Identity;
+                if (instanceScales != null)
+                    mat = float4x4.CreateScale(instanceScales[i]);
+                if (instanceRotations != null)
+                    mat *= float4x4.CreateRotationZXY(instanceRotations[i]);
+                mat *= float4x4.CreateTranslation(instancePositions[i]);
+                modelMats[i] = mat;
+            }
+
+            var posBufferData = new float[amount * 16];
+            for (var i = 0; i < modelMats.Length; i++)
+            {
+                posBufferData[i * 16] = modelMats[i].M11;
+                posBufferData[i * 16 + 1] = modelMats[i].M21;
+                posBufferData[i * 16 + 2] = modelMats[i].M31;
+                posBufferData[i * 16 + 3] = modelMats[i].M41;
+
+                posBufferData[i * 16 + 4] = modelMats[i].M12;
+                posBufferData[i * 16 + 5] = modelMats[i].M22;
+                posBufferData[i * 16 + 6] = modelMats[i].M32;
+                posBufferData[i * 16 + 7] = modelMats[i].M42;
+
+                posBufferData[i * 16 + 8] = modelMats[i].M13;
+                posBufferData[i * 16 + 9] = modelMats[i].M23;
+                posBufferData[i * 16 + 10] = modelMats[i].M33;
+                posBufferData[i * 16 + 11] = modelMats[i].M43;
+
+                posBufferData[i * 16 + 12] = modelMats[i].M14;
+                posBufferData[i * 16 + 13] = modelMats[i].M24;
+                posBufferData[i * 16 + 14] = modelMats[i].M34;
+                posBufferData[i * 16 + 15] = modelMats[i].M44;
+            }
+
+            WebGLBuffer instanceTransformBo;
+            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == null)
+            {
+                instanceTransformBo = gl2.CreateBuffer();
+                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
+                gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
+                gl2.BufferData(ARRAY_BUFFER, posBufferData, DYNAMIC_DRAW);
+            }
+            else
+            {
+                instanceTransformBo = ((InstanceDataImp)instanceImp).InstanceTransformBufferObject;
+                gl2.BindBuffer(ARRAY_BUFFER, instanceTransformBo);
+                gl2.BufferSubData(ARRAY_BUFFER, IntPtr.Zero, posBufferData);
+            }
+
+            var instancedPosBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            if (instancedPosBytes != matBytes)
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedPosBytes, matBytes));
+
+            gl2.BindVertexArray(((InstanceDataImp)instanceImp).VertexArrayObject);
+            // set attribute pointers for matrix (4 times vec4)
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat1);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat1, 4, FLOAT, false, sizeOfMat, 0);
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat2);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat2, 4, FLOAT, false, sizeOfMat, (uint)(1 * sizeOfFloat4));
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat3);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat3, 4, FLOAT, false, sizeOfMat, (uint)(2 * sizeOfFloat4));
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat4);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat4, 4, FLOAT, false, sizeOfMat, (uint)(3 * sizeOfFloat4));
+
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedModelMat1, 1);
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedModelMat2, 1);
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedModelMat3, 1);
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedModelMat4, 1);
+        }
+
+        /// <summary>
+        /// Creates or updates the instance color buffer..
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="InstanceDataImp"/>.</param>
+        /// <param name="instanceColors">The colors of the instances.</param>
+        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
+        {
+            if (instanceColors == null)
+                return;
+
+            float[] colorsFlat = new float[instanceColors.Length * 4];
+            int i = 0;
+            foreach (float4 v in instanceColors)
+            {
+                colorsFlat[i] = v.x;
+                colorsFlat[i + 1] = v.y;
+                colorsFlat[i + 2] = v.z;
+                colorsFlat[i + 3] = v.w;
+                i += 4;
+            }
+
+            int vboBytes;
+            int colsBytes = instanceColors.Length * 4 * sizeof(float);
+            if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == null)
+            {
+                ((InstanceDataImp)instanceImp).InstanceColorBufferObject = gl2.CreateBuffer();
+                gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
+                gl2.BufferData(ARRAY_BUFFER, colorsFlat, DYNAMIC_DRAW);
+            }
+            else
+            {
+                gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
+                gl2.BufferSubData(ARRAY_BUFFER, IntPtr.Zero, colorsFlat);
+            }
+
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            if (vboBytes != colsBytes)
+                throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
+
+            gl2.BindVertexArray(((InstanceDataImp)instanceImp).VertexArrayObject);
+            // set attribute pointers for matrix (4 times vec4)
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedColor);
+            gl2.VertexAttribPointer((uint)AttributeLocations.InstancedColor, 4, FLOAT, false, 4 * sizeof(float), 0);
+            gl2.VertexAttribDivisor((uint)AttributeLocations.InstancedColor, 1);
         }
 
         /// <summary>
@@ -1096,6 +1277,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).TangentBufferObject = gl2.CreateBuffer(); ;
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.TangentAttribLocation, 3, FLOAT, false, 0, 0);
 
             float[] tangentsFlat = new float[tangents.Length * 4];
 
@@ -1137,6 +1319,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).BitangentBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BitangentBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.BitangentAttribLocation, 3, FLOAT, false, 0, 0);
 
             float[] bitangentsFlat = new float[bitangents.Length * 3];
 
@@ -1182,6 +1365,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).NormalBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).NormalBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.NormalAttribLocation, 3, FLOAT, false, 0, 0);
 
             float[] normalsFlat = new float[normals.Length * 3];
 
@@ -1228,6 +1412,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).BoneIndexBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneIndexBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.BoneIndexAttribLocation, 4, FLOAT, false, 0, 0);
 
             float[] boneIndicesFlat = new float[boneIndices.Length * 4];
 
@@ -1274,6 +1459,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).BoneWeightBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.BoneWeightAttribLocation, 4, FLOAT, false, 0, 0);
 
             float[] boneWeightsFlat = new float[boneWeights.Length * 4];
 
@@ -1321,6 +1507,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).UVBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.UvAttribLocation, 2, FLOAT, false, 0, 0);
 
             float[] uvsFlat = new float[uvs.Length * 2];
 
@@ -1366,6 +1553,61 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).ColorBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
+            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            if (vboBytes != colsBytes)
+                throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
+        }
+
+        /// <summary>
+        /// Binds the second set of colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <exception cref="ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors1(IMeshImp mr, uint[] colors)
+        {
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            int vboBytes;
+            int colsBytes = colors.Length * sizeof(uint);
+            if (((MeshImp)mr).Color1BufferObject == null)
+                ((MeshImp)mr).Color1BufferObject = gl2.CreateBuffer();
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color1BufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.Color1AttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
+            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            if (vboBytes != colsBytes)
+                throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
+        }
+
+        /// <summary>
+        /// Binds the third set of colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <exception cref="ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors2(IMeshImp mr, uint[] colors)
+        {
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            int vboBytes;
+            int colsBytes = colors.Length * sizeof(uint);
+            if (((MeshImp)mr).Color2BufferObject == null)
+                ((MeshImp)mr).Color2BufferObject = gl2.CreateBuffer();
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color2BufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.Color2AttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
             gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
@@ -1397,7 +1639,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             vboBytes = (int)gl2.GetBufferParameter(ELEMENT_ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
-
         }
 
         /// <summary>
@@ -1408,6 +1649,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             gl2.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
             ((MeshImp)mr).InvalidateVertices();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="instanceImp">The instance data whose buffers are to be deleted.</param>
+        public void RemoveInstanceData(IInstanceDataImp instanceImp)
+        {
+            gl2.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
+            gl2.DeleteBuffer(((InstanceDataImp)instanceImp).InstanceColorBufferObject);
+            ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = null;
+            ((InstanceDataImp)instanceImp).InstanceColorBufferObject = null;
         }
 
         /// <summary>
@@ -1428,6 +1681,26 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             gl2.DeleteBuffer(((MeshImp)mr).ColorBufferObject);
             ((MeshImp)mr).InvalidateColors();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveColors1(IMeshImp mesh)
+        {
+            gl2.DeleteBuffer(((MeshImp)mesh).Color1BufferObject);
+            ((MeshImp)mesh).InvalidateColors1();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveColors2(IMeshImp mesh)
+        {
+            gl2.DeleteBuffer(((MeshImp)mesh).Color2BufferObject);
+            ((MeshImp)mesh).InvalidateColors2();
         }
 
         /// <summary>
@@ -1493,127 +1766,124 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        public void Render(IMeshImp mr)
+        /// <param name="instanceData">The <see cref="IInstanceDataImp" /></param>
+        public void Render(IMeshImp mr, IInstanceDataImp instanceData = null)
         {
+            gl2.BindVertexArray(((MeshImp)mr).VertexArrayObject);
+
             if (((MeshImp)mr).VertexBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, 3, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).ColorBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
-            }
+
+            if (((MeshImp)mr).Color1BufferObject != null)
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
+
+            if (((MeshImp)mr).Color2BufferObject != null)
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
 
             if (((MeshImp)mr).UVBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.UvAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.UvAttribLocation, 2, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).NormalBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.NormalAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).NormalBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.NormalAttribLocation, 3, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).TangentBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.TangentAttribLocation, 3, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).BitangentBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.BitangentAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BitangentBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.BitangentAttribLocation, 3, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).BoneIndexBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.BoneIndexAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneIndexBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.BoneIndexAttribLocation, 4, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).BoneWeightBufferObject != null)
-            {
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.BoneWeightAttribLocation);
-                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
-                gl2.VertexAttribPointer((uint)AttributeLocations.BoneWeightAttribLocation, 4, FLOAT, false, 0, 0);
-            }
+
             if (((MeshImp)mr).ElementBufferObject != null)
             {
                 gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
 
-                switch (((MeshImp)mr).MeshType)
+                var oglPrimitiveType = ((MeshImp)mr).MeshType switch
                 {
-                    case OpenGLPrimitiveType.Triangles:
-                    default:
-                        gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case OpenGLPrimitiveType.Points:
-                        gl2.DrawElements(POINTS, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case OpenGLPrimitiveType.Lines:
-                        gl2.DrawElements(LINES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case OpenGLPrimitiveType.LineLoop:
-                        gl2.DrawElements(LINE_LOOP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case OpenGLPrimitiveType.LineStrip:
-                        gl2.DrawElements(LINE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case OpenGLPrimitiveType.Patches:
-                        gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        Diagnostics.Warn("Mesh type set to triangles due to unavailability of PATCHES");
-                        break;
-                    case OpenGLPrimitiveType.QuadStrip:
-                        gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        Diagnostics.Warn("Mesh type set to triangles due to unavailability of QUAD_STRIP");
-                        break;
-                    case OpenGLPrimitiveType.TriangleFan:
-                        gl2.DrawElements(TRIANGLE_FAN, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
-                    case OpenGLPrimitiveType.TriangleStrip:
-                        gl2.DrawElements(TRIANGLE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                        break;
+                    PrimitiveType.Points => POINTS,
+                    PrimitiveType.Lines => LINES,
+                    PrimitiveType.LineLoop => LINE_LOOP,
+                    PrimitiveType.LineStrip => LINE_STRIP,
+                    PrimitiveType.Patches => throw new NotSupportedException("Patches aren't supported."),
+                    PrimitiveType.QuadStrip => throw new NotSupportedException("QuadStrips aren't supported."),
+                    PrimitiveType.TriangleFan => TRIANGLE_FAN,
+                    PrimitiveType.TriangleStrip => TRIANGLE_STRIP,
+                    PrimitiveType.Quads => throw new NotSupportedException("Quads aren't supported."),
+                    _ => TRIANGLES,
+                };
+
+                if (instanceData != null)
+                {
+                    var sizeOfFloat4 = sizeof(float) * 4;
+                    var sizeOfMat = sizeOfFloat4 * 4;
+                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != null)
+                    {
+                        gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceData).InstanceColorBufferObject);
+                        gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedColor);
+                        //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
+                        gl2.VertexAttribPointer((uint)AttributeLocations.InstancedColor, 4, FLOAT, false, 4 * sizeof(float), 0);
+                    }
+
+                    gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceData).InstanceTransformBufferObject);
+
+                    // set attribute pointers for matrix (4 times vec4)
+                    gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat1);
+                    gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat2);
+                    gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat3);
+                    gl2.EnableVertexAttribArray((uint)AttributeLocations.InstancedModelMat4);
+
+                    //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
+                    gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat1, 4, FLOAT, false, sizeOfMat, 0);
+                    gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat2, 4, FLOAT, false, sizeOfMat, (uint)(1 * sizeOfFloat4));
+                    gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat3, 4, FLOAT, false, sizeOfMat, (uint)(2 * sizeOfFloat4));
+                    gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat4, 4, FLOAT, false, sizeOfMat, (uint)(3 * sizeOfFloat4));
+
+                    gl2.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0U, instanceData.Amount);
+
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat1);
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat2);
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat3);
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat4);
+                    gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedColor);
                 }
+                else
+                    gl2.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
             }
 
-
+            gl2.BindBuffer(ARRAY_BUFFER, null);
             if (((MeshImp)mr).VertexBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
-            }
+
             if (((MeshImp)mr).ColorBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
-            }
+
+            if (((MeshImp)mr).Color1BufferObject != null)
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.Color1AttribLocation);
+
+            if (((MeshImp)mr).Color2BufferObject != null)
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.Color2AttribLocation);
+
             if (((MeshImp)mr).NormalBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.NormalAttribLocation);
-            }
+
             if (((MeshImp)mr).UVBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.UvAttribLocation);
-            }
+
             if (((MeshImp)mr).TangentBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
-            }
+
             if (((MeshImp)mr).BitangentBufferObject != null)
-            {
-                gl2.BindBuffer(ARRAY_BUFFER, null);
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
-            }
+
+            gl2.BindVertexArray(null);
+
         }
 
         /// <summary>
@@ -1623,7 +1893,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texId">The texture identifier.</param>
         public void GetBufferContent(Rectangle quad, ITextureHandle texId)
         {
-            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexId);
             gl2.CopyTexImage2D(TEXTURE_2D, 0, RGBA, quad.Left, quad.Top, quad.Width, quad.Height, 0);
         }
 
@@ -1634,6 +1904,19 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public IMeshImp CreateMeshImp()
         {
             return new MeshImp();
+        }
+
+        /// <summary>
+        /// Creates the instance data implementation.
+        /// </summary>
+        /// <returns>The <see cref="IInstanceDataImp" /> instance.</returns>
+        public IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp)
+        {
+            var instanceImp = new InstanceDataImp
+            {
+                VertexArrayObject = ((MeshImp)meshImp).VertexArrayObject
+            };
+            return instanceImp;
         }
 
         internal static uint BlendOperationToOgl(BlendOperation bo)
@@ -1966,23 +2249,28 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle)
         {
+            WebGLFramebuffer fBuffer;
+            if (tex is not WritableTexture)
+            {
+                throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
+            }
+
             if (((TextureHandle)texHandle).FrameBufferHandle == null)
             {
-                WebGLFramebuffer fBuffer = gl2.CreateFramebuffer();
+                fBuffer = gl2.CreateFramebuffer();
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
-
-                gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texHandle).TexHandle);
+                gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texHandle).TexId);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height);
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
                 }
                 else
                 {
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { NONE });
                     gl2.ReadBuffer(NONE);
                 }
@@ -1993,9 +2281,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
-                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; Colorformat: {tex.PixelFormat.ColorFormat}");
-
-            gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; color format: {tex.PixelFormat.ColorFormat}");
         }
 
         /// <summary>
@@ -2011,17 +2297,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
 
-                gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle);
+                gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexId);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height);
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle, 0);
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
                 }
                 else
                 {
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexId, 0);
                     gl2.DrawBuffers(new uint[] { NONE });
                     gl2.ReadBuffer(NONE);
                 }
@@ -2032,10 +2318,49 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
-                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; Pixelformat: {tex.PixelFormat}");
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; pixel format: {tex.PixelFormat}");
+        }
 
+        /// <summary>
+        /// Sets an <see cref="IWritableArrayTexture"/> as render target
+        /// Not supported in WebGL2 ?
+        /// </summary>
+        /// <param name="tex"></param>
+        /// <param name="layer"></param>
+        /// <param name="texHandle"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
+        {
+            if (((TextureHandle)texHandle).FrameBufferHandle == null)
+            {
+                var fBuffer = gl2.CreateFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
 
-            gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexId);
+
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
+                {
+                    ((TextureHandle)texHandle).DepthRenderBufferHandle = CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, COLOR_ATTACHMENT0, ((TextureHandle)texHandle).TexId, 0, layer);
+                    gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
+                }
+                else
+                {
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexId, 0, layer);
+                    gl2.DrawBuffers(new uint[] { NONE });
+                    gl2.ReadBuffer(NONE);
+                }
+            }
+            else
+            {
+                gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexId);
+                gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexId, 0, layer);
+            }
+
+            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
+                throw new Exception($"Error creating RenderTarget IWritableArrayTexture: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
         }
 
         /// <summary>
@@ -2081,14 +2406,24 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     gl2.BindRenderbuffer(RENDERBUFFER, gDepthRenderbufferHandle);
                 }
             }
-
+#if DEBUG
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
             {
-                throw new Exception($"Error creating Framebuffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
+                throw new Exception($"Error creating frame buffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
                     $"DepthBuffer set? {renderTarget.DepthBufferHandle != null}");
             }
+#endif
+        }
 
-            gl2.Clear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT);
+        /// <summary>
+        /// Takes a <see cref="WritableMultisampleTexture"/> and blits the result of all samples into an
+        /// existing <see cref="WritableTexture"/> for further use (e. g. bind and use as Albedo texture)
+        /// </summary>
+        /// <param name="input">WritableMultisampleTexture</param>
+        /// <param name="output">WritableTexture</param>
+        public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
+        {
+            throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
         }
 
         private WebGLRenderbuffer CreateDepthRenderBuffer(int width, int height)
@@ -2127,12 +2462,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
                     if (i == depthTexPos)
                     {
-                        gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT + (uint)depthCnt, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                        gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT + (uint)depthCnt, TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                         depthCnt++;
                     }
                     else
                     {
-                        gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                        gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                     }
                 }
 
@@ -2144,7 +2479,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ITextureHandle texHandle = texHandles[depthTexPos];
 
                 if (texHandle != null)
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexId, 0);
                 else
                     throw new NullReferenceException("Texture handle is null!");
 
@@ -2176,7 +2511,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="texHandle">The gpu handle of the texture.</param>
         public void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0)
         {
-            ChangeFramebufferTexture2D(renderTarget, attachment, ((TextureHandle)texHandle).TexHandle, isDepthTex);
+            ChangeFramebufferTexture2D(renderTarget, attachment, ((TextureHandle)texHandle).TexId, isDepthTex);
         }
 
         private void ChangeFramebufferTexture2D(IRenderTarget renderTarget, int attachment, WebGLTexture handle, bool isDepth)
@@ -2204,7 +2539,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
+        /// <param name="height">The height.</param>Render
         public void Viewport(int x, int y, int width, int height)
         {
             gl2.Viewport(x, y, width, height);
@@ -2234,6 +2569,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 HardwareCapability.CanRenderDeferred => 1U,
                 HardwareCapability.CanUseGeometryShaders => 0U,
+                HardwareCapability.MaxSamples => 0U, // not supported
                 _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null),
             };
         }
@@ -2265,9 +2601,19 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int numItems = 2;
             WebGLBuffer posBuffer = gl2.CreateBuffer();
 
+            float[] verticesFlat = new float[vertices.Length * 3];
+            int i = 0;
+            foreach (float3 v in vertices)
+            {
+                verticesFlat[i] = v.x;
+                verticesFlat[i + 1] = v.y;
+                verticesFlat[i + 2] = v.z;
+                i += 3;
+            }
+
             gl2.EnableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
             gl2.BindBuffer(ARRAY_BUFFER, posBuffer);
-            gl2.BufferData(ARRAY_BUFFER, vertices, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, verticesFlat, STATIC_DRAW);
             gl2.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, itemSize, FLOAT, false, 0, 0);
 
             gl2.DrawArrays(LINE_STRIP, 0, numItems);
@@ -2340,7 +2686,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="filterMode"></param>
         public void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode)
         {
-            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexId);
             Tuple<int, int> glMinMagFilter = GetMinMagFilter(filterMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, glMinMagFilter.Item1);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, glMinMagFilter.Item2);
@@ -2353,7 +2699,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="wrapMode"></param>
         public void SetTextureWrapMode(ITextureHandle tex, TextureWrapMode wrapMode)
         {
-            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexId);
             int glWrapMode = GetWrapMode(wrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
@@ -2376,7 +2722,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var pxInfo = GetTexturePixelInfo(img);
+            var pxInfo = GetTexturePixelInfo(img.PixelFormat);
 
             var data = new uint[img.Width * img.Height * img.Layers];
 
@@ -2390,7 +2736,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_WRAP_T, glWrapMode);
 
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             return texID;
 
@@ -2410,52 +2756,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         #endregion
 
-        /// <summary>
-        /// Sets an <see cref="IWritableArrayTexture"/> as render target
-        /// Not supported in WebGL2 ?
-        /// </summary>
-        /// <param name="tex"></param>
-        /// <param name="layer"></param>
-        /// <param name="texHandle"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
-        {
-            if (((TextureHandle)texHandle).FrameBufferHandle == null)
-            {
-                var fBuffer = gl2.CreateFramebuffer();
-                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
-                gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
-
-                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
-
-                if (tex.TextureType != RenderTargetTextureTypes.Depth)
-                {
-                    CreateDepthRenderBuffer(tex.Width, tex.Height);
-                    gl2.FramebufferTextureLayer(FRAMEBUFFER, COLOR_ATTACHMENT0, ((TextureHandle)texHandle).TexHandle, 0, layer);
-                    gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
-                }
-                else
-                {
-                    gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
-                    gl2.DrawBuffers(new uint[] { NONE });
-                    gl2.ReadBuffer(NONE);
-                }
-            }
-            else
-            {
-                gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
-                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
-                gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
-            }
-
-            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
-                throw new Exception($"Error creating RenderTarget IWritableArrayTexture: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
-
-            gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
-        }
 
         /// <summary>
-        /// Creates a computeshader programm
+        /// Creates a compute shader program.
         /// Not supported in WebGL2 ?
         /// </summary>
         /// <param name="cs"></param>
@@ -2485,17 +2788,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.DetachShader(program, computeObject);
             gl2.DeleteShader(computeObject);
 
-            return new ShaderHandleImp { Handle = program };
+            return new ShaderHandle { Handle = program };
         }
 
         /// <summary>
-        /// Genereates a GBuffer target
+        /// Generates a GBuffer target
         /// </summary>
         /// <param name="res"></param>
         /// <returns></returns>
         public IRenderTarget CreateGBufferTarget(TexRes res)
         {
-            RenderTarget gBufferRenderTarget = new(res);
+            RenderTargetBlazor gBufferRenderTarget = new(res);
             gBufferRenderTarget.SetPositionTex();
             gBufferRenderTarget.SetAlbedoTex();
             gBufferRenderTarget.SetNormalTex();
@@ -2514,45 +2817,45 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="shaderProgram"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        public IList<IActiveUniform> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
             // compute shader!
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Returns a shader uniform param based on a name
+        /// Returns a shader uniform parameter based on a name
         /// Not supported in WebGL2 ?
         /// </summary>
         /// <param name="shaderProgram"></param>
         /// <param name="paramName"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
+        public IUniformHandle GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Sets the shader param, casts to float first
+        /// Sets the shader parameter, casts to float first.
         /// </summary>
         /// <param name="param"></param>
         /// <param name="val"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void SetShaderParam(IShaderParam param, double val)
+        public void SetShaderParam(IUniformHandle param, double val)
         {
-            gl2.Uniform1f(((ShaderParam)param).handle, (float)val);
+            gl2.Uniform1f(((UniformHandle)param).handle, (float)val);
         }
 
         /// <summary>
-        /// Sets an shader param to an image
+        /// Sets an shader parameter to an image.
         /// </summary>
         /// <param name="param"></param>
         /// <param name="texId"></param>
         /// <param name="texTarget"></param>
         /// <param name="format"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void SetShaderParamImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
+        public void SetShaderParamImage(IUniformHandle param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
         {
             throw new NotImplementedException();
         }
@@ -2592,6 +2895,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
+        /// Defines a barrier ordering memory transactions. At the moment it will insert all supported barriers.
+        /// </summary>
+        public void MemoryBarrier()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Not supported?
         /// </summary>
         /// <param name="kernelIndex"></param>
@@ -2600,35 +2911,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="threadGroupsZ"></param>
         /// <exception cref="NotImplementedException"></exception>
         public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Not supported?
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        public void MemoryBarrier()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetColors1(IMeshImp mr, uint[] colors)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetColors2(IMeshImp mr, uint[] colors)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveColors1(IMeshImp mesh)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveColors2(IMeshImp mesh)
         {
             throw new NotImplementedException();
         }

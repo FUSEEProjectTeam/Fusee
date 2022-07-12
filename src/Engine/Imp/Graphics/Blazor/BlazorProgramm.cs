@@ -1,9 +1,7 @@
 using Fusee.Base.Core;
-using Fusee.Math.Core;
 using Microsoft.JSInterop;
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace Fusee.Base.Imp.Blazor
 {

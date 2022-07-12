@@ -264,10 +264,10 @@ namespace Fusee.Base.Common
         /// <param name="alpha">The alpha component of the color.</param>
         public ColorUint(float red, float green, float blue, float alpha)
         {
-            this.R = ColorUint.ToByte(red);
-            this.G = ColorUint.ToByte(green);
-            this.B = ColorUint.ToByte(blue);
-            this.A = ColorUint.ToByte(alpha);
+            this.R = ToByte(red);
+            this.G = ToByte(green);
+            this.B = ToByte(blue);
+            this.A = ToByte(alpha);
         }
 
         /// <summary>
@@ -276,10 +276,10 @@ namespace Fusee.Base.Common
         /// <param name="value">The red, green, blue, and alpha components of the color.</param>
         public ColorUint(float4 value)
         {
-            this.R = ColorUint.ToByte(value.x);
-            this.G = ColorUint.ToByte(value.y);
-            this.B = ColorUint.ToByte(value.z);
-            this.A = ColorUint.ToByte(value.w);
+            this.R = ToByte(value.x);
+            this.G = ToByte(value.y);
+            this.B = ToByte(value.z);
+            this.A = ToByte(value.w);
         }
 
         /// <summary>
@@ -289,10 +289,10 @@ namespace Fusee.Base.Common
         /// <param name="alpha">The alpha component of the color.</param>
         public ColorUint(float3 value, float alpha)
         {
-            this.R = ColorUint.ToByte(value.x);
-            this.G = ColorUint.ToByte(value.y);
-            this.B = ColorUint.ToByte(value.z);
-            this.A = ColorUint.ToByte(alpha);
+            this.R = ToByte(value.x);
+            this.G = ToByte(value.y);
+            this.B = ToByte(value.z);
+            this.A = ToByte(alpha);
         }
 
         /// <summary>
@@ -329,11 +329,11 @@ namespace Fusee.Base.Common
                 throw new ArgumentNullException(nameof(values));
             if (values.Length != 3 && values.Length != 4)
                 throw new ArgumentOutOfRangeException(nameof(values), "There must be three or four input values for ColorUint.");
-            this.R = ColorUint.ToByte(values[0]);
-            this.G = ColorUint.ToByte(values[1]);
-            this.B = ColorUint.ToByte(values[2]);
+            this.R = ToByte(values[0]);
+            this.G = ToByte(values[1]);
+            this.B = ToByte(values[2]);
             if (values.Length > 3)
-                this.A = ColorUint.ToByte(values[3]);
+                this.A = ToByte(values[3]);
             else
                 this.A = byte.MaxValue;
         }

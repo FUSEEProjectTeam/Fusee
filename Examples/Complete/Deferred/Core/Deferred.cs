@@ -2,12 +2,9 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
@@ -39,6 +36,8 @@ namespace Fusee.Examples.Deferred.Core
 
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+
+        private bool _renderDeferred = true;
 
         private async Task Load()
         {
@@ -168,8 +167,6 @@ namespace Fusee.Examples.Deferred.Core
             await base.InitAsync();
         }
 
-        private bool _renderDeferred = true;
-
         public override void Update()
         {
             // Mouse and keyboard movement
@@ -181,22 +178,22 @@ namespace Fusee.Examples.Deferred.Core
             if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
             else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
             }
 
@@ -205,12 +202,24 @@ namespace Fusee.Examples.Deferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 200);
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 200);
+
+            if (Keyboard.IsKeyDown(KeyCodes.F))
+                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
+
+            if (Keyboard.IsKeyDown(KeyCodes.G) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
+
+            if (Keyboard.IsKeyDown(KeyCodes.F1) && _renderDeferred)
+                _renderDeferred = false;
+            else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
+                _renderDeferred = true;
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            //Diagnostics.Warn(FramesPerSecond);
             //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f) * DeltaTime * 50, 0 ,0));
 
             var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
@@ -234,17 +243,6 @@ namespace Fusee.Examples.Deferred.Core
             }
 
             _campComp.BackgroundColor = _backgroundColor;
-
-            if (Keyboard.IsKeyDown(KeyCodes.F))
-                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
-
-            if (Keyboard.IsKeyDown(KeyCodes.G) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
-
-            if (Keyboard.IsKeyDown(KeyCodes.F1) && _renderDeferred)
-                _renderDeferred = false;
-            else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
-                _renderDeferred = true;
 
             if (_renderDeferred)
                 _sceneRendererDeferred.Render(RC);

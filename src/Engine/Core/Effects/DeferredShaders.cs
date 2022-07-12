@@ -15,7 +15,12 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                    sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version300Es);
                 sb.AppendLine("#define ITERATIONS 14");
                 sb.AppendLine($"#define {UniformNameDeclarations.LightedSceneTexture} Albedo");
                 sb.AppendLine("#define EDGE_THRESHOLD_MIN 0.0625");
@@ -26,7 +31,7 @@ namespace Fusee.Engine.Core.Effects
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
 
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.LightedSceneTexture));
-                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ViewportPx));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.IVec2, UniformNameDeclarations.ViewportPx));
 
                 sb.AppendLine(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.ColorOut));
 
@@ -59,7 +64,7 @@ namespace Fusee.Engine.Core.Effects
                     $"",
                     $"// ---- 0. Detecting where to apply FXAA",
                     $"",
-                    $"vec2 inverseScreenSize = vec2(1.0/{UniformNameDeclarations.ViewportPx}.x, 1.0/{UniformNameDeclarations.ViewportPx}.y);",
+                    $"vec2 inverseScreenSize = vec2(1.0/float({UniformNameDeclarations.ViewportPx}.x), 1.0/float({UniformNameDeclarations.ViewportPx}.y));",
                     $"vec3 colorCenter = texture({UniformNameDeclarations.LightedSceneTexture}, {VaryingNameDeclarations.TextureCoordinates}).rgb;",
                     $"",
                     $"// Luma at the current fragment",
@@ -290,7 +295,12 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                    sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version300Es);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
@@ -314,7 +324,12 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version440Core);
+
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version460Core);
+
                 sb.AppendLine("layout (triangles) in;");
                 sb.AppendLine("layout(triangle_strip, max_vertices = 18) out; ");
 
@@ -349,7 +364,10 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version440Core);
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version460Core);
                 sb.AppendLine("layout (points) in;");
                 sb.AppendLine("layout (points, max_vertices=6) out;");
 
@@ -380,7 +398,12 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                    sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version300Es);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Model));
@@ -401,7 +424,12 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                    sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version300Es);
                 sb.AppendLine("#extension GL_ARB_explicit_uniform_location : enable");
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
                 sb.AppendLine("layout (location = 0) out vec4 Depth;");
@@ -424,7 +452,12 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                    sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version300Es);
 
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Model));
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
@@ -446,17 +479,22 @@ namespace Fusee.Engine.Core.Effects
             get
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                    sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version300Es);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.FragPos));
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.LightMatClipPlanes));
-                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec3, UniformNameDeclarations.LightPos));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec3, UniformNameDeclarations.LightShadowPos));
 
                 sb.AppendLine(GLSL.CreateMethod(GLSL.Type.Void, "main", Array.Empty<string>(), new List<string>
                 {
                     "// get distance between fragment and light source",
-                    $"float lightDistance = length({VaryingNameDeclarations.FragPos}.xyz - {UniformNameDeclarations.LightPos});",
+                    $"float lightDistance = length({VaryingNameDeclarations.FragPos}.xyz - {UniformNameDeclarations.LightShadowPos});",
                     "",
                     "// map to [0;1] range by dividing by far_plane",
                     $"lightDistance = lightDistance / {UniformNameDeclarations.LightMatClipPlanes}.y;",
@@ -476,10 +514,13 @@ namespace Fusee.Engine.Core.Effects
         {
             get
             {
-                // TODO(MR,SBu): check for naming!
-
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                    sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version300Es);
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
                 sb.AppendLine("#define KERNEL_SIZE_HALF 2");
@@ -520,10 +561,14 @@ namespace Fusee.Engine.Core.Effects
         {
             get
             {
-                // TODO(MR,SBu): check for naming!
-
                 var sb = new StringBuilder();
-                sb.AppendLine(Header.Version300Es);
+
+                if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Desktop)
+                    sb.AppendLine(Header.Version460Core);
+                else if (ModuleExtensionPoint.PlatformId == Common.FuseePlatformId.Mesa)
+                    sb.AppendLine(Header.Version450Core);
+                else
+                    sb.AppendLine(Header.Version300Es);
                 sb.AppendLine("#define KERNEL_LENGTH 64");
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 

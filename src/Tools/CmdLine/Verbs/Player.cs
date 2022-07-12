@@ -17,7 +17,7 @@ using Path = System.IO.Path;
 
 namespace Fusee.Tools.CmdLine.Verbs
 {
-    [Verb("player", HelpText = "Output the protobuf schema for the .fus file format.")]
+    [Verb("player", HelpText = "Plays given Fusee-App.")]
     internal class Player
     {
         [Value(0, HelpText = "Path or url to .fus/.fuz file or Fusee-App .dll.", MetaName = "Input", Required = false)]

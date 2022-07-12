@@ -5,7 +5,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -13,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using static Fusee.Engine.Core.Input;
+using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -28,15 +29,18 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         public int NumberOfAnnotations = 8;
 
-        private const float ZNear = 1f;
-        private const float ZFar = 1000;
-
         private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
-
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
+        private SceneNode _camNode;
+        private Transform _mainCamPivot;
+        private Camera _mainCam = new(ProjectionMethod.Perspective, 0.1f, 1000, M.PiOver4)
+        {
+            BackgroundColor = new float4(0.1f, 0.1f, 0.1f, 1)
+        };
+
         private float _initWidth;
         private float _initHeight;
         private float2 _resizeScaleFactor;
@@ -44,8 +48,6 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private float _canvasWidth;
         private float _canvasHeight;
-
-        private readonly float _fovy = M.PiOver4;
 
         private List<UserInterfaceInput> _uiInput;
 
@@ -80,8 +82,36 @@ namespace Fusee.Examples.AdvancedUI.Core
             _initWidth = Width;
             _initHeight = Height;
 
-            //_scene = BuildScene();
+            _mainCamPivot = new Transform()
+            {
+                Translation = new float3(0, 0, 0),
+                Rotation = new float3()
+            };
+            _camNode = new SceneNode()
+            {
+                Components = new List<SceneComponent>()
+                {
+                    _mainCamPivot
+                },
+                Children = new ChildList()
+                {
+                    new SceneNode()
+                    {
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Translation = new float3(0, 0, -5),
+                                Rotation = new float3()
+                            },
+                            _mainCam
+                        }
+                    }
+                }
+
+            };
             _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
+            _scene.Children.Add(_camNode);
 
             _monkeyNode = _scene.Children[0];
             _monkey = _monkeyNode.GetComponent<Mesh>();
@@ -132,53 +162,44 @@ namespace Fusee.Examples.AdvancedUI.Core
             //Create a scene picker for performing visibility tests
             _scenePicker = new ScenePicker(_scene);
 
-            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
-
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            RC.Viewport(0, 0, Width, Height);
-
-            #region Controls
+            _mainCamPivot.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
 
             // Mouse and keyboard movement
-            if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
+            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
             }
 
-            if (Input.Mouse.LeftButton)
+            if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
-            else if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
-                float2 touchVel = Input.Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
+                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
+                _angleVelHorz = RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
-                    _angleVelVert = -RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
                 else
                 {
-                    float curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTimeUpdate);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -186,22 +207,15 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
+        }
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            float4x4 mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            float4x4 mtxCam = float4x4.LookAt(0, 0, -5, 0, 0, 0, 0, 1, 0);
-
-            float4x4 view = mtxCam * mtxRot;
-            float4x4 perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            float4x4 orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-
-            #endregion Controls
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
+            _sceneRenderer.Render(RC);
 
             //Annotations will be updated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
-            RC.View = view;
-            RC.Projection = perspective;
-
             foreach (SceneNode child in _canvas.Children)
             {
                 if (!child.Name.Contains("MarkModelContainer")) continue;
@@ -216,23 +230,23 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                     //the monkey's matrices
                     float4x4 model = _monkeyNode.GetGlobalTransformation();
-                    float4x4 projection = perspective;
-
+                    var view = _camNode.Children[0].GetGlobalTransformation().Invert();
+                    var projection = _mainCam.GetProjectionMat(Width, Height, out _);
                     float4x4 mvpMonkey = projection * view * model;
 
                     float3 clipPos = float4x4.TransformPerspective(mvpMonkey, uiInput.Position);
+
                     float2 canvasPosCircle = new float2(clipPos.x, clipPos.y) * 0.5f + 0.5f;
                     canvasPosCircle.x *= _canvasWidth;
                     canvasPosCircle.y *= _canvasHeight;
 
-                    uiInput.CircleCanvasPos = canvasPosCircle;
+                    uiInput.CircleCanvasPos = canvasPosCircle.xy;
 
                     var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2));
 
                     circle.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(AnchorPos.Middle, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-
                     PickResult newPick = _scenePicker.Pick(RC, new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                     if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
@@ -318,18 +332,16 @@ namespace Fusee.Examples.AdvancedUI.Core
                 }
             }
 
-            _sceneRenderer.Render(RC);
-
-            RC.Projection = _canvasRenderMode == CanvasRenderMode.Screen ? orthographic : perspective;
-            // Constantly check for interactive objects.
-            if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
-
-            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
             _guiRenderer.Render(RC);
+
+            // Constantly check for interactive objects.
+            if (!Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
 
             Present();
         }
@@ -405,14 +417,41 @@ namespace Fusee.Examples.AdvancedUI.Core
                 {
                     new SceneNode()
                     {
+                        Name = "GuiCamNode",
+                        Components = new List<SceneComponent>()
+                        {
+                            _mainCamPivot
+                        },
+                        Children = new ChildList()
+                        {
+                            new SceneNode()
+                            {
+                                Components = new List<SceneComponent>()
+                                {
+                                    new Transform()
+                                    {
+                                        Translation = new float3(0, 0, -5),
+                                        Rotation = new float3()
+                                    },
+                                    new Camera(_canvasRenderMode == CanvasRenderMode.Screen ? ProjectionMethod.Orthographic : ProjectionMethod.Perspective, 0.01f, 500, M.PiOver4)
+                                    {
+                                        ClearColor = false
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new SceneNode()
+                    {
                         Components = new List<SceneComponent>()
                         {
                             new Transform()
                             {
-                                Translation = new float3(0, 0, 0.1f),
-                                Rotation = new float3(0, 0, 0),
+                                Translation = float3.Zero,
+                                Rotation = float3.Zero,
                                 Scale = new float3(_canvasWidth, _canvasHeight, 0.1f)
-                            }
+                            },
+
                         },
                         Children = new ChildList()
                         {
@@ -552,7 +591,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 List<KeyValuePair<int, float2>> orderedBy = intersectedAnnotations.OrderBy(item => item.Value.y).ToList();
 
                 intersectedAnnotations = new Dictionary<int, float2>();
-                foreach (KeyValuePair<int, float2> keyValue in orderedBy) //JSIL not implemented exception: ToDictionary
+                foreach (KeyValuePair<int, float2> keyValue in orderedBy)
                 {
                     intersectedAnnotations.Add(keyValue.Key, keyValue.Value);
                 }

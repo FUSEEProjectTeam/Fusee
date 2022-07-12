@@ -22,11 +22,9 @@ namespace Fusee.Examples.Camera.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private Transform _guiCamTransform;
 
         private Transform _mainCamTransform;
         private readonly Engine.Core.Scene.Camera _mainCam = new(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
-        private readonly Engine.Core.Scene.Camera _guiCam = new(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private readonly Engine.Core.Scene.Camera _sndCam = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         private Transform _sndCamTransform;
@@ -45,17 +43,6 @@ namespace Fusee.Examples.Camera.Core
         private async Task Load()
         {
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
-            SceneNode guiCam = new()
-            {
-                Name = "GUICam",
-                Components = new List<SceneComponent>()
-                {
-                    _guiCamTransform,
-                    _guiCam
-                }
-            };
-
-            _gui.Children.Insert(0, guiCam);
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -152,11 +139,7 @@ namespace Fusee.Examples.Camera.Core
             _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
             _sndCam.Layer = 10;
 
-            _guiCam.ClearColor = false;
-            _guiCam.ClearDepth = false;
-            _guiCam.FrustumCullingOn = false;
-
-            _mainCamTransform = _guiCamTransform = new Transform()
+            _mainCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 1, -30),
@@ -164,34 +147,37 @@ namespace Fusee.Examples.Camera.Core
             };
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
             if (Mouse.RightButton)
             {
-                _valHorzSnd = Mouse.XVel * 0.003f * DeltaTime;
-                _valVertSnd = Mouse.YVel * 0.003f * DeltaTime;
+                _valHorzSnd = Mouse.XVel * 0.003f * DeltaTimeUpdate;
+                _valVertSnd = Mouse.YVel * 0.003f * DeltaTimeUpdate;
 
                 _anlgeHorznd += _valHorzSnd;
                 _angleVertSnd += _valVertSnd;
 
                 _valHorzSnd = _valVertSnd = 0;
 
-                _sndCamTransform.FpsView(_anlgeHorznd, _angleVertSnd, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
+                _sndCamTransform.FpsView(_anlgeHorznd, _angleVertSnd, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 10);
             }
             else if (Mouse.LeftButton)
             {
-                _valHorzMain = Mouse.XVel * 0.003f * DeltaTime;
-                _valVertMain = Mouse.YVel * 0.003f * DeltaTime;
+                _valHorzMain = Mouse.XVel * 0.003f * DeltaTimeUpdate;
+                _valVertMain = Mouse.YVel * 0.003f * DeltaTimeUpdate;
 
                 _anlgeHorzMain += _valHorzMain;
                 _angleVertMain += _valVertMain;
 
                 _valHorzMain = _valVertMain = 0;
 
-                _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
+                _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 10);
             }
+        }
 
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
             float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out _) * float4x4.Invert(_mainCamTransform.Matrix);
             _frustum.Vertices = FrustumF.CalculateFrustumCorners(viewProjection).ToArray();
 
@@ -210,7 +196,6 @@ namespace Fusee.Examples.Camera.Core
             {
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
             }
-
             if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
