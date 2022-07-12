@@ -19,7 +19,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         public string PathToOocFile = Path.Combine("Assets", "Cube1030301", "Potree");
 
         public ShaderEffect DepthPassEf;
-        public PointCloudSurfaceEffect ColorPassEf;
+        public SurfaceEffectPointCloud ColorPassEf;
 
         private PointShape _shape = PointShape.Paraboloid;
         public PointShape Shape

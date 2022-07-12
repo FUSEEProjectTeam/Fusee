@@ -1,6 +1,8 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
+using Fusee.PointCloud.Common;
 using Fusee.Xene;
 using System;
 
@@ -60,15 +62,25 @@ namespace Fusee.PointCloud.Core.Scene
             }
         }
 
+        /// <summary>
+        /// Sets the currently used <see cref="RenderLayer"/>.
+        /// </summary>
+        /// <param name="renderLayer"></param>
         public void UpdateRenderLayer(RenderLayers renderLayer)
         {
             _renderLayer = renderLayer;
         }
 
+        /// <summary>
+        /// Sets the currently used <see cref="Camera"/>.
+        /// </summary>
+        /// <param name="cam"></param>
         public void UpdateCamera(Camera cam)
         {
             _camera = cam;
         }
+
+        private readonly Plane quad = new();
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloudRenderModule"/>.
@@ -101,11 +113,21 @@ namespace Fusee.PointCloud.Core.Scene
                 pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
             }
 
-            foreach (var mesh in (pointCloud.PointCloudImp).MeshesToRender)
+            switch (pointCloud.RenderMode)
             {
-                _rc.Render(mesh, _isForwardModule);
+                case RenderMode.PointSize:
+                    foreach (var mesh in ((IPointCloudImp<GpuMesh>)pointCloud.PointCloudImp).GpuDataToRender)
+                    {
+                        _rc.Render(mesh, _isForwardModule);
+                    }
+                    break;
+                case RenderMode.Instanced:
+                    foreach (var instanceData in ((IPointCloudImp<InstanceData>)pointCloud.PointCloudImp).GpuDataToRender)
+                    {
+                        _rc.Render(quad, instanceData, _isForwardModule);
+                    }
+                    break;
             }
-
         }
     }
 }

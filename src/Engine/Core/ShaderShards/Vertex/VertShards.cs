@@ -15,23 +15,21 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// </summary>
         /// <param name="surfInput">The surface input class. Needed to receive the shading model.</param>
         /// <returns></returns>
-        internal static List<string> SurfOutBody(SurfaceInput surfInput)
+        internal static List<string> SurfOutBody(SurfaceEffectInput surfInput)
         {
             var res = new List<string>();
             switch (surfInput.ShadingModel)
             {
                 case ShadingModel.Edl:
                 case ShadingModel.Unlit:
-                    res.Add("OUT.position = fuVertex;");
+                    res.Add($"OUT.position = {UniformNameDeclarations.Vertex};");
                     break;
                 case ShadingModel.DiffuseSpecular:
                 case ShadingModel.DiffuseOnly:
                 case ShadingModel.Glossy:
                 case ShadingModel.BRDF:
-                    res.Add(@"
-                    OUT.position = fuVertex;
-                    OUT.normal = fuNormal;"
-                    );
+                    res.Add($"OUT.position = vec4({UniformNameDeclarations.Vertex}, 1.0);");
+                    res.Add("OUT.normal = fuNormal;");
                     break;
                 default:
                     throw new ArgumentException("Invalid ShadingModel!");
@@ -42,23 +40,26 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// <summary>
         /// Returns a default method body for the vertex shaders "ChangeSurf" method.
         /// </summary>
-        internal static List<string> SurfOutBody(ShadingModel shadingModel)
+        internal static List<string> SurfOutBody(ShadingModel shadingModel, bool doRenderBillboards)
         {
             var res = new List<string>();
             switch (shadingModel)
             {
                 case ShadingModel.Edl:
                 case ShadingModel.Unlit:
-                    res.Add("OUT.position = fuVertex;");
-                    break;
+                    {
+                        if (!doRenderBillboards)
+                            res.Add($"OUT.position = vec4({UniformNameDeclarations.Vertex}, 1.0);");
+                        else
+                            res.Add($"OUT.position = {VaryingNameDeclarations.ViewPos};");
+                        break;
+                    }
                 case ShadingModel.DiffuseSpecular:
                 case ShadingModel.DiffuseOnly:
                 case ShadingModel.Glossy:
                 case ShadingModel.BRDF:
-                    res.Add(@"
-                    OUT.position = fuVertex;
-                    OUT.normal = fuNormal;"
-                    );
+                    res.Add($"OUT.position = vec4({UniformNameDeclarations.Vertex}, 1.0);");
+                    res.Add("OUT.normal = fuNormal;");
                     break;
                 default:
                     throw new ArgumentException("Invalid ShadingModel!");

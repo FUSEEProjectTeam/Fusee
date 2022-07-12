@@ -88,7 +88,7 @@ namespace Fusee.Examples.Picking.Android
                 Engine.Core.Input.AddDriverImp(
                     new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
                 // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvasImplementor));
-                // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
+                // Delayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
             }
             else
             {
@@ -100,7 +100,7 @@ namespace Fusee.Examples.Picking.Android
         /// <summary>
         /// Gets the supported OpenGL ES version of device.
         /// </summary>
-        /// <returns>Hieghest supported version of OpenGL ES</returns>
+        /// <returns> Highest supported version of OpenGL ES</returns>
         private long SupportedOpenGLVersion()
         {
             //based on https://android.googlesource.com/platform/cts/+/master/tests/tests/graphics/src/android/opengl/cts/OpenGlEsVersionTest.java

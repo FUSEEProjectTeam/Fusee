@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a effect that does no lighting calculation.
     /// In this case it only contains the albedo color.
     /// </summary>
-    public abstract class SurfaceInput : INotifyValueChange<SurfaceEffectEventArgs>
+    public abstract class SurfaceEffectInput : INotifyValueChange<SurfaceEffectEventArgs>
     {
         /// <summary>
         /// The <see cref="ShaderShards.ShadingModel"/>, appropriate for this Input.
@@ -63,7 +63,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a effect that does no lighting calculation.
     /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
-    public class UnlitInput : SurfaceInput
+    public class UnlitInput : SurfaceEffectInput
     {
         /// <summary>
         /// The mix between albedo texture and albedo color.
@@ -394,7 +394,7 @@ namespace Fusee.Engine.Core.Effects
 
     /// <summary>
     /// Class that can be used to collect properties that will serve as uniforms for eye dome lighting.
-    /// NOTE: This Input is only compatible with <see cref="PointCloudSurfaceEffect"/>s right now.
+    /// NOTE: This Input is only compatible with <see cref="SurfaceEffectPointCloud"/>s right now.
     /// </summary>
     public class EdlInput : UnlitInput
     {

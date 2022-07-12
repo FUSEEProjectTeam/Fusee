@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.Core.ShaderShards
+namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
     /// Collection of uniform parameter names, as they should be used in the Shader Shards to make them compatible to each other.
-    /// A hash code is assigned to each parameter, which is used to identify it in the <see cref="RenderContext"/>.
+    /// A hash code is assigned to each parameter, which is used to identify it internally.
     /// </summary>
     public static class UniformNameDeclarations
     {
@@ -17,9 +17,9 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ArrayPostfix"/> parameter.
         /// </summary>
-        public static int ArrayPostfixHash = ArrayPostfix.GetHashCode();
+        public static readonly int ArrayPostfixHash = ArrayPostfix.GetHashCode();
 
-        #region Fusee internal
+        #region Fusee Vertex Attributes
 
         /// <summary>
         /// The vertex attribute name.
@@ -28,7 +28,15 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="Vertex"/> parameter.
         /// </summary>
-        public static int VertexHash = Vertex.GetHashCode();
+        public static readonly int VertexHash = Vertex.GetHashCode();
+        /// <summary>
+        /// The vertex attribute name.
+        /// </summary>
+        public const string InstanceModelMat = "fuInstanceModelMat";
+        /// <summary>
+        /// Hash code for the <see cref="Vertex"/> parameter.
+        /// </summary>
+        public static readonly int InstanceModelMatHash = InstanceModelMat.GetHashCode();
         /// <summary>
         /// The color attribute name.
         /// </summary>
@@ -36,7 +44,15 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="VertexColor"/> parameter.
         /// </summary>
-        public static int VertexColorHash = VertexColor.GetHashCode();
+        public static readonly int VertexColorHash = VertexColor.GetHashCode();
+        /// <summary>
+        /// The color attribute name.
+        /// </summary>
+        public const string InstanceColor = "fuInstanceColor";
+        /// <summary>
+        /// Hash code for the <see cref="VertexColor"/> parameter.
+        /// </summary>
+        public static readonly int InstanceColorHash = InstanceColor.GetHashCode();
 
         /// <summary>
         /// The color attribute name.
@@ -45,7 +61,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="VertexColor"/> parameter.
         /// </summary>
-        public static int VertexColor1Hash = VertexColor1.GetHashCode();
+        public static readonly int VertexColor1Hash = VertexColor1.GetHashCode();
 
         /// <summary>
         /// The color attribute name.
@@ -54,7 +70,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="VertexColor"/> parameter.
         /// </summary>
-        public static int VertexColor2Hash = VertexColor2.GetHashCode();
+        public static readonly int VertexColor2Hash = VertexColor2.GetHashCode();
 
         /// <summary>
         /// The normal attribute name.
@@ -63,7 +79,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="Normal"/> parameter.
         /// </summary>
-        public static int NormalHash = Normal.GetHashCode();
+        public static readonly int NormalHash = Normal.GetHashCode();
 
         /// <summary>
         /// The uv attribute name.
@@ -72,7 +88,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="TextureCoordinates"/> parameter.
         /// </summary>
-        public static int TextureCoordinatesHash = TextureCoordinates.GetHashCode();
+        public static readonly int TextureCoordinatesHash = TextureCoordinates.GetHashCode();
 
         /// <summary>
         /// The tangent attribute name.
@@ -81,7 +97,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="Tangent"/> parameter.
         /// </summary>
-        public static int TangentHash = Tangent.GetHashCode();
+        public static readonly int TangentHash = Tangent.GetHashCode();
 
         /// <summary>
         /// The bitangent attribute name.
@@ -90,7 +106,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="Bitangent"/> parameter.
         /// </summary>
-        public static int BitangentHash = Bitangent.GetHashCode();
+        public static readonly int BitangentHash = Bitangent.GetHashCode();
 
         /// <summary>
         /// The bone weight attribute name.
@@ -99,7 +115,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="BoneWeight"/> parameter.
         /// </summary>
-        public static int BoneWeightHash = BoneWeight.GetHashCode();
+        public static readonly int BoneWeightHash = BoneWeight.GetHashCode();
 
         /// <summary>
         /// The bone index attribute name.
@@ -108,7 +124,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="BoneIndex"/> parameter.
         /// </summary>
-        public static int BoneIndexHash = BoneIndex.GetHashCode();
+        public static readonly int BoneIndexHash = BoneIndex.GetHashCode();
+
+        #endregion
+
+        #region Global uniform matrices
 
         /// <summary>
         /// The model matrix. Transforms from model into world space.
@@ -117,7 +137,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="Model"/> parameter.
         /// </summary>
-        public static int ModelHash = Model.GetHashCode();
+        public static readonly int ModelHash = Model.GetHashCode();
 
         /// <summary>
         /// The view matrix. Transforms from world into camera space.
@@ -126,7 +146,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="View"/> parameter.
         /// </summary>
-        public static int ViewHash = View.GetHashCode();
+        public static readonly int ViewHash = View.GetHashCode();
 
         /// <summary>
         /// The model view matrix. Transforms from model into camera space.
@@ -135,7 +155,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ModelView"/> parameter.
         /// </summary>
-        public static int ModelViewHash = ModelView.GetHashCode();
+        public static readonly int ModelViewHash = ModelView.GetHashCode();
 
         /// <summary>
         /// The model view matrix. Transforms from view into clip space.
@@ -144,7 +164,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="Projection"/> parameter.
         /// </summary>
-        public static int ProjectionHash = Projection.GetHashCode();
+        public static readonly int ProjectionHash = Projection.GetHashCode();
 
         /// <summary>
         /// The model view projection matrix. Transforms from model into clip space.
@@ -153,7 +173,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ModelViewProjection"/> parameter.
         /// </summary>
-        public static int ModelViewProjectionHash = ModelViewProjection.GetHashCode();
+        public static readonly int ModelViewProjectionHash = ModelViewProjection.GetHashCode();
 
         /// <summary>
         /// The inverse view matrix.
@@ -162,7 +182,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="IView"/> parameter.
         /// </summary>
-        public static int IViewHash = IView.GetHashCode();
+        public static readonly int IViewHash = IView.GetHashCode();
 
         /// <summary>
         /// The inverse view matrix.
@@ -171,7 +191,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="IModel"/> parameter.
         /// </summary>
-        public static int IModelHash = IModel.GetHashCode();
+        public static readonly int IModelHash = IModel.GetHashCode();
 
         /// <summary>
         /// The inverse view matrix.
@@ -180,7 +200,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="TModel"/> parameter.
         /// </summary>
-        public static int TModelHash = TModel.GetHashCode();
+        public static readonly int TModelHash = TModel.GetHashCode();
 
         /// <summary>
         /// The inverse model view matrix.
@@ -189,7 +209,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="IModelView"/> parameter.
         /// </summary>
-        public static int IModelViewHash = IModelView.GetHashCode();
+        public static readonly int IModelViewHash = IModelView.GetHashCode();
 
         /// <summary>
         /// The inverse transposed view matrix.
@@ -198,7 +218,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="TView"/> parameter.
         /// </summary>
-        public static int TViewHash = TView.GetHashCode();
+        public static readonly int TViewHash = TView.GetHashCode();
 
         /// <summary>
         /// The inverse transposed view matrix.
@@ -207,7 +227,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ITView"/> parameter.
         /// </summary>
-        public static int ITViewHash = ITView.GetHashCode();
+        public static readonly int ITViewHash = ITView.GetHashCode();
 
         /// <summary>
         /// The inverse projection matrix.
@@ -216,7 +236,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="IProjection"/> parameter.
         /// </summary>
-        public static int IProjectionHash = IProjection.GetHashCode();
+        public static readonly int IProjectionHash = IProjection.GetHashCode();
 
         /// <summary>
         /// The inverse model view projection matrix.
@@ -225,7 +245,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="IModelViewProjection"/> parameter.
         /// </summary>
-        public static int IModelViewProjectionHash = IModelViewProjection.GetHashCode();
+        public static readonly int IModelViewProjectionHash = IModelViewProjection.GetHashCode();
 
         /// <summary>
         /// The transposed model view matrix.
@@ -234,7 +254,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="TModelView"/> parameter.
         /// </summary>
-        public static int TModelViewHash = TModelView.GetHashCode();
+        public static readonly int TModelViewHash = TModelView.GetHashCode();
 
         /// <summary>
         /// The transposed projection matrix.
@@ -243,7 +263,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="TProjection"/> parameter.
         /// </summary>
-        public static int TProjectionHash = TProjection.GetHashCode();
+        public static readonly int TProjectionHash = TProjection.GetHashCode();
 
         /// <summary>
         /// The transposed model view projection matrix.
@@ -252,7 +272,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="TModelViewProjection"/> parameter.
         /// </summary>
-        public static int TModelViewProjectionHash = TModelViewProjection.GetHashCode();
+        public static readonly int TModelViewProjectionHash = TModelViewProjection.GetHashCode();
 
         /// <summary>
         /// The inversed transposed model view matrix.
@@ -261,7 +281,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ITModelView"/> parameter.
         /// </summary>
-        public static int ITModelViewHash = ITModelView.GetHashCode();
+        public static readonly int ITModelViewHash = ITModelView.GetHashCode();
 
         /// <summary>
         /// The inversed transposed projection matrix.
@@ -270,7 +290,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ITProjection"/> parameter.
         /// </summary>
-        public static int ITProjectionHash = ITProjection.GetHashCode();
+        public static readonly int ITProjectionHash = ITProjection.GetHashCode();
 
         /// <summary>
         /// The inversed transposed model view projection matrix.
@@ -279,7 +299,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ITModelViewProjection"/> parameter.
         /// </summary>
-        public static int ITModelViewProjectionHash = ITModelViewProjection.GetHashCode();
+        public static readonly int ITModelViewProjectionHash = ITModelViewProjection.GetHashCode();
 
         /// <summary>
         /// The inversed transposed model view projection matrix.
@@ -288,7 +308,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ITModel"/> parameter.
         /// </summary>
-        public static int ITModelHash = ITModel.GetHashCode();
+        public static readonly int ITModelHash = ITModel.GetHashCode();
 
         /// <summary>
         /// The bones array.
@@ -297,7 +317,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="Bones"/> parameter.
         /// </summary>
-        public static int BonesHash = Bones.GetHashCode();
+        public static readonly int BonesHash = Bones.GetHashCode();
 
         /// <summary>
         /// The bones array including the postfix.
@@ -306,7 +326,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="BonesArray"/> parameter.
         /// </summary>
-        public static int BonesArrayHash = BonesArray.GetHashCode();
+        public static readonly int BonesArrayHash = BonesArray.GetHashCode();
 
         /// <summary>
         /// The bones array including the postfix.
@@ -315,7 +335,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="FuseePlatformId"/> parameter.
         /// </summary>
-        public static int FuseePlatformIdHash = FuseePlatformId.GetHashCode();
+        public static readonly int FuseePlatformIdHash = FuseePlatformId.GetHashCode();
 
         #endregion
 
@@ -324,29 +344,29 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform SSAOKernel[0] variable.
         /// </summary>
-        public static string SSAOKernel { get; } = "SSAOKernel[0]";
+        public static readonly string SSAOKernel = "SSAOKernel[0]";
         /// <summary>
         /// Hash code for the <see cref="SSAOKernel"/> parameter.
         /// </summary>
-        public static int SSAOKernelHash = SSAOKernel.GetHashCode();
+        public static readonly int SSAOKernelHash = SSAOKernel.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform NoiseTex variable, needed to calculate SSAO.
         /// </summary>
-        public static string NoiseTex { get; } = "NoiseTex";
+        public static readonly string NoiseTex = "NoiseTex";
         /// <summary>
         /// Hash code for the <see cref="NoiseTex"/> parameter.
         /// </summary>
-        public static int NoiseTexHash = NoiseTex.GetHashCode();
+        public static readonly int NoiseTexHash = NoiseTex.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SsaoOn variable.
         /// </summary>
-        public static string SsaoOn { get; } = "SsaoOn";
+        public static readonly string SsaoOn = "SsaoOn";
         /// <summary>
         /// Hash code for the <see cref="SsaoOn"/> parameter.
         /// </summary>
-        public static int SsaoOnHash = SsaoOn.GetHashCode();
+        public static readonly int SsaoOnHash = SsaoOn.GetHashCode();
 
         #endregion
 
@@ -364,11 +384,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public const string LightPos = "LightPos";
+        public const string LightShadowPos = "LightPos";
         /// <summary>
-        /// Hash code for the <see cref="LightPos"/> parameter.
+        /// Hash code for the <see cref="LightShadowPos"/> parameter.
         /// </summary>
-        public static int LightPosHash = LightPos.GetHashCode();
+        public static readonly int LightPosHash = LightShadowPos.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform LightMatClipPlanes.
@@ -377,7 +397,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="LightMatClipPlanes"/> parameter.
         /// </summary>
-        public static int LightMatClipPlanesHash = LightMatClipPlanes.GetHashCode();
+        public static readonly int LightMatClipPlanesHash = LightMatClipPlanes.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
@@ -386,7 +406,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="LightSpaceMatrix"/> parameter.
         /// </summary>
-        public static int LightSpaceMatrixHash = LightSpaceMatrix.GetHashCode();
+        public static readonly int LightSpaceMatrixHash = LightSpaceMatrix.GetHashCode();
 
 
         /// <summary>
@@ -400,7 +420,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="LightSpaceMatrices"/> parameter.
         /// </summary>
-        public static int LightSpaceMatricesHash = (LightSpaceMatrices + ArrayPostfix).GetHashCode();
+        public static readonly int LightSpaceMatricesHash = (LightSpaceMatrices + ArrayPostfix).GetHashCode();
 
         /// <summary>
         /// The var name for the uniform ShadowMap.
@@ -409,7 +429,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ShadowMap"/> parameter.
         /// </summary>
-        public static int ShadowMapHash = ShadowMap.GetHashCode();
+        public static readonly int ShadowMapHash = ShadowMap.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform ShadowCubeMap.
@@ -418,7 +438,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="ShadowCubeMap"/> parameter.
         /// </summary>
-        public static int ShadowCubeMapHash = ShadowCubeMap.GetHashCode();
+        public static readonly int ShadowCubeMapHash = ShadowCubeMap.GetHashCode();
 
         #endregion
 
@@ -430,7 +450,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="PointSize"/> parameter.
         /// </summary>
-        public static int PointSizeHash = PointSize.GetHashCode();
+        public static readonly int PointSizeHash = PointSize.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform PointShape.
@@ -439,7 +459,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="PointShape"/> parameter.
         /// </summary>
-        public static int PointShapeHash = PointShape.GetHashCode();
+        public static readonly int PointShapeHash = PointShape.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform PointSizeMode.
@@ -448,27 +468,186 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="PointSizeMode"/> parameter.
         /// </summary>
-        public static int PointSizeModeHash = PointSizeMode.GetHashCode();
+        public static readonly int PointSizeModeHash = PointSizeMode.GetHashCode();
 
+        #endregion        
+
+        #region Light
+
+        /// <summary>
+        /// Name of the global uniform array that holds all lights in the scene.
+        /// </summary>
+        public const string AllLightsArray = "FUSEE_allLights";
+
+        /// <summary>
+        /// Name of a light's position variable.
+        /// </summary>
+        public const string LightWorldPos = "position";
+
+        /// <summary>
+        /// Name of a light's intensity/color variable.
+        /// </summary>
+        public const string LightIntensities = "intensities";
+
+        /// <summary>
+        /// Name of a light's maximal distance variable.
+        /// </summary>
+        public const string LightMaxDist = "maxDistance";
+
+        /// <summary>
+        /// Name of a light's strength variable.
+        /// </summary>
+        public const string LightStrength = "strength";
+
+        /// <summary>
+        /// Name of a light's outer cone angle variable.
+        /// </summary>
+        public const string LightOuterConeAngle = "outerConeAngle";
+
+        /// <summary>
+        /// Name of a light's maximal distance variable.
+        /// </summary>
+        public const string LightInnerConeAngle = "innerConeAngle";
+
+        /// <summary>
+        /// Name of a light's direction variable.
+        /// </summary>
+        public const string LightDirection = "direction";
+
+        /// <summary>
+        /// Name of a light's type variable.
+        /// </summary>
+        public const string LightType = "lightType";
+
+        /// <summary>
+        /// Name of the variable that determines if the light is active.
+        /// </summary>
+        public const string LightIsActive = "isActive";
+
+        /// <summary>
+        /// Name of the variable that determines if the light casts shadows.
+        /// </summary>
+        public const string LightIsCastingShadows = "isCastingShadows";
+
+        /// <summary>
+        /// Name of a light's shadow bias variable.
+        /// </summary>
+        public const string LightBias = "bias";
+
+
+        /// <summary>
+        /// Returns the full name of the position uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetPosName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightWorldPos;
+        }
+
+        /// <summary>
+        /// Returns the full name of the intensity uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetIntensitiesName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightIntensities;
+        }
+
+        /// <summary>
+        /// Returns the full name of the maximal distance uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetMaxDistName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightMaxDist;
+        }
+
+        /// <summary>
+        /// Returns the full name of the light's strength uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetStrengthName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightStrength;
+        }
+
+        /// <summary>
+        /// Returns the full name of the light's outer cone angle uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetOuterConeAngleName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightOuterConeAngle;
+        }
+
+        /// <summary>
+        /// Returns the full name of the light's inner cone angle uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetInnerConeAngleName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightInnerConeAngle;
+        }
+
+        /// <summary>
+        /// Returns the full name of the light's direction uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetDirectionName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightDirection;
+        }
+
+        /// <summary>
+        /// Returns the full name of the light's type uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetTypeName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightType;
+        }
+
+        /// <summary>
+        /// Returns the full name of the light's "active" uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetIsActiveName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightIsActive;
+        }
+
+        /// <summary>
+        /// Returns the full name of the light's "is casting shadows" uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetIsCastingShadowsName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightIsCastingShadows;
+        }
+
+        /// <summary>
+        /// Returns the full name of the light's shadow bias uniform, including <see cref="AllLightsArray"/>.
+        /// </summary>
+        public static string GetBiasName(int i)
+        {
+            return AllLightsArray + $"[{i}]." + LightBias;
+        }
         #endregion
 
         /// <summary>
         /// The var name for the uniform ClippingPlanes variable.
         /// </summary>
         public const string ClippingPlanes = "FUSEE_ClippingPlanes";
+
+        /// <summary>
+        /// The var name for the uniform ScreenParams (width and height of the window).
+        /// </summary>
+        public const string ViewportPx = "FUSEE_ViewportPx";
+
         /// <summary>
         /// Hash code for the <see cref="ClippingPlanes"/> parameter.
         /// </summary>
-        public static int ClippingPlanesHash = ClippingPlanes.GetHashCode();
+        public static readonly int ClippingPlanesHash = ClippingPlanes.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform PassNo variable.
         /// </summary>
         public const string RenderPassNo = "PassNo";
+
         /// <summary>
         /// Hash code for the <see cref="RenderPassNo"/> parameter.
         /// </summary>
-        public static int RenderPassNoHash = RenderPassNo.GetHashCode();
+        public static readonly int RenderPassNoHash = RenderPassNo.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform BackgroundColor.
@@ -477,7 +656,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="BackgroundColor"/> parameter.
         /// </summary>
-        public static int BackgroundColorHash = BackgroundColor.GetHashCode();
+        public static readonly int BackgroundColorHash = BackgroundColor.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform ColorMode.
@@ -489,13 +668,9 @@ namespace Fusee.Engine.Core.ShaderShards
         public static int ColorModeHash = ColorMode.GetHashCode();
 
         /// <summary>
-        /// The var name for the uniform ScreenParams (width and height of the window).
-        /// </summary>
-        public const string ViewportPx = "FUSEE_ViewportPx";
-        /// <summary>
         /// Hash code for the <see cref="ViewportPx"/> parameter.
         /// </summary>
-        public static int ViewportPxHash = ViewportPx.GetHashCode();
+        public static readonly int ViewportPxHash = ViewportPx.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform AmbientStrength variable within the pixel shaders.
@@ -504,7 +679,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="AmbientStrength"/> parameter.
         /// </summary>
-        public static int AmbientStrengthHash = AmbientStrength.GetHashCode();
+        public static readonly int AmbientStrengthHash = AmbientStrength.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform Albedo variable within the pixel shaders.
@@ -513,7 +688,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="Albedo"/> parameter.
         /// </summary>
-        public static int AlbedoHash = Albedo.GetHashCode();
+        public static readonly int AlbedoHash = Albedo.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularColor variable within the pixel shaders.
@@ -522,7 +697,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="SpecularColor"/> parameter.
         /// </summary>
-        public static int SpecularColorHash = SpecularColor.GetHashCode();
+        public static readonly int SpecularColorHash = SpecularColor.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform EmissiveColor variable within the pixel shaders.
@@ -531,7 +706,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="EmissiveColor"/> parameter.
         /// </summary>
-        public static int EmissiveColorHash = EmissiveColor.GetHashCode();
+        public static readonly int EmissiveColorHash = EmissiveColor.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
@@ -540,7 +715,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="AlbedoTextureHash"/> parameter.
         /// </summary>
-        public static int AlbedoTextureHash = AlbedoTexture.GetHashCode();
+        public static readonly int AlbedoTextureHash = AlbedoTexture.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
@@ -549,7 +724,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="DiffuseTextureTiles"/> parameter.
         /// </summary>
-        public static int DiffuseTextureTilesHash = DiffuseTextureTiles.GetHashCode();
+        public static readonly int DiffuseTextureTilesHash = DiffuseTextureTiles.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularTexture variable within the pixel shaders.
@@ -558,7 +733,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="SpecularTexture"/> parameter.
         /// </summary>
-        public static int SpecularTextureHash = SpecularTexture.GetHashCode();
+        public static readonly int SpecularTextureHash = SpecularTexture.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform EmissiveTexture variable within the pixel shaders.
@@ -567,7 +742,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="EmissiveTexture"/> parameter.
         /// </summary>
-        public static int EmissiveTextureHash = EmissiveTexture.GetHashCode();
+        public static readonly int EmissiveTextureHash = EmissiveTexture.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform NormalMap variable within the pixel shaders.
@@ -576,7 +751,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="NormalMap"/> parameter.
         /// </summary>
-        public static int NormalMapHash = NormalMap.GetHashCode();
+        public static readonly int NormalMapHash = NormalMap.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform NormalTextureTiles variable within the pixel shaders.
@@ -585,7 +760,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="NormalTextureTiles"/> parameter.
         /// </summary>
-        public static int NormalTextureTilesHash = NormalTextureTiles.GetHashCode();
+        public static readonly int NormalTextureTilesHash = NormalTextureTiles.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform AlbedoMix variable within the pixel shaders.
@@ -594,7 +769,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="AlbedoMix"/> parameter.
         /// </summary>
-        public static int AlbedoMixHash = AlbedoMix.GetHashCode();
+        public static readonly int AlbedoMixHash = AlbedoMix.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularMix variable within the pixel shaders.
@@ -603,7 +778,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="SpecularMix"/> parameter.
         /// </summary>
-        public static int SpecularMixHash = SpecularMix.GetHashCode();
+        public static readonly int SpecularMixHash = SpecularMix.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform EmissiveMix variable within the pixel shaders.
@@ -612,7 +787,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="EmissiveMix"/> parameter.
         /// </summary>
-        public static int EmissiveMixHash = EmissiveMix.GetHashCode();
+        public static readonly int EmissiveMixHash = EmissiveMix.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularShininess variable within the pixel shaders.
@@ -621,7 +796,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="SpecularShininess"/> parameter.
         /// </summary>
-        public static int SpecularShininessHash = SpecularShininess.GetHashCode();
+        public static readonly int SpecularShininessHash = SpecularShininess.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularStrength variable within the pixel shaders.
@@ -630,7 +805,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="SpecularStrength"/> parameter.
         /// </summary>
-        public static int SpecularStrengthHash = SpecularStrength.GetHashCode();
+        public static readonly int SpecularStrengthHash = SpecularStrength.GetHashCode();
 
         /// <summary>
         /// [PBR (Cook-Torrance) only] Describes the roughness of the material.
@@ -639,7 +814,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="RoughnessValue"/> parameter.
         /// </summary>
-        public static int RoughnessValueHash = RoughnessValue.GetHashCode();
+        public static readonly int RoughnessValueHash = RoughnessValue.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform NormalMapIntensity variable within the pixel shaders.
@@ -648,8 +823,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="NormalMapIntensity"/> parameter.
         /// </summary>
-        public static int NormalMapIntensityHash = NormalMapIntensity.GetHashCode();
-
+        public static readonly int NormalMapIntensityHash = NormalMapIntensity.GetHashCode();
 
         /// <summary>
         /// List of all possible render texture names.

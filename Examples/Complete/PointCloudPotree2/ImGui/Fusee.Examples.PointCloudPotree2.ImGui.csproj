@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -56,7 +56,7 @@
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiDesktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiImp.Desktop.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Potree\Fusee.PointCloud.Potree.csproj" />
 	</ItemGroup>

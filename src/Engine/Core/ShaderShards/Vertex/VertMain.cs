@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
@@ -51,18 +53,18 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string VertexMain(ShadingModel shadingModel, TextureSetup texSetup)
+        public static string VertexMain(ShadingModel shadingModel, TextureSetup texSetup, RenderFlags renderMod)
         {
             var vertMainBody = new List<string>
             {
-                $"{SurfaceOut.SurfOutVaryingName} = {SurfaceOut.ChangeSurfVert}();",
-                $"vec3 changedVert = {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
-                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * vec4({SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2}, 1.0)).xyz;",
+                $"{VaryingNameDeclarations.SurfOutVaryingName} = {SurfaceEffectNameDeclarations.ChangeSurfVert}();",
+                $"vec4 changedVert = {VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
+
             };
 
             if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
             {
-                vertMainBody.Add($"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({UniformNameDeclarations.ITModelView}* vec4({SurfaceOut.SurfOutVaryingName}.normal, 0.0)));");
+                vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({UniformNameDeclarations.ITModelView}* vec4({VaryingNameDeclarations.SurfOutVaryingName}.normal, 0.0)));");
             }
 
             vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
@@ -72,11 +74,29 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add($"vec3 T = normalize(vec3({UniformNameDeclarations.ITModelView} * vec4({UniformNameDeclarations.Tangent}.xyz, 0.0)));");
                 vertMainBody.Add($"vec3 B = normalize(vec3({UniformNameDeclarations.ITModelView} * vec4({UniformNameDeclarations.Bitangent}.xyz, 0.0)));");
 
-                vertMainBody.Add($"TBN = mat3(T,B,{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2});");
+                vertMainBody.Add($"TBN = mat3(T,B,{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Normal.Item2});");
             }
 
-            vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(changedVert, 1.0);");
-            vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
+            if (renderMod.HasFlag(RenderFlags.Instanced) && !renderMod.HasFlag(RenderFlags.PointCloud))
+            {
+                vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * changedVert;");
+                vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Projection} * {UniformNameDeclarations.View} * ({UniformNameDeclarations.InstanceModelMat} * {UniformNameDeclarations.Model}) * changedVert;");
+                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.InstanceColor};");
+            }
+            else if (renderMod.HasFlag(RenderFlags.Instanced) && renderMod.HasFlag(RenderFlags.PointCloud))
+            {
+                vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * changedVert;");
+                vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Projection} * changedVert;");
+                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.InstanceColor};");
+            }
+            else
+            {
+                vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * changedVert;");
+                vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * changedVert;");
+                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
+            }
+
+
             vertMainBody.Add($"{VaryingNameDeclarations.Color1} = {UniformNameDeclarations.VertexColor1};");
             vertMainBody.Add($"{VaryingNameDeclarations.Color2} = {UniformNameDeclarations.VertexColor2};");
 

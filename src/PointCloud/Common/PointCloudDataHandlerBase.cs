@@ -1,12 +1,11 @@
-﻿using Fusee.Engine.Core;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
     /// </summary>
-    public abstract class PointCloudDataHandlerBase
+    public abstract class PointCloudDataHandlerBase<TGpuData>
     {
         /// <summary>
         /// Used to manage gpu pressure when disposing of a large quantity of meshes.
@@ -27,7 +26,7 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Contains meshes that are marked for disposal.
         /// </summary>
-        protected Dictionary<OctantId, IEnumerable<GpuMesh>> DisposeQueue;
+        protected Dictionary<OctantId, IEnumerable<TGpuData>> DisposeQueue;
 
         /// <summary>
         /// Locking object for the loading queue.
@@ -44,7 +43,7 @@ namespace Fusee.PointCloud.Common
         /// else look in the point cache, if there are points create a mesh and add to the MeshCache.
         /// </summary>
         /// <param name="guid">The unique id of an octant.</param>
-        public abstract IEnumerable<GpuMesh> GetMeshes(OctantId guid);
+        public abstract IEnumerable<TGpuData> GetGpuData(OctantId guid);
 
         /// <summary>
         /// Loads points from the hard drive if they are neither in the loading queue nor in the PointCahce.

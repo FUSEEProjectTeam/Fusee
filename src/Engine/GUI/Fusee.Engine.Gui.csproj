@@ -10,7 +10,7 @@
 
 	<ItemGroup>
 		<Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-		<Content Include="NuGet\Fusee.Engine.GUI.targets" PackagePath="build\Fusee.Engine.GUI.targets" />
+		<Content Include="NuGet\Fusee.Engine.Gui.targets" PackagePath="build\Fusee.Engine.Gui.targets" />
 	</ItemGroup>
 
 	<ItemGroup>

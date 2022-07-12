@@ -15,8 +15,8 @@ namespace Fusee.Tests.Render.Desktop
             Program.Example = new Fusee.Examples.ComputeFractal.Core.ComputeFractal() { };
             Program.Init("Fractal.png");
 
-            //Program.Example = new Fusee.Examples.Deferred.Core.Deferred() { };
-            //Program.Init("Deferred.png");
+            Program.Example = new Fusee.Examples.Deferred.Core.Deferred() { };
+            Program.Init("Deferred.png");
 
             Program.Example = new Fusee.Examples.GeometryEditing.Core.GeometryEditing();
             Program.Init("GeometryEditing.png");

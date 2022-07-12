@@ -4,7 +4,7 @@ using Fusee.Engine.Imp.Graphics.Desktop;
 using OpenTK.Graphics.OpenGL;
 using System;
 
-namespace Fusee.ImGuiDesktop.Templates
+namespace Fusee.ImGuiImp.Desktop.Templates
 {
     public abstract class FuseeControlToTexture
     {
@@ -105,19 +105,16 @@ namespace Fusee.ImGuiDesktop.Templates
             // Do the actual rendering
             var hndl = RenderAFrame();
             if (hndl == null) return IntPtr.Zero;
-            var tex = ((Engine.Imp.Graphics.Desktop.TextureHandle)hndl).TexHandle;
-
-
+            var tex = ((TextureHandle)hndl).TexId;
             _rc.SetRenderTarget();
             _rc.Viewport(0, 0, _originalWidth, _originalHeight);
 
             // Warning: wolves ahead
             if (prgmHndl == null)
-                prgmHndl = new ShaderHandleImp() { Handle = ImGuiController.ShaderProgram };
+                prgmHndl = new ShaderHandle() { Handle = ImGuiController.ShaderProgram };
             _rc.CurrentShaderProgram = prgmHndl;
 
             return new IntPtr(tex);
         }
-
     }
 }

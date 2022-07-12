@@ -154,6 +154,9 @@ namespace Fusee.Engine.Common
         /// </summary>
         bool TangentsSet { get; }
 
+        /// <summary>
+        /// Implementation Tasks: Invalidates the tangents of the mesh, e.g. reset the buffer object by setting it to 0.
+        /// </summary>
         void InvalidateTangents();
 
         /// <summary>
@@ -161,6 +164,9 @@ namespace Fusee.Engine.Common
         /// </summary>
         bool BiTangentsSet { get; }
 
+        /// <summary>
+        /// Implementation Tasks: Invalidates the bitangents of the mesh, e.g. reset the buffer object by setting it to 0.
+        /// </summary>
         void InvalidateBiTangents();
 
         /// <summary>

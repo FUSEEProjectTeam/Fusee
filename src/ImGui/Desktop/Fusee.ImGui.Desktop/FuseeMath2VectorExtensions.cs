@@ -1,7 +1,7 @@
 ﻿using Fusee.Math.Core;
 using System.Numerics;
 
-namespace Fusee.ImGuiDesktop
+namespace Fusee.ImGuiImp.Desktop
 {
     public static class FuseeMath2VectorExtensions
     {

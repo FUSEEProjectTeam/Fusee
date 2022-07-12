@@ -6,7 +6,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// A ShaderEffect contains a string for each, the vertex, fragment and geometry shader and a set of render states.
     /// Use this if you want to write the shader code on your own. 
-    /// The values of uniform variables you defined (<see cref="Effect.ParamDecl"/>) can be set using <see cref="Effect.SetFxParam{T}(string, T)"/>. 
+    /// The values of uniform variables you defined (<see cref="Effect.UniformParameters"/>) can be set using <see cref="Effect.SetFxParam{T}(int, T)"/> or <see cref="Effect.SetFxParam{T}(string, T)"/>. 
     /// </summary>
     public class ShaderEffect : Effect, IDisposable
     {
@@ -28,23 +28,26 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The constructor to create a shader effect.
         /// </summary>
-        /// <param name="effectPass">See <see cref="FxPassDeclaration"/>.</param>
         /// <param name="effectParameters">The list of (uniform) parameters. The concrete type of the object also indicates the parameter's type.
         /// </param>
+        /// <param name="rendererStates"></param>
+        /// <param name="vs"></param>
+        /// <param name="ps"></param>
+        /// <param name="gs"></param>
         /// <remarks> Make sure to insert all uniform variable in "effectParameters" that are declared in the shader code.</remarks>
-        public ShaderEffect(FxPassDeclaration effectPass, IEnumerable<IFxParamDeclaration> effectParameters)
+        public ShaderEffect(IEnumerable<IFxParamDeclaration> effectParameters, RenderStateSet rendererStates, string vs, string ps, string gs = null)
         {
-            ParamDecl = new Dictionary<int, IFxParamDeclaration>();
+            UniformParameters = new Dictionary<int, IFxParamDeclaration>();
 
-            RendererStates = effectPass.StateSet;
-            VertexShaderSrc = effectPass.VS;
-            PixelShaderSrc = effectPass.PS;
-            GeometryShaderSrc = effectPass.GS;
+            RendererStates = rendererStates;
+            VertexShaderSrc = vs;
+            PixelShaderSrc = ps;
+            GeometryShaderSrc = gs;
 
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
-                    ParamDecl.Add(param.Hash, param);
+                    UniformParameters.Add(param.Hash, param);
             }
 
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);

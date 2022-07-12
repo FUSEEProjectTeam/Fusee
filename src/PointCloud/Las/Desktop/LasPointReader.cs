@@ -25,7 +25,7 @@ namespace Fusee.PointCloud.Las.Desktop
         private IntPtr _ptrToLASClass = new();
         private string _filename;
 
-        public IPointCloud GetPointCloudComponent(string filename)
+        public IPointCloud GetPointCloudComponent(string filename, RenderMode renderMode)
         {
             _filename = filename;
             OpenFile(_filename);

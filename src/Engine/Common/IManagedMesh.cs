@@ -2,6 +2,9 @@
 
 namespace Fusee.Engine.Common
 {
+    /// <summary>
+    /// Interface for meshes that are observed by the MeshManager. The MeshManger is handling the memory allocation and deallocation of meshes on the GPU.
+    /// </summary>
     public interface IManagedMesh : IDisposable
     {
         /// <summary>
@@ -14,6 +17,9 @@ namespace Fusee.Engine.Common
         /// </summary>
         public Suid SessionUniqueIdentifier { get; }
 
+        /// <summary>
+        /// The primitive type this mesh is composed of.
+        /// </summary>
         PrimitiveType MeshType { get; set; }
     }
 }

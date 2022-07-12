@@ -3,13 +3,14 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.Imp.Shared;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Imp.SharedAll;
 using Fusee.Math.Core;
 using OpenTK.Graphics.ES31;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Fusee.Engine.Imp.Graphics.Android
@@ -335,7 +336,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)glWrapMode);
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             return texID;
         }
@@ -367,7 +368,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)glWrapMode);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)glWrapMode);
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             return texID;
         }
@@ -402,7 +403,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             //Diagnostics.Debug(GL.GetErrorCode());
 
@@ -457,7 +458,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
 
-            ITextureHandle texID = new TextureHandle { TexHandle = id };
+            ITextureHandle texID = new TextureHandle { TexId = id };
 
             //Diagnostics.Debug(GL.GetErrorCode());
 
@@ -476,11 +477,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            PixelFormat format = GetTexturePixelInfo(img.ImageData.PixelFormat).Format;
+            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
 
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexId);
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
-                format, PixelType.UnsignedByte, img.ImageData.PixelData);
+                pxInfo.Format, PixelType.UnsignedByte, img.ImageData.PixelData);
         }
 
         /// <summary>
@@ -490,7 +492,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="filterMode">The new filter mode.</param>
         public void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexId);
             var glMinMagFilter = GetMinMagFilter(filterMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)glMinMagFilter.Item1);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)glMinMagFilter.Item2);
@@ -503,7 +505,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         ///<param name="wrapMode">The new wrap mode.</param>
         public void SetTextureWrapMode(ITextureHandle tex, Common.TextureWrapMode wrapMode)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexId);
             var glWrapMode = GetWrapMode(wrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
@@ -549,9 +551,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.DeleteRenderbuffers(1, ref texHandle.DepthRenderBufferHandle);
             }
 
-            if (texHandle.TexHandle != -1)
+            if (texHandle.TexId != -1)
             {
-                GL.DeleteTextures(1, ref texHandle.TexHandle);
+                var texId = texHandle.TexId;
+                GL.DeleteTexture(texId);
                 _textureCountPerShader--;
             }
         }
@@ -591,7 +594,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.DetachShader(program, computeObject);
             GL.DeleteShader(computeObject);
 
-            return new ShaderHandleImp { Handle = program };
+            return new ShaderHandle { Handle = program };
         }
 
         /// <summary>
@@ -650,9 +653,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
+            GL.BindAttribLocation(program, AttributeLocations.InstancedColor, UniformNameDeclarations.InstanceColor);
+            GL.BindAttribLocation(program, AttributeLocations.InstancedModelMat1, UniformNameDeclarations.InstanceModelMat);
 
             GL.LinkProgram(program);
-            return new ShaderHandleImp { Handle = program };
+            return new ShaderHandle { Handle = program };
         }
 
         /// <inheritdoc />
@@ -664,7 +669,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             if (_androidContext == null) return; // if no RenderContext is available return - otherwise memory read error
 
-            var program = ((ShaderHandleImp)sp).Handle;
+            var program = ((ShaderHandle)sp).Handle;
 
             // wait for all threads to be finished
             GL.Finish();
@@ -684,7 +689,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             _textureCountPerShader = 0;
             _shaderParam2TexUnit.Clear();
 
-            GL.UseProgram(((ShaderHandleImp)program).Handle);
+            GL.UseProgram(((ShaderHandle)program).Handle);
         }
 
         /// <summary>
@@ -704,47 +709,51 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="shaderProgram">The shader program.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
+        public IUniformHandle GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
             StringBuilder sbParamName = new(paramName);
-            int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, sbParamName.ToString());
-            return (h == -1) ? null : new ShaderParam { handle = h };
+            int h = GL.GetUniformLocation(((ShaderHandle)shaderProgram).Handle, sbParamName.ToString());
+            return (h == -1) ? null : new UniformHandle { handle = h };
         }
 
         /// <summary>
-        /// Gets the float parameter value inside a shader program by using a <see cref="IShaderParam" /> as search reference.
+        /// Gets the float parameter value inside a shader program by using a <see cref="IUniformHandle" /> as search reference.
         /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
         /// </summary>
         /// <param name="program">The program.</param>
         /// <param name="param">The parameter.</param>
         /// <returns>A float number (default is 0).</returns>
-        public float GetParamValue(IShaderHandle program, IShaderParam param)
+        public float GetParamValue(IShaderHandle program, IUniformHandle param)
         {
-            GL.GetUniform(((ShaderHandleImp)program).Handle, ((ShaderParam)param).handle, out float f);
+            GL.GetUniform(((ShaderHandle)program).Handle, ((UniformHandle)param).handle, out float f);
             return f;
         }
 
         /// <summary>
-        /// Returns a List of type <see cref="ShaderParamInfo"/> for all ShaderStorageBlocks
+        /// Returns a List of type <see cref="ActiveUniform"/> for all ShaderStorageBlocks
         /// </summary>
         /// <param name="shaderProgram">The shader program to query.</param>
-        public IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        public IList<IActiveUniform> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
-            var paramList = new List<ShaderParamInfo>();
-            var sProg = (ShaderHandleImp)shaderProgram;
+            var paramList = new List<IActiveUniform>();
+            var sProg = (ShaderHandle)shaderProgram;
             GL.GetProgramInterface(sProg.Handle, All.ShaderStorageBlock, All.MaxNameLength, out int ssboMaxLen);
             GL.GetProgramInterface(sProg.Handle, All.ShaderStorageBlock, All.ActiveResources, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
-                var paramInfo = new ShaderParamInfo();
+                var param = new ActiveUniform
+                {
+                    HasValueChanged = true
+                };
+
                 var name = new StringBuilder();
                 GL.GetProgramResourceName(sProg.Handle, All.ShaderStorageBlock, i, ssboMaxLen, out _, name);
-                paramInfo.Name = name.ToString();
+                param.Name = name.ToString();
 
                 int h = GL.GetProgramResourceIndex(sProg.Handle, All.ShaderStorageBlock, name);
-                paramInfo.Handle = (h == -1) ? null : new ShaderParam { handle = h };
-                paramList.Add(paramInfo);
+                param.Handle = (h == -1) ? null : new UniformHandle { handle = h };
+                paramList.Add(param);
             }
 
             return paramList;
@@ -756,34 +765,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
+        public IList<IActiveUniform> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
-            var sProg = (ShaderHandleImp)shaderProgram;
-            var paramList = new List<ShaderParamInfo>();
+            var sProg = (ShaderHandle)shaderProgram;
+            var paramList = new List<IActiveUniform>();
 
             GL.GetProgram(sProg.Handle, ProgramParameter.ActiveUniforms, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
-                var paramInfo = new ShaderParamInfo();
-                StringBuilder sbName = new(512);
-                GL.GetActiveUniform(sProg.Handle, i, 511, out _, out paramInfo.Size, out ActiveUniformType uType, sbName);
-                paramInfo.Name = sbName.ToString();
-                paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
-
-                paramInfo.Type = uType switch
+                var paramInfo = new ActiveUniform
                 {
-                    ActiveUniformType.Int => typeof(int),
-                    ActiveUniformType.Float => typeof(float),
-                    ActiveUniformType.FloatVec2 => typeof(float2),
-                    ActiveUniformType.FloatVec3 => typeof(float3),
-                    ActiveUniformType.FloatVec4 => typeof(float4),
-                    ActiveUniformType.FloatMat4 => typeof(float4x4),
-                    ActiveUniformType.Sampler2D or ActiveUniformType.UnsignedIntSampler2D or ActiveUniformType.IntSampler2D or ActiveUniformType.Sampler2DShadow => typeof(ITextureBase),
-                    ActiveUniformType.SamplerCube or ActiveUniformType.SamplerCubeShadow => typeof(IWritableCubeMap),
-                    ActiveUniformType.Sampler2DArray => typeof(IWritableArrayTexture),
-                    _ => throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown."),
+                    Name = GL.GetActiveUniform(sProg.Handle, i, out var paramSize, out ActiveUniformType uType),
+                    HasValueChanged = true
                 };
+                paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
+                paramInfo.Size = paramSize;
                 paramList.Add(paramInfo);
             }
             return paramList;
@@ -794,9 +791,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float val)
+        public void SetShaderParam(IUniformHandle param, float val)
         {
-            GL.Uniform1(((ShaderParam)param).handle, val);
+            GL.Uniform1(((UniformHandle)param).handle, val);
         }
 
         /// <summary>
@@ -804,10 +801,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, double val)
+        public void SetShaderParam(IUniformHandle param, double val)
         {
             Diagnostics.Warn("No support for double values - it is cast to float!");
-            GL.Uniform1(((ShaderParam)param).handle, (float)val);
+            GL.Uniform1(((UniformHandle)param).handle, (float)val);
         }
 
         /// <summary>
@@ -815,9 +812,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float2 val)
+        public void SetShaderParam(IUniformHandle param, float2 val)
         {
-            GL.Uniform2(((ShaderParam)param).handle, val.x, val.y);
+            GL.Uniform2(((UniformHandle)param).handle, val.x, val.y);
         }
 
         /// <summary>
@@ -825,10 +822,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float2[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, float2[] val)
         {
             fixed (float2* pFlt = &val[0])
-                GL.Uniform2(((ShaderParam)param).handle, val.Length, (float*)pFlt);
+                GL.Uniform2(((UniformHandle)param).handle, val.Length, (float*)pFlt);
         }
 
         /// <summary>
@@ -836,9 +833,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float3 val)
+        public void SetShaderParam(IUniformHandle param, float3 val)
         {
-            GL.Uniform3(((ShaderParam)param).handle, val.x, val.y, val.z);
+            GL.Uniform3(((UniformHandle)param).handle, val.x, val.y, val.z);
         }
 
         /// <summary>
@@ -846,10 +843,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float3[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, float3[] val)
         {
             fixed (float3* pFlt = &val[0])
-                GL.Uniform4(((ShaderParam)param).handle, val.Length, (float*)pFlt);
+                GL.Uniform4(((UniformHandle)param).handle, val.Length, (float*)pFlt);
         }
 
         /// <summary>
@@ -857,9 +854,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4 val)
+        public void SetShaderParam(IUniformHandle param, float4 val)
         {
-            GL.Uniform4(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
+            GL.Uniform4(((UniformHandle)param).handle, val.x, val.y, val.z, val.w);
         }
 
         /// <summary>
@@ -867,15 +864,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4x4 val)
+        public unsafe void SetShaderParam(IUniformHandle param, float4x4 val)
         {
-            unsafe
+            fixed (void* pt = new byte[Marshal.SizeOf(val)])
             {
-                var mF = (float*)(&val);
-
-                // Column order notation
-                GL.UniformMatrix4(((ShaderParam)param).handle, 1, true, mF);
+                var intPtr = new IntPtr(pt);
+                Marshal.StructureToPtr(val, intPtr, true);
+                GL.UniformMatrix4(((UniformHandle)param).handle, 1, true, (float*)intPtr);
             }
+
+            //unsafe
+            //{
+            //    var mF = (float*)(&val);
+
+            //    // Column order notation
+            //    GL.UniformMatrix4(((UniformHandle)param).handle, 1, true, mF);
+            //}
         }
 
         /// <summary>
@@ -883,10 +887,20 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float4[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, float4[] val)
         {
             fixed (float4* pFlt = &val[0])
-                GL.Uniform4(((ShaderParam)param).handle, val.Length, (float*)pFlt);
+                GL.Uniform4(((UniformHandle)param).handle, val.Length, (float*)pFlt);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="int2" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IUniformHandle param, int2 val)
+        {
+            GL.Uniform2(((UniformHandle)param).handle, val.x, val.y);
         }
 
         /// <summary>
@@ -894,7 +908,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float4x4[] val)
+        public unsafe void SetShaderParam(IUniformHandle param, float4x4[] val)
         {
             var tmpArray = new float4[val.Length * 4];
 
@@ -907,7 +921,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             fixed (float4* pMtx = &tmpArray[0])
-                GL.UniformMatrix4(((ShaderParam)param).handle, val.Length, false, (float*)pMtx);
+                GL.UniformMatrix4(((UniformHandle)param).handle, val.Length, false, (float*)pMtx);
         }
 
         /// <summary>
@@ -915,9 +929,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, int val)
+        public void SetShaderParam(IUniformHandle param, int val)
         {
-            GL.Uniform1(((ShaderParam)param).handle, val);
+            GL.Uniform1(((UniformHandle)param).handle, val);
         }
 
         private void BindImage(TextureType texTarget, ITextureHandle texId, int texUint, All access, SizedInternalFormat format)
@@ -941,16 +955,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     Diagnostics.Error("Xamarin OpenTK ES31 does not support Texture1D.");
                     break;
                 case TextureType.Texture2D:
-                    GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
+                    GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.Texture3D:
-                    GL.BindTexture(TextureTarget.Texture3D, ((TextureHandle)texId).TexHandle);
+                    GL.BindTexture(TextureTarget.Texture3D, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.TextureCubeMap:
-                    GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
+                    GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexId);
                     break;
                 case TextureType.ArrayTexture:
-                    GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
+                    GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexId);
                     break;
                 default:
                     throw new ArgumentException($"Unknown texture target: {texTarget}.");
@@ -963,9 +977,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="param">The shader parameter, associated with this texture.</param>
         /// <param name="texId">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
+        public void SetActiveAndBindTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
             {
                 _textureCountPerShader++;
@@ -984,9 +998,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="texId">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="texUnit">The texture unit.</param>
-        public void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget, out int texUnit)
+        public void SetActiveAndBindTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget, out int texUnit)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
             {
                 _textureCountPerShader++;
@@ -1004,9 +1018,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
         /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
+        public void SetActiveAndBindTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             int[] texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
@@ -1033,9 +1047,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="texUnitArray">The texture units.</param>
-        public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray)
+        public void SetActiveAndBindTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
@@ -1062,15 +1076,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="format">The internal sized format of the texture.</param>
-        public void SetShaderParamImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
+        public void SetShaderParamImage(IUniformHandle param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
         {
             SetActiveAndBindImage(param, texId, texTarget, format, All.ReadWrite, out int texUnit);
-            GL.Uniform1(((ShaderParam)param).handle, texUnit);
+            GL.Uniform1(((UniformHandle)param).handle, texUnit);
         }
 
-        private void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, All access, out int texUnit)
+        private void SetActiveAndBindImage(IUniformHandle param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, All access, out int texUnit)
         {
-            int iParam = ((ShaderParam)param).handle;
+            int iParam = ((UniformHandle)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
             {
                 _textureCountPerShader++;
@@ -1090,10 +1104,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
+        public void SetShaderParamTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget)
         {
             SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);
-            GL.Uniform1(((ShaderParam)param).handle, texUnit);
+            GL.Uniform1(((UniformHandle)param).handle, texUnit);
         }
 
         /// <summary>
@@ -1102,12 +1116,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public unsafe void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
+        public unsafe void SetShaderParamTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget)
         {
             SetActiveAndBindTextureArray(param, texIds, texTarget, out int[] texUnitArray);
 
             fixed (int* pFlt = &texUnitArray[0])
-                GL.Uniform1(((ShaderParam)param).handle, texUnitArray.Length, pFlt);
+                GL.Uniform1(((UniformHandle)param).handle, texUnitArray.Length, pFlt);
         }
 
         #endregion Shader related Members
@@ -1216,8 +1230,127 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void SetVertexArrayObject(IMeshImp mr)
         {
-            //throw new NotImplementedException("Depth clamping isn't implemented yet!");
+            if (((MeshImp)mr).VertexArrayObject == 0)
+            {
+                GL.GenVertexArrays(1, out int vao);
+                ((MeshImp)mr).VertexArrayObject = vao;
+            }
         }
+
+        /// <summary>
+        /// Creates and binds the instance model matrices onto the GL render context and assigns an buffer object index to the passed <see cref="IInstanceDataImp" /> instance.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
+        /// <param name="instancePositions">The instance positions.</param>
+        /// <param name="instanceRotations">The instance rotations.</param>
+        /// <param name="instanceScales">The instance scale values.</param>
+        public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales)
+        {
+            var vao = ((InstanceDataImp)instanceImp).VertexArrayObject;
+            if (vao == 0)
+            {
+                throw new ApplicationException("Create the VAO first!");
+            }
+
+            var sizeOfFloat4 = sizeof(float) * 4;
+            var sizeOfMat = sizeOfFloat4 * 4;
+            var amount = instancePositions.Length;
+            int matBytes = amount * sizeOfMat;
+
+            var posBufferData = new float4[amount * 4];
+
+            var modelMats = new float4x4[amount];
+
+            for (int i = 0; i < amount; i++)
+            {
+                modelMats[i] = float4x4.CreateTranslation(instancePositions[i]) * float4x4.CreateRotationZXY(instanceRotations[i]) * float4x4.CreateScale(instanceScales[i]);
+            }
+
+            for (var i = 0; i < modelMats.Length; i++)
+            {
+                posBufferData[i * 4] = modelMats[i].Column1;
+                posBufferData[i * 4 + 1] = modelMats[i].Column2;
+                posBufferData[i * 4 + 2] = modelMats[i].Column3;
+                posBufferData[i * 4 + 3] = modelMats[i].Column4;
+            }
+
+            if (((InstanceDataImp)instanceImp).InstanceTransformBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int instanceTransformBo);
+                ((InstanceDataImp)instanceImp).InstanceTransformBufferObject = instanceTransformBo;
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
+                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)matBytes, modelMats, BufferUsage.DynamicDraw);
+            }
+            else
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceImp).InstanceTransformBufferObject);
+                GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, (IntPtr)matBytes, modelMats);
+            }
+
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int instancedPosBytes);
+            if (instancedPosBytes != matBytes)
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedPosBytes, matBytes));
+
+            GL.BindVertexArray(vao);
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat1);
+            GL.VertexAttribPointer(AttributeLocations.InstancedModelMat1, 4, VertexAttribPointerType.Float, false, sizeOfMat, 0);
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat2);
+            GL.VertexAttribPointer(AttributeLocations.InstancedModelMat2, 4, VertexAttribPointerType.Float, false, sizeOfMat, 1 * sizeOfFloat4);
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat3);
+            GL.VertexAttribPointer(AttributeLocations.InstancedModelMat3, 4, VertexAttribPointerType.Float, false, sizeOfMat, 2 * sizeOfFloat4);
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat4);
+            GL.VertexAttribPointer(AttributeLocations.InstancedModelMat4, 4, VertexAttribPointerType.Float, false, sizeOfMat, 3 * sizeOfFloat4);
+
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat1, 1);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat2, 1);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat3, 1);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedModelMat4, 1);
+        }
+
+        /// <summary>
+        /// Binds the instance colors onto the GL render context and assigns an buffer object index to the passed <see cref="IInstanceDataImp" /> instance.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
+        /// <param name="instanceColors">The instance colors.</param>
+        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
+        {
+            if (instanceColors == null)
+                return;
+
+            var vao = ((InstanceDataImp)instanceImp).VertexArrayObject;
+            if (vao == 0)
+            {
+                throw new ApplicationException("Create the VAO first!");
+            }
+
+            //TODO: can we use AttributeLocations.Color?
+            int sizeOfCol = sizeof(float) * 4;
+            int iColorBytes = instanceColors.Length * sizeOfCol;
+            int instanceColorBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
+            if (instanceColorBo == 0)
+            {
+                GL.GenBuffers(1, out instanceColorBo);
+                ((InstanceDataImp)instanceImp).InstanceColorBufferObject = instanceColorBo;
+                GL.BindBuffer(BufferTarget.ArrayBuffer, instanceColorBo);
+                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)iColorBytes, instanceColors, BufferUsage.StaticDraw);
+            }
+            else
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, instanceColorBo);
+                GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, (IntPtr)iColorBytes, instanceColors);
+            }
+
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int instancedColorBytes);
+            if (instancedColorBytes != iColorBytes)
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedColorBytes, iColorBytes));
+
+            GL.BindVertexArray(vao);
+            // set attribute pointers for matrix (4 times vec4)
+            GL.EnableVertexAttribArray(AttributeLocations.InstancedColor);
+            GL.VertexAttribPointer(AttributeLocations.InstancedColor, 4, VertexAttribPointerType.Float, false, sizeOfCol, 0);
+            GL.VertexAttribDivisor(AttributeLocations.InstancedColor, 1);
+        }
+
 
         /// <summary>
         /// Binds the vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -1240,6 +1373,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 ((MeshImp)mr).VertexBufferObject = bufferIdx;
             }
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
+            GL.VertexAttribPointer(AttributeLocations.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
@@ -1272,6 +1406,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), tangents, BufferUsage.StaticDraw);
+            GL.VertexAttribPointer(AttributeLocations.TangentAttribLocation, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format(
@@ -1301,6 +1436,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
+            GL.VertexAttribPointer(AttributeLocations.BitangentAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), bitangents, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
@@ -1332,6 +1468,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
+            GL.VertexAttribPointer(AttributeLocations.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != normsBytes)
@@ -1362,6 +1499,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
+            GL.VertexAttribPointer(AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != indicesBytes)
@@ -1392,6 +1530,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
+            GL.VertexAttribPointer(AttributeLocations.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != weightsBytes)
@@ -1452,6 +1591,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
+            GL.VertexAttribPointer(AttributeLocations.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
@@ -1482,6 +1622,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
+            GL.VertexAttribPointer(AttributeLocations.Color1AttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
@@ -1513,6 +1654,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
+            GL.VertexAttribPointer(AttributeLocations.Color2AttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format(
@@ -1561,6 +1703,21 @@ namespace Fusee.Engine.Imp.Graphics.Android
             int bufferObj = ((MeshImp)mr).VertexBufferObject;
             GL.DeleteBuffers(1, ref bufferObj);
             ((MeshImp)mr).InvalidateVertices();
+        }
+
+        /// <summary>
+        /// Deletes the buffers associated with the instance data implementation.
+        /// </summary>
+        /// <param name="instanceDataImp">The instance data for which to delete the GPU buffers.</param>
+        public void RemoveInstanceData(IInstanceDataImp instanceDataImp)
+        {
+            var posBo = ((InstanceDataImp)instanceDataImp).InstanceTransformBufferObject;
+            var colBo = ((InstanceDataImp)instanceDataImp).InstanceColorBufferObject;
+
+            GL.DeleteBuffers(1, ref posBo);
+            GL.DeleteBuffers(1, ref colBo);
+            ((InstanceDataImp)instanceDataImp).InstanceTransformBufferObject = 0;
+            ((InstanceDataImp)instanceDataImp).InstanceColorBufferObject = 0;
         }
 
         /// <summary>
@@ -1697,135 +1854,112 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        public void Render(IMeshImp mr)
+        /// <param name="instanceData">Contains the buffers that need to be bound when using instanced rendering.</param>
+        public void Render(IMeshImp mr, IInstanceDataImp instanceData = null)
         {
+            GL.BindVertexArray(((MeshImp)mr).VertexArrayObject);
+
             if (((MeshImp)mr).VertexBufferObject != 0)
-            {
                 GL.EnableVertexAttribArray(AttributeLocations.VertexAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
-                GL.VertexAttribPointer(AttributeLocations.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
             if (((MeshImp)mr).ColorBufferObject != 0)
-            {
                 GL.EnableVertexAttribArray(AttributeLocations.ColorAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
-                GL.VertexAttribPointer(AttributeLocations.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0,
-                    IntPtr.Zero);
-            }
-
+            if (((MeshImp)mr).ColorBufferObject1 != 0)
+                GL.EnableVertexAttribArray(AttributeLocations.Color1AttribLocation);
+            if (((MeshImp)mr).ColorBufferObject2 != 0)
+                GL.EnableVertexAttribArray(AttributeLocations.Color2AttribLocation);
             if (((MeshImp)mr).UVBufferObject != 0)
-            {
                 GL.EnableVertexAttribArray(AttributeLocations.UvAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
-                GL.VertexAttribPointer(AttributeLocations.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
-            }
-
             if (((MeshImp)mr).NormalBufferObject != 0)
-            {
                 GL.EnableVertexAttribArray(AttributeLocations.NormalAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
-                GL.VertexAttribPointer(AttributeLocations.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).BoneIndexBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(AttributeLocations.BoneIndexAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
-                GL.VertexAttribPointer(AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).BoneWeightBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(AttributeLocations.BoneWeightAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
-                GL.VertexAttribPointer(AttributeLocations.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
             if (((MeshImp)mr).TangentBufferObject != 0)
-            {
                 GL.EnableVertexAttribArray(AttributeLocations.TangentAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
-                GL.VertexAttribPointer(AttributeLocations.TangentAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
-
             if (((MeshImp)mr).BitangentBufferObject != 0)
-            {
                 GL.EnableVertexAttribArray(AttributeLocations.BitangentAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
-                GL.VertexAttribPointer(AttributeLocations.BitangentAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
+            if (((MeshImp)mr).BoneIndexBufferObject != 0)
+                GL.EnableVertexAttribArray(AttributeLocations.BoneIndexAttribLocation);
+            if (((MeshImp)mr).BoneWeightBufferObject != 0)
+                GL.EnableVertexAttribArray(AttributeLocations.BoneWeightAttribLocation);
+
 
             if (((MeshImp)mr).ElementBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
-                GL.DrawElements(BeginMode.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort,
-                    IntPtr.Zero);
-                //GL.DrawArrays(GL.Enums.All.POINTS, 0, shape.Vertices.Length);
 
-                switch (((MeshImp)mr).MeshType)
+                var oglPrimitiveType = ((MeshImp)mr).MeshType switch
                 {
-                    case Common.PrimitiveType.Triangles:
-                    default:
-                        GL.DrawElements(BeginMode.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                        break;
+                    Common.PrimitiveType.Points => OpenTK.Graphics.ES31.PrimitiveType.Points,
+                    Common.PrimitiveType.Lines => OpenTK.Graphics.ES31.PrimitiveType.Lines,
+                    Common.PrimitiveType.LineLoop => OpenTK.Graphics.ES31.PrimitiveType.LineLoop,
+                    Common.PrimitiveType.LineStrip => OpenTK.Graphics.ES31.PrimitiveType.LineStrip,
+                    Common.PrimitiveType.Patches => throw new NotSupportedException("Patches aren't supported."),
+                    Common.PrimitiveType.QuadStrip => throw new NotSupportedException("QuadStrips aren't supported."),
+                    Common.PrimitiveType.TriangleFan => OpenTK.Graphics.ES31.PrimitiveType.TriangleFan,
+                    Common.PrimitiveType.TriangleStrip => OpenTK.Graphics.ES31.PrimitiveType.TriangleStrip,
+                    Common.PrimitiveType.Quads => throw new NotSupportedException("Quads aren't supported."),
+                    _ => OpenTK.Graphics.ES31.PrimitiveType.Triangles,
+                };
 
-                    case Common.PrimitiveType.Points:
-                        // enable gl_PointSize to set the point size
-                        GL.Enable(EnableCap.DepthTest);
-                        //GL.Enable(EnableCap.DepthTest);
-                        //GL.DepthMask(true);
-                        //GL.Enable(All.VertexProgramPointSize);
-                        GL.DrawElements(BeginMode.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                        break;
+                if (instanceData != null)
+                {
+                    var sizeOfFloat4 = sizeof(float) * 4;
+                    var sizeOfMat = sizeOfFloat4 * 4;
+                    if (((InstanceDataImp)instanceData).InstanceColorBufferObject != 0)
+                    {
+                        GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceData).InstanceColorBufferObject);
+                        GL.EnableVertexAttribArray(AttributeLocations.InstancedColor);
+                        //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
+                        GL.VertexAttribPointer(AttributeLocations.InstancedColor, 4, VertexAttribPointerType.Float, false, sizeOfFloat4, 0);
+                    }
 
-                    case Common.PrimitiveType.Lines:
-                        GL.DrawElements(BeginMode.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                        break;
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, ((InstanceDataImp)instanceData).InstanceTransformBufferObject);
 
-                    case Common.PrimitiveType.LineLoop:
-                        GL.DrawElements(BeginMode.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                        break;
+                    // set attribute pointers for matrix (4 times vec4)
+                    GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat1);
+                    GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat2);
+                    GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat3);
+                    GL.EnableVertexAttribArray(AttributeLocations.InstancedModelMat4);
 
-                    case Common.PrimitiveType.LineStrip:
-                        GL.DrawElements(BeginMode.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                        break;
+                    //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
+                    GL.VertexAttribPointer(AttributeLocations.InstancedModelMat1, 4, VertexAttribPointerType.Float, false, sizeOfMat, 0);
+                    GL.VertexAttribPointer(AttributeLocations.InstancedModelMat2, 4, VertexAttribPointerType.Float, false, sizeOfMat, (1 * sizeOfFloat4));
+                    GL.VertexAttribPointer(AttributeLocations.InstancedModelMat3, 4, VertexAttribPointerType.Float, false, sizeOfMat, (2 * sizeOfFloat4));
+                    GL.VertexAttribPointer(AttributeLocations.InstancedModelMat4, 4, VertexAttribPointerType.Float, false, sizeOfMat, (3 * sizeOfFloat4));
 
-                    case Common.PrimitiveType.Patches:
-                        throw new NotSupportedException("Patches is no valid primitive type within OpenGL ES 3.0");
-                    case Common.PrimitiveType.QuadStrip:
-                        throw new NotSupportedException("Quad strip is no valid primitive type within OpenGL ES 3.0");
-                    case Common.PrimitiveType.TriangleFan:
-                        GL.DrawElements(BeginMode.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                        break;
+                    GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero, instanceData.Amount);
 
-                    case Common.PrimitiveType.TriangleStrip:
-                        GL.DrawElements(BeginMode.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                        break;
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedModelMat1);
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedModelMat2);
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedModelMat3);
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedModelMat4);
+                    GL.DisableVertexAttribArray(AttributeLocations.InstancedColor);
                 }
+                else
+                    GL.DrawElements((BeginMode)oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
             }
+
             if (((MeshImp)mr).VertexBufferObject != 0)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(AttributeLocations.VertexAttribLocation);
-            }
             if (((MeshImp)mr).ColorBufferObject != 0)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(AttributeLocations.ColorAttribLocation);
-            }
-            if (((MeshImp)mr).NormalBufferObject != 0)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(AttributeLocations.NormalAttribLocation);
-            }
+            if (((MeshImp)mr).ColorBufferObject1 != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.Color1AttribLocation);
+            if (((MeshImp)mr).ColorBufferObject2 != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.Color2AttribLocation);
             if (((MeshImp)mr).UVBufferObject != 0)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(AttributeLocations.UvAttribLocation);
-            }
+            if (((MeshImp)mr).NormalBufferObject != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.NormalAttribLocation);
+            if (((MeshImp)mr).TangentBufferObject != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.TangentAttribLocation);
+            if (((MeshImp)mr).BitangentBufferObject != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.BitangentAttribLocation);
+            if (((MeshImp)mr).BoneIndexBufferObject != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.BoneIndexAttribLocation);
+            if (((MeshImp)mr).BoneWeightBufferObject != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.BoneWeightAttribLocation);
+
+            GL.BindVertexArray(0);
+
         }
 
         /// <summary>
@@ -1833,9 +1967,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="quad">The Rectangle where the content is draw into.</param>
         /// <param name="texId">The texture identifier.</param>
-        public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
+        public void GetBufferContent(Rectangle quad, ITextureHandle texId)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexId);
             GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width,
                 quad.Height, 0);
         }
@@ -1847,6 +1981,19 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public IMeshImp CreateMeshImp()
         {
             return new MeshImp();
+        }
+
+        /// <summary>
+        /// Creates the instance data implementation.
+        /// </summary>
+        /// <returns>The <see cref="IInstanceDataImp" /> instance.</returns>
+        public IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp)
+        {
+            var instanceImp = new InstanceDataImp
+            {
+                VertexArrayObject = ((MeshImp)meshImp).VertexArrayObject
+            };
+            return instanceImp;
         }
 
         internal static BlendEquationMode BlendOperationToOgl(BlendOperation bo)
@@ -2185,7 +2332,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
+        public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
         {
             throw new NotSupportedException("Android has no MultisampleWritableTexture support!");
         }
@@ -2218,10 +2365,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
 
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle);
+                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texHandle).TexId);
 
                 CreateDepthRenderBuffer(tex.Width, tex.Height);
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.Texture2D, ((TextureHandle)texHandle).TexId, 0);
                 GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.ColorAttachment0 });
             }
             else
@@ -2244,10 +2391,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
 
-                GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexHandle);
+                GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexId);
 
                 CreateDepthRenderBuffer(tex.Width, tex.Height);
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexHandle, 0);
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexId, 0);
                 GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.ColorAttachment0 });
             }
             else
@@ -2271,17 +2418,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
 
-                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
+                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexId);
 
                 if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
-                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexId, 0, layer);
                     GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.ColorAttachment0 });
                 }
                 else
                 {
-                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexId, 0, layer);
                     GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.None });
                     GL.ReadBuffer(ReadBufferMode.None);
                 }
@@ -2289,8 +2436,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             else
             {
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
-                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
-                GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexId);
+                GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexId, 0, layer);
             }
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
@@ -2377,11 +2524,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                     if (i == depthTexPos)
                     {
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment + (depthCnt), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment + (depthCnt), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexId, 0);
                         depthCnt++;
                     }
                     else
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (i - depthCnt), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (i - depthCnt), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexId, 0);
                 }
                 GL.DrawBuffers(attachments.Count, attachments.ToArray());
             }
@@ -2390,7 +2537,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 var texHandle = texHandles[depthTexPos];
 
                 if (texHandle != null)
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)texHandle).TexId, 0);
                 else
                     throw new NullReferenceException("Texture handle is null!");
 
@@ -2422,7 +2569,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="texHandle">The gpu handle of the texture.</param>
         public void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0)
         {
-            ChangeFramebufferTexture2D(renderTarget, attachment, ((TextureHandle)texHandle).TexHandle, isDepthTex);
+            ChangeFramebufferTexture2D(renderTarget, attachment, ((TextureHandle)texHandle).TexId, isDepthTex);
         }
 
         private void ChangeFramebufferTexture2D(IRenderTarget renderTarget, int attachment, int handle, bool isDepth)
@@ -2612,7 +2759,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             return depth;
         }
-
-        #endregion Picking related Members
     }
+    #endregion
 }

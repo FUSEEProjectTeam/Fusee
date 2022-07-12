@@ -4,6 +4,7 @@ namespace Fusee.Base.Common
 {
     /// <summary>
     /// Interface describing operations that are possible on arbitrary image data types.
+    /// Also contains the pixel data as byte array. 
     /// </summary>
     public interface IImageData
     {

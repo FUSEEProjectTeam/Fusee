@@ -3,7 +3,7 @@
     /// <summary>
     /// Session unique Id.
     /// </summary>
-    public struct Suid
+    public readonly struct Suid
     {
         private static readonly object LockObject = new();
         private static ulong _idCounter = 0;

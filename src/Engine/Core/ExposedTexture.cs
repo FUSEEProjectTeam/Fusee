@@ -1,11 +1,5 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {

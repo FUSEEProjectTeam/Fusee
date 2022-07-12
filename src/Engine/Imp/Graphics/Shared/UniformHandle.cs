@@ -7,10 +7,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 #endif
 {
     /// <summary>
-    /// Implementation of the <see cref="IShaderParam" /> interface.
+    /// Implementation of the <see cref="IUniformHandle" /> interface.
     /// This object is passed to shader programs that are running on the graphics card to modify shader values.
     /// </summary>
-    public class ShaderParam : IShaderParam
+    public class UniformHandle : IUniformHandle
     {
         internal int handle;
     }

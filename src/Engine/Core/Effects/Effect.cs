@@ -14,7 +14,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Collection of all uniform parameters of this effect. See <see cref="IFxParamDeclaration"/>.
         /// </summary>
-        public Dictionary<int, IFxParamDeclaration> ParamDecl { get; protected set; }
+        public Dictionary<int, IFxParamDeclaration> UniformParameters { get; protected set; }
 
         /// <summary>
         /// The renderer states that are applied for this effect, e.g. the blend and alpha mode.
@@ -43,7 +43,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="value">Value of the uniform variable</param>
         public void SetFxParam<T>(string name, T value)
         {
-            if (ParamDecl != null)
+            if (UniformParameters != null)
             {
                 var hash = name.GetHashCode();
                 SetFxParam(hash, value);
@@ -57,15 +57,12 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="value">Value of the uniform variable</param>
         public void SetFxParam<T>(int hash, T value)
         {
-            if (ParamDecl.ContainsKey(hash))
+            if (UniformParameters.ContainsKey(hash))
             {
-                var dcl = ParamDecl[hash];
-
-                if (!ParamDecl[hash].SetValue(value)) return;
+                if (!UniformParameters[hash].SetValue(value)) return;
 
                 EffectManagerEventArgs.Changed = UniformChangedEnum.Update;
                 EffectManagerEventArgs.ChangedUniformHash = hash;
-                EffectManagerEventArgs.ChangedUniformValue = value;
 
                 EffectChanged?.Invoke(this, EffectManagerEventArgs);
             }
@@ -83,7 +80,7 @@ namespace Fusee.Engine.Core.Effects
         public T GetFxParam<T>(string name)
         {
             var hash = name.GetHashCode();
-            if (ParamDecl.TryGetValue(hash, out var dcl))
+            if (UniformParameters.TryGetValue(hash, out var dcl))
             {
                 return ((FxParamDeclaration<T>)dcl).Value;
             }

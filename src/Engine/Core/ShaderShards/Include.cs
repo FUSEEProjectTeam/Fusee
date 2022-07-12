@@ -1,4 +1,5 @@
 ﻿using Fusee.Base.Core;
+using Fusee.Engine.Core.Effects;
 using System;
 using System.Collections.Generic;
 using System.IO;

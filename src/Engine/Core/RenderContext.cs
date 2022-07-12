@@ -2,16 +2,35 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Fusee.ImGuiDesktop")]
+[assembly: InternalsVisibleTo("Fusee.ImGuiImp.Desktop")]
 namespace Fusee.Engine.Core
 {
+    internal struct GlobalUniform
+    {
+        /// <summary>
+        /// Delegate that points to a method that can return the uniform value.
+        /// </summary>
+        public GetUniformValue Getter;
+
+        /// <summary>
+        /// The name of the uniform parameter.r
+        /// </summary>
+        public string Name;
+
+        /// <summary>
+        /// Uniform arrays that contain structs (eg. the "allLights" array) are a special case
+        /// because every field of the struct needs to have its own Getter but only there is only one uniform parameter declared in the shader code.
+        /// Therefore these getters cannot be used to generate the uniform declaration in glsl.
+        /// </summary>
+        public bool IsStructArray;
+    }
+
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
@@ -61,15 +80,14 @@ namespace Fusee.Engine.Core
         /// </summary>
         public FrustumF RenderFrustum { get; private set; }
 
-
-        /// <summary>
-        /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
-        /// </summary>
-        internal readonly Dictionary<int, FxParam> GlobalFXParams;
-
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
         private bool _disposed;
+
+        /// <summary>
+        /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
+        ///</summary>
+        internal Dictionary<int, GlobalUniform> GlobalUniforms;
 
         #region RenderState management properties
 
@@ -150,8 +168,6 @@ namespace Fusee.Engine.Core
         private float4x4 _projection;
         private float4x4 _view;
         private float4x4 _model;
-
-        private float4x4[] _bones;
 
         // Derived matrices
         private float4x4 _modelViewProjection;
@@ -234,22 +250,6 @@ namespace Fusee.Engine.Core
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
 
-                SetGlobalEffectParam(UniformNameDeclarations.ViewHash, _view);
-                SetGlobalEffectParam(UniformNameDeclarations.ModelViewHash, ModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjectionHash, ModelViewProjection);
-
-                SetGlobalEffectParam(UniformNameDeclarations.IViewHash, InvView);
-                SetGlobalEffectParam(UniformNameDeclarations.IModelViewHash, InvModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjectionHash, InvModelViewProjection);
-
-                SetGlobalEffectParam(UniformNameDeclarations.ITViewHash, InvTransView);
-                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewHash, InvTransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjectionHash, InvTransModelViewProjection);
-
-                SetGlobalEffectParam(UniformNameDeclarations.TViewHash, TransView);
-                SetGlobalEffectParam(UniformNameDeclarations.TModelViewHash, TransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjectionHash, TransModelViewProjection);
-
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
                 RenderFrustum.CalculateFrustumPlanes(_projection * _view);
@@ -288,22 +288,6 @@ namespace Fusee.Engine.Core
                 _transModelOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-
-                SetGlobalEffectParam(UniformNameDeclarations.ModelHash, _model);
-                SetGlobalEffectParam(UniformNameDeclarations.ModelViewHash, ModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjectionHash, ModelViewProjection);
-
-                SetGlobalEffectParam(UniformNameDeclarations.IModelHash, InvModel);
-                SetGlobalEffectParam(UniformNameDeclarations.IModelViewHash, InvModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjectionHash, InvModelViewProjection);
-
-                SetGlobalEffectParam(UniformNameDeclarations.ITModelHash, InvTransModel);
-                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewHash, InvTransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjectionHash, InvTransModelViewProjection);
-
-                SetGlobalEffectParam(UniformNameDeclarations.TModelHash, TransModel);
-                SetGlobalEffectParam(UniformNameDeclarations.TModelViewHash, TransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjectionHash, TransModelViewProjection);
             }
         }
 
@@ -335,16 +319,10 @@ namespace Fusee.Engine.Core
                 _invTransProjectionOk = false;
                 _transProjectionOk = false;
 
-                SetGlobalEffectParam(UniformNameDeclarations.ProjectionHash, _projection);
-                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjectionHash, ModelViewProjection);
-                SetGlobalEffectParam(UniformNameDeclarations.IProjectionHash, InvProjection);
-                SetGlobalEffectParam(UniformNameDeclarations.ITProjectionHash, InvTransProjection);
-                SetGlobalEffectParam(UniformNameDeclarations.TProjectionHash, TransProjection);
-
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
                 RenderFrustum.CalculateFrustumPlanes(_projection * View);
-                SetGlobalEffectParam(UniformNameDeclarations.ClippingPlanesHash, CalculateClippingPlanesFromProjection());
+                CalculateClippingPlanesFromProjection(out _clippingPlanes);
             }
         }
 
@@ -784,18 +762,13 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        private int2 _viewportInPx = int2.One;
+        private float2 _clippingPlanes = float2.One;
+
         /// <summary>
-        /// Array of bone matrices.
+        /// Global Uniform array of <see cref="LightResult"/>s. Updated by a SceneRenderer.
         /// </summary>
-        public float4x4[] Bones
-        {
-            get => _bones;
-            set
-            {
-                _bones = value;
-                SetGlobalEffectParam(UniformNameDeclarations.BonesArrayHash, _bones);
-            }
-        }
+        public LightResult[] ForwardLights = new LightResult[ModuleExtensionPoint.NumberOfLightsForward];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
@@ -804,11 +777,10 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+            ModuleExtensionPoint.CreateGpuMesh = CreateGpuMesh;
+            ModuleExtensionPoint.PlatformId = _rci.FuseePlatformId;
             DefaultState = new RenderContextDefaultState();
             DefaultEffect = MakeEffect.Default();
-            GlobalFXParams = new Dictionary<int, FxParam>();
-
-            SetGlobalEffectParam(UniformNameDeclarations.FuseePlatformIdHash, _rci.FuseePlatformId);
 
             RenderFrustum = new FrustumF();
 
@@ -821,7 +793,311 @@ namespace Fusee.Engine.Core
             _textureManager = new TextureManager(_rci);
             _effectManager = new EffectManager(this);
 
-            ModuleExtensionPoint.CreateGpuMesh = CreateGpuMesh;
+            GlobalUniforms = new()
+            {
+                {
+                    UniformNameDeclarations.ViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.View,
+                        Getter = () => View,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ModelHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.Model,
+                        Getter = () => Model,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.Projection,
+                        Getter = () => Projection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ModelViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ModelView,
+                        Getter = () => ModelView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ModelViewProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ModelViewProjection,
+                        Getter = () => ModelViewProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.IViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IView,
+                        Getter = () => InvView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.IModelHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IModel,
+                        Getter = () => InvModel,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.IModelViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IModelView,
+                        Getter = () => InvModelView,
+                        IsStructArray = false
+                    }
+                },
+                {
+
+                    UniformNameDeclarations.IProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IProjection,
+                        Getter = () => InvProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.IModelViewProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.IModelViewProjection,
+                        Getter = () => InvModelViewProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TView,
+                        Getter = () => TransView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TModelHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TModel,
+                        Getter = () => TransModel,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TModelViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TModelView,
+                        Getter = () => TransModelView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TProjection,
+                        Getter = () => TransProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.TModelViewProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.TModelViewProjection,
+                        Getter = () => TransModelViewProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITView,
+                        Getter = () => InvTransView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITModelHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITModel,
+                        Getter = () => InvTransModel,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITModelViewHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITModelView,
+                        Getter = () => InvTransModelView,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITProjection,
+                        Getter = () => InvTransProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ITModelViewProjectionHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ITModelViewProjection,
+                        Getter = () => InvTransModelViewProjection,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.FuseePlatformIdHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.FuseePlatformId,
+                        Getter = () => (int)_rci.FuseePlatformId,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ClippingPlanesHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ClippingPlanes,
+                        Getter = () => _clippingPlanes,
+                        IsStructArray = false
+                    }
+                },
+                {
+                    UniformNameDeclarations.ViewportPxHash,
+                    new GlobalUniform
+                    {
+                        Name = UniformNameDeclarations.ViewportPx,
+                        Getter = () => _viewportInPx,
+                        IsStructArray = false
+                    }
+                }
+            };
+
+            for (var i = 0; i < ModuleExtensionPoint.NumberOfLightsForward; i++)
+            {
+                ForwardLights[i] = new LightResult();
+                AddForwardLightGetter(i);
+            }
+
+
+        }
+
+        private void AddForwardLightGetter(int arrayPos)
+        {
+            var lightPos = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetPosName(arrayPos),
+                Getter = () => View * ForwardLights[arrayPos].WorldSpacePos,
+                IsStructArray = true
+            };
+
+            var lightColor = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetIntensitiesName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.Color,
+                IsStructArray = true
+            };
+
+            var lightMaxDistance = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetMaxDistName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.MaxDistance,
+                IsStructArray = true
+            };
+
+            var lightStrength = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetStrengthName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.Strength,
+                IsStructArray = true
+            };
+
+            var lightOuterConeAngle = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetOuterConeAngleName(arrayPos),
+                Getter = () => M.DegreesToRadians(ForwardLights[arrayPos].Light.OuterConeAngle),
+                IsStructArray = true
+            };
+            var lightInnerConeAngle = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetInnerConeAngleName(arrayPos),
+                Getter = () => M.DegreesToRadians(ForwardLights[arrayPos].Light.InnerConeAngle),
+                IsStructArray = true
+            };
+            var lightDirection = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetDirectionName(arrayPos),
+                Getter = () => (View * ForwardLights[arrayPos].Rotation * float4.UnitZ).xyz.Normalize(),
+                IsStructArray = true
+            };
+            var lightType = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetTypeName(arrayPos),
+                Getter = () => (int)ForwardLights[arrayPos].Light.Type,
+                IsStructArray = true
+            };
+            var lightIsActive = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetIsActiveName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.Active ? 1 : 0,
+                IsStructArray = true
+            };
+            var lightIsCastingShadows = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetIsCastingShadowsName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.IsCastingShadows ? 1 : 0,
+                IsStructArray = true
+            };
+            var lightBias = new GlobalUniform
+            {
+                Name = UniformNameDeclarations.GetBiasName(arrayPos),
+                Getter = () => ForwardLights[arrayPos].Light.Bias,
+                IsStructArray = true
+            };
+
+            GlobalUniforms.Add(lightPos.Name.GetHashCode(), lightPos);
+            GlobalUniforms.Add(lightColor.Name.GetHashCode(), lightColor);
+            GlobalUniforms.Add(lightMaxDistance.Name.GetHashCode(), lightMaxDistance);
+            GlobalUniforms.Add(lightStrength.Name.GetHashCode(), lightStrength);
+            GlobalUniforms.Add(lightOuterConeAngle.Name.GetHashCode(), lightOuterConeAngle);
+            GlobalUniforms.Add(lightInnerConeAngle.Name.GetHashCode(), lightInnerConeAngle);
+            GlobalUniforms.Add(lightDirection.Name.GetHashCode(), lightDirection);
+            GlobalUniforms.Add(lightType.Name.GetHashCode(), lightType);
+            GlobalUniforms.Add(lightIsActive.Name.GetHashCode(), lightIsActive);
+            GlobalUniforms.Add(lightIsCastingShadows.Name.GetHashCode(), lightIsCastingShadows);
+            GlobalUniforms.Add(lightBias.Name.GetHashCode(), lightBias);
         }
 
         /// <summary>
@@ -862,7 +1138,8 @@ namespace Fusee.Engine.Core
             ViewportHeight = height;
             ViewportXStart = x;
             ViewportYStart = y;
-            SetGlobalEffectParam(UniformNameDeclarations.ViewportPxHash, new float2(width, height));
+            _viewportInPx.x = width;
+            _viewportInPx.y = height;
         }
 
         #region Image Data related methods
@@ -915,7 +1192,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        private void SetShaderParamTexture(IShaderParam param, Texture texture)
+        private void SetShaderParamTexture(IUniformHandle param, Texture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
@@ -926,7 +1203,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        private void SetShaderParamImage(IShaderParam param, WritableTexture texture)
+        private void SetShaderParamImage(IUniformHandle param, WritableTexture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamImage(param, textureHandle, TextureType.Image2D, texture.PixelFormat);
@@ -938,7 +1215,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        private void SetShaderParamTexture(IShaderParam param, WritableMultisampleTexture texture)
+        private void SetShaderParamTexture(IUniformHandle param, WritableMultisampleTexture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.TextureMultisample);
@@ -949,7 +1226,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        private void SetShaderParamTexture(IShaderParam param, WritableTexture texture)
+        private void SetShaderParamTexture(IUniformHandle param, WritableTexture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
@@ -960,7 +1237,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="textures">A texture array.</param>
-        private void SetShaderParamWritableTextureArray(IShaderParam param, WritableTexture[] textures)
+        private void SetShaderParamWritableTextureArray(IUniformHandle param, WritableTexture[] textures)
         {
             var texHandles = new List<ITextureHandle>();
             foreach (var tex in textures)
@@ -977,7 +1254,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        private void SetShaderParamTexture(IShaderParam param, WritableCubeMap texture)
+        private void SetShaderParamTexture(IUniformHandle param, WritableCubeMap texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.TextureCubeMap);
@@ -988,7 +1265,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        private void SetShaderParamTexture(IShaderParam param, WritableArrayTexture texture)
+        private void SetShaderParamTexture(IUniformHandle param, WritableArrayTexture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.ArrayTexture);
@@ -1052,224 +1329,151 @@ namespace Fusee.Engine.Core
             if (_rci == null)
                 throw new NullReferenceException("No render context Implementation found!");
 
-            var compiledEffect = new CompiledEffect();
-            var shaderParams = new Dictionary<int, ShaderParamInfo>();
-
-            string vert = string.Empty;
-            string geom = string.Empty;
-            string frag = string.Empty;
-            string cs = string.Empty;
-
-            var efType = ef.GetType();
-            if (efType != typeof(ComputeShader))
+            switch (ef)
             {
-                try // to compile all the shaders
-                {
-                    if (efType == typeof(ShaderEffect))
-                    {
-                        var shaderEffect = (ShaderEffect)ef;
-                        vert = shaderEffect.VertexShaderSrc;
-                        geom = shaderEffect.GeometryShaderSrc;
-                        frag = shaderEffect.PixelShaderSrc;
-                    }
-                    else
-                    {
-                        var surfEffect = (SurfaceEffectBase)ef;
-
-                        var renderDependentShards = new List<KeyValuePair<ShardCategory, string>>();
-
-                        //TODO: try to suppress adding these parameters if the effect is used only for deferred rendering.
-                        //May be difficult because we'd need to remove or add them (and only them) depending on the render method
-                        if (fx == null) //effect was never build before
-                        {
-                            surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.SurfaceInput.ShadingModel, surfEffect.SurfaceInput.TextureSetup)));
-                            foreach (var dcl in SurfaceEffectBase.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
-                                surfEffect.ParamDecl.Add(dcl.Hash, dcl);
-                        }
-
-                        if (renderForward)
-                        {
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.SurfaceInput.ShadingModel)));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.SurfaceInput.ShadingModel, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
-                        }
-                        else
-                        {
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.ColorManagementMethods()));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.SurfaceInput.ShadingModel, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
-                        }
-
-                        vert = SurfaceEffectBase.JoinShards(surfEffect.VertexShaderSrc);
-                        geom = SurfaceEffectBase.JoinShards(surfEffect.GeometryShaderSrc);
-                        frag = SurfaceEffectBase.JoinShards(surfEffect.FragmentShaderSrc, renderDependentShards);
-                    }
-                    var shaderOnGpu = _rci.CreateShaderProgram(vert, frag, geom);
-                    var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
-
-                    if (activeUniforms.Count == 0)
-                    {
-                        var ex = new Exception();
-                        Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters from the gpu!", ex, new string[] { vert, geom, frag }); ;
-                        throw new Exception("Error while compiling shader for pass.", ex);
-                    }
-
-                    foreach (var param in activeUniforms)
-                    {
-                        if (!shaderParams.ContainsKey(param.Key))
-                            shaderParams.Add(param.Key, param.Value);
-                    }
-
-                    compiledEffect.GpuHandle = shaderOnGpu;
-                }
-                catch (Exception ex)
-                {
-                    Diagnostics.Error("Error while compiling shader ", ex, new string[] { vert, geom, frag });
-                    throw new Exception($"Error while compiling shader\n{vert}\n{geom}\n{frag}", ex);
-                }
-            }
-            else
-            {
-                try
-                {
-                    var computeShader = (ComputeShader)ef;
-                    cs = computeShader.ComputeShaderSrc;
-
-                    var shaderOnGpu = _rci.CreateShaderProgramCompute(cs);
-                    var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
-
-                    var shaderStorageBuffers = _rci.GetShaderStorageBufferList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
-
-                    if (activeUniforms.Count == 0)
-                    {
-                        var ex = new Exception();
-                        Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { cs }); ;
-                        throw new Exception("Error while compiling shader for pass.", ex);
-                    }
-
-                    foreach (var param in activeUniforms)
-                    {
-                        if (!shaderParams.ContainsKey(param.Key))
-                            shaderParams.Add(param.Key, param.Value);
-                    }
-
-                    foreach (var param in shaderStorageBuffers)
-                    {
-                        if (!shaderParams.ContainsKey(param.Key))
-                            shaderParams.Add(param.Key, param.Value);
-                    }
-
-                    compiledEffect.GpuHandle = shaderOnGpu;
-                }
-                catch (Exception ex)
-                {
-                    Diagnostics.Error("Error while compiling shader ", ex, new string[] { cs });
-                    throw new Exception("Error while compiling shader ", ex);
-                }
-            }
-
-            if (renderForward)
-            {
-                if (_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledFx))
-                {
-                    compiledFx.ForwardFx = compiledEffect;
-                    CreateAllEffectVariables(ef, compiledFx.ForwardFx, shaderParams);
-                    _allCompiledEffects[ef] = compiledFx;
-
-                }
-                else
-                {
-                    var cFx = new CompiledEffects() { ForwardFx = compiledEffect };
-                    CreateAllEffectVariables(ef, cFx.ForwardFx, shaderParams);
-                    _allCompiledEffects.Add(ef, cFx);
-                }
-            }
-            else
-            {
-                if (_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledFx))
-                {
-                    compiledFx.DeferredFx = compiledEffect;
-                    _allCompiledEffects[ef] = compiledFx;
-                }
-                else
-                {
-                    var cFx = new CompiledEffects() { DeferredFx = compiledEffect };
-                    CreateAllEffectVariables(ef, cFx.DeferredFx, shaderParams);
-                    _allCompiledEffects.Add(ef, cFx);
-                }
+                case ComputeEffect cFx:
+                    CreateShaderForComputeEffect(cFx);
+                    break;
+                case ShaderEffect shFx:
+                    CreateShaderForShaderEffect(shFx);
+                    break;
+                case SurfaceEffectBase surfFx:
+                    CreateShaderForSurfaceEffect(surfFx);
+                    break;
             }
 
             // register built shader effect
             _effectManager.RegisterEffect(ef);
         }
 
-        /// <summary>
-        /// Gets the <see cref="CompiledEffect"/> from the RC's dictionary and creates all effect parameters.
-        /// </summary>
-        /// <param name="ef">The ShaderEffect the parameters are created for.</param>
-        /// <param name="cFx">The compiled shader effect for which the effect variables will be created.</param>
-        /// <param name="activeUniforms">The active uniform parameters, as they are saved in the source shader on the gpu.</param>
-        private void CreateAllEffectVariables(Effect ef, CompiledEffect cFx, Dictionary<int, ShaderParamInfo> activeUniforms)
+        private CompiledEffect CompileEffect(Effect ef, string vert, string geom, string frag)
         {
-            if (cFx.ActiveUniforms.Count != 0)
-                throw new ArgumentException("The compiled effect already has parameters!");
+            var shaderOnGpu = _rci.CreateShaderProgram(vert, frag, geom);
+            var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
 
-            //Iterate source shader's active params and create a EffectParam for each one.
+            if (activeUniforms.Count == 0)
+            {
+                var ex = new Exception();
+                Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { vert, geom, frag }); ;
+                throw new Exception("Error while compiling shader for pass.", ex);
+            }
+
+            AssignUniformGetter(ef, activeUniforms);
+
+            var compiledEffect = new CompiledEffect
+            {
+                GpuHandle = shaderOnGpu,
+                ActiveUniforms = activeUniforms
+            };
+
+            return compiledEffect;
+        }
+
+        private void AssignUniformGetter(Effect ef, Dictionary<int, IActiveUniform> activeUniforms)
+        {
             foreach (var shaderParam in activeUniforms)
             {
-                if (!ef.ParamDecl.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
+                if (GlobalUniforms.TryGetValue(shaderParam.Key, out var globalUniform))
                 {
-                    Diagnostics.Error(shaderParam.Value.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
-                    continue;
+                    shaderParam.Value.UniformValueGetter = globalUniform.Getter;
+                    shaderParam.Value.IsGlobal = true;
                 }
-
-                var effectParam = new FxParam()
-                {
-                    Info = shaderParam.Value
-                };
-
-                // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(shaderParam.Key, out FxParam globalFxParam))
-                    effectParam.Value = globalFxParam.Value;
                 else
-                    effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
-
-                cFx.ActiveUniforms.Add(shaderParam.Key, effectParam);
-            }
-        }
-
-        /// <summary>
-        /// Sets global effect parameters by updating or adding them in the GlobalFXParams list.
-        /// Changes will only have an effect when rendering.
-        /// </summary>
-        /// <param name="hash">Effect parameter hash (generated from its name).</param>
-        /// <param name="value">Effect parameter value.</param>
-        public void SetGlobalEffectParam(int hash, object value)
-        {
-            if (GlobalFXParams.TryGetValue(hash, out var param))
-            {
-                if (param.Value == value) return; // no new value
-                param.Value = value;
-                param.HasValueChanged = true;
-            }
-            else if (value != null)
-            {
-                var newParam = new FxParam()
                 {
-                    Value = value
-                };
-                GlobalFXParams.Add(hash, newParam);
+                    if (!ef.UniformParameters.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
+                    {
+                        Diagnostics.Error(shaderParam.Value.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
+                        continue;
+                    }
+
+                    shaderParam.Value.UniformValueGetter = () => ef.UniformParameters[shaderParam.Key].GetValue();
+                    shaderParam.Value.IsGlobal = false;
+                }
             }
         }
 
-        internal void ClearGlobalEffectParamsDirtyFlag()
+        private void CreateShaderForShaderEffect(ShaderEffect ef)
         {
-            foreach (var globalParam in GlobalFXParams.Values)
+            var vert = ef.VertexShaderSrc;
+            var geom = ef.GeometryShaderSrc;
+            var frag = ef.PixelShaderSrc;
+
+            var compiledEffect = CompileEffect(ef, vert, geom, frag);
+
+            var cFx = new CompiledEffects() { ForwardFx = compiledEffect };
+            _allCompiledEffects.Add(ef, cFx);
+        }
+
+        private void CreateShaderForComputeEffect(ComputeEffect ef)
+        {
+            var cs = ef.ComputeShaderSrc;
+
+            var shaderOnGpu = _rci.CreateShaderProgramCompute(cs);
+            var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
+            var shaderStorageBuffers = _rci.GetShaderStorageBufferList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);
+            foreach (var fxParam in shaderStorageBuffers)
             {
-                globalParam.HasValueChanged = false;
+                activeUniforms.Add(fxParam.Key, fxParam.Value);
             }
+            shaderStorageBuffers.Clear();
+
+            if (activeUniforms.Count == 0)
+            {
+                var ex = new Exception();
+                Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { cs }); ;
+                throw new Exception("Error while compiling shader for pass.", ex);
+            }
+
+            AssignUniformGetter(ef, activeUniforms);
+
+            var compiledEffect = new CompiledEffect
+            {
+                GpuHandle = shaderOnGpu,
+                ActiveUniforms = activeUniforms
+            };
+            var cFx = new CompiledEffects() { ForwardFx = compiledEffect };
+            _allCompiledEffects.Add(ef, cFx);
+        }
+
+        private void CreateShaderForSurfaceEffect(SurfaceEffectBase ef)
+        {
+            //Add the shader code for the global uniforms
+            foreach (var key in GlobalUniforms.Keys)
+            {
+                ShaderCategory shaderCategory = ShaderCategory.Vertex | ShaderCategory.Fragment;
+                if (ef.GeometryShaderSrc.Count != 0)
+                    shaderCategory |= ShaderCategory.Geometry;
+                if (!GlobalUniforms[key].IsStructArray)
+                    ef.HandleUniform(shaderCategory, GlobalUniforms[key].Name, GlobalUniforms[key].Getter().GetType(), ShardCategory.InternalUniform);
+            }
+
+            var renderDependentShardsForward = new List<KeyValuePair<ShardCategory, string>>(5);
+            var renderDependentShardsDeferred = new List<KeyValuePair<ShardCategory, string>>(3);
+
+            renderDependentShardsForward.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(ef.SurfaceInput.ShadingModel)));
+            renderDependentShardsForward.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(ef.SurfaceInput.ShadingModel, nameof(ef.SurfaceInput))));
+            renderDependentShardsForward.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
+            renderDependentShardsForward.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
+            renderDependentShardsForward.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
+
+            renderDependentShardsDeferred.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
+            renderDependentShardsDeferred.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.ColorManagementMethods()));
+            renderDependentShardsDeferred.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(ef.SurfaceInput.ShadingModel, nameof(ef.SurfaceInput))));
+
+            string vert = SurfaceEffectBase.JoinShards(ef.VertexShaderSrc);
+            string geom = SurfaceEffectBase.JoinShards(ef.GeometryShaderSrc);
+
+            //Forward
+            string frag = SurfaceEffectBase.JoinShards(ef.FragmentShaderSrc, renderDependentShardsForward);
+            var compiledForward = CompileEffect(ef, vert, geom, frag);
+            var compiledEffects = new CompiledEffects() { ForwardFx = compiledForward };
+
+            //Deferred
+            frag = SurfaceEffectBase.JoinShards(ef.FragmentShaderSrc, renderDependentShardsDeferred);
+            var compiledDeferred = CompileEffect(ef, vert, geom, frag);
+            compiledEffects.DeferredFx = compiledDeferred;
+
+            _allCompiledEffects.Add(ef, compiledEffects);
         }
 
         /// <summary>
@@ -1277,29 +1481,21 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="ef">The Effect.</param>
         /// <param name="hash">The parameter's hash (generated from its name).</param>
-        /// <param name="paramValue">The parameter's value.</param>
-        internal void UpdateParameterInCompiledEffect(Effect ef, int hash, object paramValue)
+        internal void MarkShaderUniformForUpdate(Effect ef, int hash)
         {
-            if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffects)) throw new ArgumentException("Effect isn't build yet!");
-
+            var compiledEffects = _allCompiledEffects[ef];
             var forwardFx = compiledEffects.ForwardFx;
             if (forwardFx != null)
             {
                 if (forwardFx.ActiveUniforms.TryGetValue(hash, out var effectParamFw))
-                {
-                    effectParamFw.Value = paramValue;
                     effectParamFw.HasValueChanged = true;
-                }
             }
 
             var deferredFx = compiledEffects.DeferredFx;
             if (deferredFx != null)
             {
                 if (deferredFx.ActiveUniforms.TryGetValue(hash, out var effectParamDf))
-                {
-                    effectParamDf.Value = paramValue;
                     effectParamDf.HasValueChanged = true;
-                }
             }
         }
 
@@ -1309,65 +1505,29 @@ namespace Fusee.Engine.Core
         /// <param name="ef">The Effect.</param>
         internal void RemoveShader(Effect ef)
         {
-            if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffect)) return;
+            var compiledEffects = _allCompiledEffects[ef];
+            _allCompiledEffects.Remove(ef);
 
-            _ = _allCompiledEffects.Remove(ef);
+            if (compiledEffects.ForwardFx != null)
+                _rci.RemoveShader(compiledEffects.ForwardFx?.GpuHandle);
 
-            if (compiledEffect.ForwardFx != null)
-                _rci.RemoveShader(compiledEffect.ForwardFx?.GpuHandle);
-
-            if (compiledEffect.DeferredFx != null)
-                _rci.RemoveShader(compiledEffect.DeferredFx?.GpuHandle);
+            if (compiledEffects.DeferredFx != null)
+                _rci.RemoveShader(compiledEffects.DeferredFx?.GpuHandle);
         }
 
         private void UpdateAllActiveFxParams(CompiledEffect cFx)
         {
             foreach (var fxParam in cFx.ActiveUniforms.Values)
             {
-                SetShaderParamT(fxParam);
+                SetShaderParamT(in fxParam);
                 fxParam.HasValueChanged = false;
-            }
-        }
-
-        private void SetGlobalParamsInCurrentFx(CompiledEffect cFx)
-        {
-            foreach (var key in GlobalFXParams.Keys)
-            {
-                var globalFxParam = GlobalFXParams[key];
-
-                if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
-                {
-                    if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
-                        _currentEffect.SetFxParam(key, globalFxParam.Value);
-                }
             }
         }
 
         private CompiledEffect GetCompiledFxForRenderMethod(bool renderForward)
         {
             var compiledEffect = _allCompiledEffects[_currentEffect];
-            CompiledEffect cFx;
-            if (renderForward)
-            {
-                if (compiledEffect.ForwardFx == null)
-                {
-                    CreateShaderProgram(_currentEffect, renderForward);
-                    compiledEffect = _allCompiledEffects[_currentEffect];
-                }
-
-                cFx = compiledEffect.ForwardFx;
-            }
-            else
-            {
-                if (compiledEffect.DeferredFx == null)
-                {
-                    CreateShaderProgram(_currentEffect, renderForward);
-                    compiledEffect = _allCompiledEffects[_currentEffect];
-                }
-                cFx = compiledEffect.DeferredFx;
-            }
-
-            return cFx;
+            return renderForward ? compiledEffect.ForwardFx : compiledEffect.DeferredFx;
         }
 
         /// <summary>
@@ -1388,147 +1548,148 @@ namespace Fusee.Engine.Core
         /// Note that this will change the parameter value in the currently bound shader.
         /// </summary>
         /// <param name="param">The shader parameter.</param>
-        private void SetShaderParamT(FxParam param)
+        private void SetShaderParamT(in IActiveUniform param)
         {
-            if (param.HasValueChanged)
+            var val = param.UniformValueGetter();
+            if (val == null) return;
+
+            if (param.IsGlobal || param.HasValueChanged)
             {
-                if (param.Info.Type == typeof(bool))
+                if (val is bool boolVal)
                 {
-                    _rci.SetShaderParam(param.Info.Handle, (bool)param.Value ? 1 : 0);
+                    _rci.SetShaderParam(param.Handle, boolVal ? 1 : 0);
                 }
-                if (param.Info.Type == typeof(int))
+                else if (val is int intVal)
                 {
-                    _rci.SetShaderParam(param.Info.Handle, (int)param.Value);
+                    _rci.SetShaderParam(param.Handle, intVal);
                 }
-                else if (param.Info.Type == typeof(float))
+                else if (val is float floatVal)
                 {
-                    _rci.SetShaderParam(param.Info.Handle, (float)param.Value);
+                    _rci.SetShaderParam(param.Handle, floatVal);
                 }
-                else if (param.Info.Type == typeof(double))
+                else if (val is double doubleVal)
                 {
-                    _rci.SetShaderParam(param.Info.Handle, (double)param.Value);
+                    _rci.SetShaderParam(param.Handle, doubleVal);
                 }
-                else if (param.Info.Type == typeof(float2))
+                else if (val is float2 float2Val)
                 {
-                    if (param.Info.Size > 1)
-                    {
-                        // parameter is an array
-                        var paramArray = (float2[])param.Value;
-                        _rci.SetShaderParam(param.Info.Handle, paramArray);
-                        return;
-                    }
-                    _rci.SetShaderParam(param.Info.Handle, (float2)param.Value);
+                    _rci.SetShaderParam(param.Handle, float2Val);
                 }
-                else if (param.Info.Type == typeof(float3))
+                else if (val is float3 float3Val)
                 {
-                    if (param.Info.Size > 1)
-                    {
-                        // parameter is an array
-                        var paramArray = (float3[])param.Value;
-                        _rci.SetShaderParam(param.Info.Handle, paramArray);
-                        return;
-                    }
-                    _rci.SetShaderParam(param.Info.Handle, (float3)param.Value);
+                    _rci.SetShaderParam(param.Handle, float3Val);
                 }
-                else if (param.Info.Type == typeof(float4))
+                else if (val is float4 float4Val)
                 {
-                    if (param.Info.Size > 1)
-                    {
-                        // parameter is an array
-                        var paramArray = (float4[])param.Value;
-                        _rci.SetShaderParam(param.Info.Handle, paramArray);
-                        return;
-                    }
-                    _rci.SetShaderParam(param.Info.Handle, (float4)param.Value);
+                    _rci.SetShaderParam(param.Handle, float4Val);
                 }
-                else if (param.Info.Type == typeof(float4x4))
+                else if (val is float4x4 float4x4Val)
                 {
-                    if (param.Info.Size > 1)
-                    {
-                        // parameter is an array
-                        var paramArray = (float4x4[])param.Value;
-                        _rci.SetShaderParam(param.Info.Handle, paramArray);
-                        return;
-                    }
-                    _rci.SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+                    _rci.SetShaderParam(param.Handle, float4x4Val);
                 }
-                else if (param.Info.Type == typeof(float4x4[]))
+                else if (val is int2 int2Val)
                 {
-                    _rci.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+                    _rci.SetShaderParam(param.Handle, int2Val);
                 }
 
-                else if (param.Value is IWritableArrayTexture)
+                else if (val is IWritableArrayTexture writableArrayTex)
                 {
-                    SetShaderParamTexture(param.Info.Handle, ((WritableArrayTexture)param.Value));
+                    SetShaderParamTexture(param.Handle, (WritableArrayTexture)writableArrayTex);
                 }
-                else if (param.Value is IWritableCubeMap)
+                else if (val is IWritableCubeMap writableCubeTex)
                 {
-                    SetShaderParamTexture(param.Info.Handle, ((WritableCubeMap)param.Value));
+                    SetShaderParamTexture(param.Handle, (WritableCubeMap)writableCubeTex);
                 }
-                else if (param.Value is IWritableTexture[])
+                else if (val is IWritableTexture[] writableTexArray)
                 {
-                    SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
+                    SetShaderParamWritableTextureArray(param.Handle, (WritableTexture[])writableTexArray);
                 }
-                else if (param.Value is WritableTexture wt)
+                else if (val is IWritableTexture writableTex)
                 {
+                    var wt = (WritableTexture)writableTex;
                     if (wt.AsImage)
-                        SetShaderParamImage(param.Info.Handle, wt);
+                        SetShaderParamImage(param.Handle, wt);
                     else
-                        SetShaderParamTexture(param.Info.Handle, wt);
+                        SetShaderParamTexture(param.Handle, wt);
                 }
-                else if (param.Value is WritableMultisampleTexture wmst)
+                else if (val is WritableMultisampleTexture wmst)
                 {
-                    SetShaderParamTexture(param.Info.Handle, wmst);
+                    SetShaderParamTexture(param.Handle, wmst);
                 }
-                else if (param.Value is ITexture)
+                else if (val is ITexture tex)
                 {
-                    SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
+                    SetShaderParamTexture(param.Handle, (Texture)tex);
                 }
-                else if (param.Value is IStorageBuffer buffer)
+                else if (val is IStorageBuffer buffer)
                 {
-                    ConnectBufferToShaderStorage(buffer, param.Info.Name);
+                    ConnectBufferToShaderStorage(buffer, param.Name);
+                }
+
+                else if (val is float4x4[] float4x4ArrayVal)
+                {
+                    _rci.SetShaderParam(param.Handle, float4x4ArrayVal);
+                }
+                else if (val is float2[] float2ArrayVal)
+                {
+                    _rci.SetShaderParam(param.Handle, float2ArrayVal);
+                }
+                else if (val is float3[] float3ArrayVal)
+                {
+                    _rci.SetShaderParam(param.Handle, float3ArrayVal);
+                }
+                else if (val is float4[] float4ArrayVal)
+                {
+                    _rci.SetShaderParam(param.Handle, float4ArrayVal);
+                }
+
+                else
+                {
+                    throw new ArgumentException($"{param} has an unknown type {val.GetType().Name}.");
                 }
             }
             else
             {
-                if (param.Value is ITextureBase)
+                if (val is ITextureBase textureBase)
                 {
-                    if (param.Value is IWritableArrayTexture)
+                    if (textureBase is IWritableArrayTexture)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableArrayTexture)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.ArrayTexture);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableArrayTexture)textureBase);
+                        _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.ArrayTexture);
                     }
-                    else if (param.Value is IWritableCubeMap)
+                    else if (val is IWritableCubeMap writableCubeTex)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableCubeMap)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TextureCubeMap);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableCubeMap)writableCubeTex);
+                        _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.TextureCubeMap);
                     }
-                    else if (param.Value is WritableTexture)
+                    else if (val is IWritableTexture writableTex)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableTexture)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableTexture)writableTex);
+                        _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
                     }
-                    else if (param.Value is WritableMultisampleTexture)
+                    else if (val is WritableMultisampleTexture writableMultTex)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableMultisampleTexture)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TextureMultisample);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableMultisampleTexture)writableMultTex);
+                        _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.TextureMultisample);
                     }
-                    else if (param.Value is ITexture)
+                    else if (val is ITexture tex)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture)tex);
+                        _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
                     }
-                    else if (param.Value is IWritableTexture[])
+                    else if (val is IWritableTexture[] writableTexArray)
                     {
-                        foreach (var tex in (WritableTexture[])param.Value)
+                        foreach (var texture in (WritableTexture[])writableTexArray)
                         {
-                            ITextureHandle textureHandle = _textureManager.GetTextureHandle(tex);
-                            _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
+                            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
+                            _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
                         }
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"{param} has a unknown type.");
                     }
                 }
             }
-
         }
 
         #endregion
@@ -1683,11 +1844,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        /// <param name="width">Texture width</param>
-        /// <param name="height">Texture height</param>
-        public void BlitMultisample2DTextureToTexture(ITextureHandle input, ITextureHandle output, int width, int height)
+        public void BlitMultisample2DTextureToTexture(WritableMultisampleTexture input, WritableTexture output)
         {
-            _rci.BlitMultisample2DTextureToTexture(input, output, width, height);
+            _rci.BlitMultisample2DTextureToTexture(input, output);
         }
 
         /// <summary>
@@ -1794,48 +1953,46 @@ namespace Fusee.Engine.Core
         public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
         {
             if (_currentEffect == null) throw new NullReferenceException("No Compute Shader bound.");
-            if (_currentEffect.GetType() != typeof(ComputeShader)) throw new NullReferenceException("Bound Effect isn't a Compute Shader.");
+            if (_currentEffect.GetType() != typeof(ComputeEffect)) throw new NullReferenceException("Bound Effect isn't a Compute Shader.");
 
-            try
-            {
-                var cFx = GetCompiledFxForRenderMethod(true);
-                SetCompiledFx(cFx.GpuHandle);
-                SetRenderStateSet(_currentEffect.RendererStates);
-                SetGlobalParamsInCurrentFx(cFx);
-                UpdateAllActiveFxParams(cFx);
+            var cFx = GetCompiledFxForRenderMethod(true);
+            SetCompiledFx(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+            UpdateAllActiveFxParams(cFx);
 
-                _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
+            _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
 
-                // After rendering always cleanup pending meshes, textures and shader effects
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
-                _effectManager.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass ", ex);
-            }
+            // After rendering always cleanup pending meshes, textures and shader effects
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+            _effectManager.Cleanup();
         }
 
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
         /// <param name="mesh">The mesh that should be rendered.</param>
+        /// <param name="instanceData">Optional parameter in case gpu instancing is used to render the given mesh. See <see cref="InstanceData"/>.</param>
         /// <param name="doRenderForward">Is a forward or deferred renderer used? Will fetch the proper shader for the render method.</param>
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        public void Render(Mesh mesh, bool doRenderForward = true)
+        public void Render(Mesh mesh, InstanceData instanceData = null, bool doRenderForward = true)
         {
             var cFx = GetCompiledFxForRenderMethod(doRenderForward);
             SetCompiledFx(cFx.GpuHandle);
             SetRenderStateSet(_currentEffect.RendererStates);
-            SetGlobalParamsInCurrentFx(cFx);
             UpdateAllActiveFxParams(cFx);
 
-            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
-            _rci.Render(meshImp);
+            var meshImp = _meshManager.GetImpFromMesh(mesh);
+            if (instanceData != null)
+            {
+                var instanceDataImp = _meshManager.GetImpFromInstanceData(mesh, instanceData);
+                _rci.Render(meshImp, instanceDataImp);
+            }
+            else
+                _rci.Render(meshImp, null);
 
             // After rendering always cleanup pending meshes, textures and shader effects
             _meshManager.Cleanup();
@@ -1857,10 +2014,9 @@ namespace Fusee.Engine.Core
             var cFx = GetCompiledFxForRenderMethod(doRenderForward);
             SetCompiledFx(cFx.GpuHandle);
             SetRenderStateSet(_currentEffect.RendererStates);
-            SetGlobalParamsInCurrentFx(cFx);
             UpdateAllActiveFxParams(cFx);
 
-            var meshImp = _meshManager.GetMeshImpFromMesh(mesh);
+            var meshImp = _meshManager.GetImpFromMesh(mesh);
             _rci.Render(meshImp);
 
             // After rendering always cleanup pending meshes, textures and shader effects
@@ -1869,13 +2025,14 @@ namespace Fusee.Engine.Core
             _effectManager.Cleanup();
         }
 
-        private float2 CalculateClippingPlanesFromProjection()
+        private void CalculateClippingPlanesFromProjection(out float2 clippingPlanes)
         {
             var C = Projection.M33;
             var D = Projection.M34;
             float f = D / (C - 1.0f) * -1;
             float n = D / (C + 1.0f) * -1;
-            return new float2(n, f);
+            clippingPlanes.x = n;
+            clippingPlanes.y = f;
         }
 
         /// <summary>

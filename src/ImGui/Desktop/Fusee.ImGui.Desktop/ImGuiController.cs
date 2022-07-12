@@ -8,7 +8,7 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Fusee.ImGuiDesktop
+namespace Fusee.ImGuiImp.Desktop
 {
     public class ImGuiController
     {
@@ -224,7 +224,6 @@ namespace Fusee.ImGuiDesktop
             var clampS = (int)TextureWrapMode.ClampToEdge;
             var clampT = (int)TextureWrapMode.ClampToEdge;
             var clampR = (int)TextureWrapMode.ClampToEdge;
-
             GL.TextureParameterI(id, TextureParameterName.TextureMinFilter, ref minFilter);
             GL.TextureParameterI(id, TextureParameterName.TextureMagFilter, ref magFilter);
             GL.TextureParameterI(id, TextureParameterName.TextureWrapS, ref clampS);

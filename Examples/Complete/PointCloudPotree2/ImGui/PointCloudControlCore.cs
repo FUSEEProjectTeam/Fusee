@@ -3,6 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
+using Fusee.ImGuiImp.Desktop.Templates;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core.Scene;
@@ -12,7 +13,7 @@ using System.Collections.Generic;
 
 namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 {
-    internal class PointCloudControlCore : ImGuiDesktop.Templates.FuseeControlToTexture, IDisposable
+    internal class PointCloudControlCore : FuseeControlToTexture, IDisposable
     {
         public bool UseWPF { get; set; }
         public bool ReadyToLoadNewFile { get; private set; }
@@ -44,8 +45,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         private Camera _cam;
         private float3 _initCameraPos;
 
-        private PointCloudComponent? _pointCloud;
-
+        private PointCloudComponent _pointCloud;
 
         public PointCloudControlCore(RenderContext rc) : base(rc)
         {
@@ -89,7 +89,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 };
 
                 var potreeReader = new Potree2Reader();
-                _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(PtRenderingParams.Instance.PathToOocFile);
+                _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(PtRenderingParams.Instance.PathToOocFile, RenderMode.PointSize);
                 _pointCloud.PointCloudImp.MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
                 _pointCloud.PointCloudImp.PointThreshold = PtRenderingParams.Instance.PointThreshold;
 
@@ -151,7 +151,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 {
                     DepthRenderBufferHandle = -1,
                     FrameBufferHandle = -1,
-                    TexHandle = -1
+                    TexId = -1
                 };
             }
 
