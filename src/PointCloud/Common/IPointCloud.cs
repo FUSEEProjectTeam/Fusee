@@ -10,7 +10,7 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Non-Point-type-specific out-out-of-core point cloud implementation.
         /// </summary>
-        public IPointCloudImp PointCloudImp { get; }
+        public IPointCloudImpBase PointCloudImp { get; }
 
         /// <summary>
         /// Center of the point cloud.
@@ -22,4 +22,6 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         public float3 Size { get; }
     }
+
+
 }

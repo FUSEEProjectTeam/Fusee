@@ -1,8 +1,8 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.ImGuiDesktop;
-using Fusee.ImGuiDesktop.Templates;
+using Fusee.ImGuiImp.Desktop;
+using Fusee.ImGuiImp.Desktop.Templates;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using ImGuiNET;
@@ -43,7 +43,6 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         private PointCloudControlCore _fuControl;
 
         #endregion
-
 
         public override async Task InitAsync()
         {
@@ -217,9 +216,9 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             PtRenderingParams.Instance.Size = _ptSize;
             PtRenderingParams.Instance.PtMode = _currentPtSizeMethod switch
             {
-                0 => PointCloud.Common.PointSizeMode.FixedPixelSize,
-                1 => PointCloud.Common.PointSizeMode.FixedWorldSize,
-                _ => PointCloud.Common.PointSizeMode.FixedPixelSize
+                0 => PointSizeMode.FixedPixelSize,
+                1 => PointSizeMode.FixedWorldSize,
+                _ => PointSizeMode.FixedPixelSize
             };
 
             ImGui.EndGroup();

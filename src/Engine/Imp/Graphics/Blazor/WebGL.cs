@@ -809,15 +809,66 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("bufferData", target, size, usage);
         }
 
-        public void BufferData(uint target, Array data, uint usage)
+        public void BufferData(uint target, float[] data, uint usage)
         {
             // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
-            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferData", target, data, usage);
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataFloat", target, data, usage);
         }
 
-        public void BufferSubData(uint target, uint offset, Array data)
+        public void BufferData(uint target, double[] data, uint usage)
         {
-            Invoke("bufferSubData", target, offset, data);
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataFloat", target, data, usage);
+        }
+
+        public void BufferData(uint target, uint[] data, uint usage)
+        {
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataUInt", target, data, usage);
+
+        }
+
+        public void BufferData(uint target, ushort[] data, uint usage)
+        {
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataUShort", target, data, usage);
+        }
+
+        /*InvokeUnmarshalled only supports three type specifications - therefor we cannot implement WebGL2:
+        //bufferSubData(target, dstByteOffset, srcData, srcOffset) and
+        bufferSubData(target, dstByteOffset, srcData, srcOffset, length)*/
+        public void BufferSubData(uint target, IntPtr dstByteOffset, float[] data)
+        {
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, IntPtr, Array, object>("customBufferSubDataFloat", target, dstByteOffset, data);
+        }
+
+        /*InvokeUnmarshalled only supports three type specifications - therefor we cannot implement WebGL2:
+        //bufferSubData(target, dstByteOffset, srcData, srcOffset) and
+        bufferSubData(target, dstByteOffset, srcData, srcOffset, length)*/
+        public void BufferSubData(uint target, IntPtr dstByteOffset, double[] data)
+        {
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, IntPtr, Array, object>("customBufferDataDouble", target, dstByteOffset, data);
+        }
+
+        /*InvokeUnmarshalled only supports three type specifications - therefor we cannot implement WebGL2:
+        //bufferSubData(target, dstByteOffset, srcData, srcOffset) and
+        bufferSubData(target, dstByteOffset, srcData, srcOffset, length)*/
+        public void BufferSubData(uint target, IntPtr dstByteOffset, uint[] data)
+        {
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, IntPtr, Array, object>("customBufferDataUInt", target, dstByteOffset, data);
+
+        }
+
+        /*InvokeUnmarshalled only supports three type specifications - therefor we cannot implement WebGL2:
+        //bufferSubData(target, dstByteOffset, srcData, srcOffset) and
+        bufferSubData(target, dstByteOffset, srcData, srcOffset, length)*/
+        public void BufferSubData(uint target, IntPtr dstByteOffset, ushort[] data)
+        {
+            // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
+            ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, IntPtr, Array, object>("customBufferDataUShort", target, dstByteOffset, data);
         }
 
         public uint CheckFramebufferStatus(uint target)

@@ -24,12 +24,12 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Header)]
-        public string Version = Header.Version300Es;
+        public string Version;
 
         /// <summary>
         /// The shader shard containing the definition of PI.
         /// </summary>
-        [FxShader(ShaderCategory.Fragment)]
+        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Header)]
         public string Pi = Header.DefinePi;
 
@@ -47,7 +47,7 @@ namespace Fusee.Engine.Core.Effects
         /// User-defined input struct. Must derive from <see cref="DiffuseInput"/>. 
         /// Used in the <see cref="SurfOutFragMethod"/> to modify the parameters of the chosen <see cref="SurfaceOutput"/>.
         /// </summary>
-        public SurfaceInput SurfaceInput { get; set; }
+        public SurfaceEffectInput SurfaceInput { get; set; }
         //======================================================//
 
         //================== Surface Shard ==========================//
@@ -66,14 +66,14 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public string SurfVaryingFrag = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+        public string SurfVaryingFrag = $"in {SurfaceEffectNameDeclarations.StructTypeName} {VaryingNameDeclarations.SurfOutVaryingName};\n";
 
         /// <summary>
         /// Vertex shader "out" declaration of the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public string SurfVaryingVert = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+        public string SurfVaryingVert = $"out {SurfaceEffectNameDeclarations.StructTypeName} {VaryingNameDeclarations.SurfOutVaryingName};\n";
 
         /// <summary>
         /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
@@ -89,7 +89,6 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.SurfOut)]
         public string SurfOutVertMethod;
         //======================================================//
-
         /// <summary>
         /// Fragment shader "in" declaration for the uv coordinates.
         /// </summary>
@@ -176,16 +175,21 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="surfaceInput"><see cref="SurfaceInput"/>. Provides the values used to modify the <see cref="SurfaceOut"/>.</param>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
         public SurfaceEffectBase
-            (SurfaceInput surfaceInput, RenderStateSet renderStateSet = null)
+            (SurfaceEffectInput surfaceInput, RenderStateSet renderStateSet = null)
         {
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
-            ParamDecl = new Dictionary<int, IFxParamDeclaration>();
+            UniformParameters = new Dictionary<int, IFxParamDeclaration>();
 
-            Version = Header.Version300Es;
+            if (ModuleExtensionPoint.PlatformId == FuseePlatformId.Desktop)
+                Version = Header.Version460Core;
+            else if (ModuleExtensionPoint.PlatformId == FuseePlatformId.Mesa)
+                Version = Header.Version450Core;
+            else
+                Version = Header.Version300Es;
             Pi = Header.DefinePi;
             Precision = Header.EsPrecisionHighpFloat;
-            SurfVaryingFrag = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
-            SurfVaryingVert = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+            SurfVaryingFrag = $"in {SurfaceEffectNameDeclarations.StructTypeName} {VaryingNameDeclarations.SurfOutVaryingName};\n";
+            SurfVaryingVert = $"out {SurfaceEffectNameDeclarations.StructTypeName} {VaryingNameDeclarations.SurfOutVaryingName};\n";
             UvIn = GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
             UvOut = GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
             TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
@@ -203,7 +207,7 @@ namespace Fusee.Engine.Core.Effects
             foreach (var structProp in surfInType.GetProperties())
             {
                 var paramDcl = BuildFxParamDecl(structProp, GetType().GetProperty(surfInName));
-                ParamDecl.Add(paramDcl.Hash, paramDcl);
+                UniformParameters.Add(paramDcl.Hash, paramDcl);
             }
 
             HandleUniform(ShaderCategory.Fragment, nameof(SurfaceInput), surfInType);
@@ -270,7 +274,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Uniform:
                         {
                             var paramDcl = BuildFxParamDecl(prop);
-                            ParamDecl.Add(paramDcl.Hash, paramDcl);
+                            UniformParameters.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
                         }
@@ -294,7 +298,7 @@ namespace Fusee.Engine.Core.Effects
                         foreach (var structProp in prop.PropertyType.GetProperties())
                         {
                             var paramDcl = BuildFxParamDecl(structProp, prop);
-                            ParamDecl.Add(paramDcl.Hash, paramDcl);
+                            UniformParameters.Add(paramDcl.Hash, paramDcl);
                         }
                         HandleUniform(shaderAttribute.ShaderCategory, prop.Name, prop.PropertyType);
                         continue;
@@ -340,7 +344,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.InternalUniform:
                         {
                             var paramDcl = BuildFxParamDecl(field);
-                            ParamDecl.Add(paramDcl.Hash, paramDcl);
+                            UniformParameters.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
                         }
@@ -434,47 +438,47 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        private void HandleUniform(ShaderCategory shaderCategory, string uniformName, Type type)
+        internal void HandleUniform(ShaderCategory shaderCategory, string uniformName, Type type, ShardCategory shardCategory = ShardCategory.Property)
         {
             var uniform = "uniform ";
             switch (shaderCategory)
             {
                 case ShaderCategory.Vertex:
-                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Fragment:
-                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Geometry:
-                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case (ShaderCategory.Vertex | ShaderCategory.Fragment):
-                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case (ShaderCategory.Fragment | ShaderCategory.Geometry):
-                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case (ShaderCategory.Vertex | ShaderCategory.Geometry):
-                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case (ShaderCategory.Vertex | ShaderCategory.Geometry | ShaderCategory.Fragment):
-                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardCategory, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
 
@@ -584,74 +588,69 @@ namespace Fusee.Engine.Core.Effects
         {
             for (int i = 0; i < numberOfLights; i++)
             {
-                if (!ShaderShards.Fragment.Lighting.LightPararamStringsAllLights.ContainsKey(i))
-                {
-                    ShaderShards.Fragment.Lighting.LightPararamStringsAllLights.Add(i, new ShaderShards.Fragment.LightParamStrings(i));
-                }
-
                 yield return new FxParamDeclaration<float3>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].PositionViewSpace,
+                    Name = UniformNameDeclarations.GetPosName(i),
                     Value = new float3(0, 0, -1.0f)
                 };
 
                 yield return new FxParamDeclaration<float4>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Intensities,
+                    Name = UniformNameDeclarations.GetIntensitiesName(i),
                     Value = float4.Zero
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].MaxDistance,
+                    Name = UniformNameDeclarations.GetMaxDistName(i),
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Strength,
+                    Name = UniformNameDeclarations.GetStrengthName(i),
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].OuterAngle,
+                    Name = UniformNameDeclarations.GetOuterConeAngleName(i),
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].InnerAngle,
+                    Name = UniformNameDeclarations.GetInnerConeAngleName(i),
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float3>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Direction,
+                    Name = UniformNameDeclarations.GetDirectionName(i),
                     Value = float3.Zero
                 };
 
                 yield return new FxParamDeclaration<int>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].LightType,
+                    Name = UniformNameDeclarations.GetTypeName(i),
                     Value = 1
                 };
 
                 yield return new FxParamDeclaration<int>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].IsActive,
+                    Name = UniformNameDeclarations.GetIsActiveName(i),
                     Value = 1
                 };
 
                 yield return new FxParamDeclaration<int>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].IsCastingShadows,
+                    Name = UniformNameDeclarations.GetIsCastingShadowsName(i),
                     Value = 0
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Bias,
+                    Name = UniformNameDeclarations.GetBiasName(i),
                     Value = 0f
                 };
             }
@@ -665,9 +664,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="memberName">The name of the member which this event originated from.</param>
         protected void PropertyChangedHandler(object sender, SurfaceEffectEventArgs args, string memberName)
         {
-            GetType().GetMethods().Where(m => m.Name == "SetFxParam").Where(item => item.GetParameters()[0].ParameterType == typeof(string)).First()
-            .MakeGenericMethod(args.Type)
-            .Invoke(this, new object[] { memberName + "." + args.Name, args.Value });
+            SetFxParam(memberName + "." + args.Name, args.Value);
         }
 
         private PropertyInfo[] GetPublicProperties(Type type)

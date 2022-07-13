@@ -2,7 +2,6 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
-using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
@@ -188,6 +187,7 @@ namespace Fusee.Engine.Core
             var cams = PrePassVisitor.CameraPrepassResults;
 
             float2 pickPosClip;
+
             if (cams.Count == 0)
             {
                 pickPosClip = (pickPos * new float2(2.0f / rc.ViewportWidth, -2.0f / rc.ViewportHeight)) + new float2(-1, 1);
@@ -195,30 +195,29 @@ namespace Fusee.Engine.Core
                 return Viserate();
             }
 
-            Tuple<SceneNode, CameraResult> pickCam = null;
+            CameraResult pickCam = default;
             Rectangle pickCamRect = new();
 
-            foreach (var cam in cams)
+            foreach (var camRes in cams)
             {
                 Rectangle camRect = new();
-                camRect.Left = (int)((cam.Item2.Camera.Viewport.x * rc.ViewportWidth) / 100);
-                camRect.Top = (int)((cam.Item2.Camera.Viewport.y * rc.ViewportHeight) / 100);
-                camRect.Right = (int)((cam.Item2.Camera.Viewport.z * rc.ViewportWidth) / 100) + camRect.Left;
-                camRect.Bottom = (int)((cam.Item2.Camera.Viewport.w * rc.ViewportHeight) / 100) + camRect.Top;
-
+                camRect.Left = (int)(camRes.Camera.Viewport.x * rc.ViewportWidth / 100);
+                camRect.Top = (int)(camRes.Camera.Viewport.y * rc.ViewportHeight / 100);
+                camRect.Right = (int)(camRes.Camera.Viewport.z * rc.ViewportWidth) / 100 + camRect.Left;
+                camRect.Bottom = (int)(camRes.Camera.Viewport.w * rc.ViewportHeight) / 100 + camRect.Top;
 
                 if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos)) continue;
 
-                if (pickCam == null || cam.Item2.Camera.Layer > pickCam.Item2.Camera.Layer)
+                if (pickCam == default || camRes.Camera.Layer > pickCam.Camera.Layer)
                 {
-                    pickCam = cam;
+                    pickCam = camRes;
                     pickCamRect = camRect;
                 }
             }
 
             // Calculate pickPosClip
             pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
-            Ray = new RayF(pickPosClip, float4x4.Invert(pickCam.Item1.GetTransform().Matrix), pickCam.Item2.Camera.GetProjectionMat(rc.ViewportWidth, rc.ViewportHeight, out _));
+            Ray = new RayF(pickPosClip, pickCam.View, pickCam.Camera.GetProjectionMat(rc.ViewportWidth, rc.ViewportHeight, out _));
 
             return Viserate();
         }

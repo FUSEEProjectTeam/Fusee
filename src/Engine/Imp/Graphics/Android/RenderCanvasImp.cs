@@ -363,7 +363,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #endregion Internal Members
     }
 
-    public class RenderCanvasGameView : AndroidGameView
+    internal class RenderCanvasGameView : AndroidGameView
     {
         #region Fields
 

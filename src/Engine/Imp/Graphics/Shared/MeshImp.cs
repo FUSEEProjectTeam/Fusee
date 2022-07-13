@@ -1,21 +1,12 @@
 ﻿using Fusee.Engine.Common;
 
 #if PLATFORM_DESKTOP
-
 namespace Fusee.Engine.Imp.Graphics.Desktop
 #elif PLATFORM_ANDROID
 
 namespace Fusee.Engine.Imp.Graphics.Android
 #endif
 {
-    /// <summary>
-    /// Contains a handle for any type of attribute buffer stored on GPU memory such as vertices, normals, uvs etc.
-    /// </summary>
-    public class AttributeImp : IAttribImp
-    {
-        internal int AttributeBufferObject;
-    }
-
     /// <summary>
     /// This is the implementation of the <see cref="IMeshImp" /> interface.
     /// It is used to check the status of the informations of a mesh and flush informations if required.

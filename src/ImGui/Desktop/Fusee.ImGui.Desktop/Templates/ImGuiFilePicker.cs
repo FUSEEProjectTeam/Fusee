@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 
-namespace Fusee.ImGuiDesktop.Templates
+namespace Fusee.ImGuiImp.Desktop.Templates
 {
     /// <summary>
     /// Very rough implementation of a File(Picker-)Dialog without any dependencies to any os and/or winforms/wpf

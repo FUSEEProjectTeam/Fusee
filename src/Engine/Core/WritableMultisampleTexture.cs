@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using System;
 
@@ -56,9 +56,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         public Compare CompareFunc { get; private set; }
 
-        private readonly ITextureHandle _texHandle;
-        private WritableTexture _internalResultTexture;
-        private readonly RenderContext RC;
+        /// <summary>
+        /// Renderable result texture.
+        /// </summary>
+        public WritableTexture InternalResultTexture { get; private set; }
 
         /// <summary>
         /// Opaque handle to texture, this is the internal handle, which can be used. However this is not yet sampled to one result texture
@@ -78,23 +79,9 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                if (_internalResultTexture == null)
-                {
-                    _internalResultTexture = WritableTexture.CreateAlbedoTex(Width, Height, PixelFormat);
-                    // set it once, therefore all framebuffer, etc. are being generated
-                    RC.SetRenderTarget(_internalResultTexture);
-                }
-
-                RC.BlitMultisample2DTextureToTexture(InternalTextureHandle, _internalResultTexture.TextureHandle, Width, Height);
-                return _internalResultTexture.TextureHandle;
+                return InternalResultTexture.TextureHandle;
             }
         }
-
-        /// <summary>
-        /// Resulting <see cref="ITextureHandle"/> after blitting and sampling is finished
-        /// Can be used as any other <see cref="WritableTexture"/>, the content is sampled and ready to go.
-        /// </summary>
-        internal WritableTexture TextureResult { get; set; }
 
         /// <summary>
         /// Specifies if mipmaps are created for this texture.
@@ -111,7 +98,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         public TextureFilterMode FilterMode { get; private set; }
 
-
         private bool disposedValue;
 
         /// <summary>
@@ -127,7 +113,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
         /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
-        public WritableMultisampleTexture(RenderContext rc, RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, int multisampleFactor = 4, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
+        public WritableMultisampleTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, int multisampleFactor = 4, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
             //var maxSamples = rc.GetHardwareCapabilities(HardwareCapability.MaxSamples);
             //if(maxSamples == 0)
@@ -150,7 +136,8 @@ namespace Fusee.Engine.Core
             CompareMode = compareMode;
             CompareFunc = compareFunc;
             MultisampleFactor = multisampleFactor;
-            RC = rc;
+
+            InternalResultTexture = WritableTexture.CreateAlbedoTex(Width, Height, PixelFormat);
         }
 
         /// <summary>
@@ -160,10 +147,14 @@ namespace Fusee.Engine.Core
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
         /// <param name="multisampleFactor">Define how many samples are being used to sample this texture, default: 4</param>
-        public static WritableMultisampleTexture CreateAlbedoTex(RenderContext rc, int width, int height, int multisampleFactor = 4)
+        public static WritableMultisampleTexture CreateAlbedoTex(int width, int height, int multisampleFactor = 4)
         {
-            return new WritableMultisampleTexture(rc, RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA),
-                width, height, multisampleFactor);
+            var pxFormat = new ImagePixelFormat(ColorFormat.RGBA);
+            var resTex = new WritableMultisampleTexture(RenderTargetTextureTypes.Albedo, pxFormat, width, height, multisampleFactor);
+
+            resTex.InternalResultTexture = WritableTexture.CreateAlbedoTex(resTex.Width, resTex.Height, pxFormat);
+
+            return resTex;
         }
 
         /// <summary>
@@ -177,6 +168,7 @@ namespace Fusee.Engine.Core
                 if (disposing)
                 {
                     TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+                    InternalResultTexture.Dispose();
                 }
 
                 disposedValue = true;

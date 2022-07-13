@@ -5,7 +5,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Desktop;
 using System;
 
-namespace Fusee.ImGuiDesktop
+namespace Fusee.ImGuiImp.Desktop
 {
     struct UniformFieldInfo
     {
@@ -64,7 +64,7 @@ namespace Fusee.ImGuiDesktop
 
             try
             {
-                _gameWindow = new ImGuiDesktop.RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
             catch
             {
@@ -319,7 +319,7 @@ namespace Fusee.ImGuiDesktop
         /// </summary>
         public event EventHandler<ResizeEventArgs>? Resize;
 
-        internal readonly ImGuiDesktop.RenderCanvasGameWindow _gameWindow;
+        internal readonly RenderCanvasGameWindow _gameWindow;
 
     }
 

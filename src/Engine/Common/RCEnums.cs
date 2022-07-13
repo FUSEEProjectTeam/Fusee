@@ -641,7 +641,8 @@ namespace Fusee.Engine.Common
         Undefined = 0,
         Desktop = 1,
         Android = 2,
-        Blazor = 3
+        Blazor = 3,
+        Mesa = 4
 #pragma warning restore 1591
     }
 }

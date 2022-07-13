@@ -2,7 +2,7 @@
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Desktop;
-using Fusee.ImGuiDesktop;
+using Fusee.ImGuiImp.Desktop;
 using ImGuiNET;
 using System;
 using System.IO;
@@ -15,7 +15,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         Description = "A very simple example how to use ImGui within a Fusee application.")]
     public class Core : RenderCanvas
     {
-
         #region StaticBindingVars
 
         private static bool _dockspaceOpen = true;
@@ -55,7 +54,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         {
             Load();
             await base.InitAsync();
-
         }
 
         public override void Update()
@@ -66,7 +64,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         public override void Resize(ResizeEventArgs e)
         {
             _fuControl.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
-
         }
 
         public override async void RenderAFrame()
@@ -138,15 +135,13 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
             ImGui.Begin("ImageWnd");
 
-            var hndl = ((TextureHandle)_imageTexture.TextureHandle).TexHandle;
+            var hndl = ((TextureHandle)_imageTexture.TextureHandle).TexId;
             ImGui.Image(new IntPtr(hndl), new Vector2(_imageTexture.Width, _imageTexture.Height));
 
             ImGui.End();
 
             DrawGUI();
         }
-
-
 
         internal void DrawGUI()
         {

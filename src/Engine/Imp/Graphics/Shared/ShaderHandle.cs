@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 
 #if PLATFORM_DESKTOP
-[assembly: InternalsVisibleTo("Fusee.ImGuiDesktop")]
+[assembly: InternalsVisibleTo("Fusee.ImGuiImp.Desktop")]
 namespace Fusee.Engine.Imp.Graphics.Desktop
 #elif PLATFORM_ANDROID
 namespace Fusee.Engine.Imp.Graphics.Android
@@ -11,7 +11,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// <summary>
     /// Implementation of <see cref="IShaderHandle" /> for usage with OpenTK framework.
     /// </summary>
-    public class ShaderHandleImp : IShaderHandle
+    public class ShaderHandle : IShaderHandle
     {
         internal int Handle;
     }

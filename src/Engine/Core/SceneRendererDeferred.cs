@@ -4,7 +4,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
@@ -108,7 +107,7 @@ namespace Fusee.Engine.Core
         private WritableTexture _blurRenderTex;
         private WritableTexture _lightedSceneTex; //Do post-pro effects like FXAA on this texture.
 
-        private readonly Dictionary<Tuple<SceneNode, Light>, ShadowParams> _shadowparams; //One per Light
+        private readonly Dictionary<Light, ShadowParams> _shadowparams; //One per Light
 
         private RenderPasses _currentPass;
         private bool _canUseGeometryShaders;
@@ -132,7 +131,7 @@ namespace Fusee.Engine.Core
             TexRes = texRes;
             ShadowMapRes = shadowMapRes;
 
-            _shadowparams = new Dictionary<Tuple<SceneNode, Light>, ShadowParams>();
+            _shadowparams = new Dictionary<Light, ShadowParams>();
         }
 
         # region Deferred specific visitors
@@ -144,9 +143,6 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderShaderEffect(Effect effect)
         {
-            if (HasNumberOfLightsChanged)
-                HasNumberOfLightsChanged = false;
-
             if (_currentPass != RenderPasses.Shadow)
             {
                 _rc.SetEffect(effect, false);
@@ -183,20 +179,15 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            //var wc = CurrentNode.GetWeights();
-            //if (wc != null)
-            //    AddWeightToMesh(mesh, wc);
-
-            var renderStatesBefore = _rc.CurrentRenderState.Copy();
             if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
             {
                 if (mesh.MeshType == PrimitiveType.Points)
-                    _rc.SetEffect(_shadowCubeMapEffectPointPrimitives, true);
+                    _rc.SetEffect(_shadowCubeMapEffectPointPrimitives);
                 else
-                    _rc.SetEffect(_shadowCubeMapEffect, true);
+                    _rc.SetEffect(_shadowCubeMapEffect);
             }
-            _rc.Render(mesh, _currentPass == RenderPasses.Shadow);
-            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
+            _rc.Render(mesh, CurrentInstanceData, _currentPass == RenderPasses.Shadow);
+            CurrentInstanceData = null;
         }
 
         /// <summary>
@@ -230,14 +221,13 @@ namespace Fusee.Engine.Core
             if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
             {
                 if (mesh.MeshType == PrimitiveType.Points)
-                    _rc.SetEffect(_shadowCubeMapEffectPointPrimitives, true);
+                    _rc.SetEffect(_shadowCubeMapEffectPointPrimitives);
                 else
-                    _rc.SetEffect(_shadowCubeMapEffect, true);
+                    _rc.SetEffect(_shadowCubeMapEffect);
             }
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, _currentPass == RenderPasses.Shadow);
-            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
 
         #endregion
@@ -249,20 +239,19 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected override void PopState()
         {
-            _rc.SetRenderStateSet(_state.RenderUndoStates);
             _state.Pop();
             _rc.Model = _state.Model;
 
             //If we render the shadow pass: ignore ShaderEffects of the SceneNodes and use the ones that are needed to render the shadow maps.
             if (_currentPass != RenderPasses.Shadow)
-                _rc.SetEffect(_state.Effect, false);
+                _rc.SetEffect(_state.Effect);
 
         }
         #endregion
 
         #region Shadow mapping
 
-        private ShadowParams CreateShadowParams(LightResult lr, Tuple<SceneNode, Light> key)
+        private ShadowParams CreateShadowParams(LightResult lr)
         {
             float4x4[] lightSpaceMatrices;
             List<FrustumF> frustums;
@@ -397,7 +386,7 @@ namespace Fusee.Engine.Core
             }
 
             //2. If we haven't created the shadow parameters for this light yet, do so,
-            if (!_shadowparams.TryGetValue(key, out var outParams))
+            if (!_shadowparams.TryGetValue(lr.Light, out var outParams))
             {
                 switch (lr.Light.Type)
                 {
@@ -432,7 +421,7 @@ namespace Fusee.Engine.Core
                         throw new ArgumentException("Invalid light type.");
                 }
 
-                _shadowparams.Add(key, outParams);
+                _shadowparams.Add(lr.Light, outParams);
             }
             //else update light space matrices and clip planes.
             else
@@ -467,16 +456,16 @@ namespace Fusee.Engine.Core
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
-                var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Item2.Camera.Layer);
+                var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Camera.Layer);
 
                 foreach (var cam in cams)
                 {
-                    if (cam.Item2.Camera.Active)
+                    if (cam.Camera.Active)
                     {
-                        PerCamClear(cam.Item2);
-                        NotifyCameraChanges(cam.Item2.Camera);
-                        DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
-                        PerCamRender(cam.Item2, cam.Item2.Camera.RenderTexture);
+                        PerCamClear(cam);
+                        NotifyCameraChanges(cam.Camera);
+                        DoFrumstumCulling = cam.Camera.FrustumCullingOn;
+                        PerCamRender(cam, cam.Camera.RenderTexture);
                     }
                 }
 
@@ -488,8 +477,6 @@ namespace Fusee.Engine.Core
             {
                 RenderAllPasses(new float4(0, 0, _rc.ViewportWidth, _rc.ViewportHeight));
             }
-
-            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         private void PerCamRender(CameraResult cam, IWritableTexture renderTex = null)
@@ -511,6 +498,13 @@ namespace Fusee.Engine.Core
             }
 
             RenderAllPasses(viewport, renderTex);
+
+
+            // if we have a multisample texture we need to blt the result of our rendering to the result texture
+            if (cam.Camera.RenderTexture is WritableMultisampleTexture wmt)
+            {
+                _rc.BlitMultisample2DTextureToTexture(wmt, wmt.InternalResultTexture);
+            }
         }
 
         private void RenderAllPasses(float4 lightingPassViewport, IWritableTexture renderTex = null)
@@ -588,16 +582,16 @@ namespace Fusee.Engine.Core
                 var isCastingShadows = false; //needed because Android and Web doesn't support geometry shaders.
                 var lightVisRes = LightViseratorResults[i];
 
-                if (!lightVisRes.Item2.Light.Active) continue;
+                if (!lightVisRes.Light.Active) continue;
 
-                if (lightVisRes.Item2.Light.IsCastingShadows)
+                if (lightVisRes.Light.IsCastingShadows)
                 {
                     isCastingShadows = true;
 
-                    if (!_shadowparams.TryGetValue(new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light), out var shadowParams)) continue;
+                    if (!_shadowparams.TryGetValue(lightVisRes.Light, out var shadowParams)) continue;
 
                     //Create and/or choose correct shader effect
-                    switch (lightVisRes.Item2.Light.Type)
+                    switch (lightVisRes.Light.Type)
                     {
                         case LightType.Point:
                             {
@@ -605,7 +599,7 @@ namespace Fusee.Engine.Core
                                 {
                                     if (_lightingPassEffectPoint == null)
                                     {
-                                        _lightingPassEffectPoint = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableCubeMap)shadowParams.ShadowMap);
+                                        _lightingPassEffectPoint = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Light, _texClearColor, (WritableCubeMap)shadowParams.ShadowMap);
                                         _rc.CreateShaderProgram(_lightingPassEffectPoint);
                                     }
                                     _lightingPassEffect = _lightingPassEffectPoint;
@@ -616,7 +610,7 @@ namespace Fusee.Engine.Core
 
                                     if (_lightingPassEffectNoShadow == null)
                                     {
-                                        _lightingPassEffectNoShadow = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor);
+                                        _lightingPassEffectNoShadow = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Light, _texClearColor);
                                         _rc.CreateShaderProgram(_lightingPassEffectNoShadow);
                                     }
                                     _lightingPassEffect = _lightingPassEffectNoShadow;
@@ -630,7 +624,7 @@ namespace Fusee.Engine.Core
                                 {
                                     if (_lightingPassEffectCascaded == null)
                                     {
-                                        _lightingPassEffectCascaded = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableArrayTexture)shadowParams.ShadowMap, shadowParams.ClipPlanesForLightMat, NumberOfCascades, _texClearColor);
+                                        _lightingPassEffectCascaded = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Light, (WritableArrayTexture)shadowParams.ShadowMap, shadowParams.ClipPlanesForLightMat, NumberOfCascades, _texClearColor);
                                         _rc.CreateShaderProgram(_lightingPassEffectCascaded);
                                     }
                                     _lightingPassEffect = _lightingPassEffectCascaded;
@@ -639,7 +633,7 @@ namespace Fusee.Engine.Core
                                 {
                                     if (_lightingPassEffectNoCascades == null)
                                     {
-                                        _lightingPassEffectNoCascades = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
+                                        _lightingPassEffectNoCascades = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
                                         _rc.CreateShaderProgram(_lightingPassEffectNoCascades);
                                     }
                                     _lightingPassEffect = _lightingPassEffectNoCascades;
@@ -650,7 +644,7 @@ namespace Fusee.Engine.Core
                             {
                                 if (_lightingPassEffectOther == null)
                                 {
-                                    _lightingPassEffectOther = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
+                                    _lightingPassEffectOther = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
                                     _rc.CreateShaderProgram(_lightingPassEffectOther);
                                 }
                                 _lightingPassEffect = _lightingPassEffectOther;
@@ -664,7 +658,7 @@ namespace Fusee.Engine.Core
                 {
                     if (_lightingPassEffectNoShadow == null)
                     {
-                        _lightingPassEffectNoShadow = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor);
+                        _lightingPassEffectNoShadow = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Light, _texClearColor);
                         _rc.CreateShaderProgram(_lightingPassEffectNoShadow);
                     }
                     _lightingPassEffect = _lightingPassEffectNoShadow;
@@ -682,9 +676,9 @@ namespace Fusee.Engine.Core
                 //Set background color only in last light pass to NOT blend the color (additive).
                 var isNextLightLast = i + 1 == LightViseratorResults.Count - 1;
                 if (i == LightViseratorResults.Count - 1 ||
-                   (isNextLightLast && !LightViseratorResults[i + 1].Item2.Light.Active) ||
-                   (isNextLightLast && !LightViseratorResults[i + 1].Item2.Light.IsCastingShadows) ||
-                   (isNextLightLast && lightVisRes.Item2.Light.Type == LightType.Point && !_canUseGeometryShaders))
+                   (isNextLightLast && !LightViseratorResults[i + 1].Light.Active) ||
+                   (isNextLightLast && !LightViseratorResults[i + 1].Light.IsCastingShadows) ||
+                   (isNextLightLast && lightVisRes.Light.Type == LightType.Point && !_canUseGeometryShaders))
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, BackgroundColor);
                 else
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, _texClearColor);
@@ -705,14 +699,13 @@ namespace Fusee.Engine.Core
 
             foreach (var lightVisRes in LightViseratorResults)
             {
-                if (!lightVisRes.Item2.ReRenderShadowMap ||
-                    !lightVisRes.Item2.Light.IsCastingShadows ||
-                    !lightVisRes.Item2.Light.Active ||
-                    (lightVisRes.Item2.Light.Type == LightType.Point && !_canUseGeometryShaders)) continue;
+                if (!lightVisRes.ReRenderShadowMap ||
+                    !lightVisRes.Light.IsCastingShadows ||
+                    !lightVisRes.Light.Active ||
+                    (lightVisRes.Light.Type == LightType.Point && !_canUseGeometryShaders)) continue;
 
-                var key = new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light);
-                var shadowParams = CreateShadowParams(lightVisRes.Item2, key);
-                _currentLightType = lightVisRes.Item2.Light.Type;
+                var shadowParams = CreateShadowParams(lightVisRes);
+                _currentLightType = lightVisRes.Light.Type;
 
                 switch (_currentLightType)
                 {
@@ -737,11 +730,11 @@ namespace Fusee.Engine.Core
                                 _shadowCubeMapEffectPointPrimitives.SetFxParam(UniformNameDeclarations.LightSpaceMatricesHash, shadowParams.LightSpaceMatrices);
 
                             _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.LightMatClipPlanesHash, shadowParams.ClipPlanesForLightMat[0]);
-                            _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.LightPosHash, lightVisRes.Item2.WorldSpacePos);
+                            _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.LightPosHash, lightVisRes.WorldSpacePos);
 
                             _shadowCubeMapEffectPointPrimitives.SetFxParam(UniformNameDeclarations.LightMatClipPlanesHash, shadowParams.ClipPlanesForLightMat[0]);
-                            _shadowCubeMapEffectPointPrimitives.SetFxParam(UniformNameDeclarations.LightPosHash, lightVisRes.Item2.WorldSpacePos);
-                            _rc.SetEffect(_shadowCubeMapEffect, true);
+                            _shadowCubeMapEffectPointPrimitives.SetFxParam(UniformNameDeclarations.LightPosHash, lightVisRes.WorldSpacePos);
+                            _rc.SetEffect(_shadowCubeMapEffect);
 
                             _rc.SetRenderTarget((IWritableCubeMap)shadowParams.ShadowMap);
                             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -756,7 +749,7 @@ namespace Fusee.Engine.Core
                             if (NumberOfCascades == 1)
                             {
                                 _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
-                                _rc.SetEffect(_shadowEffect, true);
+                                _rc.SetEffect(_shadowEffect);
                                 _rc.SetRenderTarget(shadowParams.ShadowMap);
                                 _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -769,7 +762,7 @@ namespace Fusee.Engine.Core
                                 for (int i = 0; i < NumberOfCascades; i++)
                                 {
                                     _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[i]);
-                                    _rc.SetEffect(_shadowEffect, true);
+                                    _rc.SetEffect(_shadowEffect);
                                     _rc.SetRenderTarget((IWritableArrayTexture)shadowParams.ShadowMap, i);
                                     _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -788,7 +781,7 @@ namespace Fusee.Engine.Core
                         {
                             DoFrumstumCulling = true;
                             _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
-                            _rc.SetEffect(_shadowEffect, false);
+                            _rc.SetEffect(_shadowEffect);
                             _rc.SetRenderTarget(shadowParams.ShadowMap);
                             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -800,8 +793,8 @@ namespace Fusee.Engine.Core
                     default:
                         break;
                 }
-                if (lightVisRes.Item2.Light.Type != LightType.Legacy && lightVisRes.Item2.Light.Type != LightType.Parallel && NumberOfCascades > 1)
-                    lightVisRes.Item2.ReRenderShadowMap = false;
+                if (lightVisRes.Light.Type != LightType.Legacy && lightVisRes.Light.Type != LightType.Parallel && NumberOfCascades > 1)
+                    lightVisRes.ReRenderShadowMap = false;
             }
         }
 
@@ -819,7 +812,7 @@ namespace Fusee.Engine.Core
             _currentPass = RenderPasses.Ssao;
             if (_ssaoTexEffect == null)
             {
-                _ssaoTexEffect = MakeEffect.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes), 4);
+                _ssaoTexEffect = MakeEffect.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new int2((int)TexRes, (int)TexRes), 4);
                 _rc.CreateShaderProgram(_ssaoTexEffect);
             }
             _rc.SetEffect(_ssaoTexEffect);
@@ -848,7 +841,7 @@ namespace Fusee.Engine.Core
             _currentPass = RenderPasses.Fxaa;
             if (_fxaaEffect == null)
             {
-                _fxaaEffect = MakeEffect.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)TexRes, (float)TexRes));
+                _fxaaEffect = MakeEffect.FXAARenderTargetEffect(_lightedSceneTex, new int2((int)TexRes, (int)TexRes));
                 _rc.CreateShaderProgram(_fxaaEffect);
             }
             _rc.SetEffect(_fxaaEffect);
@@ -861,14 +854,13 @@ namespace Fusee.Engine.Core
             _rc.Render(_quad);
         }
 
-        private void UpdateLightAndShadowParams(Tuple<SceneNode, LightResult> lightVisRes, ShaderEffect effect, bool isCastingShadows)
+        private void UpdateLightAndShadowParams(LightResult lightVisRes, ShaderEffect effect, bool isCastingShadows)
         {
-            var lightRes = lightVisRes.Item2;
-            var light = lightRes.Light;
+            var light = lightVisRes.Light;
 
             if (light.Type == LightType.Legacy)
             {
-                lightRes.Rotation = new float4x4
+                lightVisRes.Rotation = new float4x4
                 (
                     new float4(_rc.InvView.Row1.xyz, 0),
                     new float4(_rc.InvView.Row2.xyz, 0),
@@ -877,7 +869,7 @@ namespace Fusee.Engine.Core
                  );
             }
 
-            var dirWorldSpace = float3.Normalize((lightRes.Rotation * float4.UnitZ).xyz);
+            var dirWorldSpace = float3.Normalize((lightVisRes.Rotation * float4.UnitZ).xyz);
             var dirViewSpace = float3.Normalize((_rc.View * new float4(dirWorldSpace)).xyz);
             var strength = light.Strength;
 
@@ -888,10 +880,10 @@ namespace Fusee.Engine.Core
             }
 
             // Set params in modelview space since the lightning calculation is in modelview space
-            switch (lightVisRes.Item2.Light.Type)
+            switch (lightVisRes.Light.Type)
             {
                 case LightType.Point:
-                    effect.SetFxParam("light.position", _rc.View * lightRes.WorldSpacePos);
+                    effect.SetFxParam("light.position", _rc.View * lightVisRes.WorldSpacePos);
                     effect.SetFxParam("light.intensities", light.Color);
                     effect.SetFxParam("light.maxDistance", light.MaxDistance);
                     effect.SetFxParam("light.strength", strength);
@@ -905,7 +897,7 @@ namespace Fusee.Engine.Core
                     effect.SetFxParam("light.isActive", light.Active ? 1 : 0);
                     break;
                 case LightType.Spot:
-                    effect.SetFxParam("light.position", _rc.View * lightRes.WorldSpacePos);
+                    effect.SetFxParam("light.position", _rc.View * lightVisRes.WorldSpacePos);
                     effect.SetFxParam("light.intensities", light.Color);
                     effect.SetFxParam("light.maxDistance", light.MaxDistance);
                     effect.SetFxParam("light.strength", strength);
@@ -922,9 +914,9 @@ namespace Fusee.Engine.Core
             {
                 effect.SetFxParam("light.isCastingShadows", light.IsCastingShadows ? 1 : 0);
                 effect.SetFxParam("light.bias", light.Bias);
-                var shadowParams = _shadowparams[new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light)];
+                var shadowParams = _shadowparams[lightVisRes.Light];
 
-                switch (lightVisRes.Item2.Light.Type)
+                switch (lightVisRes.Light.Type)
                 {
                     case LightType.Point:
                         effect.SetFxParam(UniformNameDeclarations.ShadowCubeMapHash, (WritableCubeMap)shadowParams.ShadowMap);
@@ -966,7 +958,6 @@ namespace Fusee.Engine.Core
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = _rc.DefaultEffect;
             _rc.CreateShaderProgram(_state.Effect, false);
-            _state.RenderUndoStates = new RenderStateSet();
             _state.RenderLayer = new RenderLayer();
         }
 

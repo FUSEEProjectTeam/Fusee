@@ -4,7 +4,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
@@ -41,7 +40,6 @@ namespace Fusee.Examples.RenderContextOnly.Core
         private SurfaceEffect _greenFx;
         private SurfaceEffect _grayFx;
 
-
         public override async Task InitAsync()
         {
             await base.InitAsync();
@@ -59,7 +57,6 @@ namespace Fusee.Examples.RenderContextOnly.Core
                 Color = float4.One,
                 Strength = 1
             };
-            UpdateShaderParamForLight(_light);
 
             _rocketWhite = Rocket.MeshWhite();
             _modelMatWhite = Rocket.TransformWhite().Matrix;
@@ -130,7 +127,7 @@ namespace Fusee.Examples.RenderContextOnly.Core
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
 
             //If a parameter or the transformation of the light has changed:
-            //UpdateShaderParamForLight(_light);
+            UpdateShaderParamForLight(_light, mtxRot, mtxCam.Column4.xyz);
 
             RC.Model = _modelMatWhite;
             RC.SetEffect(_whiteFx);
@@ -148,28 +145,20 @@ namespace Fusee.Examples.RenderContextOnly.Core
             Present();
         }
 
-        private void UpdateShaderParamForLight(Light light)
+        private void UpdateShaderParamForLight(Light light, float4x4 rotation, float3 worldSpacePos)
         {
             var strength = light.Strength;
 
             if (strength > 1.0 || strength < 0.0)
             {
                 strength = M.Clamp(light.Strength, 0.0f, 1.0f);
+                light.Strength = strength;
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
-            var lightParamStrings = new LightParamStrings(0);
-
-            // Set parameters in view/camera space.
-            RC.SetGlobalEffectParam(lightParamStrings.PositionViewSpace.GetHashCode(), float3.Zero);
-            RC.SetGlobalEffectParam(lightParamStrings.Intensities.GetHashCode(), light.Color);
-            RC.SetGlobalEffectParam(lightParamStrings.MaxDistance.GetHashCode(), light.MaxDistance);
-            RC.SetGlobalEffectParam(lightParamStrings.Strength.GetHashCode(), strength);
-            RC.SetGlobalEffectParam(lightParamStrings.OuterAngle.GetHashCode(), M.DegreesToRadians(light.OuterConeAngle));
-            RC.SetGlobalEffectParam(lightParamStrings.InnerAngle.GetHashCode(), M.DegreesToRadians(light.InnerConeAngle));
-            RC.SetGlobalEffectParam(lightParamStrings.Direction.GetHashCode(), float3.UnitZ);
-            RC.SetGlobalEffectParam(lightParamStrings.LightType.GetHashCode(), (int)light.Type);
-            RC.SetGlobalEffectParam(lightParamStrings.IsActive.GetHashCode(), light.Active ? 1 : 0);
+            RC.ForwardLights[0].Light = light;
+            RC.ForwardLights[0].WorldSpacePos = worldSpacePos;
+            RC.ForwardLights[0].Rotation = rotation.Invert();
         }
     }
 }

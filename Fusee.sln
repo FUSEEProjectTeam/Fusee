@@ -292,7 +292,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.RenderContex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PickingRayCast.Blazor", "Examples\Complete\PickingRayCast\Blazor\Fusee.Examples.PickingRayCast.Blazor.csproj", "{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.ImGuiDesktop", "src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiDesktop.csproj", "{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fusee.Engine.Imp.Graphics.SharedAll", "src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.shproj", "{7638E21E-193F-4AC7-8F01-B595FE8B3CAA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.ImGuiImp.Desktop", "src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiImp.Desktop.csproj", "{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.FuseeImGui.Desktop", "Examples\Complete\ImGui\Desktop\Fusee.Examples.FuseeImGui.Desktop.csproj", "{A1E5AC7E-97B2-4BED-AB75-780416E422A5}"
 EndProject
@@ -1869,6 +1871,7 @@ Global
 		{FF0DEE54-C91E-480F-B103-593FB00E92FF} = {E6E73351-7DED-4B97-B254-A0E903D769C1}
 		{ED0AC25F-615E-4AE6-A491-ADD41ABEB2D2} = {E6E73351-7DED-4B97-B254-A0E903D769C1}
 		{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1} = {425DDCA8-659F-44FB-832E-117C7DED152E}
+		{7638E21E-193F-4AC7-8F01-B595FE8B3CAA} = {6295AB06-EBE4-4887-A811-20737F6F8645}
 		{A1E5AC7E-97B2-4BED-AB75-780416E422A5} = {D1853E25-C274-44E7-8AB6-9BE3A4E61928}
 		{D1853E25-C274-44E7-8AB6-9BE3A4E61928} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
 		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
@@ -1878,9 +1881,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
+		src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.projitems*{717241b4-f2aa-4124-807a-68db3c73157f}*SharedItemsImports = 5
+		src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.projitems*{7638e21e-193f-4ac7-8f01-b595fe8b3caa}*SharedItemsImports = 13
+		src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 5
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 5
 		src\PointCloud\Las\Shared\Fusee.PointCloud.Las.Shared.projitems*{dcc7da71-3e2e-476c-8391-1f9651637503}*SharedItemsImports = 13
 		src\PointCloud\Las\Shared\Fusee.PointCloud.Las.Shared.projitems*{f28634e7-52b8-4935-b19e-cb8a6844e6f1}*SharedItemsImports = 5
+		src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 5
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

@@ -25,7 +25,7 @@ namespace Fusee.Engine.Core
         #endregion
 
         /// <summary>
-        /// Actual pixel data of the image
+        /// The <see cref="IImageData"/> of this texture.
         /// </summary>
         public IImageData ImageData { get; private set; }
 

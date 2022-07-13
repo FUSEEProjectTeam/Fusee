@@ -184,7 +184,7 @@ namespace Fusee.PointCloud.Common
                     throw new ArgumentException($"Current octant ID's maximum level is {Level}");
                 return ((OctantOrientation)(_id >> ((18 - level) * 3))) & OctantOrientation.LeftRightFrontBackDownUpMask;
             }
-            /// Implicitly re-sets the level if exceeded
+            // Implicitly re-sets the level if exceeded
             set
             {
                 if (!(0 <= level && level <= 18))

@@ -3,7 +3,6 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using Fusee.Xirkit;
@@ -20,11 +19,6 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class SceneRendererForward : Visitor<SceneNode, SceneComponent>
     {
-        /// <summary>
-        ///Is set to true if a light was added or removed from the scene.
-        /// /// </summary>
-        protected bool HasNumberOfLightsChanged;
-
         /// <summary>
         /// Enables or disables Frustum Culling.
         /// If we render with one or more cameras this value will be overwritten by <see cref="Camera.FrustumCullingOn"/>.
@@ -49,9 +43,14 @@ namespace Fusee.Engine.Core
         private RenderLayers _renderLayer;
 
         /// <summary>
+        /// Returns currently visited <see cref="InstanceData"/> during a traversal.
+        /// </summary>
+        protected InstanceData CurrentInstanceData;
+
+        /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
-        internal List<Tuple<SceneNode, LightResult>> LightViseratorResults
+        internal List<LightResult> LightViseratorResults
         {
             get => _lightResults;
             private set
@@ -60,13 +59,11 @@ namespace Fusee.Engine.Core
 
                 if (_numberOfLights != _lightResults.Count)
                 {
-                    Lighting.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
-                    HasNumberOfLightsChanged = true;
                     _numberOfLights = _lightResults.Count;
                 }
             }
         }
-        private List<Tuple<SceneNode, LightResult>> _lightResults = new();
+        private List<LightResult> _lightResults = new();
 
         #region Traversal information
 
@@ -130,7 +127,7 @@ namespace Fusee.Engine.Core
                 };
             }
             // if there is no light in scene then add one (legacyMode)
-            _lightResults.Add(new Tuple<SceneNode, LightResult>(CurrentNode, new LightResult(_legacyLight)
+            _lightResults.Add(new LightResult(_legacyLight)
             {
                 Rotation = new float4x4
                 (
@@ -140,7 +137,7 @@ namespace Fusee.Engine.Core
                     float4.UnitW
                  ),
                 WorldSpacePos = _rc.InvView.Column4.xyz
-            }));
+            });
         }
 
         /// <summary>
@@ -303,7 +300,6 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-
         /// <summary>
         /// Renders the scene.
         /// </summary>
@@ -319,16 +315,17 @@ namespace Fusee.Engine.Core
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
-                var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Item2.Camera.Layer);
+                var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Camera.Layer);
 
+                //Render for all cameras
                 foreach (var cam in cams)
                 {
-                    if (cam.Item2.Camera.Active)
+                    if (cam.Camera.Active)
                     {
-                        PerCamClear(cam.Item2);
-                        NotifyCameraChanges(cam.Item2.Camera);
-                        DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
-                        PerCamRender(cam.Item2);
+                        PerCamClear(cam);
+                        NotifyCameraChanges(cam.Camera);
+                        DoFrumstumCulling = cam.Camera.FrustumCullingOn;
+                        PerCamRender(cam);
                     }
                 }
 
@@ -342,8 +339,6 @@ namespace Fusee.Engine.Core
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
-
-            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         internal void PerCamClear(CameraResult cam)
@@ -385,6 +380,12 @@ namespace Fusee.Engine.Core
 
             Traverse(_sc.Children);
 
+            // if we have a multisample texture we need to blt the result of our rendering to the result texture
+            if (tex is WritableMultisampleTexture wmt)
+            {
+                _rc.BlitMultisample2DTextureToTexture(wmt, wmt.InternalResultTexture);
+            }
+
         }
 
         /// <summary>
@@ -421,7 +422,7 @@ namespace Fusee.Engine.Core
 
             var trans = boneContainer.GetGlobalTranslation();
             var rot = boneContainer.GetGlobalRotation();
-            _ = float4x4.CreateTranslation(trans) * rot; //TODO: ???
+            _ = float4x4.CreateTranslation(trans) * rot;
 
             if (!_boneMap.TryGetValue(boneContainer, out _))
                 _boneMap.Add(boneContainer, _rc.Model);
@@ -442,7 +443,17 @@ namespace Fusee.Engine.Core
                 var tmp = weight.BindingMatrices[i];
                 boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
             }
-            _rc.Bones = boneArray;
+            //TODO: find a way to NOT push the bones into the RC because they are not "global"
+        }
+
+        /// <summary>
+        /// Sets <see cref="CurrentInstanceData"/>.
+        /// </summary>
+        /// <param name="instanceData"></param>
+        [VisitMethod]
+        public void RenderInstances(InstanceData instanceData)
+        {
+            CurrentInstanceData = instanceData;
         }
 
         private bool isCtcInitialized = false;
@@ -676,11 +687,6 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderEffect(Effect effect)
         {
-            if (HasNumberOfLightsChanged)
-            {
-                //change #define MAX_LIGHTS... or rebuild shader effect?
-                HasNumberOfLightsChanged = false;
-            }
             _state.Effect = effect;
             _rc.SetEffect(_state.Effect, true);
         }
@@ -712,9 +718,8 @@ namespace Fusee.Engine.Core
             //if (wc != null)
             //    AddWeightToMesh(mesh, wc);
 
-            var renderStatesBefore = _rc.CurrentRenderState.Copy();
-            _rc.Render(mesh, true);
-            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
+            _rc.Render(mesh, CurrentInstanceData, true);
+            CurrentInstanceData = null;
         }
 
         /// <summary>
@@ -739,9 +744,7 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, true);
-            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
 
         /// <summary>
@@ -817,7 +820,6 @@ namespace Fusee.Engine.Core
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = _rc.DefaultEffect;
             _rc.CreateShaderProgram(_state.Effect);
-            _state.RenderUndoStates = new RenderStateSet();
             _state.RenderLayer = new RenderLayer();
         }
 
@@ -834,7 +836,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected override void PopState()
         {
-            _rc.SetRenderStateSet(_state.RenderUndoStates);
             _state.Pop();
             _rc.Model = _state.Model;
             _rc.SetEffect(_state.Effect, true);
@@ -844,52 +845,31 @@ namespace Fusee.Engine.Core
 
         private void UpdateShaderParamsForAllLights()
         {
-            if (_lightResults.Count > Lighting.NumberOfLightsForward)
-                Diagnostics.Warn($"Number of lights in the scene exceeds the maximal allowed number. Lights above {Lighting.NumberOfLightsForward} will be ignored!");
+            if (_lightResults.Count > ModuleExtensionPoint.NumberOfLightsForward)
+                Diagnostics.Warn($"Number of lights in the scene exceeds the maximal allowed number. Lights above {ModuleExtensionPoint.NumberOfLightsForward} will be ignored!");
 
-            for (var i = 0; i < Lighting.NumberOfLightsForward; i++)
+            for (var i = 0; i < _rc.ForwardLights.Length; i++)
             {
                 if (i < _lightResults.Count)
-                {
-
-                    if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
-                        Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
-
-                    UpdateShaderParamForLight(i, _lightResults[i].Item2);
-                }
+                    UpdateShaderParamForLight(i, _lightResults[i]);
                 else
-                    _rc.SetGlobalEffectParam($"allLights[{i}].isActive".GetHashCode(), 0);
+                    _rc.ForwardLights[i].Light.Active = false;
             }
         }
 
         private void UpdateShaderParamForLight(int position, LightResult lightRes)
         {
             var light = lightRes.Light;
-
-            var dirWorldSpace = float3.Normalize((lightRes.Rotation * float4.UnitZ).xyz);
-            var dirViewSpace = float3.Normalize((_rc.View * new float4(dirWorldSpace)).xyz);
             var strength = light.Strength;
 
             if (strength > 1.0 || strength < 0.0)
             {
                 strength = M.Clamp(light.Strength, 0.0f, 1.0f);
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
+                light.Strength = strength;
             }
 
-            var lightParamStrings = Lighting.LightPararamStringsAllLights[position];
-
-            // Set parameters in modelview space since the lightning calculation is in modelview space
-            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace.GetHashCode(), _rc.View * lightRes.WorldSpacePos);
-            _rc.SetGlobalEffectParam(lightParamStrings.Intensities.GetHashCode(), light.Color);
-            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance.GetHashCode(), light.MaxDistance);
-            _rc.SetGlobalEffectParam(lightParamStrings.Strength.GetHashCode(), strength);
-            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle.GetHashCode(), M.DegreesToRadians(light.OuterConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle.GetHashCode(), M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.Direction.GetHashCode(), dirViewSpace);
-            _rc.SetGlobalEffectParam(lightParamStrings.LightType.GetHashCode(), (int)light.Type);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsActive.GetHashCode(), light.Active ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows.GetHashCode(), light.IsCastingShadows ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.Bias.GetHashCode(), light.Bias);
+            _rc.ForwardLights[position] = lightRes;
         }
     }
 }

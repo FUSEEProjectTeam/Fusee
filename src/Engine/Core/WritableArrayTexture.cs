@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using System;
 
@@ -102,6 +102,9 @@ namespace Fusee.Engine.Core
             private set;
         }
 
+        /// <summary>
+        /// Opaque handle to the texture object on the gpu.
+        /// </summary>
         public ITextureHandle TextureHandle { get; internal set; }
 
         /// <summary>
@@ -132,16 +135,35 @@ namespace Fusee.Engine.Core
             Layers = layers;
         }
 
+        private bool _disposed;
         /// <summary>
-        /// Implementation of the <see cref="IDisposable"/> interface.
+        /// Fire dispose mesh event
         /// </summary>
-        public void Dispose()
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
         {
-            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+                }
+
+                _disposed = true;
+            }
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire TextureChanged event.
+        /// Fire dispose mesh event
+        /// </summary>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// Destructor calls <see cref="Dispose(bool)"/> in order to fire TextureChanged event.
         /// </summary>
         ~WritableArrayTexture()
         {

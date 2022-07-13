@@ -80,7 +80,7 @@ namespace Fusee.Tests.Render.Desktop
                     EnableBlending = true
                 };
                 app.CanvasImplementor = cimp;
-                app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(cimp);
+                app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(cimp, Engine.Common.FuseePlatformId.Mesa);
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(cimp));
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(cimp));
 

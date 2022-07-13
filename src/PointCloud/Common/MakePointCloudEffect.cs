@@ -22,35 +22,53 @@ namespace Fusee.PointCloud.Common
         public static ShaderEffect ForDepthPass(int size, PointSizeMode pointSizeMode, PointShape shape)
         {
             return new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = AssetStorage.Get<string>("PointCloud.vert"),
-                PS = AssetStorage.Get<string>("PointDepth.frag"),
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = true,
-                    ZEnable = true,
-                }
-            },
+
             new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
-
-                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.ViewportPx, Value = float2.One},
-
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = size},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)shape},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)pointSizeMode},
-            })
+            },
+            new RenderStateSet
+            {
+                AlphaBlendEnable = true,
+                ZEnable = true,
+            },
+            AssetStorage.Get<string>("PointCloud.vert"),
+            AssetStorage.Get<string>("PointDepth.frag"))
             {
                 Active = false
             };
         }
 
         /// <summary>
-        /// The <see cref="PointCloudSurfaceEffect"/> used for point cloud rendering.
+        /// <see cref="ShaderEffect"/> for rendering the depth-only pass. The result is used for EDL lighting. Only needed when using forward rendering.
+        /// </summary>
+        /// <param name="size">The point size.</param>
+        /// <param name="pointSizeMode">The <see cref="PointSizeMode"/>.</param>
+        /// <param name="shape">The <see cref="PointShape"/>.</param>
+        /// <returns></returns>
+        public static ShaderEffect ForDepthPassInstanced(int size, PointSizeMode pointSizeMode, PointShape shape)
+        {
+            return new ShaderEffect(
+
+            new List<IFxParamDeclaration>
+            {
+                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = size},
+                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)shape},
+                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)pointSizeMode},
+            },
+            new RenderStateSet
+            {
+                AlphaBlendEnable = true,
+                ZEnable = true,
+            },
+            AssetStorage.Get<string>("PointCloudInstanced.vert"),
+            AssetStorage.Get<string>("PointDepthInstanced.frag"));
+        }
+
+        /// <summary>
+        /// The <see cref="SurfaceEffectPointCloud"/> used for point cloud rendering.
         /// </summary>
         /// <param name="size">The point size.</param>
         /// <param name="pointSizeMode">The <see cref="PointSizeMode"/>.</param>
@@ -59,9 +77,35 @@ namespace Fusee.PointCloud.Common
         /// <param name="edlStrength">The strength of the EDL lighting.</param>
         /// <param name="edlNeigbourPx">Number of pixels, used in the EDL lighting calculation.</param>
         /// <returns></returns>
-        public static PointCloudSurfaceEffect ForColorPass(int size, ColorMode colorMode, PointSizeMode pointSizeMode, PointShape shape, float edlStrength, int edlNeigbourPx)
+        public static SurfaceEffectPointCloud ForColorPass(int size, ColorMode colorMode, PointSizeMode pointSizeMode, PointShape shape, float edlStrength, int edlNeigbourPx)
         {
-            var fx = new PointCloudSurfaceEffect
+            var fx = new SurfaceEffectPointCloud
+            {
+                PointSize = size,
+                ColorMode = (int)colorMode,
+                PointShape = (int)shape,
+                DepthTex = null,
+                EDLStrength = edlStrength,
+                EDLNeighbourPixels = edlNeigbourPx,
+                PointSizeMode = (int)pointSizeMode
+            };
+            fx.SurfaceInput.Albedo = new float4(0.5f, 0.5f, 0.5f, 1.0f);
+            return fx;
+        }
+
+        /// <summary>
+        /// The <see cref="SurfaceEffectPointCloud"/> used for point cloud rendering.
+        /// </summary>
+        /// <param name="size">The point size.</param>
+        /// <param name="pointSizeMode">The <see cref="PointSizeMode"/>.</param>
+        /// <param name="shape">The <see cref="PointShape"/>.</param>
+        /// <param name="colorMode">The <see cref="ColorMode"/>.</param>
+        /// <param name="edlStrength">The strength of the EDL lighting.</param>
+        /// <param name="edlNeigbourPx">Number of pixels, used in the EDL lighting calculation.</param>
+        /// <returns></returns>
+        public static SurfaceEffectPointCloud ForColorPassInstanced(int size, ColorMode colorMode, PointSizeMode pointSizeMode, PointShape shape, float edlStrength, int edlNeigbourPx)
+        {
+            var fx = new SurfaceEffectPointCloud(null, true)
             {
                 PointSize = size,
                 ColorMode = (int)colorMode,
