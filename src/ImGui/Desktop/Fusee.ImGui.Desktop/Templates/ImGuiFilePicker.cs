@@ -21,7 +21,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public List<string> AllowedExtensions = new();
         public bool OnlyAllowFolders;
 
-        private float4 _folderColor;
+        public float4 FolderColor = new(1, 0, 1, 1);
+        public float4 BackgroundColor = new(1, 0, 0, 1);
 
         /// <summary>
         /// Returns a folder picker instance
@@ -30,18 +31,17 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// <param name="startingPath"></param>
         /// <returns></returns>
         public static ImGuiFileDialog GetFolderPicker(object o, string startingPath)
-            => GetFilePicker(o, startingPath, new float4(255, 0, 255, 255), "", true);
+            => GetFilePicker(o, startingPath, "", true);
 
         /// <summary>
         /// Returns a file picker instance, bind one file picker to one class via <see cref="GetFilePicker(object, string, float4, string, bool)"/>
         /// </summary>
         /// <param name="o"></param>
         /// <param name="startingPath"></param>
-        /// <param name="folderColor"></param>
         /// <param name="searchFilter"></param>
         /// <param name="onlyAllowFolders"></param>
         /// <returns></returns>
-        public static ImGuiFileDialog GetFilePicker(object o, string startingPath, float4 folderColor, string searchFilter = "", bool onlyAllowFolders = false)
+        public static ImGuiFileDialog GetFilePicker(object o, string startingPath, string searchFilter = "", bool onlyAllowFolders = false)
         {
             if (!_filePickers.TryGetValue(o, out var fp))
             {
@@ -62,8 +62,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 {
                     RootFolder = startingPath,
                     CurrentFolder = startingPath,
-                    OnlyAllowFolders = onlyAllowFolders,
-                    _folderColor = folderColor
+                    OnlyAllowFolders = onlyAllowFolders
                 };
 
                 if (searchFilter != null)
@@ -102,6 +101,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             bool result = false;
 
+            ImGui.PushStyleColor(ImGuiCol.FrameBg, BackgroundColor.ToUintColor());
             if (ImGui.BeginChildFrame(1, new Vector2(ImGui.GetWindowSize().X, 400)))
             {
 
@@ -110,7 +110,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 {
                     if (di.Parent != null && CurrentFolder != RootFolder)
                     {
-                        ImGui.PushStyleColor(ImGuiCol.Text, _folderColor.ToUintColor());
+                        ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
                         if (ImGui.Selectable("../", false, ImGuiSelectableFlags.DontClosePopups))
                             CurrentFolder = di.Parent.FullName;
 
@@ -123,7 +123,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                         if (Directory.Exists(fse))
                         {
                             var name = Path.GetFileName(fse);
-                            ImGui.PushStyleColor(ImGuiCol.Text, _folderColor.ToUintColor());
+                            ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
                             if (ImGui.Selectable(name + "/", false, ImGuiSelectableFlags.DontClosePopups))
                                 CurrentFolder = fse;
                             ImGui.PopStyleColor();
