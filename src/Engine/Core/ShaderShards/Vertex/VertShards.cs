@@ -22,7 +22,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             {
                 case ShadingModel.Edl:
                 case ShadingModel.Unlit:
-                    res.Add($"OUT.position = {UniformNameDeclarations.Vertex};");
+                    res.Add($"OUT.position = vec4({UniformNameDeclarations.Vertex}, 1.0);");
                     break;
                 case ShadingModel.DiffuseSpecular:
                 case ShadingModel.DiffuseOnly:
