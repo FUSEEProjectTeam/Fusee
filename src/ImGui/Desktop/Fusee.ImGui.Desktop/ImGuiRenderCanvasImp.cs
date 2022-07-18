@@ -171,7 +171,10 @@ namespace Fusee.ImGuiImp.Desktop
 
         public void CloseGameWindow()
         {
-            throw new NotImplementedException();
+            NativeWindow.ProcessWindowEvents(true);
+            _controller.Dispose();
+            _gameWindow.Close();
+            _gameWindow.Dispose();
         }
 
         private void ResizeWindow()

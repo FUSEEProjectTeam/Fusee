@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 
 namespace Fusee.ImGuiImp.Desktop
 {
-    public class ImGuiController
+    public class ImGuiController : IDisposable
     {
         private static int _vertexArray;
         private static int _vertexBuffer;
@@ -47,6 +47,7 @@ namespace Fusee.ImGuiImp.Desktop
                                                 }";
 
         internal static int ShaderProgram;
+        private bool disposedValue;
         private static readonly Dictionary<string, UniformFieldInfo> _uniformVarToLocation = new();
         private readonly RenderCanvasGameWindow _gw;
 
@@ -54,7 +55,6 @@ namespace Fusee.ImGuiImp.Desktop
         {
             WindowResized(gw.Size.X, gw.Size.Y);
             _gw = gw;
-
         }
 
         public void WindowResized(int width, int height)
@@ -398,6 +398,35 @@ namespace Fusee.ImGuiImp.Desktop
             GL.Enable(EnableCap.DepthTest);
 
             draw_data.Clear();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ImGui.DestroyContext();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~ImGuiController()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
