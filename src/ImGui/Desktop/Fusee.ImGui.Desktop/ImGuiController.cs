@@ -21,6 +21,8 @@ namespace Fusee.ImGuiImp.Desktop
         public int GameWindowWidth;
         public int GameWindowHeight;
 
+        private IntPtr _context;
+
         private static Vector2 _scaleFactor = Vector2.One;
 
         private static readonly string _vertexSource = @"#version 330 core
@@ -70,8 +72,8 @@ namespace Fusee.ImGuiImp.Desktop
         /// <param name="pathToFontTexture">path to texture (e. g. "Assets/Lato-Black.ttf")</param>
         public void InitImGUI(int fontSize = 14, string pathToFontTexture = "")
         {
-            IntPtr context = ImGui.CreateContext();
-            ImGui.SetCurrentContext(context);
+            _context = ImGui.CreateContext();
+            ImGui.SetCurrentContext(_context);
 
             var io = ImGui.GetIO();
             if (pathToFontTexture != string.Empty)
@@ -261,6 +263,8 @@ namespace Fusee.ImGuiImp.Desktop
         {
             ImGui.Render();
             RenderImDrawData(ImGui.GetDrawData());
+
+            _gw?.SwapBuffers();
         }
 
         internal unsafe void RenderImDrawData(ImDrawDataPtr draw_data)
@@ -406,7 +410,7 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 if (disposing)
                 {
-                    ImGui.DestroyContext();
+                    ImGui.DestroyContext(_context);
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

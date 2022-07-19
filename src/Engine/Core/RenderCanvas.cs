@@ -194,7 +194,6 @@ namespace Fusee.Engine.Core
             CanvasImplementor.UnLoad += delegate
             {
                 DeInit();
-                CloseGameWindow();
             };
 
             CanvasImplementor.Update += delegate

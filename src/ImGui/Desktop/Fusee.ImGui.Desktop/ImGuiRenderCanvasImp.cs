@@ -4,6 +4,7 @@ using Fusee.Engine.Core;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Desktop;
 using System;
+using System.Threading;
 
 namespace Fusee.ImGuiImp.Desktop
 {
@@ -52,9 +53,8 @@ namespace Fusee.ImGuiImp.Desktop
         /// </summary>
         protected internal int BaseLeft;
 
-
         private ImGuiController _controller;
-
+        private bool _isShuttingDown;
 
         public ImGuiRenderCanvasImp(ImageData? icon = null, bool isMultithreaded = false)
         {
@@ -87,7 +87,6 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 _gameWindow.UpdateFrequency = 0;
                 _gameWindow.RenderFrequency = 0;
-                _gameWindow.VSync = OpenTK.Windowing.Common.VSyncMode.Adaptive;
 
                 _gameWindow.Run();
             }
@@ -113,12 +112,12 @@ namespace Fusee.ImGuiImp.Desktop
         protected internal void DoUpdate()
         {
             if (!_initialized) return;
+            if (_isShuttingDown) return;
 
             // HACK(mr): Fixme, don't know why
             //Input.Instance.PreUpdate();
 
             Update?.Invoke(this, new RenderEventArgs());
-
             _controller.UpdateImGui(DeltaTimeUpdate);
 
             //Input.Instance.PostUpdate();
@@ -128,19 +127,16 @@ namespace Fusee.ImGuiImp.Desktop
         {
             if (!_initialized) return;
             if (_controller.GameWindowWidth <= 0) return;
+            if (_isShuttingDown) return;
 
             Input.Instance.PreUpdate();
 
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit | ClearBufferMask.StencilBufferBit);
-
             Render?.Invoke(this, new RenderEventArgs());
 
+            if (_isShuttingDown) return;
+
             _controller.RenderImGui();
-
-            _gameWindow?.SwapBuffers();
-
             Input.Instance.PostUpdate();
-
         }
 
         protected internal void DoUnLoad()
@@ -171,8 +167,10 @@ namespace Fusee.ImGuiImp.Desktop
 
         public void CloseGameWindow()
         {
+            _isShuttingDown = true;
             NativeWindow.ProcessWindowEvents(true);
             _controller.Dispose();
+            _gameWindow.Context.MakeCurrent();
             _gameWindow.Close();
             _gameWindow.Dispose();
         }
