@@ -139,7 +139,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             DrawGUI();
             DrawFilePickerDialog();
 
-            if(_wantsToShutdown)
+            if (_wantsToShutdown)
                 CloseGameWindow();
         }
 
