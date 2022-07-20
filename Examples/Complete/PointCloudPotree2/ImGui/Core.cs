@@ -39,6 +39,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         private static bool _isMouseInsideFuControl;
 
+        private bool _spwanOpenFilePopup = false;
 
         private PointCloudControlCore _fuControl;
         private ImGuiFilePicker _picker;
@@ -169,7 +170,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.NewLine();
             if (ImGui.Button("Open File"))
             {
-                spwanOpenFilePopup = true;
+                _spwanOpenFilePopup = true;
             }
             ImGui.SameLine();
 
@@ -293,7 +294,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                 {
                     if (ImGui.MenuItem("Open"))
                     {
-                        spwanOpenFilePopup = true;
+                        _spwanOpenFilePopup = true;
                     }
                     if (ImGui.MenuItem("Exit"))
                     {
@@ -305,12 +306,11 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.EndMainMenuBar();
         }
 
-        bool filePickerOpen = true;
-        bool spwanOpenFilePopup = false;
+
 
         private void DrawFilePickerDialog()
         {
-            _picker.Draw(ref spwanOpenFilePopup);
+            _picker.Draw(ref _spwanOpenFilePopup);
         }
 
         /// <summary>
