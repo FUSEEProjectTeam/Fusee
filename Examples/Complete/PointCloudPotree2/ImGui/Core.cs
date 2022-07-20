@@ -39,6 +39,8 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
         private static bool _isMouseInsideFuControl;
 
+        private bool _wantsToShutdown;
+
 
         private PointCloudControlCore _fuControl;
 
@@ -51,7 +53,6 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             _fuControl = new PointCloudControlCore(RC);
             _fuControl.Init();
             await base.InitAsync();
-
         }
 
         public override void Update()
@@ -62,7 +63,6 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         public override void Resize(ResizeEventArgs e)
         {
             _fuControl?.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
-
         }
 
         public override void RenderAFrame()
@@ -138,6 +138,9 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
             DrawGUI();
             DrawFilePickerDialog();
+
+            if (_wantsToShutdown)
+                CloseGameWindow();
         }
 
 
@@ -277,7 +280,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                     }
                     if (ImGui.MenuItem("Exit"))
                     {
-                        Environment.Exit(0);
+                        _wantsToShutdown = true;
                     }
                     ImGui.EndMenu();
                 }
