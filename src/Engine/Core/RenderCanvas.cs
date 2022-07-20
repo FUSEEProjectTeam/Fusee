@@ -69,7 +69,7 @@ namespace Fusee.Engine.Core
         #region Members
 
         /// <summary>
-        /// Used to inject functionallity that is ment to be executed when the application is shutting down.
+        /// Used to inject functionality that is meant to be executed when the application is shutting down.
         /// </summary>
         public event EventHandler<EventArgs> ApplicationIsShuttingDown;
 
