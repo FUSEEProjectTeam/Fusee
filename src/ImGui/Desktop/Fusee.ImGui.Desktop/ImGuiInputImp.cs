@@ -299,14 +299,14 @@ namespace Fusee.ImGuiImp.Desktop
                         }
 
                         // copy
-                        if(_ctrlPressed && e.Button.Id == 67)
+                        if (_ctrlPressed && e.Button.Id == 67)
                         {
                             gw.ClipboardString = CurrentlySelectedText;
                             return;
                         }
 
                         // paste
-                        if(_ctrlPressed && e.Button.Id == 86)
+                        if (_ctrlPressed && e.Button.Id == 86)
                         {
                             value = gw.ClipboardString;
                         }
