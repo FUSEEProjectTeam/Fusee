@@ -14,6 +14,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// </summary>
         public EventHandler<string?>? OnPicked;
 
+        /// <summary>
+        /// Title of window (visible in top bar)
+        /// </summary>
+        public string Id = "Open File";
+
         public readonly bool OnlyAllowFolders;
         public readonly List<string>? AllowedExtensions;
 
@@ -80,8 +85,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         {
             if (!_filePickerOpen) return;
 
-            var filePickerOpen = true;
-
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
             ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new Vector2(0, 250));
@@ -89,7 +92,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.PushStyleColor(ImGuiCol.WindowBg, WindowBackground.ToUintColor());
 
             ImGui.SetNextWindowFocus();
-            ImGui.Begin("FilePicker", ref filePickerOpen, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDocking);
+            ImGui.Begin(Id, ref _filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDocking);
 
             // Drive Selection
             foreach (var drive in DriveInfo.GetDrives())
@@ -199,8 +202,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                                 _filePickerOpen = false;
                                 OnPicked?.Invoke(this, Path.Combine(_currentFolder, SelectedFile));
 
-                                ImGui.PopStyleVar(3);
-                                ImGui.PopStyleColor();
+                                ImGui.PopStyleVar(4);
+                                ImGui.PopStyleColor(2);
                                 return; // prevent double invoke due to double click
                             }
                         }
