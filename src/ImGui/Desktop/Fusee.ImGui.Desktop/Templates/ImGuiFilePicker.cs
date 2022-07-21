@@ -193,7 +193,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                             var name = Path.GetFileName(fse);
 
                             if (ImGui.Selectable(name, SelectedFile == name, ImGuiSelectableFlags.DontClosePopups))
-                                SelectedFile = fse;
+                                SelectedFile = name;
 
                             if (ImGui.IsMouseDoubleClicked(0) && SelectedFile != null && ImGui.GetIO().WantCaptureMouse)
                             {
