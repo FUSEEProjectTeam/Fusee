@@ -6,10 +6,11 @@ using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Fusee.ImGuiImp.Desktop
 {
-    public class ImGuiInputImp : IInputDriverImp
+    public unsafe class ImGuiInputImp : IInputDriverImp
     {
         private readonly GameWindow _gameWindow;
         private readonly KeyboardDeviceImp _keyboard;
@@ -233,12 +234,14 @@ namespace Fusee.ImGuiImp.Desktop
         };
 
         private static bool _uppercase;
+        private static bool _ctrlPressed;
 
-        public static void InitImGuiInput()
+        public static string CurrentlySelectedText = "";
+
+        public unsafe static void InitImGuiInput(GameWindow gw)
         {
 
             var io = ImGui.GetIO();
-
 
             Input.Keyboard.ButtonValueChanged += (s, e) =>
             {
@@ -253,6 +256,12 @@ namespace Fusee.ImGuiImp.Desktop
                     if (e.Button.Id == (int)KeyCodes.LShift || e.Button.Id == (int)KeyCodes.RShift)
                     {
                         _uppercase = e.Pressed;
+                        return;
+                    }
+
+                    if (e.Button.Id == (int)KeyCodes.LControl || e.Button.Id == (int)KeyCodes.RControl)
+                    {
+                        _ctrlPressed = e.Pressed;
                         return;
                     }
 
@@ -289,6 +298,18 @@ namespace Fusee.ImGuiImp.Desktop
                             value = value.ToUpper();
                         }
 
+                        // copy
+                        if (_ctrlPressed && e.Button.Id == 67)
+                        {
+                            gw.ClipboardString = CurrentlySelectedText;
+                            return;
+                        }
+
+                        // paste
+                        if (_ctrlPressed && e.Button.Id == 86)
+                        {
+                            value = gw.ClipboardString;
+                        }
 
                         io.AddInputCharactersUTF8(value);
                     }
@@ -303,12 +324,11 @@ namespace Fusee.ImGuiImp.Desktop
 
 
             io.AddMousePosEvent(Input.Mouse.X / scaleFactor.X, Input.Mouse.Y / scaleFactor.Y);
-            io.AddMouseButtonEvent(0, Input.Mouse.LeftButton);
-            io.AddMouseButtonEvent(1, Input.Mouse.MiddleButton);
-            io.AddMouseButtonEvent(2, Input.Mouse.RightButton);
+            io.AddMouseButtonEvent((int)ImGuiMouseButton.Left, Input.Mouse.LeftButton);
+            io.AddMouseButtonEvent((int)ImGuiMouseButton.Middle, Input.Mouse.MiddleButton);
+            io.AddMouseButtonEvent((int)ImGuiMouseButton.Right, Input.Mouse.RightButton);
 
             io.AddMouseWheelEvent(0, Input.Mouse.WheelVel * 0.01f);
-
 
             io.KeyShift = Input.Keyboard.IsKeyDown(KeyCodes.LShift) || Input.Keyboard.IsKeyDown(KeyCodes.RShift);
             io.KeyCtrl = Input.Keyboard.IsKeyDown(KeyCodes.LControl) || Input.Keyboard.IsKeyDown(KeyCodes.RControl);

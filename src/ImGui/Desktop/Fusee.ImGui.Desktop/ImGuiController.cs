@@ -92,7 +92,7 @@ namespace Fusee.ImGuiImp.Desktop
 
             CreateDeviceResources();
             SetPerFrameImGuiData(1f / 60f);
-            ImGuiInputImp.InitImGuiInput();
+            ImGuiInputImp.InitImGuiInput(_gw);
 
             // TODO(mr): Let user decide
             if (File.Exists("Assets/ImGuiSettings.ini"))

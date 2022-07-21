@@ -360,8 +360,8 @@ namespace Fusee.Engine.Core
         public void CloseGameWindow()
         {
             IsShuttingDown = true;
-            CanvasImplementor.CloseGameWindow();
             RC.Dispose();
+            CanvasImplementor.CloseGameWindow();
         }
 
         #endregion
