@@ -187,10 +187,10 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                             }
 
                             ImGui.PopStyleColor();
-                        } 
+                        }
                         else
                         {
-                            var name = Path.GetFileName(fse);                            
+                            var name = Path.GetFileName(fse);
 
                             if (ImGui.Selectable(name, SelectedFile == name, ImGuiSelectableFlags.DontClosePopups))
                                 SelectedFile = fse;
