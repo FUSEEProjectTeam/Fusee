@@ -187,14 +187,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                             }
 
                             ImGui.PopStyleColor();
-                        }
+                        } 
                         else
                         {
-                            var name = Path.GetFileName(fse);
-                            bool isSelected = SelectedFile == fse;
+                            var name = Path.GetFileName(fse);                            
 
-
-                            if (ImGui.Selectable(name, isSelected, ImGuiSelectableFlags.DontClosePopups))
+                            if (ImGui.Selectable(name, SelectedFile == name, ImGuiSelectableFlags.DontClosePopups))
                                 SelectedFile = fse;
 
                             if (ImGui.IsMouseDoubleClicked(0) && SelectedFile != null && ImGui.GetIO().WantCaptureMouse)
