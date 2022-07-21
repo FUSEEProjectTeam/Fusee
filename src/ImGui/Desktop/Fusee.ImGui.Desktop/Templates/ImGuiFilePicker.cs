@@ -48,6 +48,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public Vector4 WarningTextColor = new(200, 0, 0, 255);
 
         /// <summary>
+        /// Background color of one <see cref="ImGui.Selectable(string)"/> object
+        /// </summary>
+        public Vector4 SelectedColor = new(125, 75, 75, 255);
+
+        /// <summary>
         /// Generate a new ImGuiFilePicker instance
         /// </summary>
         /// <param name="startingPath">Starting path, defaults to C:\</param>
@@ -192,8 +197,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                         {
                             var name = Path.GetFileName(fse);
 
+                            ImGui.PushStyleColor(ImGuiCol.Header, SelectedColor.ToUintColor());
+
                             if (ImGui.Selectable(name, SelectedFile == name, ImGuiSelectableFlags.DontClosePopups))
                                 SelectedFile = name;
+
+                            ImGui.PopStyleColor();
 
                             if (ImGui.IsMouseDoubleClicked(0) && SelectedFile != null && ImGui.GetIO().WantCaptureMouse)
                             {
