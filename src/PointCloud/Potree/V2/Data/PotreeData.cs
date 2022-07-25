@@ -3,7 +3,7 @@
     /// <summary>
     /// Contains information about the Potree file's meta data and hierarchy/octree.
     /// </summary>
-    public class PotreeData
+    public class PotreeReaderMetadata
     {
         /// <summary>
         /// The hierarchy as linear list of <see cref="PotreeNode"/>s.

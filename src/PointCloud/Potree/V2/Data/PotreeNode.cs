@@ -1,6 +1,8 @@
 ﻿using Fusee.Math.Core;
 using System;
 
+#pragma warning disable CS1591
+
 namespace Fusee.PointCloud.Potree.V2.Data
 {
     public class PotreeNode
@@ -48,3 +50,5 @@ namespace Fusee.PointCloud.Potree.V2.Data
         UNSET = -1
     }
 }
+
+#pragma warning restore CS1591

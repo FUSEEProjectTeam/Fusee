@@ -62,13 +62,13 @@ namespace Fusee.PointCloud.Potree.V2
             return (octantCount, pointsCount);
         }
 
-        public PotreeData Instance
+        public PotreeReaderMetadata Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new PotreeData();
+                    _instance = new PotreeReaderMetadata();
                     Instance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(_metadataFilePath));
                     Instance.Hierarchy = LoadHierarchy(_fileFolderPath);
                     Instance.Metadata.FolderPath = _fileFolderPath;
@@ -94,7 +94,7 @@ namespace Fusee.PointCloud.Potree.V2
                 _instance = value;
             }
         }
-        private static PotreeData _instance;
+        private static PotreeReaderMetadata _instance;
 
         private string _fileFolderPath;
         private string _metadataFilePath;

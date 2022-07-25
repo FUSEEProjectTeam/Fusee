@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
+#pragma warning disable CS1591
+
 namespace Fusee.PointCloud.Potree.V2.Data
 {
     public class PotreeSettingsHierarchy
@@ -42,6 +44,9 @@ namespace Fusee.PointCloud.Potree.V2.Data
         public List<double> MaxList { get; set; }
         [JsonIgnore]
         public double3 Max => new(MaxList[0], MaxList[1], MaxList[2]);
+
+        [JsonIgnore]
+        public int AttributeOffset { get; set; }
     }
 
     public class PotreeMetadata
@@ -73,5 +78,16 @@ namespace Fusee.PointCloud.Potree.V2.Data
 
         [JsonIgnore]
         public string FolderPath { get; set; }
+
+
+        [JsonIgnore]
+        public bool HasPositionAttribute { get; set; }
+        [JsonIgnore]
+        public bool HasClassificationAttribute { get; set; }
+        [JsonIgnore]
+        public bool HasColorAttribute { get; set; }
+
     }
 }
+
+#pragma warning restore CS1591
