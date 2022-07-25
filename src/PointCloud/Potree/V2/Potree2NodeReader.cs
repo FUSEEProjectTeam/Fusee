@@ -152,7 +152,7 @@ namespace Fusee.PointCloud.Potree.V2
                     color.b = ((byte)(b > 255 ? b / 256 : b));
 
                     ((PointAccessor<TPoint>)pointAccessor).SetColorFloat3_32(ref points[i], color);
-                }                
+                }
             }
 
             return points;

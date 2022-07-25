@@ -141,7 +141,7 @@ namespace Fusee.PointCloud.Potree.V2
             {
                 points = Potree2NodeReader.LoadNodeData<TPoint>(node, PotreeReaderMetadata.Metadata, PointAccessor);
             }
- 
+
             return points;
         }
     }
