@@ -10,12 +10,12 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2Cloud : IPointCloudImp, IDisposable
+    public class Potree2Cloud : IPointCloudImp<GpuMesh>, IDisposable
     {
         /// <summary>
         /// The complete list of meshes that can be rendered.
         /// </summary>
-        public List<GpuMesh> MeshesToRender { get; set; }
+        public List<GpuMesh> GpuDataToRender { get; set; }
 
         /// <summary>
         /// Nows which octants are visible and when to trigger the point loading.
@@ -25,7 +25,7 @@ namespace Fusee.PointCloud.Potree
         /// <summary>
         /// Handles the point and mesh data.
         /// </summary>
-        public PointCloudDataHandlerBase DataHandler { get; }
+        public PointCloudDataHandlerBase<GpuMesh> DataHandler { get; }
 
         /// <summary>
         /// The number of points that are currently visible.
@@ -90,16 +90,16 @@ namespace Fusee.PointCloud.Potree
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
         /// </summary>
-        public Potree2Cloud(PointCloudDataHandlerBase dataHandler, IPointCloudOctree octree)
+        public Potree2Cloud(PointCloudDataHandlerBase<GpuMesh> dataHandler, IPointCloudOctree octree)
         {
-            MeshesToRender = new List<GpuMesh>();
+            GpuDataToRender = new List<GpuMesh>();
             DataHandler = dataHandler;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
-            _getMeshes = dataHandler.GetMeshes;
+            _getMeshes = dataHandler.GetGpuData;
         }
 
         /// <summary>
-        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TPoint}"/> to update the visible meshes.
+        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData, TPoint}"/> to update the visible meshes.
         /// Called every frame.
         /// </summary>
         /// <param name="fov">The camera's field of view.</param>
@@ -116,7 +116,7 @@ namespace Fusee.PointCloud.Potree
                 fov == VisibilityTester.Fov &&
                 camPos == VisibilityTester.CamPos) return;
 
-            MeshesToRender.Clear();
+            GpuDataToRender.Clear();
 
             VisibilityTester.RenderFrustum = renderFrustum;
             VisibilityTester.ViewportHeight = viewportHeight;
@@ -127,13 +127,13 @@ namespace Fusee.PointCloud.Potree
 
             foreach (var guid in VisibilityTester.VisibleNodes)
             {
-                if (guid == null) continue;
+                if (!guid.Valid) continue;
 
                 var meshes = _getMeshes(guid);
 
                 if (meshes == null) continue; //points for this octant aren't loaded yet.
 
-                MeshesToRender.AddRange(meshes);
+                GpuDataToRender.AddRange(meshes);
             }
         }
 
@@ -161,7 +161,7 @@ namespace Fusee.PointCloud.Potree
             {
                 if (disposing)
                 {
-                    foreach (var mesh in MeshesToRender)
+                    foreach (var mesh in GpuDataToRender)
                     {
                         mesh.Dispose();
                     }

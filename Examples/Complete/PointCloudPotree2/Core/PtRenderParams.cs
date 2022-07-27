@@ -19,7 +19,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         public string PathToOocFile = Path.Combine("Assets", "Cube1030301", "Potree");
 
         public ShaderEffect DepthPassEf;
-        public PointCloudSurfaceEffect ColorPassEf;
+        public SurfaceEffectPointCloud ColorPassEf;
 
         private PointShape _shape = PointShape.Paraboloid;
         public PointShape Shape
@@ -45,9 +45,9 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             }
         }
 
-        private PointColorMode _colorMode = PointColorMode.VertexColor0;
+        private ColorMode _colorMode = ColorMode.VertexColor0;
 
-        public PointColorMode ColorMode
+        public ColorMode PointCloudColorMode
         {
             get { return _colorMode; }
             set
@@ -57,7 +57,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             }
         }
 
-        private int _size = 3;
+        private int _size = 1;
         public int Size
         {
             get { return _size; }
@@ -80,7 +80,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             }
         }
 
-        private float _edlStrength = 0.3f;
+        private float _edlStrength = 0;
         public float EdlStrength
         {
             get { return _edlStrength; }

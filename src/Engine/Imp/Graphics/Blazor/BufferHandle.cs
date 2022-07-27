@@ -17,4 +17,20 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
     {
         internal WebGLFramebuffer Handle = null;
     }
+
+    /// <summary>
+    /// VertexArrayObject implementation for WebAsm.
+    /// </summary>
+    public class VertexArrayObject : IBufferHandle
+    {
+        internal WebGLVertexArrayObject Handle = null;
+    }
+
+    /// <summary>
+    /// VertexArrayObject implementation for WebAsm.
+    /// </summary>
+    public class VertexBufferObject : IBufferHandle
+    {
+        internal WebGLBuffer Handle = null;
+    }
 }

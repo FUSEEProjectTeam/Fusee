@@ -1,25 +1,12 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Imp.Graphics.Desktop;
-using Fusee.Math.Core;
-using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
-namespace Fusee.ImGuiDesktop
+namespace Fusee.ImGuiImp.Desktop
 {
     struct UniformFieldInfo
     {
@@ -66,18 +53,18 @@ namespace Fusee.ImGuiDesktop
         /// </summary>
         protected internal int BaseLeft;
 
-
         private ImGuiController _controller;
-
+        private bool _isShuttingDown;
 
         public ImGuiRenderCanvasImp(ImageData? icon = null, bool isMultithreaded = false)
         {
+
             int width = 1280;
             int height = 720;
 
             try
             {
-                _gameWindow = new ImGuiDesktop.RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
             catch
             {
@@ -90,28 +77,8 @@ namespace Fusee.ImGuiDesktop
             };
 
             _gameWindow.CenterWindow();
-            if (_gameWindow.IsMultiThreaded)
-                _gameWindow.Context.MakeNoneCurrent();
 
-            // convert icon to OpenTKImage
-            //if (icon != null)
-            //{
-            //    // convert Bgra to Rgba for OpenTK.WindowIcon
-            //    var pxData = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(icon.PixelData, icon.Width, icon.Height);
-            //    var bgra = pxData.CloneAs<Rgba32>();
-            //    bgra.Mutate(x => x.AutoOrient());
-            //    bgra.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
-            //
-            //    if (!bgra.DangerousTryGetSinglePixelMemory(out var res))
-            //    {
-            //        Diagnostics.Warn("Couldn't convert icon image to Rgba32!");
-            //        return;
-            //    }
-            //    var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
-            //    _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, resBytes.ToArray()) });
-            //}
-
-            _controller = new ImGuiController(_gameWindow.Size.X, _gameWindow.Size.Y);
+            _controller = new ImGuiController(_gameWindow);
         }
 
         public void Run()
@@ -145,12 +112,12 @@ namespace Fusee.ImGuiDesktop
         protected internal void DoUpdate()
         {
             if (!_initialized) return;
+            if (_isShuttingDown) return;
 
             // HACK(mr): Fixme, don't know why
             //Input.Instance.PreUpdate();
 
             Update?.Invoke(this, new RenderEventArgs());
-
             _controller.UpdateImGui(DeltaTimeUpdate);
 
             //Input.Instance.PostUpdate();
@@ -160,19 +127,16 @@ namespace Fusee.ImGuiDesktop
         {
             if (!_initialized) return;
             if (_controller.GameWindowWidth <= 0) return;
+            if (_isShuttingDown) return;
 
             Input.Instance.PreUpdate();
 
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit | ClearBufferMask.StencilBufferBit);
-
             Render?.Invoke(this, new RenderEventArgs());
 
+            if (_isShuttingDown) return;
+
             _controller.RenderImGui();
-
-            _gameWindow?.SwapBuffers();
-
             Input.Instance.PostUpdate();
-
         }
 
         protected internal void DoUnLoad()
@@ -183,7 +147,7 @@ namespace Fusee.ImGuiDesktop
         protected internal void DoResize(int width, int height)
         {
             Resize?.Invoke(this, new ResizeEventArgs(width, height));
-            _controller.WindowResized(width, height);
+            _controller?.WindowResized(width, height);
         }
 
         public void SetCursor(CursorType cursorType)
@@ -203,7 +167,12 @@ namespace Fusee.ImGuiDesktop
 
         public void CloseGameWindow()
         {
-            throw new NotImplementedException();
+            _isShuttingDown = true;
+            NativeWindow.ProcessWindowEvents(true);
+            _controller.Dispose();
+            _gameWindow.Context.MakeCurrent();
+            _gameWindow.Close();
+            _gameWindow.Dispose();
         }
 
         private void ResizeWindow()
@@ -351,7 +320,7 @@ namespace Fusee.ImGuiDesktop
         /// </summary>
         public event EventHandler<ResizeEventArgs>? Resize;
 
-        internal readonly ImGuiDesktop.RenderCanvasGameWindow _gameWindow;
+        internal readonly RenderCanvasGameWindow _gameWindow;
 
     }
 

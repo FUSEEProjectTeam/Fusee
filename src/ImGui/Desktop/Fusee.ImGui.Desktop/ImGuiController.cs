@@ -1,5 +1,4 @@
 ﻿using Fusee.Base.Core;
-using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
@@ -9,9 +8,9 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Fusee.ImGuiDesktop
+namespace Fusee.ImGuiImp.Desktop
 {
-    public class ImGuiController
+    public class ImGuiController : IDisposable
     {
         private static int _vertexArray;
         private static int _vertexBuffer;
@@ -21,6 +20,8 @@ namespace Fusee.ImGuiDesktop
 
         public int GameWindowWidth;
         public int GameWindowHeight;
+
+        private IntPtr _context;
 
         private static Vector2 _scaleFactor = Vector2.One;
 
@@ -47,10 +48,16 @@ namespace Fusee.ImGuiDesktop
                                                     outputColor = color * texture(in_fontTexture, texCoord);
                                                 }";
 
-        private static int _shaderProgram;
+        internal static int ShaderProgram;
+        private bool disposedValue;
         private static readonly Dictionary<string, UniformFieldInfo> _uniformVarToLocation = new();
+        private readonly RenderCanvasGameWindow _gw;
 
-        public ImGuiController(int width, int height) => WindowResized(width, height);
+        public ImGuiController(RenderCanvasGameWindow gw)
+        {
+            WindowResized(gw.Size.X, gw.Size.Y);
+            _gw = gw;
+        }
 
         public void WindowResized(int width, int height)
         {
@@ -65,8 +72,8 @@ namespace Fusee.ImGuiDesktop
         /// <param name="pathToFontTexture">path to texture (e. g. "Assets/Lato-Black.ttf")</param>
         public void InitImGUI(int fontSize = 14, string pathToFontTexture = "")
         {
-            IntPtr context = ImGui.CreateContext();
-            ImGui.SetCurrentContext(context);
+            _context = ImGui.CreateContext();
+            ImGui.SetCurrentContext(_context);
 
             var io = ImGui.GetIO();
             if (pathToFontTexture != string.Empty)
@@ -79,21 +86,24 @@ namespace Fusee.ImGuiDesktop
             }
 
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
-            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
             io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
+
+            io.ConfigInputTrickleEventQueue = false;
 
             CreateDeviceResources();
             SetPerFrameImGuiData(1f / 60f);
-            ImGuiInputImp.InitImGuiInput();
+            ImGuiInputImp.InitImGuiInput(_gw);
 
             // TODO(mr): Let user decide
             if (File.Exists("Assets/ImGuiSettings.ini"))
                 ImGui.LoadIniSettingsFromDisk("Assets/ImGuiSettings.ini");
+
+            //io.MouseDrawCursor = true;
         }
 
         private static void CreateDeviceResources()
         {
-            _shaderProgram = GL.CreateProgram();
+            ShaderProgram = GL.CreateProgram();
 
             var vertexShader = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexShader, _vertexSource);
@@ -117,32 +127,32 @@ namespace Fusee.ImGuiDesktop
                 Diagnostics.Error($"GL.CompileShader for shader '{pixelShader}' had info log:\n{Info}");
             }
 
-            GL.AttachShader(_shaderProgram, vertexShader);
-            GL.AttachShader(_shaderProgram, pixelShader);
+            GL.AttachShader(ShaderProgram, vertexShader);
+            GL.AttachShader(ShaderProgram, pixelShader);
 
-            GL.LinkProgram(_shaderProgram);
+            GL.LinkProgram(ShaderProgram);
 
-            GL.GetProgram(_shaderProgram, GetProgramParameterName.LinkStatus, out success);
+            GL.GetProgram(ShaderProgram, GetProgramParameterName.LinkStatus, out success);
 
             if (success == 0)
             {
-                string Info = GL.GetProgramInfoLog(_shaderProgram);
+                string Info = GL.GetProgramInfoLog(ShaderProgram);
                 Diagnostics.Error($"GL.LinkProgram had info log:\n{Info}");
             }
 
-            GL.DetachShader(_shaderProgram, vertexShader);
-            GL.DetachShader(_shaderProgram, pixelShader);
+            GL.DetachShader(ShaderProgram, vertexShader);
+            GL.DetachShader(ShaderProgram, pixelShader);
             GL.DeleteShader(vertexShader);
             GL.DeleteShader(pixelShader);
 
-            GL.GetProgram(_shaderProgram, GetProgramParameterName.ActiveUniforms, out int cnt);
+            GL.GetProgram(ShaderProgram, GetProgramParameterName.ActiveUniforms, out int cnt);
 
             for (var i = 0; i < cnt; i++)
             {
-                var name = GL.GetActiveUniform(_shaderProgram, i, out int Size, out ActiveUniformType Type);
+                var name = GL.GetActiveUniform(ShaderProgram, i, out int Size, out ActiveUniformType Type);
 
                 UniformFieldInfo FieldInfo;
-                FieldInfo.Location = GL.GetUniformLocation(_shaderProgram, name);
+                FieldInfo.Location = GL.GetUniformLocation(ShaderProgram, name);
                 FieldInfo.Name = name;
                 FieldInfo.Size = Size;
                 FieldInfo.Type = Type;
@@ -158,64 +168,85 @@ namespace Fusee.ImGuiDesktop
             GL.CreateBuffers(1, out _vertexBuffer);
             GL.CreateBuffers(1, out _indexBuffer);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertexBufferSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _indexBuffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, _indexBufferSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
+            //GL.BufferData(BufferTarget.ArrayBuffer, _vertexBufferSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            GL.NamedBufferStorage(_vertexBuffer, _vertexBufferSize, IntPtr.Zero, BufferStorageFlags.DynamicStorageBit);
+
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, _indexBuffer);
+            //GL.BufferData(BufferTarget.ArrayBuffer, _indexBufferSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.NamedBufferStorage(_indexBuffer, _indexBufferSize, IntPtr.Zero, BufferStorageFlags.DynamicStorageBit);
 
             RecreateFontDeviceTexture();
 
-            GL.VertexArrayVertexBuffer(_vertexArray, 0, _vertexBuffer, IntPtr.Zero, Unsafe.SizeOf<ImDrawVert>());
-            GL.VertexArrayElementBuffer(_vertexArray, _indexBuffer);
-
-            GL.EnableVertexArrayAttrib(_vertexArray, 0);
-            GL.VertexArrayAttribBinding(_vertexArray, 0, 0);
-            GL.VertexArrayAttribFormat(_vertexArray, 0, 2, VertexAttribType.Float, false, 0);
-
-            GL.EnableVertexArrayAttrib(_vertexArray, 1);
-            GL.VertexArrayAttribBinding(_vertexArray, 1, 0);
-            GL.VertexArrayAttribFormat(_vertexArray, 1, 2, VertexAttribType.Float, false, 8);
-
-            GL.EnableVertexArrayAttrib(_vertexArray, 2);
-            GL.VertexArrayAttribBinding(_vertexArray, 2, 0);
-            GL.VertexArrayAttribFormat(_vertexArray, 2, 4, VertexAttribType.UnsignedByte, true, 16);
+            VaoSetUp(_vertexArray, _vertexBuffer, _indexBuffer);
 
             if (GL.GetError() != 0)
             {
                 throw new Exception($"OpenGL Error {GL.GetError()}");
             }
-
         }
 
-        private static unsafe void RecreateFontDeviceTexture()
+        private static void VaoSetUp(int vertexArray, int vertexBuffer, int indexBuffer)
+        {
+            GL.VertexArrayVertexBuffer(vertexArray, 0, vertexBuffer, IntPtr.Zero, Unsafe.SizeOf<ImDrawVert>());
+            GL.VertexArrayElementBuffer(vertexArray, indexBuffer);
+
+            GL.EnableVertexArrayAttrib(vertexArray, 0);
+            GL.VertexArrayAttribBinding(vertexArray, 0, 0);
+            GL.VertexArrayAttribFormat(vertexArray, 0, 2, VertexAttribType.Float, false, 0);
+
+            GL.EnableVertexArrayAttrib(vertexArray, 1);
+            GL.VertexArrayAttribBinding(vertexArray, 1, 0);
+            GL.VertexArrayAttribFormat(vertexArray, 1, 2, VertexAttribType.Float, false, 8);
+
+            GL.EnableVertexArrayAttrib(vertexArray, 2);
+            GL.VertexArrayAttribBinding(vertexArray, 2, 0);
+            GL.VertexArrayAttribFormat(vertexArray, 2, 4, VertexAttribType.UnsignedByte, true, 16);
+        }
+
+        /// Call this method after calling <see cref="ImFontAtlasPtr.AddFontFromFileTTF(string, float)"/>
+        /// to re-create and bind the font texture
+        /// </summary>
+        public static unsafe void RecreateFontDeviceTexture()
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
 
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            //int id = GL.GenTexture();
+            //GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+            GL.TextureStorage2D(id, 1, SizedInternalFormat.Rgba8, width, height);
+            GL.TextureSubImage2D(id, 0, 0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
+            var minFilter = (int)TextureMinFilter.Linear;
+            var magFilter = (int)TextureMagFilter.Linear;
+            var clampS = (int)TextureWrapMode.ClampToEdge;
+            var clampT = (int)TextureWrapMode.ClampToEdge;
+            var clampR = (int)TextureWrapMode.ClampToEdge;
+            GL.TextureParameterI(id, TextureParameterName.TextureMinFilter, ref minFilter);
+            GL.TextureParameterI(id, TextureParameterName.TextureMagFilter, ref magFilter);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapS, ref clampS);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapT, ref clampT);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapR, ref clampR);
 
             io.Fonts.SetTexID(new IntPtr(id));
 
             io.Fonts.ClearTexData();
         }
 
+
         private void SetPerFrameImGuiData(float deltaSeconds)
         {
+            _gw.TryGetCurrentMonitorScale(out var hScale, out var vScale);
+            _scaleFactor = new Vector2(hScale, vScale);
+            var displaySizeX = GameWindowWidth / _scaleFactor.X;
+            var displaySizeY = GameWindowHeight / _scaleFactor.Y;
 
             ImGuiIOPtr io = ImGui.GetIO();
-            io.DisplaySize = new System.Numerics.Vector2(
-                GameWindowWidth / _scaleFactor.X,
-                GameWindowHeight / _scaleFactor.Y);
+            io.DisplaySize = new System.Numerics.Vector2(displaySizeX, displaySizeY);
             io.DisplayFramebufferScale = _scaleFactor;
             io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
         }
@@ -223,17 +254,17 @@ namespace Fusee.ImGuiDesktop
         public void UpdateImGui(float DeltaTimeUpdate)
         {
             SetPerFrameImGuiData(DeltaTimeUpdate);
-            ImGuiInputImp.UpdateImGuiInput();
+            ImGuiInputImp.UpdateImGuiInput(_scaleFactor);
 
             ImGui.NewFrame();
         }
-
-
 
         public void RenderImGui()
         {
             ImGui.Render();
             RenderImDrawData(ImGui.GetDrawData());
+
+            _gw?.SwapBuffers();
         }
 
         internal unsafe void RenderImDrawData(ImDrawDataPtr draw_data)
@@ -253,9 +284,14 @@ namespace Fusee.ImGuiDesktop
             {
                 int newSize = (int)M.Max(_vertexBufferSize * 1.5f, totalVBSize);
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
-                GL.BufferData(BufferTarget.ArrayBuffer, newSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                //GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
+                //GL.BufferData(BufferTarget.ArrayBuffer, newSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+                GL.DeleteBuffer(_vertexBuffer);
+                GL.CreateBuffers(1, out _vertexBuffer);
+
+                GL.NamedBufferStorage(_vertexBuffer, newSize, IntPtr.Zero, BufferStorageFlags.DynamicStorageBit);
 
                 _vertexBufferSize = newSize;
 
@@ -267,31 +303,39 @@ namespace Fusee.ImGuiDesktop
             {
                 int newSize = (int)M.Max(_indexBufferSize * 1.5f, totalIBSize);
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _indexBuffer);
-                GL.BufferData(BufferTarget.ArrayBuffer, newSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                //GL.BindBuffer(BufferTarget.ArrayBuffer, _indexBuffer);
+                //GL.BufferData(BufferTarget.ArrayBuffer, newSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+                GL.DeleteBuffer(_indexBuffer);
+                GL.CreateBuffers(1, out _indexBuffer);
+
+                GL.NamedBufferStorage(_indexBuffer, newSize, IntPtr.Zero, BufferStorageFlags.DynamicStorageBit);
 
                 _indexBufferSize = newSize;
 
                 Diagnostics.Debug($"Resized index buffer to new size {_indexBufferSize}");
             }
 
+            VaoSetUp(_vertexArray, _vertexBuffer, _indexBuffer);
 
             for (int i = 0; i < draw_data.CmdListsCount; i++)
             {
                 var cmd_list = draw_data.CmdListsRange[i];
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
-                GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)(vertexOffsetInVertices * Unsafe.SizeOf<ImDrawVert>()), cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
+                //GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
+                //GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)(vertexOffsetInVertices * Unsafe.SizeOf<ImDrawVert>()), cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
+                GL.NamedBufferSubData(_vertexBuffer, (IntPtr)(vertexOffsetInVertices * Unsafe.SizeOf<ImDrawVert>()), cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _indexBuffer);
-                GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)(indexOffsetInElements * sizeof(ushort)), cmd_list.IdxBuffer.Size * sizeof(ushort), cmd_list.IdxBuffer.Data);
+                //GL.BindBuffer(BufferTarget.ArrayBuffer, _indexBuffer);
+                //GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)(indexOffsetInElements * sizeof(ushort)), cmd_list.IdxBuffer.Size * sizeof(ushort), cmd_list.IdxBuffer.Data);
+                GL.NamedBufferSubData(_indexBuffer, (IntPtr)(indexOffsetInElements * sizeof(ushort)), cmd_list.IdxBuffer.Size * sizeof(ushort), cmd_list.IdxBuffer.Data);
 
                 vertexOffsetInVertices += (uint)cmd_list.VtxBuffer.Size;
                 indexOffsetInElements += (uint)cmd_list.IdxBuffer.Size;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
             // Setup orthographic projection matrix into our constant buffer
             ImGuiIOPtr io = ImGui.GetIO();
@@ -303,7 +347,7 @@ namespace Fusee.ImGuiDesktop
                -1.0f,
                1.0f);
 
-            GL.UseProgram(_shaderProgram);
+            GL.UseProgram(ShaderProgram);
 
             // Column order notation
             GL.UniformMatrix4(_uniformVarToLocation["projection_matrix"].Location, false, ref mvp);
@@ -319,7 +363,7 @@ namespace Fusee.ImGuiDesktop
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.DepthTest);
-
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             // Render command lists
             int vtx_offset = 0;
@@ -336,8 +380,9 @@ namespace Fusee.ImGuiDesktop
                     }
                     else
                     {
-                        GL.ActiveTexture(TextureUnit.Texture0);
-                        GL.BindTexture(TextureTarget.Texture2D, (int)pcmd.TextureId);
+                        //GL.ActiveTexture(TextureUnit.Texture0);
+                        //GL.BindTexture(TextureTarget.Texture2D, (int)pcmd.TextureId);
+                        GL.BindTextureUnit(0, (int)pcmd.TextureId);
 
                         // We do _windowHeight - (int)clip.W instead of (int)clip.Y because gl has flipped Y when it comes to these coordinates
                         var clip = pcmd.ClipRect;
@@ -357,6 +402,35 @@ namespace Fusee.ImGuiDesktop
             GL.Enable(EnableCap.DepthTest);
 
             draw_data.Clear();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ImGui.DestroyContext(_context);
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~ImGuiController()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

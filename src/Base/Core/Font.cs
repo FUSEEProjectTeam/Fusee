@@ -103,6 +103,7 @@ namespace Fusee.Base.Core
         ///     Renders the given glyph.
         /// </summary>
         /// <param name="c">The character code (Unicode) of the character to render.</param>
+        /// <param name="info">Provides info about a character.</param>
         /// <returns>
         ///     An image data structure containing an image of the given character.
         /// </returns>

@@ -1,6 +1,8 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.ImGuiDesktop;
+using Fusee.Engine.Imp.Graphics.Desktop;
+using Fusee.ImGuiImp.Desktop;
 using ImGuiNET;
 using System;
 using System.IO;
@@ -13,7 +15,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         Description = "A very simple example how to use ImGui within a Fusee application.")]
     public class Core : RenderCanvas
     {
-
         #region StaticBindingVars
 
         private static bool _dockspaceOpen = true;
@@ -27,7 +28,9 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         #endregion
 
 
-        private void Load()
+        private ExposedTexture _imageTexture;
+
+        private async void Load()
         {
             SetImGuiDesign();
 
@@ -39,13 +42,18 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             {
                 ImGui.LoadIniSettingsFromDisk(Path.Combine("Assets/MyImGuiSettings.ini"));
             }
+
+            var img = await AssetStorage.GetAsync<ImageData>("FuseeIconTop32.png");
+            _imageTexture = new ExposedTexture(img);
+
+            // register texture to the RenderContext
+            RC.RegisterTexture(_imageTexture);
         }
 
         public override async Task InitAsync()
         {
             Load();
             await base.InitAsync();
-
         }
 
         public override void Update()
@@ -56,11 +64,13 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         public override void Resize(ResizeEventArgs e)
         {
             _fuControl.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
-
         }
 
-        public override void RenderAFrame()
+        public override async void RenderAFrame()
         {
+            // Enable Dockspace
+            ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+
             // Set Window flags for Dockspace
             var wndDockspaceFlags =
                     ImGuiWindowFlags.NoDocking
@@ -123,9 +133,15 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             ImGui.EndChild();
             ImGui.End();
 
+            ImGui.Begin("ImageWnd");
+
+            var hndl = ((TextureHandle)_imageTexture.TextureHandle).TexId;
+            ImGui.Image(new IntPtr(hndl), new Vector2(_imageTexture.Width, _imageTexture.Height));
+
+            ImGui.End();
+
             DrawGUI();
         }
-
 
         internal void DrawGUI()
         {

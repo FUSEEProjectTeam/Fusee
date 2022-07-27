@@ -1,10 +1,10 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Imp.Graphics.Desktop;
 using OpenTK.Graphics.OpenGL;
 using System;
-using TextureWrapMode = OpenTK.Graphics.OpenGL.TextureWrapMode;
 
-namespace Fusee.ImGuiDesktop.Templates
+namespace Fusee.ImGuiImp.Desktop.Templates
 {
     public abstract class FuseeControlToTexture
     {
@@ -13,6 +13,8 @@ namespace Fusee.ImGuiDesktop.Templates
 
         private int _lastWidth;
         private int _lastHeight;
+
+        private IShaderHandle prgmHndl;
 
         protected RenderContext _rc;
 
@@ -103,17 +105,16 @@ namespace Fusee.ImGuiDesktop.Templates
             // Do the actual rendering
             var hndl = RenderAFrame();
             if (hndl == null) return IntPtr.Zero;
-            var tex = ((Engine.Imp.Graphics.Desktop.TextureHandle)hndl).TexHandle;
+            var tex = ((TextureHandle)hndl).TexId;
+            _rc.SetRenderTarget();
+            _rc.Viewport(0, 0, _originalWidth, _originalHeight);
 
-            // Disable FB, reset size etc. to previous size
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            GL.Viewport(0, 0, _originalWidth, _originalHeight);
+            // Warning: wolves ahead
+            if (prgmHndl == null)
+                prgmHndl = new ShaderHandle() { Handle = ImGuiController.ShaderProgram };
+            _rc.CurrentShaderProgram = prgmHndl;
 
-            // bind the render result and return ptr to texture
-            GL.BindTexture(TextureTarget.Texture2D, tex);
             return new IntPtr(tex);
         }
-
     }
 }

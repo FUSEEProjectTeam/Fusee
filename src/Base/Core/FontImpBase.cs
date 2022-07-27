@@ -170,6 +170,7 @@ namespace Fusee.Base.Core
         /// Renders a glyph to an IImageData for further use
         /// </summary>
         /// <param name="c"></param>
+        /// <param name="info">The info about the character.</param>
         /// <returns></returns>
         public IImageData GetImageDataForGlyph(uint c, in GlyphInfo info)
         {
@@ -186,7 +187,7 @@ namespace Fusee.Base.Core
                 img.CopyPixelDataTo(res);
             }
             // invalid (unknown) chars 
-            catch (Exception e)
+            catch (Exception)
             {
                 Diagnostics.Warn($"Generating glyph for char {c}:{Convert.ToChar(c)} failed, skipping");
                 return new ImageData(0, 0);

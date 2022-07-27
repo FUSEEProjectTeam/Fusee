@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using System;
 
 namespace Fusee.Engine.Core
 {
@@ -7,7 +8,7 @@ namespace Fusee.Engine.Core
     /// </summary>
     public sealed class ModuleExtensionPoint : IDisposable
     {
-        #region Singleton 
+        #region Singleton
         private static readonly ModuleExtensionPoint _instance = new();
 
         // Explicit static constructor to tell C# compiler
@@ -28,6 +29,9 @@ namespace Fusee.Engine.Core
         }
         #endregion
 
+        ///The maximal number of lights we can render when using the forward pipeline.
+        public const int NumberOfLightsForward = 8;
+
         /// <summary>
         /// Delegate of the method that knows how to create a GpuMesh - without passing the RenderContext down into the module.
         /// Set in the constructor the RenderContext.
@@ -38,6 +42,11 @@ namespace Fusee.Engine.Core
             set { Instance._createGpuMesh = value; }
         }
         private CreateGpuMesh _createGpuMesh;
+
+        /// <summary>
+        /// Bound to the platform specific RenderContext implementation. Set by the <see cref="RenderContext"/>.
+        /// </summary>
+        public static FuseePlatformId PlatformId { get; internal set; }
 
         #region Dispose
 
@@ -84,4 +93,5 @@ namespace Fusee.Engine.Core
         }
         #endregion
     }
+
 }

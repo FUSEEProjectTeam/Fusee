@@ -11,7 +11,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// </summary>
     public class TextureHandle : ITextureHandle
     {
-        public int TexHandle = -1;
+        public int TexId = -1;
         public int FrameBufferHandle = -1;
         public int DepthRenderBufferHandle = -1;
     }

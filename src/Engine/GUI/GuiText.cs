@@ -159,8 +159,8 @@ namespace Fusee.Engine.Gui
                 allUvs.AddRange(LineUVs[i]);
             }
 
-            Vertices = allVerts.ToArray();
             Triangles = allTriangles.ToArray();
+            Vertices = allVerts.ToArray();
             Normals = allNormals.ToArray();
             UVs = allUvs.ToArray();
 

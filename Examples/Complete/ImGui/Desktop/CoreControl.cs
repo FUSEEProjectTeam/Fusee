@@ -3,6 +3,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
+using Fusee.ImGuiImp.Desktop.Templates;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         public string Value;
     }
 
-    internal class CoreControl : ImGuiDesktop.Templates.FuseeControlToTexture, IDisposable
+    internal class CoreControl : FuseeControlToTexture, IDisposable
     {
         private SceneContainer _rocketScene;
         private SceneRendererForward _renderer;
@@ -172,10 +173,12 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         protected override ITextureHandle RenderAFrame()
         {
-            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
-            _renderer.Render(_rc);
-
-            return _renderTexture.TextureHandle;
+            if (_renderTexture != null)
+            {
+                _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
+                _renderer.Render(_rc);
+            }
+            return _renderTexture?.TextureHandle;
         }
 
         protected override void Resize(int width, int height)
@@ -187,7 +190,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             Height = height;
 
             _renderTexture?.Dispose();
-            _renderTexture = WritableMultisampleTexture.CreateAlbedoTex(_rc, Width, Height, 8);
+            _renderTexture = WritableMultisampleTexture.CreateAlbedoTex(Width, Height, 8);
             _cam.RenderTexture = _renderTexture;
         }
 
@@ -197,10 +200,8 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             {
                 if (disposing)
                 {
-                    _renderTexture.Dispose();
+                    _renderTexture?.Dispose();
                 }
-
-
                 disposedValue = true;
             }
         }

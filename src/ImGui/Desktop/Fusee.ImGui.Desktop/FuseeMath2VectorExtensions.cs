@@ -1,12 +1,7 @@
 ﻿using Fusee.Math.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Fusee.ImGuiDesktop
+namespace Fusee.ImGuiImp.Desktop
 {
     public static class FuseeMath2VectorExtensions
     {

@@ -1,6 +1,21 @@
 ﻿namespace Fusee.PointCloud.Common
 {
     /// <summary>
+    /// Available render modes.
+    /// </summary>
+    public enum RenderMode
+    {
+        /// <summary>
+        /// Points are rendered by using gl_PointSize.
+        /// </summary>
+        PointSize = 0,
+        /// <summary>
+        /// Points are rendered by instanced rendering.
+        /// </summary>
+        Instanced = 1
+    }
+
+    /// <summary>
     /// Available point shapes.
     /// </summary>
     public enum PointShape
@@ -17,29 +32,6 @@
         /// Every point appears as a rectangle with weighted Z-Buffer values to generate a paraboloid.
         /// </summary>
         Paraboloid = 2
-    }
-
-    /// <summary>
-    /// Available color modes.
-    /// </summary>
-    public enum PointColorMode
-    {
-        /// <summary>
-        /// RGB value of the point.
-        /// </summary>
-        VertexColor0,
-        /// <summary>
-        /// RGB value of the point.
-        /// </summary>
-        VertexColor1,
-        /// <summary>
-        /// RGB value of the point.
-        /// </summary>
-        VertexColor2,
-        /// <summary>
-        /// RGB value of the point.
-        /// </summary>
-        Single,
     }
 
     /// <summary>

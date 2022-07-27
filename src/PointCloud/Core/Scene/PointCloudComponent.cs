@@ -12,7 +12,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// File type independent properties for point cloud rendering.
         /// </summary>
-        public IPointCloudImp PointCloudImp { get; protected set; }
+        public IPointCloudImpBase PointCloudImp { get; protected set; }
 
         /// <summary>
         /// Center of the point cloud.
@@ -25,10 +25,21 @@ namespace Fusee.PointCloud.Core.Scene
         public float3 Size { get => PointCloudImp.Size; }
 
         /// <summary>
-        /// Instantiates the <see cref="IPointCloudImp"/>.
+        /// Determines whether this point cloud should be rendered using gpu instancing.
         /// </summary>
-        public PointCloudComponent(IPointCloudImp imp)
+        public readonly RenderMode RenderMode;
+
+        /// <summary>
+        /// Reference to the Camera whose properties are used to control the visibility of point cloud chunks (octants).
+        /// </summary>
+        public Camera Camera;
+
+        /// <summary>
+        /// Instantiates the <see cref="IPointCloudImp{TGpuData}"/>.
+        /// </summary>
+        public PointCloudComponent(IPointCloudImpBase imp, RenderMode renderMode = RenderMode.PointSize)
         {
+            RenderMode = renderMode;
             PointCloudImp = imp;
         }
     }
