@@ -3,6 +3,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Desktop;
 using Fusee.ImGuiImp.Desktop;
+using Fusee.PointCloud.Common;
 using ImGuiNET;
 using System;
 using System.IO;
@@ -22,9 +23,26 @@ namespace Fusee.Examples.PointcloudEditor.Desktop
 
         private GuiControl _fuControl;
 
-        private Vector4 _rocketColor = Vector4.UnitW; // alpha 255
+        private static int _threshold = 1000000;
+        private static float _fuseeViewportMinProj;
+
+        private static int _edlNeighbour = 0;
+        private static float _edlStrength = .5f;
+
+        private static int _currentPtShape;
+        private static int _currentPtSizeMethod;
+        private static int _ptSize = 1;
+
+        private static int _currentColorMode = 1;
+
+        //private Vector4 _rocketColor = Vector4.UnitW; // alpha 255
+        private static Vector4 _ptColor = new(0, 0, 0, 1);
         private bool _colorPickerOpen;
         private float _pointSize = 1f;
+
+        private bool _spwanOpenFilePopup = false;
+        private bool _wantsToShutdown;
+
         #endregion
 
 
