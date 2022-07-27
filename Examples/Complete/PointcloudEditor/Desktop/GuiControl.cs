@@ -3,6 +3,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
+using Fusee.ImGuiImp.Desktop.Templates;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Fusee.Examples.PointcloudEditor.Desktop
         public Type Type;
         public string Value;
     }
-    internal class GuiControl : ImGuiDesktop.Templates.FuseeControlToTexture, IDisposable
+    internal class GuiControl : FuseeControlToTexture, IDisposable
     {
         private SceneContainer _rocketScene;
         private SceneRendererForward _renderer;
@@ -171,10 +172,12 @@ namespace Fusee.Examples.PointcloudEditor.Desktop
 
         protected override ITextureHandle RenderAFrame()
         {
-            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
-            _renderer.Render(_rc);
-
-            return _renderTexture.TextureHandle;
+            if (_renderTexture != null)
+            {
+                _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
+                _renderer.Render(_rc);
+            }
+            return _renderTexture?.TextureHandle;
         }
 
         protected override void Resize(int width, int height)
@@ -186,7 +189,7 @@ namespace Fusee.Examples.PointcloudEditor.Desktop
             Height = height;
 
             _renderTexture?.Dispose();
-            _renderTexture = WritableMultisampleTexture.CreateAlbedoTex(_rc, Width, Height, 8);
+            _renderTexture = WritableMultisampleTexture.CreateAlbedoTex(Width, Height, 8);
             _cam.RenderTexture = _renderTexture;
         }
 
@@ -196,7 +199,7 @@ namespace Fusee.Examples.PointcloudEditor.Desktop
             {
                 if (disposing)
                 {
-                    _renderTexture.Dispose();
+                    _renderTexture?.Dispose();
                 }
 
 
