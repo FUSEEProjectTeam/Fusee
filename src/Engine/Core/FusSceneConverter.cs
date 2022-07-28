@@ -551,21 +551,10 @@ namespace Fusee.Engine.Core
             }
 
             // convert mesh
-            mesh = new Mesh
+            mesh = new Mesh(m.Vertices, m.Triangles, m.Normals, m.UVs, m.BoneWeights, m.BoneIndices, m.Tangents, m.BiTangents, m.Colors)
             {
                 MeshType = (PrimitiveType)m.MeshType,
-                Active = true,
-                BiTangents = m.BiTangents,
-                BoneIndices = m.BoneIndices,
-                BoundingBox = m.BoundingBox,
-                BoneWeights = m.BoneWeights,
-                Colors = m.Colors,
-                Name = m.Name,
-                Normals = m.Normals,
-                Tangents = m.Tangents,
-                Triangles = m.Triangles,
-                UVs = m.UVs,
-                Vertices = m.Vertices
+                Active = true
             };
 
             if (_currentNode.Components == null)
@@ -1257,17 +1246,17 @@ namespace Fusee.Engine.Core
             var mesh = new FusMesh
             {
                 MeshType = (int)m.MeshType,
-                BiTangents = m.BiTangents,
-                BoneIndices = m.BoneIndices,
+                BiTangents = m.BiTangents.ToArray(),
+                BoneIndices = m.BoneIndices.ToArray(),
                 BoundingBox = m.BoundingBox,
-                BoneWeights = m.BoneWeights,
-                Colors = m.Colors,
+                BoneWeights = m.BoneWeights.ToArray(),
+                Colors = m.Colors.ToArray(),
                 Name = m.Name,
-                Normals = m.Normals,
-                Tangents = m.Tangents,
-                Triangles = m.Triangles,
-                UVs = m.UVs,
-                Vertices = m.Vertices
+                Normals = m.Normals.ToArray(),
+                Tangents = m.Tangents.ToArray(),
+                Triangles = m.Triangles.ToArray(),
+                UVs = m.UVs.ToArray(),
+                Vertices = m.Vertices.ToArray()
             };
 
             _currentNode.AddComponent(mesh);

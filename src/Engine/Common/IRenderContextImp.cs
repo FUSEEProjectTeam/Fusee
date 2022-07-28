@@ -1,5 +1,6 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Common
@@ -47,7 +48,7 @@ namespace Fusee.Engine.Common
         float ClearDepth { set; get; }
 
         /// <summary>
-        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping.
         /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
         /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
         /// </summary>
@@ -108,7 +109,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will detach the texture currently associated with the ColorAttachment1.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with the DepthAttachment will be detached.</param>       
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with the DepthAttachment will be detached.</param>
         void DetachTextureFromFbo(IRenderTarget renderTarget, bool isDepthTex, int attachment = 0);
 
 
@@ -117,7 +118,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will attach the texture to the ColorAttachment1.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to the DepthAttachment.</param>        
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to the DepthAttachment.</param>
         /// <param name="texHandle">The gpu handle of the texture.</param>
         void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0);
 
@@ -391,25 +392,25 @@ namespace Fusee.Engine.Common
         /// Method should be called after LoadImage method to process
         /// the BitmapData an make them available for the shader.
         /// </remarks>
-        /// <param name="img">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        /// <param name="img">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>
         ITextureHandle CreateTexture(ITexture img);
 
         /// <summary>
         /// Creates a new cube map and binds it to the shader.
-        /// </summary>        
-        /// <param name="img">An <see cref="IWritableArrayTexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        /// </summary>
+        /// <param name="img">An <see cref="IWritableArrayTexture"/>, containing necessary information for the upload to the graphics card.</param>
         ITextureHandle CreateTexture(IWritableArrayTexture img);
 
         /// <summary>
         /// Creates a new cube map and binds it to the shader.
-        /// </summary>        
-        /// <param name="img">An <see cref="IWritableCubeMap"/>, containing necessary information for the upload to the graphics card.</param>       
+        /// </summary>
+        /// <param name="img">An <see cref="IWritableCubeMap"/>, containing necessary information for the upload to the graphics card.</param>
         ITextureHandle CreateTexture(IWritableCubeMap img);
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
-        /// </summary>      
-        /// <param name="img">An <see cref="IWritableTexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        /// </summary>
+        /// <param name="img">An <see cref="IWritableTexture"/>, containing necessary information for the upload to the graphics card.</param>
         ITextureHandle CreateTexture(IWritableTexture img);
 
         /// <summary>
@@ -446,13 +447,6 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         void SetVertexArrayObject(IMeshImp mr);
 
-        /// <summary>
-        /// Binds the vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mesh">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="vertices">The vertices.</param>
-        /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
-        void SetVertices(IMeshImp mesh, float3[] vertices);
 
         /// <summary>
         /// Creates and binds the instance model matrices onto the GL render context and assigns an buffer object index to the passed <see cref="IInstanceDataImp" /> instance.
@@ -471,13 +465,122 @@ namespace Fusee.Engine.Common
         public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors);
 
         /// <summary>
+        /// Binds the vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mesh">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
+        void SetVertices(IMeshImp mesh, ReadOnlySpan<float3> vertices, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="tangents">The tangents.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">Tangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the bitangents onto the GL render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name = "bitangents">The bitangents.</param>
+        /// /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the normals onto the GL render context and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="normals">The normals.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
+        void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the UV coordinates onto the GL render context and assigns an UVBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="uvs">The UV's.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
+        void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
+        void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
+        void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
+        void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the triangles onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="triangleIndices">The triangle indices.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
+        void SetTriangles(IMeshImp mr, ReadOnlySpan<ushort> triangleIndices, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the bone indices onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneIndices">The bone indices.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
+        void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the bone weights onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneWeights">The bone weights.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
+        void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights, Tuple<int, int> changedRange);
+
+        /// <summary>
+        /// Binds the vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mesh">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
+        void SetVertices(IMeshImp mesh, ReadOnlySpan<float3> vertices);
+
+        /// <summary>
         /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="System.ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        void SetTangents(IMeshImp mr, float4[] tangents);
+        void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents);
 
         /// <summary>
         /// Binds the bitangents onto the GL render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -486,7 +589,7 @@ namespace Fusee.Engine.Common
         /// <param name = "bitangents">The bitangents.</param>
         /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        void SetBiTangents(IMeshImp mr, float3[] bitangents);
+        void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents);
 
         /// <summary>
         /// Binds the normals onto the GL render context and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -494,7 +597,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="normals">The normals.</param>
         /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
-        void SetNormals(IMeshImp mr, float3[] normals);
+        void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals);
 
         /// <summary>
         /// Binds the UV coordinates onto the GL render context and assigns an UVBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -502,7 +605,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
-        void SetUVs(IMeshImp mr, float2[] uvs);
+        void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs);
 
         /// <summary>
         /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -510,7 +613,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
-        void SetColors(IMeshImp mr, uint[] colors);
+        void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors);
 
         /// <summary>
         /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -518,7 +621,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
-        void SetColors1(IMeshImp mr, uint[] colors);
+        void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors);
 
         /// <summary>
         /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -526,7 +629,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
-        void SetColors2(IMeshImp mr, uint[] colors);
+        void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors);
 
         /// <summary>
         /// Binds the triangles onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -534,7 +637,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
-        void SetTriangles(IMeshImp mr, ushort[] triangleIndices);
+        void SetTriangles(IMeshImp mr, ReadOnlySpan<ushort> triangleIndices);
 
         /// <summary>
         /// Binds the bone indices onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -542,7 +645,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
-        void SetBoneIndices(IMeshImp mr, float4[] boneIndices);
+        void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices);
 
         /// <summary>
         /// Binds the bone weights onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -550,7 +653,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
-        void SetBoneWeights(IMeshImp mr, float4[] boneWeights);
+        void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights);
 
         /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
@@ -668,7 +771,7 @@ namespace Fusee.Engine.Common
         /// Renders the specified mesh.
         /// </summary>
         /// <param name="mr">The mesh that should be rendered.</param>
-        /// <param name="instanceData">Contains the buffers that need to be bound when using instanced rendering.</param>        
+        /// <param name="instanceData">Contains the buffers that need to be bound when using instanced rendering.</param>
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
@@ -788,17 +891,17 @@ namespace Fusee.Engine.Common
         /// <returns>The Z value at (x, y).</returns>
         float GetPixelDepth(int x, int y);
 
-        /// <summary> 
-        /// Returns the capabilities of the underlying graphics hardware 
-        /// </summary> 
-        /// <param name="capability">The capability to check against</param> 
-        /// <returns>uint</returns> 
+        /// <summary>
+        /// Returns the capabilities of the underlying graphics hardware
+        /// </summary>
+        /// <param name="capability">The capability to check against</param>
+        /// <returns>uint</returns>
         uint GetHardwareCapabilities(HardwareCapability capability);
 
-        /// <summary> 
-        /// Returns a human readable description of the underlying graphics hardware 
-        /// </summary> 
-        /// <returns>Description</returns> 
+        /// <summary>
+        /// Returns a human readable description of the underlying graphics hardware
+        /// </summary>
+        /// <returns>Description</returns>
         string GetHardwareDescription();
     }
 
@@ -819,7 +922,7 @@ namespace Fusee.Engine.Common
         CanUseGeometryShaders,
 
         /// <summary>
-        /// Returns the max value for GL_MAX_SAMPLES usable in multi-sample <see cref="IWritableTexture"/> textures 
+        /// Returns the max value for GL_MAX_SAMPLES usable in multi-sample <see cref="IWritableTexture"/> textures
         /// </summary>
         MaxSamples
     }

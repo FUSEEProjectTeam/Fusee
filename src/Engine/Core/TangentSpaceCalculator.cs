@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
                 tangents[m.Triangles[i + 2]].Normalize();
                 tangents[m.Triangles[i + 2]].w = 1;
             }
-            m.Tangents = tangents;
+            m.ReplaceTangents(tangents);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Fusee.Engine.Core
             if (m == null)
                 throw new ArgumentException("Mesh cannot be empty!");
 
-            if (m?.Normals == null || m.Normals.Length < 0)
+            if (m.Normals == null || m.Normals.Length < 0)
                 throw new ArgumentException($"Can not calculate bitangents, empty normals in this mesh: {m.Name}");
 
             if (m.Tangents == null || m.Tangents.Length < 1)
@@ -99,7 +99,7 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < m.Tangents.Length; i++)
                 bitangents[i] = float3.Cross(m.Normals[i], m.Tangents[i].xyz) * m.Tangents[i].w;
 
-            m.BiTangents = bitangents;
+            m.ReplaceBiTangents(bitangents);
         }
     }
 }

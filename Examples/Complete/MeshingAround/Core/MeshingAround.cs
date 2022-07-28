@@ -113,12 +113,7 @@ namespace Fusee.Examples.MeshingAround.Core
                         Scale = float3.One,
                         Translation = new float3(0, 0, 0)
                     },
-                    new Mesh()
-                    {
-                        Vertices = meshOne.Vertices,
-                        Triangles = meshOne.Triangles,
-                        Normals = meshOne.Normals,
-                    }
+                    new Mesh(meshOne.Vertices.ToArray(), meshOne.Triangles.ToArray(), meshOne.Normals.ToArray())
                 }
             };
             ///////////////////////////////////////////////////////////
@@ -132,13 +127,7 @@ namespace Fusee.Examples.MeshingAround.Core
                         Scale = float3.One,
                         Translation = new float3(-2, -1, 0)
                     },
-                     new Mesh()
-                    {
-                        Vertices = cube.Vertices,
-                        Triangles = cube.Triangles,
-                        Normals = cube.Normals,
-                    }
-
+                     new Mesh(cube.Vertices.ToArray(), cube.Triangles.ToArray(), cube.Normals.ToArray())
                 }
             };
             //////////////////////////////////////////////////////////////////
@@ -152,12 +141,7 @@ namespace Fusee.Examples.MeshingAround.Core
                         Scale = float3.One,
                         Translation = new float3(1.5f, -1, 0)
                     },
-                    new Mesh()
-                    {
-                        Vertices = triangle.Vertices,
-                        Triangles = triangle.Triangles,
-                        Normals = triangle.Normals,
-                    }
+                    new Mesh (triangle.Vertices.ToArray(), triangle.Triangles.ToArray(), triangle.Normals.ToArray())
                 }
             };
             //////////////////////////////////////////////////////////////////

@@ -1331,9 +1331,329 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="vertices">The vertices.</param>
+        /// <param name="changedRange">The changed range indices.</param>
         /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetVertices(IMeshImp mr, float3[] vertices)
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices, Tuple<int, int> changedRange)
+        {
+            if (vertices == null || vertices.Length == 0 || changedRange == null)
+            {
+                throw new ArgumentException("Vertices must not be null or empty");
+            }
+
+            var vbo = ((MeshImp)mr).VertexBufferObject;
+
+            if (vbo == 0)
+            {
+                throw new ApplicationException("Create the VBO first!");
+            }
+
+            var sizeOfOneElement = 3 * sizeof(float);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = vertices[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(vbo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the tangents onto the GL Render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="tangents">The tangents.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents, Tuple<int, int> changedRange)
+        {
+            if (tangents == null || tangents.Length == 0)
+            {
+                throw new ArgumentException("Tangents must not be null or empty");
+            }
+
+            var tBo = ((MeshImp)mr).TangentBufferObject;
+
+            if (tBo == 0)
+            {
+                throw new ApplicationException("Create the TBO first!");
+            }
+
+            var sizeOfOneElement = 4 * sizeof(float);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = tangents[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(tBo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the bitangents onto the GL Render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="bitangents">The BiTangents.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents, Tuple<int, int> changedRange)
+        {
+            if (bitangents == null || bitangents.Length == 0)
+            {
+                throw new ArgumentException("BiTangents must not be null or empty");
+            }
+
+            var btBo = ((MeshImp)mr).BitangentBufferObject;
+
+            if (btBo == 0)
+            {
+                throw new ApplicationException("Create the btBo first!");
+            }
+
+            var sizeOfOneElement = 3 * sizeof(float);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = bitangents[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(btBo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the normals onto the GL Render context and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="normals">The normals.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals, Tuple<int, int> changedRange)
+        {
+            if (normals == null || normals.Length == 0)
+            {
+                throw new ArgumentException("Normals must not be null or empty");
+            }
+
+            var nBo = ((MeshImp)mr).NormalBufferObject;
+
+            if (nBo == 0)
+            {
+                throw new ApplicationException("Create the nBo first!");
+            }
+
+            var sizeOfOneElement = 3 * sizeof(float);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = normals[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(nBo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the bone indices onto the GL Render context and assigns an BoneIndexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneIndices">The bone indices.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">BoneIndices must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices, Tuple<int, int> changedRange)
+        {
+            if (boneIndices == null || boneIndices.Length == 0)
+            {
+                throw new ArgumentException("BoneIndices must not be null or empty");
+            }
+
+            var biBo = ((MeshImp)mr).BoneIndexBufferObject;
+
+            if (biBo == 0)
+            {
+                throw new ApplicationException("Create the biBo first!");
+            }
+
+            var sizeOfOneElement = 4 * sizeof(float);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = boneIndices[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(biBo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the bone weights onto the GL Render context and assigns an BoneWeightBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneWeights">The bone weights.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">BoneWeights must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights, Tuple<int, int> changedRange)
+        {
+            if (boneWeights == null || boneWeights.Length == 0)
+            {
+                throw new ArgumentException("BoneWeights must not be null or empty");
+            }
+
+            var wBo = ((MeshImp)mr).BoneIndexBufferObject;
+
+            if (wBo == 0)
+            {
+                throw new ApplicationException("Create the wBo first!");
+            }
+
+            var sizeOfOneElement = 4 * sizeof(float);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = boneWeights[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(wBo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the UV coordinates onto the GL Render context and assigns an UVBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="uvs">The UV's.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">UVs must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs, Tuple<int, int> changedRange)
+        {
+            if (uvs == null || uvs.Length == 0)
+            {
+                throw new ArgumentException("UVs must not be null or empty");
+            }
+
+            var uvBo = ((MeshImp)mr).UVBufferObject;
+
+            if (uvBo == 0)
+            {
+                throw new ApplicationException("Create the uvBo first!");
+            }
+
+            var sizeOfOneElement = 2 * sizeof(float);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = uvs[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(uvBo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL Render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange)
+        {
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            var cBo = ((MeshImp)mr).ColorBufferObject;
+
+            if (cBo == 0)
+            {
+                throw new ApplicationException("Create the cBo first!");
+            }
+
+            var sizeOfOneElement = 1 * sizeof(uint);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = colors[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(cBo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL Render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange)
+        {
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            var cBo = ((MeshImp)mr).ColorBufferObject1;
+
+            if (cBo == 0)
+            {
+                throw new ApplicationException("Create the cBo first!");
+            }
+
+            var sizeOfOneElement = 1 * sizeof(uint);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = colors[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(cBo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL Render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange)
+        {
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("colors must not be null or empty");
+            }
+
+            var cBo = ((MeshImp)mr).ColorBufferObject2;
+
+            if (cBo == 0)
+            {
+                throw new ApplicationException("Create the cBo first!");
+            }
+
+            var sizeOfOneElement = 1 * sizeof(uint);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = colors[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(cBo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+        /// <summary>
+        /// Binds the triangles onto the GL Render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="triangleIndices">The triangle indices.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">triangleIndices must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<ushort> triangleIndices, Tuple<int, int> changedRange)
+        {
+            if (triangleIndices == null || triangleIndices.Length == 0)
+            {
+                throw new ArgumentException("triangleIndices must not be null or empty");
+            }
+
+            var ibo = ((MeshImp)mr).ElementBufferObject;
+
+            if (ibo == 0)
+            {
+                throw new ApplicationException("Create the ibo first!");
+            }
+
+            var sizeOfOneElement = 1 * sizeof(ushort);
+            var offsetBytes = changedRange.Item1 * sizeOfOneElement;
+            var data = triangleIndices[changedRange.Item1..changedRange.Item2];
+
+            GL.NamedBufferSubData(ibo, IntPtr.Zero, offsetBytes, ref MemoryMarshal.GetReference(data));
+        }
+
+
+        /// <summary>
+        /// Binds the vertices onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices)
         {
             if (vertices == null || vertices.Length == 0)
             {
@@ -1353,7 +1673,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(vbo, vertsBytes, vertices, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(vbo, vertsBytes, ref MemoryMarshal.GetReference(vertices), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.VertexAttribBindingIndex, vbo, IntPtr.Zero, sizeOfVert);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.VertexAttribLocation, 3, VertexAttribType.Float, false, 0);
@@ -1369,12 +1689,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out vbo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(vbo, vertsBytes, vertices, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(vbo, vertsBytes, ref MemoryMarshal.GetReference(vertices), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.VertexAttribBindingIndex, vbo, IntPtr.Zero, sizeOfVert);
 
                 }
                 else
-                    GL.NamedBufferSubData(vbo, IntPtr.Zero, vertsBytes, vertices);
+                    GL.NamedBufferSubData(vbo, IntPtr.Zero, vertsBytes, ref MemoryMarshal.GetReference(vertices));
             }
 #if DEBUG
             GL.GetNamedBufferParameter(vbo, BufferParameterName.BufferSize, out int vboBytes);
@@ -1390,7 +1710,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTangents(IMeshImp mr, float4[] tangents)
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents)
         {
             if (tangents == null || tangents.Length == 0)
             {
@@ -1409,7 +1729,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(tBo, tangentBytes, tangents, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(tBo, tangentBytes, ref MemoryMarshal.GetReference(tangents), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.TangentAttribBindingIndex, tBo, IntPtr.Zero, sizeOfTangent);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.TangentAttribLocation, 4, VertexAttribType.Float, false, 0);
@@ -1426,12 +1746,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out tBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(tBo, tangentBytes, tangents, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(tBo, tangentBytes, ref MemoryMarshal.GetReference(tangents), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.TangentAttribLocation, tBo, IntPtr.Zero, sizeOfTangent);
 
                 }
                 else
-                    GL.NamedBufferSubData(tBo, IntPtr.Zero, tangentBytes, tangents);
+                    GL.NamedBufferSubData(tBo, IntPtr.Zero, tangentBytes, ref MemoryMarshal.GetReference(tangents));
             }
 
 #if DEBUG
@@ -1448,7 +1768,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="bitangents">The BiTangents.</param>
         /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents)
         {
             if (bitangents == null || bitangents.Length == 0)
             {
@@ -1468,7 +1788,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(btBo, bitangentBytes, bitangents, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(btBo, bitangentBytes, ref MemoryMarshal.GetReference(bitangents), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.BitangentAttribBindingIndex, btBo, IntPtr.Zero, sizeOfBiTangent);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.BitangentAttribLocation, 3, VertexAttribType.Float, false, 0);
@@ -1485,12 +1805,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out btBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(btBo, bitangentBytes, bitangents, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(btBo, bitangentBytes, ref MemoryMarshal.GetReference(bitangents), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BitangentAttribLocation, btBo, IntPtr.Zero, sizeOfBiTangent);
 
                 }
                 else
-                    GL.NamedBufferSubData(btBo, IntPtr.Zero, bitangentBytes, bitangents);
+                    GL.NamedBufferSubData(btBo, IntPtr.Zero, bitangentBytes, ref MemoryMarshal.GetReference(bitangents));
             }
 
 #if DEBUG
@@ -1507,7 +1827,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="normals">The normals.</param>
         /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetNormals(IMeshImp mr, float3[] normals)
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals)
         {
             if (normals == null || normals.Length == 0)
             {
@@ -1527,7 +1847,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(nBo, normsBytes, normals, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(nBo, normsBytes, ref MemoryMarshal.GetReference(normals), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.NormalAttribBindingIndex, nBo, IntPtr.Zero, sizeOfNorm);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.NormalAttribLocation, 3, VertexAttribType.Float, false, 0);
@@ -1544,12 +1864,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out nBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(nBo, normsBytes, normals, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(nBo, normsBytes, ref MemoryMarshal.GetReference(normals), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.NormalAttribLocation, nBo, IntPtr.Zero, sizeOfNorm);
 
                 }
                 else
-                    GL.NamedBufferSubData(nBo, IntPtr.Zero, normsBytes, normals);
+                    GL.NamedBufferSubData(nBo, IntPtr.Zero, normsBytes, ref MemoryMarshal.GetReference(normals));
             }
 
 #if DEBUG
@@ -1566,7 +1886,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="ArgumentException">BoneIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices)
         {
             if (boneIndices == null || boneIndices.Length == 0)
             {
@@ -1586,7 +1906,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(biBo, indicesBytes, boneIndices, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(biBo, indicesBytes, ref MemoryMarshal.GetReference(boneIndices), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.BoneIndexAttribAttribBindingIndex, biBo, IntPtr.Zero, sizeOfboneIndex);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribType.Float, false, 0);
@@ -1602,12 +1922,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out biBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(biBo, indicesBytes, boneIndices, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(biBo, indicesBytes, ref MemoryMarshal.GetReference(boneIndices), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BoneIndexAttribLocation, biBo, IntPtr.Zero, sizeOfboneIndex);
 
                 }
                 else
-                    GL.NamedBufferSubData(biBo, IntPtr.Zero, indicesBytes, boneIndices);
+                    GL.NamedBufferSubData(biBo, IntPtr.Zero, indicesBytes, ref MemoryMarshal.GetReference(boneIndices));
             }
 
 #if DEBUG
@@ -1624,7 +1944,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="ArgumentException">BoneWeights must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights)
         {
             if (boneWeights == null || boneWeights.Length == 0)
             {
@@ -1644,7 +1964,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(wBo, weightsBytes, boneWeights, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(wBo, weightsBytes, ref MemoryMarshal.GetReference(boneWeights), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.BoneIndexAttribAttribBindingIndex, wBo, IntPtr.Zero, sizeOfBoneWeight);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribType.Float, false, 0);
@@ -1660,12 +1980,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out wBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(wBo, weightsBytes, boneWeights, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(wBo, weightsBytes, ref MemoryMarshal.GetReference(boneWeights), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BoneIndexAttribLocation, wBo, IntPtr.Zero, sizeOfBoneWeight);
 
                 }
                 else
-                    GL.NamedBufferSubData(wBo, IntPtr.Zero, weightsBytes, boneWeights);
+                    GL.NamedBufferSubData(wBo, IntPtr.Zero, weightsBytes, ref MemoryMarshal.GetReference(boneWeights));
             }
 
 #if DEBUG
@@ -1682,7 +2002,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="ArgumentException">UVs must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetUVs(IMeshImp mr, float2[] uvs)
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs)
         {
             if (uvs == null || uvs.Length == 0)
             {
@@ -1702,7 +2022,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(uvBo, uvsBytes, uvs, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(uvBo, uvsBytes, ref MemoryMarshal.GetReference(uvs), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.UvAttribBindingIndex, uvBo, IntPtr.Zero, sizeOfUv);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.UvAttribLocation, 2, VertexAttribType.Float, false, 0);
@@ -1718,12 +2038,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out uvBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(uvBo, uvsBytes, uvs, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(uvBo, uvsBytes, ref MemoryMarshal.GetReference(uvs), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.UvAttribLocation, uvBo, IntPtr.Zero, sizeOfUv);
 
                 }
                 else
-                    GL.NamedBufferSubData(uvBo, IntPtr.Zero, uvsBytes, uvs);
+                    GL.NamedBufferSubData(uvBo, IntPtr.Zero, uvsBytes, ref MemoryMarshal.GetReference(uvs));
             }
 
 #if DEBUG
@@ -1740,7 +2060,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1760,7 +2080,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.ColorAttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.ColorAttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
@@ -1776,12 +2096,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out cBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.ColorAttribLocation, cBo, IntPtr.Zero, sizeOfColor);
 
                 }
                 else
-                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
+                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, ref MemoryMarshal.GetReference(colors));
             }
 
 #if DEBUG
@@ -1798,7 +2118,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors1(IMeshImp mr, uint[] colors)
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1818,7 +2138,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.ColorAttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.Color1AttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
@@ -1834,12 +2154,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out cBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.Color1AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 }
                 else
-                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
+                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, ref MemoryMarshal.GetReference(colors));
             }
 
 #if DEBUG
@@ -1856,7 +2176,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors2(IMeshImp mr, uint[] colors)
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1876,7 +2196,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.Color2AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.Color2AttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
@@ -1892,12 +2212,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out cBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.Color2AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 }
                 else
-                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
+                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, ref MemoryMarshal.GetReference(colors));
             }
 
 #if DEBUG
@@ -1914,7 +2234,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<ushort> triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
             {
@@ -1936,7 +2256,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ApplicationException("Create the VAO first!");
                 }
                 // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
-                GL.NamedBufferStorage(ibo, trisBytes, triangleIndices, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(ibo, trisBytes, ref MemoryMarshal.GetReference(triangleIndices), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayElementBuffer(vao, ibo);
             }
             else
@@ -1949,12 +2269,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out ibo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(ibo, trisBytes, triangleIndices, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(ibo, trisBytes, ref MemoryMarshal.GetReference(triangleIndices), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayElementBuffer(vao, ibo);
 
                 }
                 else
-                    GL.NamedBufferSubData(ibo, IntPtr.Zero, trisBytes, triangleIndices);
+                    GL.NamedBufferSubData(ibo, IntPtr.Zero, trisBytes, ref MemoryMarshal.GetReference(triangleIndices));
             }
 
 #if DEBUG

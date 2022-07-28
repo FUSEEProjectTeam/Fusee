@@ -106,13 +106,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                         Translation = new float3(0, 2000, 0)
                     },
                     MakeEffect.FromDiffuseSpecular(new float4(26/255f,232/255f,148/255f,1)),
-                    new Mesh
-                    {
-                        Vertices = _textMeshVlad.Vertices,
-                        Triangles = _textMeshVlad.Triangles,
-                        Normals = _textMeshVlad.Normals,
-                    }
-                }
+                    new Mesh(_textMeshVlad.Vertices.ToArray(), _textMeshVlad.Triangles.ToArray(), _textMeshVlad.Normals.ToArray())                }
             };
 
             //Lato
@@ -127,12 +121,8 @@ namespace Fusee.Examples.ThreeDFont.Core
                         Translation = new float3(0, 0, 0)
                     },
                     MakeEffect.FromDiffuseSpecular(new float4(27/255f,242/255f,216/255f,1)),
-                    new Mesh
-                    {
-                        Vertices = _textMeshLato.Vertices,
-                        Triangles = _textMeshLato.Triangles,
-                        Normals = _textMeshLato.Normals,
-                    }
+                    new Mesh(_textMeshLato.Vertices.ToArray(), _textMeshLato.Triangles.ToArray(), _textMeshLato.Normals.ToArray())
+
                 }
             };
 
@@ -148,12 +138,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                         Translation = new float3(0, -2000, 0)
                     },
                     MakeEffect.FromDiffuseSpecular(new float4(34/255f,190/255f,219/255f,1)),
-                    new Mesh
-                    {
-                        Vertices = _textMeshGnu.Vertices,
-                        Triangles = _textMeshGnu.Triangles,
-                        Normals = _textMeshGnu.Normals,
-                    }
+                    new Mesh(_textMeshGnu.Vertices.ToArray(), _textMeshGnu.Triangles.ToArray(), _textMeshGnu.Normals.ToArray())
                 }
             };
 

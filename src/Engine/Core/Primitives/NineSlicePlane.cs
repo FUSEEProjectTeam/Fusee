@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core.Primitives
         {
             #region Fields
 
-            Vertices = new[]
+            _vertices = new[]
             {
                 new float3 {x = -0.5f, y = -0.5f, z = 0},
                 new float3 {x = -0.5f, y = -1/6f, z = 0},
@@ -40,7 +40,7 @@ namespace Fusee.Engine.Core.Primitives
             };
 
 
-            Triangles = new ushort[]
+            _triangles = new ushort[]
             {
                 0,12,1,
                 0,11,12,
@@ -72,7 +72,7 @@ namespace Fusee.Engine.Core.Primitives
 
             };
 
-            Normals = new[]
+            _normals = new[]
             {
                 new float3(0, 0, -1),
                 new float3(0, 0, -1),
@@ -92,7 +92,7 @@ namespace Fusee.Engine.Core.Primitives
                 new float3(0, 0, -1)
             };
 
-            UVs = Vertices.Select(vert => new float2(vert.x, vert.y) + new float2(0.5f, 0.5f)).ToArray();
+            _uvs = Vertices.ToArray().Select(vert => new float2(vert.x, vert.y) + new float2(0.5f, 0.5f)).ToArray();
         }
         #endregion
     }

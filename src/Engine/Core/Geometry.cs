@@ -309,7 +309,7 @@ namespace Fusee.Engine.Core
                     normals.Add(CalcFaceNormal(_faces[i]));
                 }
                 // Quick and dirty solution: if the smoothing angle holds for all combinations we create a shared normal,
-                // otherwise we create individual normals for each face. 
+                // otherwise we create individual normals for each face.
                 // TODO: Build groups of shared normals where faces are connected by edges (need edges to do this)
                 bool smoothit = true;
                 for (int i = 0; i < normals.Count; i++)
@@ -408,18 +408,7 @@ namespace Fusee.Engine.Core
                 }
                 mTris.AddRange(Triangulate(f, mFace));
             }
-
-            Mesh m = new()
-            {
-                Vertices = mVerts.ToArray()
-            };
-            if (HasNormals)
-                m.Normals = mNormals.ToArray();
-            if (HasTexCoords)
-                m.UVs = mTexCoords.ToArray();
-
-            m.Triangles = mTris.ToArray();
-            return m;
+            return new(mVerts.ToArray(), mTris.ToArray(), HasNormals ? mNormals.ToArray() : null, HasTexCoords ? mTexCoords.ToArray() : null);
         }
 
         private IEnumerable<ushort> Triangulate(Face f, int[] indices)

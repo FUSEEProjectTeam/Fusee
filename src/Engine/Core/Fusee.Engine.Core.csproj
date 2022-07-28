@@ -6,7 +6,7 @@
 		<IsPackable>true</IsPackable>
 		<Description>Fusee Engine Core</Description>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
@@ -32,6 +32,8 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
+		<PackageReference Include="Microsoft.Toolkit.Diagnostics" Version="7.1.2" />
+
 	</ItemGroup>
-	
+
 </Project>

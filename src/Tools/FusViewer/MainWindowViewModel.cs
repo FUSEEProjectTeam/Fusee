@@ -261,13 +261,13 @@ namespace Fusee.Tools.FusViewer.ViewModel
                 Desc = $"{mesh.Name}, Type: {mesh.MeshType} "
             };
 
-            if (mesh.NormalsSet)
+            if (mesh.IsNormalsSet)
                 comp.Desc += $"Normals Cnt: {mesh.Normals.Length} ";
-            if (mesh.VerticesSet)
+            if (mesh.IsVerticesSet)
                 comp.Desc += $"Vertices Cnt: {mesh.Vertices.Length} ";
-            if (mesh.TrianglesSet)
+            if (mesh.IsTrianglesSet)
                 comp.Desc += $"Triangles Cnt: {mesh.Triangles.Length} ";
-            if (mesh.UVsSet)
+            if (mesh.IsUVsSet)
                 comp.Desc += $"UVs Cnt: {mesh.UVs.Length} ";
 
 
@@ -436,13 +436,13 @@ namespace Fusee.Tools.FusViewer.ViewModel
                 Desc = $"{mesh.Name}, Type: {mesh.MeshType} "
             };
 
-            if (mesh.NormalsSet)
+            if (mesh.IsNormalsSet)
                 comp.Desc += $"Normals Cnt: {mesh.Normals.Length} ";
-            if (mesh.VerticesSet)
+            if (mesh.IsVerticesSet)
                 comp.Desc += $"Vertices Cnt: {mesh.Vertices.Length} ";
-            if (mesh.TrianglesSet)
+            if (mesh.IsTrianglesSet)
                 comp.Desc += $"Triangles Cnt: {mesh.Triangles.Length} ";
-            if (mesh.UVsSet)
+            if (mesh.IsUVsSet)
                 comp.Desc += $"UVs Cnt: {mesh.UVs.Length} ";
 
 

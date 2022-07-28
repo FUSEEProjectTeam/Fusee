@@ -12,7 +12,7 @@ namespace Fusee.Engine.Core.Primitives
         /// Initializes a new instance of the <see cref="Sphere" /> class.
         /// The default sphere has a radius of 1 unit.
         /// </summary>
-        public Sphere(int segments, int rings)
+        public Sphere(int segments, int rings) : base((segments + 1) * rings + 2, (segments + 1) * rings + 2 * 2 * 3)
         {
             BuildSphere(segments, rings);
         }
@@ -46,7 +46,7 @@ namespace Fusee.Engine.Core.Primitives
             vertices[^1] = float3.UnitY * -radius;
             #endregion
 
-            #region Normals		
+            #region Normals
             var normals = new float3[vertices.Length];
             for (var n = 0; n < vertices.Length; n++)
             {
@@ -113,10 +113,10 @@ namespace Fusee.Engine.Core.Primitives
             }
             #endregion
 
-            Vertices = vertices;
-            Triangles = triangles;
-            Normals = normals;
-            UVs = uvs;
+            _vertices = vertices;
+            _triangles = triangles;
+            _normals = normals;
+            _uvs = uvs;
 
         }
 
