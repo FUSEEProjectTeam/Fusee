@@ -302,7 +302,7 @@ namespace Fusee.Engine.Core
                             {
                                 sceneComponent = LookupTransform(test);
                             }
-                            else if(testBone != null)
+                            else if (testBone != null)
                             {
                                 sceneComponent = LookupTransform(testBone);
                             }
@@ -779,9 +779,9 @@ namespace Fusee.Engine.Core
             {
                 _currentNode.Components = new List<SceneComponent>();
             }
-            if(_currentNode.Parent.GetWeights() != null)
+            if (_currentNode.Parent.GetWeights() != null)
             {
-            AddWeightToMesh(mesh, _currentNode.Parent.GetWeights());
+                AddWeightToMesh(mesh, _currentNode.Parent.GetWeights());
             }
             _currentNode.Components.Add(mesh);
 

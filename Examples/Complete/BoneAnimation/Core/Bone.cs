@@ -23,7 +23,7 @@ namespace Fusee.Examples.BoneAnimation.Core
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
-        private float3 bPos  =new float3(1,0,0);
+        private float3 bPos = new float3(1, 0, 0);
         private SceneRendererForward _sceneRenderer;
 
 

@@ -187,7 +187,7 @@ namespace Fusee.Math.Core
         {
             return ToRotationMatrix(this);
         }
-        
+
 
 
         #endregion
