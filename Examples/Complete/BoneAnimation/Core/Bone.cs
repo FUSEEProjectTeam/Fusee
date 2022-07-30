@@ -5,7 +5,10 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
+using Fusee.Xene;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -20,56 +23,82 @@ namespace Fusee.Examples.BoneAnimation.Core
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
-
-        private SceneContainer _rocketScene;
+        private float3 bPos  =new float3(1,0,0);
         private SceneRendererForward _sceneRenderer;
 
-        private const float ZNear = 1f;
-        private const float ZFar = 1000;
-        private readonly float _fovy = M.PiOver4;
 
+        private readonly Camera _mainCam = new(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
+        private ShaderEffect _renderEffect;
+        private Transform _mainCamTransform;
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private SceneContainer _scene;
         private bool _keys;
 
-        private ComputeShader _computeShader;
-        private ShaderEffect _renderEffect;
+        //Shader
+
         private async Task Load()
         {
             Console.WriteLine("Loading scene ...");
-            _scene = AssetStorage.Get<SceneContainer>("Snake zum testen.fus");
-            
+            _scene = AssetStorage.Get<SceneContainer>("Mesh Testing.fus");
+            SceneNode _armature = _scene.Children.FindNodes(node => node.Name == "Armature")?.FirstOrDefault(); ;
+            SceneNode _mesh = _scene.Children.FindNodes(node => node.Name == "Cube")?.FirstOrDefault(); ;
+
+            Weight weight = _armature.GetComponent<Weight>();
+
+            SceneNode cam = new()
+            {
+                Name = "MainCam",
+                Components = new List<SceneComponent>()
+                {
+                    _mainCamTransform,
+                    _mainCam
+
+                }
+            };
+            _scene.Children.Add(cam);
+
+            string vs = await AssetStorage.GetAsync<string>("BoneVertex.vert");
+            string ps = await AssetStorage.GetAsync<string>("BoneFragment.frag");
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            // Load the rocket model
-
-            // Wrap a SceneRenderer around the model.
-            _computeShader = new ComputeShader(
-                        shaderCode: AssetStorage.Get<string>("MandelbrotFractal.comp"),
-                        effectParameters: new IFxParamDeclaration[]
-                        {
-                new FxParamDeclaration<WritableTexture> { Name = "destTex", Value = RWTexture},
-                new FxParamDeclaration<StorageBuffer<float4>>{ Name = "colorStorageBuffer", Value = _colors},
-                new FxParamDeclaration<StorageBuffer<double>>{ Name = "rectStorageBuffer", Value = _rect},
-                new FxParamDeclaration<double>{ Name = "k", Value = _k},
-                        });
-
+            //Load the rocket model
             _renderEffect = new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = AssetStorage.Get<string>("RenderTexToScreen.vert"),
-                PS = AssetStorage.Get<string>("RenderTexToScreen.frag"),
-                StateSet = new RenderStateSet
+                new IFxParamDeclaration[]
+                {
+                    new FxParamDeclaration<float4x4>
+                    {
+                        Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity
+                    },
+                    new FxParamDeclaration<float4x4>
+                    {
+                        Name = "finalBonesMatrices[0]", Value = weight.BindingMatrices.ToArray()[0]
+                    },
+                    new FxParamDeclaration<float4x4>
+                    {
+                        Name = "finalBonesMatrices[1]", Value = weight.BindingMatrices.ToArray()[1]
+                    },
+                    new FxParamDeclaration<float3>
+                    {
+                        Name = "bPos", Value = bPos
+                    }
+                },
+                new RenderStateSet
                 {
                     AlphaBlendEnable = false,
-                    ZEnable = true,
-                }
-            },
+                    ZEnable = true
+                },
+                vs,
+                ps);
+            _mesh.RemoveComponent(typeof(SurfaceEffect));
+            _mesh.Components.Insert(1, _renderEffect);
+            // Wrap a SceneRenderer around the model.
+            _sceneRenderer = new SceneRendererForward(_scene);
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
         public override async Task InitAsync()
@@ -82,7 +111,17 @@ namespace Fusee.Examples.BoneAnimation.Core
         public override void Init()
         {
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+
+            _mainCam.Viewport = new float4(0, 0, 100, 100);
+            _mainCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
+            _mainCam.Layer = -1;
+
+            _mainCamTransform = new Transform()
+            {
+                Rotation = float3.Zero,
+                Translation = new float3(0, 1, -10),
+                Scale = new float3(1, 1, 1)
+            };
         }
 
         public override void Update()
@@ -99,13 +138,6 @@ namespace Fusee.Examples.BoneAnimation.Core
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
-            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
-            {
-                _keys = false;
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
-            }
             else
             {
                 if (_keys)
@@ -120,6 +152,12 @@ namespace Fusee.Examples.BoneAnimation.Core
                     _angleVelVert *= curDamp;
                 }
             }
+            if (!Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
@@ -130,33 +168,17 @@ namespace Fusee.Examples.BoneAnimation.Core
         public override void RenderAFrame()
         {
             // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            RC.Viewport(0, 0, Width, Height);
-
+            bPos = new float3(1, 1, 0);
+            _renderEffect.SetFxParam<float3>("bPos", bPos);
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, -2, -4, 0, 2, 0, 0, 1, 0);
-
-            var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            _mainCamTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
 
             // Render the scene loaded in Init()
-            RC.View = view;
-            RC.Projection = perspective;
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
-            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
-            RC.Projection = orthographic;
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.

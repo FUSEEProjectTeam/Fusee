@@ -820,22 +820,13 @@ class BlenderVisitor:
             else:
                 
                 boneloc = mathutils.Vector((0,0,boneparent.length))
-            if(boneparent.parent is None):
-                self.__fusWriter.AddBoneTransform(
-                    
-                    (boneloc.x, boneloc.y, boneloc.z),
+            self.__fusWriter.AddBoneTransform(
                 
-                    ((bone_parent_quaternion_dif.x , bone_parent_quaternion_dif.z, bone_parent_quaternion_dif.y, bone_parent_quaternion_dif.w)),
-                    bone.name
-                )
-            else:
-                self.__fusWriter.AddBoneTransform(
-                    
-                        (boneloc.x, boneloc.y, boneloc.z),
-                    
-                    ((bone_parent_quaternion_dif.x , bone_parent_quaternion_dif.z, bone_parent_quaternion_dif.y, bone_parent_quaternion_dif.w)),
-                    bone.name
-                )
+                (boneloc.x, boneloc.y, boneloc.z),
+            
+                ((bone_parent_quaternion_dif.x , bone_parent_quaternion_dif.z, bone_parent_quaternion_dif.y, bone_parent_quaternion_dif.w)),
+                bone.name
+            )
 
 
 
@@ -844,8 +835,8 @@ class BlenderVisitor:
         armature.select_set(True)
         bpy.context.view_layer.objects.active = armature
         bpy.ops.object.mode_set(mode='EDIT')
-        for bone in armature.data.edit_bones:
-            bM = self.__fusWriter.BindingMatrices(bone.matrix)
+        for bone in armature.pose.bones:
+            bM = self.__fusWriter.BindingMatrices(bone.matrix_basis)
         bpy.ops.object.mode_set(mode='OBJECT')
         armature.select_set(False)
         for v in ob.data.vertices:
@@ -881,7 +872,13 @@ class BlenderVisitor:
                                     bpy.data.scenes['Scene'].frame_set(frame)
                                     bone = bone_name
                                     bone = ob.pose.bones[bone]
-                                    bone_positon =  (bone.head.x, bone.head.z, bone.head.y)
+                                    if(bone.parent == None):
+                                        bone_positon =  (bone.bone.head_local.x, bone.bone.head_local.z, bone.bone.head_local.y)
+                                    else:
+                                        if(bone.bone.use_connect is False):
+                                            bone_positon = mathutils.Vector((0 + bone.bone.head.x,0 + bone.bone.head.z,bone.parent.length + bone.bone.head.y))
+                                        else:
+                                            bone_positon = mathutils.Vector((0,0,bone.parent.length))
                                     self.__fusWriter.AddKeyframe(frame / self.fps,  bone_positon)
                                 self.__fusWriter.EndAnimationChannel()
                             elif(data_path == "rotation_quaternion"):
@@ -900,11 +897,12 @@ class BlenderVisitor:
                                     self.__fusWriter.AddKeyframe(frame / self.fps, (rot.x, rot.z, rot.y, rot. w))
                                 self.__fusWriter.EndAnimationChannel()
                     self.__fusWriter.EndAnimation()
+                    bpy.data.scenes['Scene'].frame_set(int(frames[0]))
         except Exception:       
             print(traceback.format_exc())
             selected_strips = []
         self.__fusWriter.EndAnimation()
-    
+        bpy.data.scenes['Scene'].frame_set(int(frames[0]))
     def OrderKeyframes(self, nla_strip):
         action = nla_strip.action
         kps = []

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31911.196
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{BF6B8C64-C111-450A-A8CA-297B75CDFEF8}"
 EndProject
@@ -276,6 +276,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Animation.Core", "Examples\Complete\Animation\Core\Fusee.Examples.Animation.Core.csproj", "{51364D5B-1C58-403D-93E6-ED4D168D0C95}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Animation.Blazor", "Examples\Complete\Animation\Blazor\Fusee.Examples.Animation.Blazor.csproj", "{8751E127-907E-4DA5-8CCC-64D397BBF3D4}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudPotree2.Wpf", "Examples\Complete\PointCloudPotree2\Wpf\Fusee.Examples.PointCloudPotree2.Wpf.csproj", "{35839EA8-889B-4C26-94CB-9DB309E9C9F3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Desktop", "Desktop", "{FA703895-434C-4ECF-8E0D-3145280DA2C6}"
@@ -309,6 +310,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImGui", "ImGui", "{D1853E25-C274-44E7-8AB6-9BE3A4E61928}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudPotree2.ImGui", "Examples\Complete\PointCloudPotree2\ImGui\Fusee.Examples.PointCloudPotree2.ImGui.csproj", "{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BoneAnimation", "BoneAnimation", "{E18A18D5-D720-4E65-96FC-F3A5D9EBABA4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.BoneAnimation.Desktop", "Examples\Complete\BoneAnimation\Desktop\Fusee.Examples.BoneAnimation.Desktop.csproj", "{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.BoneAnimation.Core", "Examples\Complete\BoneAnimation\Core\Fusee.Examples.BoneAnimation.Core.csproj", "{97E64A42-1866-4191-B6A2-0D7075A39304}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1804,6 +1811,42 @@ Global
 		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{97E64A42-1866-4191-B6A2-0D7075A39304}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1941,6 +1984,9 @@ Global
 		{A1E5AC7E-97B2-4BED-AB75-780416E422A5} = {D1853E25-C274-44E7-8AB6-9BE3A4E61928}
 		{D1853E25-C274-44E7-8AB6-9BE3A4E61928} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
 		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
+		{E18A18D5-D720-4E65-96FC-F3A5D9EBABA4} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
+		{A9DE0D58-6A9B-44D2-B997-F5DDF967FE99} = {E18A18D5-D720-4E65-96FC-F3A5D9EBABA4}
+		{97E64A42-1866-4191-B6A2-0D7075A39304} = {E18A18D5-D720-4E65-96FC-F3A5D9EBABA4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

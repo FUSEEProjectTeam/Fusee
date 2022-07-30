@@ -35,7 +35,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="v">The vector part</param>
         /// <param name="w">The w part</param>
-        public Quaternion(float4 v)
+        public QuaternionF(float4 v)
         {
             _xyz = v.xyz;
             _w = v.w;

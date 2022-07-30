@@ -10,8 +10,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Assets\FuseeIconTop32.png" />
+	  <None Remove="Assets\FuseeText.png" />
+	  <None Remove="Assets\Lato-Black.ttf" />
+	  <None Remove="Assets\Mesh Testing.fus" />
 	  <None Remove="Assets\parent test.fus" />
+	  <None Remove="Assets\RocketFus.fus" />
 	  <None Remove="Assets\Snake zum testen.fus" />
+	  <None Remove="Assets\Walk.fus" />
 	</ItemGroup>
 
 	<ItemGroup>

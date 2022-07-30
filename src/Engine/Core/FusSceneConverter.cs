@@ -592,7 +592,7 @@ namespace Fusee.Engine.Core
             SceneComponent sc;
             if (_componentMap.TryGetValue(t, out sc))
                 return (Transform)sc;
-            Quaternion q = new Quaternion(t.RotationQuaternion.xyz, t.RotationQuaternion.w);
+            QuaternionF q = new QuaternionF(t.RotationQuaternion.xyz, t.RotationQuaternion.w);
             Transform nt = new Transform
             {
                 Translation = t.Translation,

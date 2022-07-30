@@ -359,7 +359,7 @@ namespace Fusee.Xirkit
             AddConverter<float4, float3>(v => new float3(v.x, v.y, v.z));
             AddConverter<float4, float4>(v => v);
             AddConverter<float4, float4x4>(v => new float4x4(v.x, v.y, v.z, v.w, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            AddConverter<float4, Quaternion>(v => new Quaternion(v));
+            AddConverter<float4, QuaternionF>(v => new QuaternionF(v));
 
 
             // From float4x4
@@ -393,7 +393,7 @@ namespace Fusee.Xirkit
             AddConverter<double4x4, float4x4>(v => new float4x4((float)v.M11, (float)v.M12, (float)v.M13, (float)v.M14, (float)v.M21, (float)v.M22, (float)v.M23, (float)v.M24, (float)v.M31, (float)v.M32, (float)v.M33, (float)v.M34, (float)v.M41, (float)v.M42, (float)v.M43, (float)v.M44));
 
             // From Quaternion
-            AddConverter<Quaternion, float4>(q => q.ToFloat4());
+            AddConverter<QuaternionF, float4>(q => q.ToFloat4());
         }
 
         private static void AddConverter<TParm, TRet>(Math.Core.Converter<TParm, TRet> c)
