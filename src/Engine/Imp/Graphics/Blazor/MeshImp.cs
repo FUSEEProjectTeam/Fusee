@@ -22,8 +22,8 @@ namespace Fusee.Engine.Imp.Blazor
         internal WebGLBuffer VertexBufferObject;
         internal WebGLBuffer NormalBufferObject;
         internal WebGLBuffer ColorBufferObject;
-        internal WebGLBuffer Color1BufferObject;
-        internal WebGLBuffer Color2BufferObject;
+        internal WebGLBuffer ColorBufferObject1;
+        internal WebGLBuffer ColorBufferObject2;
         internal WebGLBuffer UVBufferObject;
         internal WebGLBuffer BoneIndexBufferObject;
         internal WebGLBuffer BoneWeightBufferObject;
@@ -174,7 +174,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void InvalidateColors1()
         {
-            Color1BufferObject = null;
+            ColorBufferObject1 = null;
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void InvalidateColors2()
         {
-            Color2BufferObject = null;
+            ColorBufferObject2 = null;
         }
 
         /// <summary>
@@ -206,12 +206,12 @@ namespace Fusee.Engine.Imp.Blazor
         /// <summary>
         /// Returns whether the second color buffer is created on the GPU.
         /// </summary>
-        public bool ColorsSet1 => Color1BufferObject != null;
+        public bool ColorsSet1 => ColorBufferObject1 != null;
 
         /// <summary>
         /// Returns whether the third color buffer is created on the GPU.
         /// </summary>
-        public bool ColorsSet2 => Color2BufferObject != null;
+        public bool ColorsSet2 => ColorBufferObject2 != null;
 
         #endregion
     }

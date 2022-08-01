@@ -2104,6 +2104,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("bufferSubData", target, dstByteOffset, srcData);
         }
 
+
         public void BufferData(uint target, Memory<byte> srcData, uint usage, uint srcOffset, uint length)
         {
             Invoke("bufferData", target, srcData, usage, srcOffset, length);

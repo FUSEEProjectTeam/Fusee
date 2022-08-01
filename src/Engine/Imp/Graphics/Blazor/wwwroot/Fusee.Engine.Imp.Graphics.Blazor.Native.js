@@ -288,14 +288,14 @@ function customBufferSubDataUInt(target, dstByteOffset, data) {
     gl2.bufferSubData(target, dstByteOffset, ints, 0);
 }
 
-function customBufferDataUInt(target, data, usage) {
 
+function customBufferSubDataInt(target, dstByteOffset, data) {
     const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
 
     const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 4);
     const length = Blazor.platform.getArrayLength(data);
-    const ints = new Uint16Array(Module.HEAPU8.buffer, dataPtr, length);
-    gl2.bufferData(target, ints, usage);
+    const ints = new Int32Array(Module.HEAPU8.buffer, dataPtr, length);
+    gl2.bufferSubData(target, dstByteOffset, ints, 0);
 }
 
 function customBufferSubDataUShort(target, dstByteOffset, data) {
@@ -307,6 +307,18 @@ function customBufferSubDataUShort(target, dstByteOffset, data) {
     const ints = new Uint16Array(Module.HEAPU8.buffer, dataPtr, length);
     gl2.bufferSubData(target, dstByteOffset, ints, 0);
 }
+
+function customBufferDataUInt(target, data, usage) {
+
+    const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
+
+    const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 4);
+    const length = Blazor.platform.getArrayLength(data);
+    const ints = new Uint16Array(Module.HEAPU8.buffer, dataPtr, length);
+    gl2.bufferData(target, ints, usage);
+}
+
+
 
 function customBufferDataUShort(target, data, usage) {
 
