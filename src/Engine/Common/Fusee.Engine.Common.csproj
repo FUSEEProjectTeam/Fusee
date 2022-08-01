@@ -15,8 +15,8 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
-		<PackageReference Include="Microsoft.Toolkit.Diagnostics" Version="7.1.2" />
-
+		<PackageReference Include="Microsoft.Toolkit.Diagnostics" Version="7.1.2" >
+			<PrivateAssets>analyzers</PrivateAssets>
+		</PackageReference>
 	</ItemGroup>
-
 </Project>
