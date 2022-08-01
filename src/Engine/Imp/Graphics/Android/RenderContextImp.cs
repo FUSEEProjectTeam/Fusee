@@ -1694,6 +1694,361 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     trisBytes, vboBytes));
         }
 
+
+
+
+        /// <summary>
+        /// Binds the vertices onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (vertices == null || vertices.Length == 0)
+                throw new ArgumentException($"{nameof(vertices)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).VertexArrayObject;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 3;
+            var changedData = vertices[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(float) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the tangents onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="tangents">The tangents.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (tangents == null || tangents.Length == 0)
+                throw new ArgumentException($"{nameof(tangents)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).TangentBufferObject;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 4;
+            var changedData = tangents[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(float) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the bitangents onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="bitangents">The bitangents.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (bitangents == null || bitangents.Length == 0)
+                throw new ArgumentException($"{nameof(bitangents)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).BitangentBufferObject;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 3;
+            var changedData = bitangents[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(float) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the noramls onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="normals">The normals.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (normals == null || normals.Length == 0)
+                throw new ArgumentException($"{nameof(normals)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).NormalBufferObject;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 3;
+            var changedData = normals[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(float) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the UVs onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="uvs">The UVs.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">UVs must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (uvs == null || uvs.Length == 0)
+                throw new ArgumentException($"{nameof(uvs)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).UVBufferObject;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 2;
+            var changedData = uvs[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(float) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (colors == null || colors.Length == 0)
+                throw new ArgumentException($"{nameof(colors)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).ColorBufferObject;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 1;
+            var changedData = colors[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(uint) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (colors == null || colors.Length == 0)
+                throw new ArgumentException($"{nameof(colors)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).ColorBufferObject1;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 1;
+            var changedData = colors[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(uint) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the colors onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (colors == null || colors.Length == 0)
+                throw new ArgumentException($"{nameof(colors)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).ColorBufferObject2;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 1;
+            var changedData = colors[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(uint) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the triangles onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="triangleIndices">The triangle indices.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Triangle indices must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<ushort> triangleIndices, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (triangleIndices == null || triangleIndices.Length == 0)
+                throw new ArgumentException($"{nameof(triangleIndices)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).ElementBufferObject;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 1;
+            var changedData = triangleIndices[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(ushort) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the bones indices onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneIndices">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Bone indices must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (boneIndices == null || boneIndices.Length == 0)
+                throw new ArgumentException($"{nameof(boneIndices)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).BoneIndexBufferObject;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 4;
+            var changedData = boneIndices[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(float) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
+        /// <summary>
+        /// Binds the bones weights onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneWeights">The colors.</param>
+        /// <param name="changedRange">The changed range indices.</param>
+        /// <exception cref="ArgumentException">Bone weights must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights, Tuple<int, int> changedRange)
+        {
+            if (mr == null)
+                return;
+
+            if (boneWeights == null || boneWeights.Length == 0)
+                throw new ArgumentException($"{nameof(boneWeights)} must not be empty or null!");
+
+            var bufferObj = ((MeshImp)mr).BoneWeightBufferObject;
+            if (bufferObj == 0)
+            {
+                throw new ApplicationException("Create the buffer first!");
+            }
+
+            var itemCnt = 4;
+            var changedData = boneWeights[changedRange.Item1..changedRange.Item2];
+            var size = sizeof(float) * itemCnt;
+            var bytes = changedData.Length * size;
+            var offset = changedRange.Item1 * size;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
+        }
+
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
@@ -2758,360 +3113,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.ReadPixels(x, y, 1, 1, PixelFormat.DepthComponent, PixelType.UnsignedByte, ref depth);
 
             return depth;
-        }
-
-
-
-        /// <summary>
-        /// Binds the vertices onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="vertices">The vertices.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (vertices == null || vertices.Length == 0)
-                throw new ArgumentException($"{nameof(vertices)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).VertexArrayObject;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 3;
-            var changedData = vertices[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(float) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the tangents onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="tangents">The tangents.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (tangents == null || tangents.Length == 0)
-                throw new ArgumentException($"{nameof(tangents)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).TangentBufferObject;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 4;
-            var changedData = tangents[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(float) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the bitangents onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="bitangents">The bitangents.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (bitangents == null || bitangents.Length == 0)
-                throw new ArgumentException($"{nameof(bitangents)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).BitangentBufferObject;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 3;
-            var changedData = bitangents[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(float) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the noramls onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="normals">The normals.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (normals == null || normals.Length == 0)
-                throw new ArgumentException($"{nameof(normals)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).NormalBufferObject;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 3;
-            var changedData = normals[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(float) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the UVs onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="uvs">The UVs.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">UVs must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (uvs == null || uvs.Length == 0)
-                throw new ArgumentException($"{nameof(uvs)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).UVBufferObject;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 2;
-            var changedData = uvs[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(float) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the colors onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="colors">The colors.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">Colors must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (colors == null || colors.Length == 0)
-                throw new ArgumentException($"{nameof(colors)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).ColorBufferObject;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 1;
-            var changedData = colors[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(uint) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the colors onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="colors">The colors.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">Colors must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (colors == null || colors.Length == 0)
-                throw new ArgumentException($"{nameof(colors)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).ColorBufferObject1;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 1;
-            var changedData = colors[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(uint) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the colors onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="colors">The colors.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">Colors must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (colors == null || colors.Length == 0)
-                throw new ArgumentException($"{nameof(colors)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).ColorBufferObject2;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 1;
-            var changedData = colors[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(uint) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the triangles onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="triangleIndices">The triangle indices.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">Triangle indices must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, ReadOnlySpan<ushort> triangleIndices, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (triangleIndices == null || triangleIndices.Length == 0)
-                throw new ArgumentException($"{nameof(triangleIndices)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).ElementBufferObject;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 1;
-            var changedData = triangleIndices[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(ushort) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the bones indices onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="boneIndices">The colors.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">Bone indices must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (boneIndices == null || boneIndices.Length == 0)
-                throw new ArgumentException($"{nameof(boneIndices)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).BoneIndexBufferObject;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 4;
-            var changedData = boneIndices[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(float) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
-        }
-
-        /// <summary>
-        /// Binds the bones weights onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="boneWeights">The colors.</param>
-        /// <param name="changedRange">The changed range indices.</param>
-        /// <exception cref="ArgumentException">Bone weights must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
-        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights, Tuple<int, int> changedRange)
-        {
-            if (mr == null)
-                return;
-
-            if (boneWeights == null ||boneWeights.Length == 0)
-                throw new ArgumentException($"{nameof(boneWeights)} must not be empty or null!");
-
-            var bufferObj = ((MeshImp)mr).BoneWeightBufferObject;
-            if (bufferObj == 0)
-            {
-                throw new ApplicationException("Create the buffer first!");
-            }
-
-            var itemCnt = 4;
-            var changedData = boneWeights[changedRange.Item1..changedRange.Item2];
-            var size = sizeof(float) * itemCnt;
-            var bytes = changedData.Length * size;
-            var offset = changedRange.Item1 * size;
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObj);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)bytes, ref MemoryMarshal.GetReference(changedData));
         }
     }
     #endregion
