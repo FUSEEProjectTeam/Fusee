@@ -882,10 +882,25 @@ namespace Fusee.Engine.Core.Scene
 
         #endregion
 
+        private AABBf _aabb;
+
         /// <summary>
         /// The bounding box of this geometry chunk.
         /// </summary>
-        public AABBf BoundingBox;
+        public AABBf BoundingBox
+        {
+            get
+            {
+                if (_aabb == null || _aabb.Size == float3.Zero)
+                    _aabb = new AABBf(_vertices);
+
+                return _aabb;
+            }
+            set
+            {
+                _aabb = value;
+            }
+        }
 
         /// <summary>
         /// The type of mesh which is represented by this instance (e. g. triangle mesh, point, line, etc...)
