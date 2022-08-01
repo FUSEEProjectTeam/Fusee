@@ -179,7 +179,7 @@ namespace Fusee.Engine.Core
             else if (meshDataEventArgs.ChangedRanges != null)
             {
                 // we changed several ranges
-                foreach(var range in meshDataEventArgs.ChangedRanges)
+                foreach (var range in meshDataEventArgs.ChangedRanges)
                 {
                     switch (meshDataEventArgs.ChangedEnum)
                     {

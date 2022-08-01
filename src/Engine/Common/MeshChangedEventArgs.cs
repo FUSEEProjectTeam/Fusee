@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Diagnostics;
+using System;
 using System.Collections.Generic;
-using Microsoft.Toolkit.Diagnostics;
 
 namespace Fusee.Engine.Common
 {
@@ -95,7 +95,7 @@ namespace Fusee.Engine.Common
 
             // check that each start, end idx is greater than 0
             // and start is not greater than end
-            foreach(var range in ranges)
+            foreach (var range in ranges)
             {
                 Guard.IsGreaterThanOrEqualTo(range.Item1, 0, nameof(range));
                 Guard.IsGreaterThanOrEqualTo(range.Item2, 0, nameof(range));
