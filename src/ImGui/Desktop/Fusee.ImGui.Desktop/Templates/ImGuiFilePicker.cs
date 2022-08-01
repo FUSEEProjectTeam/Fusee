@@ -15,9 +15,24 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public EventHandler<string?>? OnPicked;
 
         /// <summary>
-        /// Title of window (visible in top bar)
+        /// Title of window (visible in top bar).
         /// </summary>
         public string Id = "Open File";
+
+        /// <summary>
+        /// Caption of the "Open" button.
+        /// </summary>
+        public string OpenFileTxt = "Open";
+
+        /// <summary>
+        /// Caption of the "Cancel" button.
+        /// </summary>
+        public string CancelFileOpenTxt = "Cancel";
+
+        /// <summary>
+        /// File input hint text.
+        /// </summary>
+        public string FileInputHintTxt = "Selected file";
 
         public readonly bool OnlyAllowFolders;
         public readonly List<string>? AllowedExtensions;
@@ -117,7 +132,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             // Folder Selection
             var currentFolder = _currentFolder;
             ImGui.SameLine();
-            ImGui.SetNextItemWidth(400f);
             ImGui.InputTextWithHint("Folder", "Path to folder", ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
                 var arr = currentFolder.ToCharArray();
@@ -222,15 +236,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 ImGui.EndChild();
             }
 
-
-
             // File Selector
             ImGui.NewLine();
-            ImGui.BeginChild("#FileSelector", new Vector2(0, 30));
+            ImGui.BeginChild("#FileSelector", new Vector2(0, ImGui.GetFontSize() * 2f), false, ImGuiWindowFlags.AlwaysAutoResize);
 
             var selectedFile = !string.IsNullOrWhiteSpace(SelectedFile) ? SelectedFile : "";
-            ImGui.SetNextItemWidth(400f);
-            ImGui.InputTextWithHint("File", "Selected file", ref selectedFile, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
+            ImGui.InputTextWithHint("File", FileInputHintTxt, ref selectedFile, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
                 var arr = selectedFile.ToCharArray();
 
@@ -276,7 +287,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 if (fi.Exists && AllowedExtensions != null && AllowedExtensions.Contains(fi.Extension))
                 {
                     ImGui.SameLine();
-                    if (ImGui.Button("Open"))
+                    if (ImGui.Button(OpenFileTxt))
                     {
                         OnPicked?.Invoke(this, Path.Combine(_currentFolder, selectedFile));
                         _filePickerOpen = false;
@@ -287,12 +298,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.SameLine();
                 ImGui.BeginDisabled();
-                ImGui.Button("Open");
+                ImGui.Button(OpenFileTxt);
                 ImGui.EndDisabled();
             }
 
             ImGui.SameLine();
-            if (ImGui.Button("Cancel"))
+            if (ImGui.Button(CancelFileOpenTxt))
             {
                 OnPicked?.Invoke(this, null);
                 _filePickerOpen = false;
