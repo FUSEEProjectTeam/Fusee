@@ -918,15 +918,15 @@ namespace Fusee.Engine.Core.Scene
         {
             // check that normals, uvs and colors are equal length to vertices
             if (normals != null)
-                Guard.IsEqualTo(vertices.Length, normals.Length, nameof(normals));
+                Guard.IsEqualTo(normals.Length, vertices.Length, nameof(normals));
             if (uvs != null)
-                Guard.IsEqualTo(vertices.Length, uvs.Length, nameof(uvs));
+                Guard.IsEqualTo(uvs.Length, vertices.Length, nameof(uvs));
             if (colors != null)
-                Guard.IsEqualTo(vertices.Length, colors.Length, nameof(colors));
+                Guard.IsEqualTo(colors.Length, vertices.Length, nameof(colors));
             if (colors1 != null)
-                Guard.IsEqualTo(vertices.Length, colors1.Length, nameof(colors1));
+                Guard.IsEqualTo(colors1.Length, vertices.Length, nameof(colors1));
             if (colors2 != null)
-                Guard.IsEqualTo(vertices.Length, colors2.Length, nameof(colors2));
+                Guard.IsEqualTo(colors2.Length, vertices.Length, nameof(colors2));
 
             _boneWeights = boneWeights;
             _boneIndices = boneIndices;

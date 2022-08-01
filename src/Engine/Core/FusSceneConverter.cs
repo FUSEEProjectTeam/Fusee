@@ -7,6 +7,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
+using Microsoft.Toolkit.Diagnostics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -549,6 +550,27 @@ namespace Fusee.Engine.Core
                 _currentNode.Components.Add(mesh);
                 return;
             }
+
+            Guard.IsGreaterThan(m.Vertices.Length, 0, nameof(m.Vertices));
+            Guard.IsGreaterThan(m.Triangles.Length, 0, nameof(m.Triangles));
+            Guard.IsGreaterThan(m.Normals.Length, 0, nameof(m.Normals));
+            Guard.IsGreaterThan(m.UVs.Length, 0, nameof(m.UVs));
+
+            if (m.BoneWeights != null && m.Vertices.Length != m.BoneWeights.Length)
+                m.BoneWeights = new float4[m.Vertices.Length];
+
+            if (m.BoneIndices != null && m.Vertices.Length != m.BoneIndices.Length)
+                m.BoneIndices = new float4[m.Vertices.Length];
+
+            if (m.Tangents != null && m.Vertices.Length != m.Tangents.Length)
+                m.Tangents = new float4[m.Vertices.Length];
+
+            if (m.BiTangents != null && m.Vertices.Length != m.BiTangents.Length)
+                m.BiTangents = new float3[m.Vertices.Length];
+
+            if (m.Colors != null && m.Vertices.Length != m.Colors.Length)
+                m.Colors = new uint[m.Vertices.Length];
+
 
             // convert mesh
             mesh = new Mesh(m.Vertices, m.Triangles, m.Normals, m.UVs, m.BoneWeights, m.BoneIndices, m.Tangents, m.BiTangents, m.Colors)
