@@ -40,10 +40,6 @@ namespace Fusee.Examples.MuVista.Core
             BackgroundColor = float4.One
         };
         private Camera _guiCam;
-        //private readonly Camera _guiCam = new Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4)
-        //{
-        //    BackgroundColor= float4.One
-        //};
 
         private GuiButton _zoomIn;
         private GuiButton _zoomOut;
@@ -70,46 +66,13 @@ namespace Fusee.Examples.MuVista.Core
 
             Sphere sphere = new Sphere(10, 20, 50);
 
-            /*
-            TextureInputSpecular colorInput = new TextureInputSpecular()
-            {
-                Albedo = float4.One,
-                //Emission = float4.Zero,
-                //Shininess = 1.0f,
-                //SpecularStrength = 0.0f,
-                AlbedoMix = 1.0f,
-                AlbedoTex = sphereTex,
-                TexTiles = float2.One,
-                Roughness = 0.0f
-            };
-            colorInput2 = new TextureInputSpecular()
-            {
-                Albedo = float4.One,
-                AlbedoMix = 1.0f,
-                AlbedoTex = sphereTex2,
-                TexTiles = float2.One,
-                Roughness = 0.0f
-            };
-            var lightingSetup = LightingSetupFlags.Unlit | LightingSetupFlags.AlbedoTex;
-
-            _animationEffect = new VertexAnimationSurfaceEffect(lightingSetup, colorInput, FragShards.SurfOutBody_Textures(lightingSetup), VertShards.SufOutBody_PosAnimation)
-            {
-                PercentPerVertex = 1.0f,
-                PercentPerVertex1 = 0.0f
-            };
-            */
-
             //Creating CameraComponent and TransformComponent
             _mainCam.Viewport = new float4(0, 0, 100, 100);
             _mainCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
             _mainCam.Layer = -1;
             _mainCam.Active = true;
 
-            //_guiCam.ClearColor = false;
-            //_guiCam.ClearDepth = false;
-            //_guiCam.FrustumCullingOn = false;
-            //_guiCam.Layer = 99;
-
+            
             _mainCamTransform = new Transform()
             {
                 Rotation = new float3(_angleVert, _angleHorz, 0),
@@ -139,7 +102,7 @@ namespace Fusee.Examples.MuVista.Core
                 );
 
 
-            _gui = new GUI(this, Width, Height, _canvasRenderMode, _mainCamTransform, _guiCam, out _zoomOut, out _zoomIn); //GUI.CreateDefaultUi(this, Width, Height, "Test", out _zoomOut, out _zoomIn);
+            _gui = new GUI(Width, Height, _canvasRenderMode, _mainCamTransform, _guiCam, out _zoomOut, out _zoomIn);
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -174,9 +137,6 @@ namespace Fusee.Examples.MuVista.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_sphereScene);
             _guiRenderer = new SceneRendererForward(_gui);
-
-            //_zoomOut.OnMouseDown += BtnZoomOutDown;
-            //_zoomIn.OnMouseDown += BtnZoomInDown;
         }
 
         // RenderAFrame is called once a frame
