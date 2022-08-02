@@ -67,6 +67,9 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
         private string _currentFolder;
 
+        // needed for width calculation
+        private Vector2 _sizeOfInputText;
+
         /// <summary>
         /// Text color of folder
         /// </summary>
@@ -130,9 +133,20 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         {
             if (!_filePickerOpen) return;
 
+
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
             ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new Vector2(0, 250));
+
+            // calculate needed width for window to fit input text, cancel and OK button in one line
+            // as the child window adapts/inherits it's size from the parent window we need to pre-calculate
+            // the needed size
+            // buttonSize = CalcTextSize() + FramePadding * 2
+            var neededWindowWidth = ImGui.CalcTextSize(OpenFileTxt).X + (ImGui.GetStyle().FramePadding * 2).X +
+                ImGui.CalcTextSize(CancelFileOpenTxt).X + (ImGui.GetStyle().FramePadding * 2).X +
+                ImGui.CalcTextSize(FileLabelTxt).X + (ImGui.GetStyle().FramePadding * 2).X +
+                ImGui.GetStyle().WindowPadding.X + _sizeOfInputText.X;
+
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new Vector2(neededWindowWidth, 350));
 
             ImGui.PushStyleColor(ImGuiCol.WindowBg, WindowBackground.ToUintColor());
 
@@ -197,7 +211,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.PushStyleColor(ImGuiCol.ChildBg, FileSelectionMenuBackground.ToUintColor());
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 10));
 
-            if (ImGui.BeginChild("#FolderBrowser", new Vector2(0, 200), false, ImGuiWindowFlags.AlwaysUseWindowPadding))
+            if (ImGui.BeginChild("#FolderBrowser", new Vector2(-1, 200), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize))
             {
                 var di = new DirectoryInfo(_currentFolder);
                 if (di.Exists)
@@ -263,7 +277,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             // File Selector
             ImGui.NewLine();
-            ImGui.BeginChild("#FileSelector", new Vector2(0, ImGui.GetFontSize() * 2f), false, ImGuiWindowFlags.AlwaysAutoResize);
+            ImGui.BeginChild("#FileSelector", new Vector2(-1, -1), false, ImGuiWindowFlags.AlwaysAutoResize);
 
             var selectedFile = !string.IsNullOrWhiteSpace(SelectedFile) ? SelectedFile : "";
             ImGui.InputTextWithHint(FileLabelTxt, FileInputHintTxt, ref selectedFile, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
@@ -278,6 +292,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 }
                 return 0;
             });
+            if(_sizeOfInputText == Vector2.Zero)
+                _sizeOfInputText = ImGui.GetItemRectSize();
 
             if (File.Exists(selectedFile))
             {
