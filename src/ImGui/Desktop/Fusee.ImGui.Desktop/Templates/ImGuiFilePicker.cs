@@ -292,7 +292,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 }
                 return 0;
             });
-            if(_sizeOfInputText == Vector2.Zero)
+            if (_sizeOfInputText == Vector2.Zero)
                 _sizeOfInputText = ImGui.GetItemRectSize();
 
             if (File.Exists(selectedFile))
