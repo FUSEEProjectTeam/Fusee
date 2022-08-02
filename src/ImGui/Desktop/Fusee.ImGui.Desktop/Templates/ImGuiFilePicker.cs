@@ -34,6 +34,31 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// </summary>
         public string FileInputHintTxt = "Selected file";
 
+        /// <summary>
+        /// Path to folder text.
+        /// </summary>
+        public string PathToFolderTxt = "Path to folder";
+
+        /// <summary>
+        /// Folder not found warning text.
+        /// </summary>
+        public string FolderNotFoundTxt = "Folder not found!";
+
+        /// <summary>
+        /// File not found warning text.
+        /// </summary>
+        public string FileNotFoundTxt = "File not found!";
+
+        /// <summary>
+        /// Caption of folder input text
+        /// </summary>
+        public string FolderLabelTxt = "Folder";
+
+        /// <summary>
+        /// Caption of file input text
+        /// </summary>
+        public string FileLabelTxt = "File";
+
         public readonly bool OnlyAllowFolders;
         public readonly List<string>? AllowedExtensions;
 
@@ -132,7 +157,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             // Folder Selection
             var currentFolder = _currentFolder;
             ImGui.SameLine();
-            ImGui.InputTextWithHint("Folder", "Path to folder", ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
+            ImGui.InputTextWithHint(FolderLabelTxt, PathToFolderTxt, ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
                 var arr = currentFolder.ToCharArray();
 
@@ -162,7 +187,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
                 ImGui.BeginTooltip();
-                ImGui.TextColored(WarningTextColor, "Folder not found!");
+                ImGui.TextColored(WarningTextColor, FolderNotFoundTxt);
                 ImGui.EndTooltip();
                 ImGui.PopStyleVar();
             }
@@ -241,7 +266,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.BeginChild("#FileSelector", new Vector2(0, ImGui.GetFontSize() * 2f), false, ImGuiWindowFlags.AlwaysAutoResize);
 
             var selectedFile = !string.IsNullOrWhiteSpace(SelectedFile) ? SelectedFile : "";
-            ImGui.InputTextWithHint("File", FileInputHintTxt, ref selectedFile, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
+            ImGui.InputTextWithHint(FileLabelTxt, FileInputHintTxt, ref selectedFile, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
                 var arr = selectedFile.ToCharArray();
 
@@ -276,7 +301,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
                 ImGui.BeginTooltip();
-                ImGui.TextColored(WarningTextColor, "File not found!");
+                ImGui.TextColored(WarningTextColor, FileNotFoundTxt);
                 ImGui.EndTooltip();
                 ImGui.PopStyleVar();
             }
