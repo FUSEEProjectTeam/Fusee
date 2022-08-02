@@ -7,15 +7,14 @@
    
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
-  </ItemGroup>
-  
+  </ItemGroup>  
 
   <ItemGroup>
-	<ProjectReference Include="..\..\..\..\..\..\Fusee\Fusee\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-    <ProjectReference Include="..\..\..\..\..\..\Fusee\Fusee\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="..\..\..\..\..\..\Fusee\Fusee\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
-    <ProjectReference Include="..\..\..\..\..\..\Fusee\Fusee\src\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="..\..\..\..\..\..\Fusee\Fusee\src\Serialization\Fusee.Serialization.csproj" />
+	<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
     <ProjectReference Include="..\Core\Fusee.Examples.MuVista.Core.csproj" />
   </ItemGroup>
 </Project>
