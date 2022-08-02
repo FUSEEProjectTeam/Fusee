@@ -8,6 +8,7 @@ using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -26,7 +27,7 @@ namespace Fusee.Examples.MuVista.Core
         private SceneRendererForward _sceneRenderer;
         private SceneRendererForward _guiRenderer;
 
-        private GUI _gui;
+        private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
@@ -38,10 +39,14 @@ namespace Fusee.Examples.MuVista.Core
         {
             BackgroundColor = float4.One
         };
-        private readonly Camera _guiCam = new Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4)
-        {
-            BackgroundColor= float4.One
-        };
+        private Camera _guiCam;
+        //private readonly Camera _guiCam = new Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4)
+        //{
+        //    BackgroundColor= float4.One
+        //};
+
+        private GuiButton _zoomIn;
+        private GuiButton _zoomOut;
 
         private float _maxFov = 1.2f;
         private float _minFov = 0.3f;
@@ -53,8 +58,13 @@ namespace Fusee.Examples.MuVista.Core
 
 
         // Init is called on startup.
-        public override void Init()
+        public override async Task InitAsync()
         {
+            _guiCam = new Camera(ProjectionMethod.Orthographic, 0.01f, 500, M.PiOver4)
+            {
+                Active = true,
+                ClearColor = false
+            };
 
             var sphereTex = new Texture(AssetStorage.Get<ImageData>("LadyBug_C1P2.jpg"));
 
@@ -95,10 +105,10 @@ namespace Fusee.Examples.MuVista.Core
             _mainCam.Layer = -1;
             _mainCam.Active = true;
 
-            _guiCam.ClearColor = false;
-            _guiCam.ClearDepth = false;
-            _guiCam.FrustumCullingOn = false;
-            _guiCam.Layer = 99;
+            //_guiCam.ClearColor = false;
+            //_guiCam.ClearDepth = false;
+            //_guiCam.FrustumCullingOn = false;
+            //_guiCam.Layer = 99;
 
             _mainCamTransform = new Transform()
             {
@@ -128,7 +138,8 @@ namespace Fusee.Examples.MuVista.Core
                     emissionColor: float3.Zero
                 );
 
-            _gui = new GUI(Width, Height, _canvasRenderMode, _mainCamTransform, _guiCam);
+
+            _gui = GUI.CreateDefaultUi(this, Width, Height, "Test", out _zoomOut, out _zoomIn);//new GUI(Width, Height, _canvasRenderMode, _mainCamTransform, _guiCam);
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -165,16 +176,15 @@ namespace Fusee.Examples.MuVista.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_sphereScene);
-
-
             _guiRenderer = new SceneRendererForward(_gui);
+
+            //_zoomOut.OnMouseDown += BtnZoomOutDown;
+            //_zoomIn.OnMouseDown += BtnZoomInDown;
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
-
             MouseWheelZoom();
 
             CalculateRotationAngle();
@@ -278,14 +288,14 @@ namespace Fusee.Examples.MuVista.Core
 
         public void HndGuiButtonInput()
         {
-            if (_gui._btnZoomOut.IsMouseOver)
+            if (_zoomOut.IsMouseOver)
             {
-                _gui._btnZoomOut.OnMouseDown += BtnZoomOutDown;
+                _zoomOut.OnMouseDown += BtnZoomOutDown;
             }
 
-            if (_gui._btnZoomIn.IsMouseOver)
+            if (_zoomIn.IsMouseOver)
             {
-                _gui._btnZoomIn.OnMouseDown += BtnZoomInDown;
+                _zoomIn.OnMouseDown += BtnZoomInDown;
             }
         }
 
