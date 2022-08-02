@@ -27,23 +27,15 @@ namespace Fusee.Examples.MuVista.Core
 
         private FontMap _fontMap;
 
-        public GUI(int width, int height, CanvasRenderMode canvasRenderMode, Transform mainCamTransform, Camera guiCam)
+        public GUI(RenderCanvas rc, int width, int height, CanvasRenderMode canvasRenderMode, Transform mainCamTransform, Camera guiCam, out GuiButton zoomOut, out GuiButton zoomIn)
         {
-            /*
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-            var psText = AssetStorage.Get<string>("text.frag");
-            var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
-            var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
-            */
-
             var canvasWidth = width / 100f;
             var canvasHeight = height / 100f;
 
             var fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 //Set the albedo texture you want to use.
-                new Texture(AssetStorage.Get<ImageData>("FuseeText.png"), false, TextureFilterMode.Linear),
+                new Texture(AssetStorage.Get<ImageData>("FuseeText.png")),
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
@@ -57,9 +49,12 @@ namespace Fusee.Examples.MuVista.Core
             {
                 Name = "Logo_Button"
             };
-            _btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
-            _btnFuseeLogo.OnMouseExit += BtnLogoExit;
-            _btnFuseeLogo.OnMouseDown += BtnLogoDown;
+            Action<CodeComponent> btnClickedAction = (btnFuseeLogo) => { BtnLogoDown(rc); };  
+            Action<CodeComponent> btnExitAction = (btnFuseeLogo) => { BtnLogoExit(this); };
+            Action<CodeComponent> btnEnterAction = (btnFuseeLogo) => { BtnLogoEnter(this); };
+            _btnFuseeLogo.OnMouseEnter += btnEnterAction.Invoke;
+            _btnFuseeLogo.OnMouseExit += btnExitAction.Invoke;
+            _btnFuseeLogo.OnMouseDown += btnClickedAction.Invoke;
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             _fontMap = new FontMap(fontLato, 24);
@@ -73,7 +68,7 @@ namespace Fusee.Examples.MuVista.Core
                 (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
-
+            /*
             _btnZoomOut = new GuiButton
             {
                 Name = "Zoom_Out_Button"
@@ -82,8 +77,17 @@ namespace Fusee.Examples.MuVista.Core
             _btnZoomIn = new GuiButton
             {
                 Name = "Zoom_In_Button"
+            };*/
+
+            zoomOut = new GuiButton
+            {
+                Name = "Zoom_Out_Button"
             };
 
+            zoomIn = new GuiButton
+            {
+                Name = "Zoom_In_Button"
+            };
 
             _zoomInBtnPosition = new float2(canvasWidth - 1f, 1f);
             var zoomInNode = TextureNode.Create(
@@ -93,7 +97,7 @@ namespace Fusee.Examples.MuVista.Core
                 GuiElementPosition.CalcOffsets(AnchorPos.DownDownRight, _zoomInBtnPosition, canvasHeight, canvasWidth, new float2(0.5f, 0.5f)),
                 float2.One
                 );
-            zoomInNode.Components.Add(_btnZoomIn);
+            zoomInNode.Components.Add(zoomIn);
 
             _zoomOutBtnPosition = new float2(canvasWidth - 1f, 0.4f);
             var zoomOutNode = TextureNode.Create(
@@ -103,7 +107,7 @@ namespace Fusee.Examples.MuVista.Core
                 GuiElementPosition.CalcOffsets(AnchorPos.DownDownRight, _zoomOutBtnPosition, canvasHeight, canvasWidth, new float2(0.5f, 0.5f)),
                 float2.One
                 );
-            zoomOutNode.Components.Add(_btnZoomOut);
+            zoomOutNode.Components.Add(zoomOut);
 
 
             var canvas = new CanvasNode(
@@ -152,7 +156,7 @@ namespace Fusee.Examples.MuVista.Core
 
         }
 
-
+        /*
         public static SceneContainer CreateDefaultUi(RenderCanvas rc, int width, int height, string title, out GuiButton zoomOut, out GuiButton zoomIn)
         {
             var canvasWidth = width / 100f;
@@ -275,29 +279,28 @@ namespace Fusee.Examples.MuVista.Core
 
             return scene;
         }
+        */
 
-        public void BtnLogoEnter(CodeComponent sender)
+        private static void BtnLogoEnter(SceneContainer guiContainer)
         {
-            var effect = this.Children.FindNodesWhereComponent(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
+            var effect = guiContainer.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
-        public void BtnLogoExit(CodeComponent sender)
+        private static void BtnLogoExit(SceneContainer guiContainer)
         {
-            var effect = this.Children.FindNodesWhereComponent(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
+            var effect = guiContainer.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
-        public void BtnLogoDown(CodeComponent sender)
+        private static void BtnLogoDown(RenderCanvas rc)
         {
-            //OpenLink("http://fusee3d.org");
+            rc.OpenLink("http://fusee3d.org");
         }
-
-
-
-
+        
+        /*
         private static void DefaultGuiBtnEnter(SceneContainer guiContainer)
         {
             var effect = guiContainer.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
@@ -316,5 +319,6 @@ namespace Fusee.Examples.MuVista.Core
         {
             rc.OpenLink("http://fusee3d.org");
         }
+        */
     }
 }

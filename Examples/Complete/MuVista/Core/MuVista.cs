@@ -139,15 +139,12 @@ namespace Fusee.Examples.MuVista.Core
                 );
 
 
-            _gui = GUI.CreateDefaultUi(this, Width, Height, "Test", out _zoomOut, out _zoomIn);//new GUI(Width, Height, _canvasRenderMode, _mainCamTransform, _guiCam);
+            _gui = new GUI(this, Width, Height, _canvasRenderMode, _mainCamTransform, _guiCam, out _zoomOut, out _zoomIn); //GUI.CreateDefaultUi(this, Width, Height, "Test", out _zoomOut, out _zoomIn);
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            //RC.ClearColor = new float4(1, 1, 1, 1);
-
-
+            
             //Scene with Main Camera and Mesh
             _sphereScene = new SceneContainer
             {
