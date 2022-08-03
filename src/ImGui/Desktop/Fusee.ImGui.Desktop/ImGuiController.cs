@@ -200,7 +200,7 @@ namespace Fusee.ImGuiImp.Desktop
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
-       
+
             GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
             GL.TextureStorage2D(id, 1, SizedInternalFormat.Rgba8, width, height);
             GL.TextureSubImage2D(id, 0, 0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
