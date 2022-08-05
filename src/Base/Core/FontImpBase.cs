@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 using SixLabors.Fonts;
+using SixLabors.Fonts.Tables.TrueType;
 using SixLabors.Fonts.Unicode;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -71,7 +72,7 @@ namespace Fusee.Base.Core
             }
 
             var glyph = _font.GetGlyphs(new CodePoint(c), ColorFontSupport.None).First();
-            var outline = glyph.GlyphMetrics.GetOutline();
+            var outline = ((TrueTypeGlyphMetrics)glyph.GlyphMetrics).GetOutline();
 
             var orgPointCoords = outline.ControlPoints.ToArray();
             var pointTags = outline.OnCurves.ToArray().Select(x => x ? (byte)1 : (byte)0).ToArray();
