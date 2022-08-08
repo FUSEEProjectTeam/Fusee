@@ -335,10 +335,10 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = QuaternionF.FromEuler(euler, true);
 
-            Assert.Equal(expected.x, actual.x, 4);
-            Assert.Equal(expected.y, actual.y, 4);
-            Assert.Equal(expected.z, actual.z, 4);
-            Assert.Equal(expected.w, actual.w, 4);
+            Assert.Equal(expected.x, actual.x, 4f);
+            Assert.Equal(expected.y, actual.y, 4f);
+            Assert.Equal(expected.z, actual.z, 4f);
+            Assert.Equal(expected.w, actual.w, 4f);
         }
 
         [Theory]
@@ -347,9 +347,9 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = QuaternionF.ToEuler(quat, true);
 
-            Assert.Equal(expected.x, actual.x, 4);
-            Assert.Equal(expected.y, actual.y, 4);
-            Assert.Equal(expected.z, actual.z, 4);
+            Assert.Equal(expected.x, actual.x, 4f);
+            Assert.Equal(expected.y, actual.y, 4f);
+            Assert.Equal(expected.z, actual.z, 4f);
         }
 
         [Fact]
