@@ -251,7 +251,7 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = M.Cos(value);
 
-            Assert.Equal(expected, actual, 5);
+            Assert.Equal(expected, actual, 5f);
         }
 
         [Theory]
@@ -262,7 +262,7 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = M.Sin(value);
 
-            Assert.Equal(expected, actual, 5);
+            Assert.Equal(expected, actual, 5f);
         }
 
         #endregion
