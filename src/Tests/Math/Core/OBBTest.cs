@@ -6,8 +6,8 @@ namespace Fusee.Tests.Math.Core
 {
     public class OBBTest
     {
-        private const int fPrecision = 4;
-        private const int dPrecision = 6;
+        private const float fPrecision = 4f;
+        private const float dPrecision = 6f;
 
         [Theory]
         [MemberData(nameof(OBBfData))]

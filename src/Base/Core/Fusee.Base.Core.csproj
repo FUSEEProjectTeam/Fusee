@@ -17,9 +17,9 @@
 		</ProjectReference>
 
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
-		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta17" />
+		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta18" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
-		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
 
 	</ItemGroup>
 
