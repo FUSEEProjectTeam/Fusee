@@ -58,7 +58,7 @@ namespace Fusee.Examples.MuVista.Core
                 }
             }
 
-            for (int j = 0, k = 0; j < (latSegments - 1) * longSegments; j++, k++)   
+            for (int j = 0, k = 0; j < (latSegments - 1) * longSegments; j++, k++)
             {
                 if ((k + 1) % (longSegments + 1) == 0)
                 {

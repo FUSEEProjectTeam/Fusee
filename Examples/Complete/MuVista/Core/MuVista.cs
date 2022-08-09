@@ -72,7 +72,7 @@ namespace Fusee.Examples.MuVista.Core
             _mainCam.Layer = -1;
             _mainCam.Active = true;
 
-            
+
             _mainCamTransform = new Transform()
             {
                 Rotation = new float3(_angleVert, _angleHorz, 0),
@@ -86,7 +86,7 @@ namespace Fusee.Examples.MuVista.Core
                 Scale = new float3(1, 1, 1),
                 Translation = new float3(0, 0, 0)
             };
-            
+
             _sphere_Fx = MakeEffect.FromBRDF
                 (
                     albedoColor: float4.One,
@@ -107,7 +107,7 @@ namespace Fusee.Examples.MuVista.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            
+
             //Scene with Main Camera and Mesh
             _sphereScene = new SceneContainer
             {
@@ -159,7 +159,7 @@ namespace Fusee.Examples.MuVista.Core
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
 
-            
+
             if (!Input.Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
