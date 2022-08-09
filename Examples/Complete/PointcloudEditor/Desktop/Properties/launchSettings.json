@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Fusee.Examples.PointcloudEditor.Desktop": {
-      "commandName": "Project",
-      "nativeDebugging": true
-    }
-  }
-}
