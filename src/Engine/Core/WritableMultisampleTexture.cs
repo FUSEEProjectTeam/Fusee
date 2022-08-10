@@ -167,9 +167,10 @@ namespace Fusee.Engine.Core
             {
                 if (disposing)
                 {
-                    TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
-                    InternalResultTexture.Dispose();
+
                 }
+
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
 
                 disposedValue = true;
             }

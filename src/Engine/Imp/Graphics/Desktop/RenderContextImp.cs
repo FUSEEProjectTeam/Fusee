@@ -43,7 +43,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private static DebugProc _openGlDebugDelegate;
 #endif
 
-
+        /// <summary>
+        /// Current workaround to differentiate between "Desktop" and "Mesa" (Software Rasterizer used for the RenderTests in the CI)
+        /// </summary>
+        /// <param name="renderCanvas"></param>
+        /// <param name="platformID"></param>
         public RenderContextImp(IRenderCanvasImp renderCanvas, FuseePlatformId platformID) : this(renderCanvas)
         {
             FuseePlatformId = platformID;
