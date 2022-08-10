@@ -3,7 +3,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.ImGuiImp.Desktop;
 using Fusee.ImGuiImp.Desktop.Templates;
-using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using ImGuiNET;
 using System;

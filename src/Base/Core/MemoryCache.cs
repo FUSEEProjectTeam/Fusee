@@ -124,7 +124,7 @@ namespace Fusee.Base.Core
                 {
                     _cache.Dispose();
                 }
-                
+
                 _disposed = true;
             }
         }
