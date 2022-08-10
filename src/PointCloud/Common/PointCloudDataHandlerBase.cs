@@ -6,7 +6,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
     /// </summary>
-    public abstract class PointCloudDataHandlerBase<TGpuData> : IDisposable
+    public abstract class PointCloudDataHandlerBase<TGpuData>
     {
         /// <summary>
         /// Used to manage gpu pressure when disposing of a large quantity of meshes.
@@ -56,10 +56,5 @@ namespace Fusee.PointCloud.Common
         /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the MeshCache.
         /// </summary>
         public abstract void ProcessDisposeQueue();
-
-        /// <summary>
-        /// Implements <see cref="IDisposable"/>.
-        /// </summary>
-        public abstract void Dispose();
     }
 }
