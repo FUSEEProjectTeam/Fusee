@@ -10,7 +10,7 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2Cloud : IPointCloudImp<GpuMesh>, IDisposable
+    public class Potree2Cloud : IPointCloudImp<GpuMesh>
     {
         /// <summary>
         /// The complete list of meshes that can be rendered.
@@ -165,7 +165,9 @@ namespace Fusee.PointCloud.Potree
                     {
                         mesh.Dispose();
                     }
+                    DataHandler.Dispose();
                 }
+
                 _disposed = true;
             }
         }

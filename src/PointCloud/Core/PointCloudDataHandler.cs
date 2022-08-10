@@ -202,7 +202,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
@@ -223,17 +223,16 @@ namespace Fusee.PointCloud.Core
             {
                 if (disposing)
                 {
-                    _pointCache.Dispose();
-                    _gpuDataCache.Dispose();
 
-                    LockDisposeQueue = null;
-                    LockLoadingQueue = null;
-                    foreach (var meshes in DisposeQueue)
+                }
+
+                _pointCache.Dispose();
+                _gpuDataCache.Dispose();
+                foreach (var meshes in DisposeQueue)
+                {
+                    foreach (var mesh in meshes.Value)
                     {
-                        foreach (var mesh in meshes.Value)
-                        {
-                            mesh.Dispose();
-                        }
+                        mesh.Dispose();
                     }
                 }
                 _disposed = true;

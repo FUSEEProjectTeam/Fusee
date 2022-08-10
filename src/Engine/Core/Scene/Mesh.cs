@@ -347,8 +347,9 @@ namespace Fusee.Engine.Core.Scene
             {
                 if (disposing)
                 {
-                    DisposeData?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Disposed));
+                    //dispose managed resources
                 }
+                DisposeData?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Disposed));
 
                 disposed = true;
             }

@@ -122,10 +122,9 @@ namespace Fusee.Base.Core
             {
                 if (disposing)
                 {
-                    // Dispose managed resources.
                     _cache.Dispose();
-
                 }
+                
                 _disposed = true;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Core;
 using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Common
@@ -65,7 +66,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Smallest common set of properties that are needed to render point clouds out of core.
     /// </summary>
-    public interface IPointCloudImp<TGpuData> : IPointCloudImpBase
+    public interface IPointCloudImp<TGpuData> : IPointCloudImpBase, IDisposable
     {
         /// <summary>
         /// The <see cref="GpuMesh"/>, created from visible octants/point chunks, that are ready to be rendered.
