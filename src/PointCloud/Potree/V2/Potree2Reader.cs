@@ -77,7 +77,7 @@ namespace Fusee.PointCloud.Potree.V2
         public IPointCloud GetPointCloudComponent(string fileFolderPath, RenderMode renderMode = RenderMode.PointSize)
         {
             _fileFolderPath = fileFolderPath;
-
+            _instance = null; //set to null so a new file can be read at runtime - else FileDataInstance will return the wrong values
             var ptType = GetPointType();
 
             switch (ptType)
