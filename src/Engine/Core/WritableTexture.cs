@@ -250,7 +250,7 @@ namespace Fusee.Engine.Core
             {
                 if (disposing)
                 {
-                    
+
                 }
 
                 TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));

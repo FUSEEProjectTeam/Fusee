@@ -98,7 +98,7 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
                     _cam
                 }
                 };
-                
+
                 _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(PointRenderingParams.Instance.PathToOocFile, RenderMode.PointSize);
                 _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
                 _pointCloud.PointCloudImp.PointThreshold = PointRenderingParams.Instance.PointThreshold;

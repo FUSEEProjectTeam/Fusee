@@ -509,7 +509,7 @@ namespace Fusee.Engine.Core
                     _inputDevices.Clear();
                     _inputDrivers.Clear();
                     _instance = null;
-                    
+
                 }
 
                 disposed = true;
@@ -525,6 +525,6 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-       
+
     }
 }

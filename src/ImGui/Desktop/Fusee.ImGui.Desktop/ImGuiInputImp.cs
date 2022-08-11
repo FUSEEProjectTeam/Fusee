@@ -93,7 +93,7 @@ namespace Fusee.ImGuiImp.Desktop
 
 #pragma warning restore 0067
 
-        
+
 
         private static readonly Dictionary<KeyCodes, ImGuiKey> _translateKeyCodeToImGuiKey = new Dictionary<KeyCodes, ImGuiKey>
         {

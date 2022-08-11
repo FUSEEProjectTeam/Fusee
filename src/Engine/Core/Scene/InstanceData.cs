@@ -160,7 +160,7 @@ namespace Fusee.Engine.Core.Scene
             {
                 if (disposing)
                 {
-                    
+
                 }
                 DisposeData?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Disposed));
 
