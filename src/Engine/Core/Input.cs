@@ -471,23 +471,58 @@ namespace Fusee.Engine.Core
             }
         }
 
+        #region IDisposable Support
+
+        private bool disposed;
+
         /// <summary>
-        /// Should be called from the application framework before the application stops. Typically not to be called by user code unless
-        /// users implement their own application framework.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            foreach (var device in _inputDevices.Values)
-            {
-                InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = device });
-                device.Disconnect();
-            }
-            _inputDevices.Clear();
-            foreach (var driver in _inputDrivers.Values)
-            {
-                driver.Dispose();
-            }
-            _inputDrivers.Clear();
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    _inputDevices.Clear();
+                    _inputDrivers.Clear();
+
+                    foreach (var device in _inputDevices.Values)
+                    {
+                        InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = device });
+                        device.Disconnect();
+                    }
+                }
+
+                disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
+        ~Input()
+        {
+            Dispose(false);
+        }
+
+        #endregion
+       
     }
 }

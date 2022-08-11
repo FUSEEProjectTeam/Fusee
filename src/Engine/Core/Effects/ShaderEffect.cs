@@ -8,7 +8,7 @@ namespace Fusee.Engine.Core.Effects
     /// Use this if you want to write the shader code on your own. 
     /// The values of uniform variables you defined (<see cref="Effect.UniformParameters"/>) can be set using <see cref="Effect.SetFxParam{T}(int, T)"/> or <see cref="Effect.SetFxParam{T}(string, T)"/>. 
     /// </summary>
-    public class ShaderEffect : Effect, IDisposable
+    public class ShaderEffect : Effect
     {
         /// <summary>
         /// The Vertex shader code.
@@ -58,7 +58,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
 

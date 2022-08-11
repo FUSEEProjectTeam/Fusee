@@ -10,7 +10,7 @@ namespace Fusee.Engine.Imp.SharedAll
     /// If only a single texture is needed, the usage of a <see cref="WritableTexture"/> as a render target is preferred.
     /// Use the "Create__Tex"-Methods of this class to generate the textures you need. The order of the textures in the RenderTextures array is given by the <see cref="RenderTargetTextureTypes"/> enum.
     /// </summary>
-    public class RenderTarget : IRenderTarget, IDisposable
+    public class RenderTarget : IRenderTarget
     {
         /// <summary>
         /// Event that deletes unmanaged buffer objects.

@@ -12,7 +12,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// A surface effect contains information to build a shader program. This is an abstract base class.
     /// </summary>
-    public abstract class SurfaceEffectBase : Effect, IDisposable
+    public abstract class SurfaceEffectBase : Effect
     {
         private bool _disposed;
         internal readonly List<KeyValuePair<ShardCategory, string>> VertexShaderSrc = new();
@@ -722,7 +722,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

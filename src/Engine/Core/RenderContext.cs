@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
     /// many similarities in this class' methods and properties.
     /// </summary>
-    public class RenderContext : IDisposable
+    public class RenderContext
     {
         /// <summary>
         /// The color to use when clearing the color buffer.
@@ -82,7 +82,6 @@ namespace Fusee.Engine.Core
 
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
-        private bool _disposed;
 
         /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
@@ -2076,45 +2075,5 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <param name="disposing">If disposing equals true, the method has been called directly
-        /// or indirectly by a user's code. Managed and unmanaged resources
-        /// can be disposed.
-        /// If disposing equals false, the method has been called by the
-        /// runtime from inside the finalizer and you should not reference
-        /// other objects. Only unmanaged resources can be disposed.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            // Check to see if Dispose has already been called.
-            if (!_disposed)
-            {
-                _effectManager.Dispose();
-                _textureManager.Dispose();
-                _meshManager.Dispose();
-
-                // Note disposing has been done.
-                _disposed = true;
-            }
-        }
-
-        /// <summary>
-        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
-        /// </summary>
-        ~RenderContext()
-        {
-            Dispose(disposing: false);
-        }
     }
 }

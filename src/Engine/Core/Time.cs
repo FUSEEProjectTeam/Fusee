@@ -177,9 +177,5 @@
         public static Time Instance => _instance ??= new Time();
 
         #endregion
-
-        internal void Dispose()
-        {
-        }
     }
 }

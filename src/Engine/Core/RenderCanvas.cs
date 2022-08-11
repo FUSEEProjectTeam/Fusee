@@ -276,7 +276,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         public virtual void DeInit()
         {
-            Time.Instance.Dispose();
             Input.Instance.Dispose();
         }
 
@@ -367,7 +366,6 @@ namespace Fusee.Engine.Core
         public void CloseGameWindow()
         {
             IsShuttingDown = true;
-            RC.Dispose();
             CanvasImplementor.CloseGameWindow();
         }
 

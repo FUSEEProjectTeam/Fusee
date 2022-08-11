@@ -6,7 +6,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// Class that contains information on how to build a compute shader program.
     /// </summary>
-    public class ComputeEffect : Effect, IDisposable
+    public class ComputeEffect : Effect
     {
         /// <summary>
         /// The Compute Shader code.
@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
 

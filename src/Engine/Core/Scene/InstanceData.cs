@@ -7,7 +7,7 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// 
     /// </summary>
-    public class InstanceData : SceneComponent, IDisposable, IManagedInstanceData
+    public class InstanceData : SceneComponent, IManagedInstanceData
     {
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.

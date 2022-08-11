@@ -2593,8 +2593,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        /// <param name="height">Texture height</param>
-        /// <param name="width">Texture width</param>
         public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
         {
             if (input == null || output == null) return;

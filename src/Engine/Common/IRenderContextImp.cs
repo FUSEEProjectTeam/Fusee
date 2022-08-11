@@ -737,8 +737,6 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        /// <param name="height">Height of texture</param>
-        /// <param name="width">Height of texture</param>
         void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output);
 
         /// <summary>

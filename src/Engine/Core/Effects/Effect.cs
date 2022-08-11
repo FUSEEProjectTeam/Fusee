@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// Abstract class that provides input for <see cref="ShaderEffect"/> and <see cref="SurfaceEffectBase"/>.
     /// </summary>
-    public abstract class Effect : SceneComponent
+    public abstract class Effect : SceneComponent, IDisposable
     {
         /// <summary>
         /// Collection of all uniform parameters of this effect. See <see cref="IFxParamDeclaration"/>.
@@ -133,5 +133,10 @@ namespace Fusee.Engine.Core.Effects
         {
             return SessionUniqueIdentifier.GetHashCode();
         }
+
+        /// <summary>
+        /// Abstract declaration of <see cref="IDisposable.Dispose"/>
+        /// </summary>
+        public abstract void Dispose();
     }
 }
