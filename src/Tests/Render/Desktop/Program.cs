@@ -31,7 +31,7 @@ namespace Fusee.Tests.Render.Desktop
             {
                 // Inject Fusee.Engine.Base InjectMe dependencies
                 IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
-                AssetStorage.UnRegisterAllAssetProviders();
+                AssetStorage.Instance.Dispose();
 
                 var baseDirOfExample = new Uri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
                 FilePath = baseDirOfExample.LocalPath;

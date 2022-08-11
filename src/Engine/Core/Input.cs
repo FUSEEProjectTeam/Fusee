@@ -500,14 +500,16 @@ namespace Fusee.Engine.Core
             {
                 if (disposing)
                 {
-                    _inputDevices.Clear();
-                    _inputDrivers.Clear();
-
                     foreach (var device in _inputDevices.Values)
                     {
                         InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = device });
                         device.Disconnect();
                     }
+
+                    _inputDevices.Clear();
+                    _inputDrivers.Clear();
+                    _instance = null;
+                    
                 }
 
                 disposed = true;

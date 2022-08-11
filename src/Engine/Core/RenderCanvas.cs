@@ -1,4 +1,5 @@
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using System;
 using System.Threading.Tasks;
@@ -277,6 +278,8 @@ namespace Fusee.Engine.Core
         public virtual void DeInit()
         {
             Input.Instance.Dispose();
+            Time.Instance.Dispose();
+            AssetStorage.Instance.Dispose();
         }
 
         /// <summary>
