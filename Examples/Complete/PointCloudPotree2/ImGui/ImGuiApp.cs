@@ -10,13 +10,12 @@ using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
+namespace Fusee.Examples.PointCloudPotree2.Gui
 {
     [FuseeApplication(Name = "FUSEE ImGui Example",
         Description = "A very simple example how to use ImGui within a Fusee application.")]
-    public class Core : RenderCanvas
+    public class ImGuiApp : RenderCanvas
     {
-
         #region StaticBindingVars
 
         private static bool _dockspaceOpen = true;
@@ -42,7 +41,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         private bool _wantsToShutdown;
 
 
-        private PointCloudControlCore _fuControl;
+        private PointCloudRendering _fuControl;
         private ImGuiFilePicker _picker;
 
         #endregion
@@ -51,7 +50,9 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         {
             SetImGuiDesign();
 
-            _fuControl = new PointCloudControlCore(RC);
+            _fuControl = new PointCloudRendering(RC);
+            ApplicationIsShuttingDown += OnShuttingDown;
+            EndOfFrame += _fuControl.OnLoadNewFile;
             _fuControl.Init();
             await base.InitAsync();
 
@@ -60,16 +61,13 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             {
                 if (string.IsNullOrEmpty(file)) return;
 
-                PtRenderingParams.Instance.PathToOocFile = new FileInfo(file).Directory.FullName;
+                PointRenderingParams.Instance.PathToOocFile = new FileInfo(file).Directory.FullName;
 
                 if (_fuControl != null)
                 {
-                    _fuControl.Dispose();
-                    _fuControl = new PointCloudControlCore(RC);
-                    _fuControl.Init();
+                    _fuControl.RequestedNewFile = true;
                     _fuControl.UpdateOriginalGameWindowDimensions(Width, Height);
                     _fuControl.ResetCamera();
-                    // reset color picker
                     _currentColorMode = 0;
                 }
             };
@@ -157,15 +155,14 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.EndChild();
             ImGui.End();
 
-            DrawGUI();
+            Draw();
             DrawFilePickerDialog();
 
             if (_wantsToShutdown)
                 CloseGameWindow();
         }
 
-
-        internal void DrawGUI()
+        private void Draw()
         {
             ImGui.Begin("Settings");
             ImGui.Text("Fusee PointCloud Rendering");
@@ -196,8 +193,8 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.SliderFloat("Min. Projection Size Modifier", ref _fuseeViewportMinProj, 0f, 1f);
 
 
-            PtRenderingParams.Instance.PointThreshold = _threshold;
-            PtRenderingParams.Instance.ProjectedSizeModifier = _fuseeViewportMinProj;
+            PointRenderingParams.Instance.PointThreshold = _threshold;
+            PointRenderingParams.Instance.ProjectedSizeModifier = _fuseeViewportMinProj;
 
             ImGui.EndGroup();
 
@@ -209,8 +206,8 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.SliderInt("EDL Neighbor Px", ref _edlNeighbour, 0, 5);
             ImGui.SliderFloat("EDL Strength", ref _edlStrength, 0.0f, 5f);
 
-            PtRenderingParams.Instance.EdlStrength = _edlStrength;
-            PtRenderingParams.Instance.EdlNoOfNeighbourPx = _edlNeighbour;
+            PointRenderingParams.Instance.EdlStrength = _edlStrength;
+            PointRenderingParams.Instance.EdlNoOfNeighbourPx = _edlNeighbour;
 
             ImGui.EndGroup();
 
@@ -220,7 +217,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.Text("Point Shape");
             ImGui.Combo("PointShape", ref _currentPtShape, new string[] { "Paraboloid", "Rect", "Circle" }, 3);
 
-            PtRenderingParams.Instance.Shape = _currentPtShape switch
+            PointRenderingParams.Instance.Shape = _currentPtShape switch
             {
                 0 => PointShape.Paraboloid,
                 1 => PointShape.Rect,
@@ -237,8 +234,8 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.Combo("Point Size Method", ref _currentPtSizeMethod, new string[] { "FixedPixelSize", "FixedWorldSize" }, 2);
             ImGui.SliderInt("Point Size", ref _ptSize, 1, 20);
 
-            PtRenderingParams.Instance.Size = _ptSize;
-            PtRenderingParams.Instance.PtMode = _currentPtSizeMethod switch
+            PointRenderingParams.Instance.Size = _ptSize;
+            PointRenderingParams.Instance.PtMode = _currentPtSizeMethod switch
             {
                 0 => PointSizeMode.FixedPixelSize,
                 1 => PointSizeMode.FixedWorldSize,
@@ -254,7 +251,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
 
             ImGui.Combo("Color mode", ref _currentColorMode, new string[] { "BaseColor", "VertexColor0", "VertexColor1", "VertexColor2" }, 4);
 
-            PtRenderingParams.Instance.ColorMode = _currentColorMode switch
+            PointRenderingParams.Instance.ColorMode = _currentColorMode switch
             {
                 0 => ColorMode.BaseColor,
                 1 => ColorMode.VertexColor0,
@@ -279,7 +276,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
                     ImGui.ColorPicker4("Color", ref _ptColor);
                     ImGui.End();
 
-                    PtRenderingParams.Instance.ColorPassEf.SurfaceInput.Albedo = _ptColor.ToFuseeVector();
+                    PointRenderingParams.Instance.ColorPassEf.SurfaceInput.Albedo = _ptColor.ToFuseeVector();
                 }
                 ImGui.EndGroup();
             }
@@ -288,8 +285,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.End();
         }
 
-
-        internal void DrawMainMenuBar()
+        private void DrawMainMenuBar()
         {
             if (ImGui.BeginMainMenuBar())
             {
@@ -309,17 +305,20 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             ImGui.EndMainMenuBar();
         }
 
-
-
         private void DrawFilePickerDialog()
         {
             _picker.Draw(ref _spwanOpenFilePopup);
         }
 
+        private void OnShuttingDown(object sender, EventArgs e)
+        {
+            _fuControl.ClosingRequested = true;
+        }
+
         /// <summary>
         /// Place all design/styles inside this method
         /// </summary>
-        internal static void SetImGuiDesign()
+        private static void SetImGuiDesign()
         {
             var style = ImGui.GetStyle();
             var colors = style.Colors;

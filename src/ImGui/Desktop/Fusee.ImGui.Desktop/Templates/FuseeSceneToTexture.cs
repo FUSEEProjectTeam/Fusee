@@ -6,7 +6,7 @@ using System;
 
 namespace Fusee.ImGuiImp.Desktop.Templates
 {
-    public abstract class FuseeControlToTexture
+    public abstract class FuseeSceneToTexture
     {
         private int _originalWidth;
         private int _originalHeight;
@@ -65,7 +65,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// </summary>
         /// <param name="samplingFactor">MSAA sampling factor, default = 4</param>
         /// <exception cref="Exception"></exception>
-        public FuseeControlToTexture(RenderContext rc) => _rc = rc;
+        public FuseeSceneToTexture(RenderContext rc) => _rc = rc;
 
 
         /// <summary>

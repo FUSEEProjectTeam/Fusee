@@ -13,14 +13,14 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 {
     [FuseeApplication(Name = "FUSEE ImGui Example",
         Description = "A very simple example how to use ImGui within a Fusee application.")]
-    public class Core : RenderCanvas
+    public class ImGuiApp : RenderCanvas
     {
         #region StaticBindingVars
 
         private static bool _dockspaceOpen = true;
         private static bool _isMouseInsideFuControl;
 
-        private CoreControl _fuControl;
+        private SceneToTexture _fuControl;
 
         private Vector4 _rocketColor = Vector4.UnitW; // alpha 255
         private bool _colorPickerOpen;
@@ -34,7 +34,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         {
             SetImGuiDesign();
 
-            _fuControl = new CoreControl(RC);
+            _fuControl = new SceneToTexture(RC);
             _fuControl.Init();
 
             // reload last used cfg
@@ -66,7 +66,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             _fuControl.UpdateOriginalGameWindowDimensions(e.Width, e.Height);
         }
 
-        public override async void RenderAFrame()
+        public override void RenderAFrame()
         {
             // Enable Dockspace
             ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;

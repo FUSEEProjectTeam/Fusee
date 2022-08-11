@@ -18,7 +18,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         public string Value;
     }
 
-    internal class CoreControl : FuseeControlToTexture
+    internal class SceneToTexture : FuseeSceneToTexture
     {
         private SceneContainer _rocketScene;
         private SceneRendererForward _renderer;
@@ -41,7 +41,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
 
         private Camera _cam;
 
-        public CoreControl(RenderContext ctx) : base(ctx)
+        public SceneToTexture(RenderContext ctx) : base(ctx)
         {
             _rc = ctx;
         }
