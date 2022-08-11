@@ -71,7 +71,12 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Used to inject functionality that is meant to be executed when the application is shutting down.
         /// </summary>
-        public event EventHandler<EventArgs> ApplicationIsShuttingDown;
+        public event EventHandler ApplicationIsShuttingDown;
+
+        /// <summary>
+        /// Used to inject functionality that is meant to execute at the end of each frame. E.g. if components of the SceneGraph need to be changed.
+        /// </summary>
+        public event EventHandler EndOfFrame;
 
         /// <summary>
         /// Used to stop the rendering process when the application is shutting down.
@@ -159,7 +164,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// <see langword="true"/> when InitAsync() finished
-        /// Prevents <see cref="RenderCanvas.RenderAFrame"/> and <see cref="RenderCanvas.Update"/> while <see langword="false"/>
+        /// Prevents <see cref="RenderAFrame"/> and <see cref="Update"/> while <see langword="false"/>
         /// </summary>
         public bool IsLoaded { get; set; } = false;
 
@@ -219,6 +224,8 @@ namespace Fusee.Engine.Core
                 // rendering
                 if (Width != 0 || Height != 0)
                     RenderAFrame();
+
+                EndOfFrame?.Invoke(this, EventArgs.Empty);
             };
 
             CanvasImplementor.Resize += delegate
