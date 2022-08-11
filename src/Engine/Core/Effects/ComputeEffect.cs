@@ -13,6 +13,8 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public string ComputeShaderSrc { get; protected set; }
 
+        private bool disposed;
+
         /// <summary>
         /// Creates a new instance.
         /// </summary>
@@ -34,19 +36,44 @@ namespace Fusee.Engine.Core.Effects
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    //dispose managed resources
+                }
+                EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
+
+                disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Destructor calls <see cref="Dispose()"/> in order to fire MeshChanged event.
         /// </summary>
         ~ComputeEffect()
         {
             Dispose();
-        }
-
-        /// <summary>
-        /// Is called when GC of this shader effect kicks in
-        /// </summary>
-        public void Dispose()
-        {
-            EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
         }
     }
 }

@@ -344,8 +344,10 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 if (disposing)
                 {
-                    ImGui.DestroyContext(_context);
+                    
                 }
+
+                ImGui.DestroyContext(_context);
 
                 disposedValue = true;
             }
