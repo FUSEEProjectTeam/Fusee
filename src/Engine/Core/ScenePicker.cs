@@ -97,7 +97,7 @@ namespace Fusee.Engine.Core
         {
             a = Mesh.Normals[Mesh.Triangles[Triangle + 0]];
             b = Mesh.Normals[Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Triangles.Length > 2 ? Mesh.Normals[Mesh.Triangles[Triangle + 2]] : float3.Zero;;
+            c = Mesh.Triangles.Length > 2 ? Mesh.Normals[Mesh.Triangles[Triangle + 2]] : float3.Zero; ;
         }
         /// <summary>
         /// Returns the normal at the center of the picked triangle.
