@@ -15,9 +15,49 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public EventHandler<string?>? OnPicked;
 
         /// <summary>
-        /// Title of window (visible in top bar)
+        /// Title of window (visible in top bar).
         /// </summary>
         public string Id = "Open File";
+
+        /// <summary>
+        /// Caption of the "Open" button.
+        /// </summary>
+        public string OpenFileTxt = "Open";
+
+        /// <summary>
+        /// Caption of the "Cancel" button.
+        /// </summary>
+        public string CancelFileOpenTxt = "Cancel";
+
+        /// <summary>
+        /// File input hint text.
+        /// </summary>
+        public string FileInputHintTxt = "Selected file";
+
+        /// <summary>
+        /// Path to folder text.
+        /// </summary>
+        public string PathToFolderTxt = "Path to folder";
+
+        /// <summary>
+        /// Folder not found warning text.
+        /// </summary>
+        public string FolderNotFoundTxt = "Folder not found!";
+
+        /// <summary>
+        /// File not found warning text.
+        /// </summary>
+        public string FileNotFoundTxt = "File not found!";
+
+        /// <summary>
+        /// Caption of folder input text
+        /// </summary>
+        public string FolderLabelTxt = "Folder";
+
+        /// <summary>
+        /// Caption of file input text
+        /// </summary>
+        public string FileLabelTxt = "File";
 
         public readonly bool OnlyAllowFolders;
         public readonly List<string>? AllowedExtensions;
@@ -26,6 +66,9 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public string RootFolder { get; private set; }
 
         private string _currentFolder;
+
+        // needed for width calculation
+        private Vector2 _sizeOfInputText;
 
         /// <summary>
         /// Text color of folder
@@ -90,9 +133,20 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         {
             if (!_filePickerOpen) return;
 
+
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
             ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new Vector2(0, 250));
+
+            // calculate needed width for window to fit input text, cancel and OK button in one line
+            // as the child window adapts/inherits it's size from the parent window we need to pre-calculate
+            // the needed size
+            // buttonSize = CalcTextSize() + FramePadding * 2
+            var neededWindowWidth = ImGui.CalcTextSize(OpenFileTxt).X + (ImGui.GetStyle().FramePadding * 2).X +
+                ImGui.CalcTextSize(CancelFileOpenTxt).X + (ImGui.GetStyle().FramePadding * 2).X +
+                ImGui.CalcTextSize(FileLabelTxt).X + (ImGui.GetStyle().FramePadding * 2).X +
+                ImGui.GetStyle().WindowPadding.X + _sizeOfInputText.X;
+
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new Vector2(neededWindowWidth, 350));
 
             ImGui.PushStyleColor(ImGuiCol.WindowBg, WindowBackground.ToUintColor());
 
@@ -117,8 +171,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             // Folder Selection
             var currentFolder = _currentFolder;
             ImGui.SameLine();
-            ImGui.SetNextItemWidth(400f);
-            ImGui.InputTextWithHint("Folder", "Path to folder", ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
+            ImGui.InputTextWithHint(FolderLabelTxt, PathToFolderTxt, ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
                 var arr = currentFolder.ToCharArray();
 
@@ -148,7 +201,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
                 ImGui.BeginTooltip();
-                ImGui.TextColored(WarningTextColor, "Folder not found!");
+                ImGui.TextColored(WarningTextColor, FolderNotFoundTxt);
                 ImGui.EndTooltip();
                 ImGui.PopStyleVar();
             }
@@ -158,7 +211,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.PushStyleColor(ImGuiCol.ChildBg, FileSelectionMenuBackground.ToUintColor());
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 10));
 
-            if (ImGui.BeginChild("#FolderBrowser", new Vector2(0, 200), false, ImGuiWindowFlags.AlwaysUseWindowPadding))
+            if (ImGui.BeginChild("#FolderBrowser", new Vector2(-1, 200), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize))
             {
                 var di = new DirectoryInfo(_currentFolder);
                 if (di.Exists)
@@ -222,15 +275,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 ImGui.EndChild();
             }
 
-
-
             // File Selector
             ImGui.NewLine();
-            ImGui.BeginChild("#FileSelector", new Vector2(0, 30));
+            ImGui.BeginChild("#FileSelector", new Vector2(-1, -1), false, ImGuiWindowFlags.AlwaysAutoResize);
 
             var selectedFile = !string.IsNullOrWhiteSpace(SelectedFile) ? SelectedFile : "";
-            ImGui.SetNextItemWidth(400f);
-            ImGui.InputTextWithHint("File", "Selected file", ref selectedFile, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
+            ImGui.InputTextWithHint(FileLabelTxt, FileInputHintTxt, ref selectedFile, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
                 var arr = selectedFile.ToCharArray();
 
@@ -242,6 +292,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 }
                 return 0;
             });
+            if (_sizeOfInputText == Vector2.Zero)
+                _sizeOfInputText = ImGui.GetItemRectSize();
 
             if (File.Exists(selectedFile))
             {
@@ -265,7 +317,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
                 ImGui.BeginTooltip();
-                ImGui.TextColored(WarningTextColor, "File not found!");
+                ImGui.TextColored(WarningTextColor, FileNotFoundTxt);
                 ImGui.EndTooltip();
                 ImGui.PopStyleVar();
             }
@@ -276,7 +328,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 if (fi.Exists && AllowedExtensions != null && AllowedExtensions.Contains(fi.Extension))
                 {
                     ImGui.SameLine();
-                    if (ImGui.Button("Open"))
+                    if (ImGui.Button(OpenFileTxt))
                     {
                         OnPicked?.Invoke(this, Path.Combine(_currentFolder, selectedFile));
                         _filePickerOpen = false;
@@ -287,12 +339,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.SameLine();
                 ImGui.BeginDisabled();
-                ImGui.Button("Open");
+                ImGui.Button(OpenFileTxt);
                 ImGui.EndDisabled();
             }
 
             ImGui.SameLine();
-            if (ImGui.Button("Cancel"))
+            if (ImGui.Button(CancelFileOpenTxt))
             {
                 OnPicked?.Invoke(this, null);
                 _filePickerOpen = false;

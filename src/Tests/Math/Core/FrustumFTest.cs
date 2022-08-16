@@ -37,9 +37,9 @@ namespace Fusee.Tests.Math.Core
 
             for (int i = 0; i < actualCorners.Count; i++)
             {
-                Assert.Equal(expectedCorners[i].x, actualCorners[i].x, 4);
-                Assert.Equal(expectedCorners[i].y, actualCorners[i].y, 4);
-                Assert.Equal(expectedCorners[i].z, actualCorners[i].z, 4);
+                Assert.Equal(expectedCorners[i].x, actualCorners[i].x, 4f);
+                Assert.Equal(expectedCorners[i].y, actualCorners[i].y, 4f);
+                Assert.Equal(expectedCorners[i].z, actualCorners[i].z, 4f);
             }
         }
 

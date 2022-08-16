@@ -631,7 +631,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <param name="startVisible">Should the window be visible from the start, default: true.</param>
         public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false, bool startVisible = true)
-            : base(new GameWindowSettings { IsMultiThreaded = isMultithreaded }, new NativeWindowSettings
+            : base(new GameWindowSettings(), new NativeWindowSettings
             {
                 Size = new OpenTK.Mathematics.Vector2i(width, height),
                 Profile = OpenTK.Windowing.Common.ContextProfile.Core,
