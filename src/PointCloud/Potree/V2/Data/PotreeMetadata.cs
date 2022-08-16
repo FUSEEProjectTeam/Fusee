@@ -71,22 +71,17 @@ namespace Fusee.PointCloud.Potree.V2.Data
         public double Spacing { get; set; }
         public PotreeSettingsBoundingBox BoundingBox { get; set; }
         public string Encoding { get; set; }
-        public List<PotreeSettingsAttribute> Attributes { get; set; }
+
+        [JsonProperty(PropertyName = "attributes")]
+        internal List<PotreeSettingsAttribute> AttributesList { get; set; }
+
+        public Dictionary<string, PotreeSettingsAttribute> Attributes { get; set; }
 
         [JsonIgnore]
         public int PointSize { get; set; }
 
         [JsonIgnore]
         public string FolderPath { get; set; }
-
-
-        [JsonIgnore]
-        public bool HasPositionAttribute { get; set; }
-        [JsonIgnore]
-        public bool HasClassificationAttribute { get; set; }
-        [JsonIgnore]
-        public bool HasColorAttribute { get; set; }
-
     }
 }
 

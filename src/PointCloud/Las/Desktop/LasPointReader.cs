@@ -23,14 +23,13 @@ namespace Fusee.PointCloud.Las.Desktop
         public LasMetaInfo MetaInfo { get; private set; }
 
         private IntPtr _ptrToLASClass = new();
-        private string _filename;
+        private string _filePath;
 
-        public IPointCloud GetPointCloudComponent(string filename, RenderMode renderMode)
+        public IPointCloud GetPointCloudComponent(RenderMode renderMode)
         {
-            _filename = filename;
-            OpenFile(_filename);
+            OpenFile(_filePath);
 
-            var pointType = GetPointType();
+            var pointType = PointType;
             switch (pointType)
             {
                 case PointType.Undefined:
@@ -104,10 +103,11 @@ namespace Fusee.PointCloud.Las.Desktop
         ///     - *.txt
         ///     - *.laz
         /// </summary>
-        /// <param name="filename">The path to a las encoded file.</param>
-        public LasPointReader(string filename)
+        /// <param name="filePath">The path to a las encoded file.</param>
+        public LasPointReader(string filePath)
         {
-            OpenFile(filename);
+            _filePath = filePath;
+            OpenFile(filePath);
         }
 
         /// <summary>
@@ -189,19 +189,22 @@ namespace Fusee.PointCloud.Las.Desktop
             return true;
         }
 
-        public PointType GetPointType()
+        public PointType PointType
         {
-            //TODO: Complete
-            switch (MetaInfo.PointDataFormat)
+            get
             {
-                case 0:
-                case 1:
-                    return PointType.PosD3InUs;
-                case 2:
-                case 3:
-                    return PointType.PosD3ColF3InUs;
-                default:
-                    throw new ArgumentException($"Point data format with byte {MetaInfo.PointDataFormat} not recognized!");
+                //TODO: Complete
+                switch (MetaInfo.PointDataFormat)
+                {
+                    case 0:
+                    case 1:
+                        return PointType.PosD3InUs;
+                    case 2:
+                    case 3:
+                        return PointType.PosD3ColF3InUs;
+                    default:
+                        throw new ArgumentException($"Point data format with byte {MetaInfo.PointDataFormat} not recognized!");
+                }
             }
         }
 

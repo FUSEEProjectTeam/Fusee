@@ -104,8 +104,10 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 }
             };
 
-            var potreeReader = new Potree2Reader();
-            _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(Path.Combine(AssetsPath, PtRenderingParams.Instance.PathToOocFile), RenderMode.Instanced);
+            var PotreeData = new PotreeData(Path.Combine(AssetsPath, PtRenderingParams.Instance.PathToOocFile));
+            var potreeReader = new Potree2Reader(ref PotreeData);
+
+            _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(RenderMode.Instanced);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PtRenderingParams.Instance.PointThreshold;
 

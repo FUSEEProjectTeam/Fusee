@@ -1,97 +1,48 @@
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Common.Accessors;
 using Fusee.PointCloud.Core;
 using Fusee.PointCloud.Core.Accessors;
 using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2.Data;
-using System;
+using System.IO;
 
 namespace Fusee.PointCloud.Potree.V2
 {
     /// <summary>
     /// Reads Potree V2 files and is able to create a point cloud scene component, that can be rendered.
     /// </summary>
-    public class Potree2Reader : IPointReader
+    public class Potree2Reader : Potree2RwBase, IPointReader
     {
         /// <summary>
-        /// A PointAccessor allows access to the point information (position, color, ect.) without casting it to a specific <see cref="PointType"/>.
+        /// Initializes a Potree 2 reader for the given Potree dataset
         /// </summary>
-        public IPointAccessor PointAccessor { get; private set; }
-
-        private PotreeReaderMetadata _potreeReaderMetadata;
-
-        internal PotreeReaderMetadata PotreeReaderMetadata
-        {
-            get
-            {
-                if (_potreeReaderMetadata == null)
-                {
-                    _potreeReaderMetadata = Potree2HierarchyReader.LoadHierarchy(_fileFolderPath);
-                }
-                return _potreeReaderMetadata;
-            }
-            set
-            {
-                _potreeReaderMetadata = value;
-            }
-        }
-
-        private string _fileFolderPath;
-
-        /// <summary>
-        /// Returns the point type.
-        /// </summary>
-        public PointType GetPointType()
-        {
-            return PointType.PosD3ColF3LblB;
-        }
+        /// <param name="potreeData"></param>
+        public Potree2Reader(ref PotreeData potreeData) : base(ref potreeData) { }
 
         /// <summary>
         /// Returns a renderable point cloud component.
         /// </summary>
         /// <param name="renderMode">Determines which <see cref="RenderMode"/> is used to display the returned point cloud."/></param>
-        /// <param name="fileFolderPath">Path to the file.</param>
-        public IPointCloud GetPointCloudComponent(string fileFolderPath, RenderMode renderMode = RenderMode.PointSize)
+        public IPointCloud GetPointCloudComponent(RenderMode renderMode = RenderMode.PointSize)
         {
-            _fileFolderPath = fileFolderPath;
-
-            var ptType = GetPointType();
-
-            switch (ptType)
+            switch (renderMode)
             {
                 default:
-                case PointType.PosD3:
-                case PointType.PosD3ColF3InUs:
-                case PointType.PosD3InUs:
-                case PointType.PosD3ColF3:
-                case PointType.PosD3LblB:
-                case PointType.PosD3NorF3ColF3InUs:
-                case PointType.PosD3NorF3InUs:
-                case PointType.PosD3NorF3ColF3:
-                case PointType.PosD3ColF3InUsLblB:
-                    throw new ArgumentOutOfRangeException($"Invalid point type {ptType}");
-                case PointType.PosD3ColF3LblB:
-                    PointAccessor = new PosD3ColF3LblBAccessor();
-
-                    switch (renderMode)
+                case RenderMode.PointSize:
                     {
-                        default:
-                        case RenderMode.PointSize:
-                            {
-                                var dataHandler = new PointCloudDataHandler<GpuMesh, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
-                                var imp = new Potree2Cloud(dataHandler, GetOctree());
-                                return new PointCloudComponent(imp, renderMode);
-                            }
+                        var dataHandler = new PointCloudDataHandler<GpuMesh, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
+                        var imp = new Potree2Cloud(dataHandler, GetOctree());
+                        return new PointCloudComponent(imp, renderMode);
+                    }
 
-                        case RenderMode.Instanced:
-                            {
-                                var dataHandlerInstanced = new PointCloudDataHandler<InstanceData, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateInstanceDataPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>, true);
-                                var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
-                                return new PointCloudComponent(imp, renderMode);
-                            }
-
+                case RenderMode.Instanced:
+                    {
+                        var dataHandlerInstanced = new PointCloudDataHandler<InstanceData, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateInstanceDataPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>, true);
+                        var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
+                        return new PointCloudComponent(imp, renderMode);
                     }
             }
         }
@@ -104,23 +55,23 @@ namespace Fusee.PointCloud.Potree.V2
         {
             int pointSize = 0;
 
-            if (PotreeReaderMetadata.Metadata != null)
+            if (_potreeData.Metadata != null)
             {
-                foreach (var metaAttributeItem in PotreeReaderMetadata.Metadata.Attributes)
+                foreach (var metaAttributeItem in _potreeData.Metadata.AttributesList)
                 {
                     pointSize += metaAttributeItem.Size;
                 }
 
-                PotreeReaderMetadata.Metadata.PointSize = pointSize;
+                _potreeData.Metadata.PointSize = pointSize;
             }
 
-            var center = PotreeReaderMetadata.Hierarchy.Root.Aabb.Center;
-            var size = PotreeReaderMetadata.Hierarchy.Root.Aabb.Size.y;
-            var maxLvl = PotreeReaderMetadata.Metadata.Hierarchy.Depth;
+            var center = _potreeData.Hierarchy.Root.Aabb.Center;
+            var size = _potreeData.Hierarchy.Root.Aabb.Size.y;
+            var maxLvl = _potreeData.Metadata.Hierarchy.Depth;
 
             var octree = new PointCloudOctree(center, size, maxLvl);
 
-            Potree2Helpers.MapChildNodesRecursive(octree.Root, PotreeReaderMetadata.Hierarchy.Root);
+            MapChildNodesRecursive(octree.Root, _potreeData.Hierarchy.Root);
 
             return octree;
         }
@@ -135,14 +86,146 @@ namespace Fusee.PointCloud.Potree.V2
         {
             TPoint[] points = null;
 
-            var node = Potree2Helpers.FindNode(ref PotreeReaderMetadata.Hierarchy, id);
+            var node = FindNode(ref _potreeData.Hierarchy, id);
 
             if (node != null)
             {
-                points = Potree2NodeReader.LoadNodeData<TPoint>(node, PotreeReaderMetadata.Metadata, PointAccessor);
+                points = LoadNodeData<TPoint>(node);
             }
 
             return points;
+        }
+
+        public TPoint[] LoadNodeData<TPoint>(PotreeNode potreeNode) where TPoint : new()
+        {
+            var octreeFilePath = Path.Combine(_potreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName);
+
+            TPoint[] points = null;
+
+            if (potreeNode != null)
+            {
+                var binaryReader = new BinaryReader(File.OpenRead(octreeFilePath));
+                points = LoadNodeData<TPoint>(potreeNode, binaryReader);
+
+                potreeNode.IsLoaded = true;
+
+                binaryReader.Close();
+                binaryReader.Dispose();
+            }
+
+            return points;
+        }
+
+        private TPoint[] LoadNodeData<TPoint>(PotreeNode node, BinaryReader binaryReader) where TPoint : new()
+        {
+            CacheOffsets();
+
+            var points = new TPoint[node.NumPoints];
+            for (int i = 0; i < node.NumPoints; i++)
+            {
+                points[i] = new TPoint();
+            }
+
+            // Commented code is to read the entire Potree2 file format. Since we don't use everything atm unused 
+            // things are commented for performance.
+            for (int i = 0; i < node.NumPoints; i++)
+            {
+                if (offsetPosition > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetPosition + i * _potreeData.Metadata.PointSize;
+
+                    double x = binaryReader.ReadInt32() * _potreeData.Metadata.Scale.x;
+                    double y = binaryReader.ReadInt32() * _potreeData.Metadata.Scale.y;
+                    double z = binaryReader.ReadInt32() * _potreeData.Metadata.Scale.z;
+
+                    double3 position = new(x, y, z);
+                    position = Potree2Consts.YZflip * position;
+
+                    ((PointAccessor<TPoint>)PointAccessor).SetPositionFloat3_64(ref points[i], position);
+                }
+
+                //if (offsetIntensity > -1)
+                //{
+                //    binaryReader.BaseStream.Position = node.ByteOffset + offsetIntensity + i * _potreeData.Metadata.PointSize;
+                //    Int16 intensity = binaryReader.ReadInt16();
+                //}
+                //if (offsetReturnNumber > -1)
+                //{
+                //    binaryReader.BaseStream.Position = node.ByteOffset + offsetReturnNumber + i * _potreeData.Metadata.PointSize;
+                //    byte returnNumber = binaryReader.ReadByte();
+                //}
+                //if (offsetNumberOfReturns > -1)
+                //{
+                //    binaryReader.BaseStream.Position = node.ByteOffset + offsetNumberOfReturns + i * _potreeData.Metadata.PointSize;
+                //    byte numberOfReturns = binaryReader.ReadByte();
+                //}
+
+                if (offsetClassification > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetClassification + i * _potreeData.Metadata.PointSize;
+
+                    byte label = binaryReader.ReadByte();
+
+                    ((PointAccessor<TPoint>)PointAccessor).SetLabelUInt_8(ref points[i], label);
+                }
+
+                //else if (offsetScanAngleRank > -1)
+                //{
+                //    binaryReader.BaseStream.Position = node.ByteOffset + offsetScanAngleRank + i * _potreeData.Metadata.PointSize;
+                //    byte scanAngleRank = binaryReader.ReadByte();
+                //}
+                //else if (offsetUserData > -1)
+                //{
+                //    binaryReader.BaseStream.Position = node.ByteOffset + offsetUserData + i * _potreeData.Metadata.PointSize;
+                //    byte userData = binaryReader.ReadByte();
+                //}
+                //else if (offsetPointSourceId > -1)
+                //{
+                //    binaryReader.BaseStream.Position = node.ByteOffset + offsetPointSourceId + i * _potreeData.Metadata.PointSize;
+                //    byte pointSourceId = binaryReader.ReadByte();
+                //}
+
+                if (offsetColor > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetColor + i * _potreeData.Metadata.PointSize;
+
+                    ushort r = binaryReader.ReadUInt16();
+                    ushort g = binaryReader.ReadUInt16();
+                    ushort b = binaryReader.ReadUInt16();
+
+                    float3 color = float3.Zero;
+
+                    color.r = ((byte)(r > 255 ? r / 256 : r));
+                    color.g = ((byte)(g > 255 ? g / 256 : g));
+                    color.b = ((byte)(b > 255 ? b / 256 : b));
+
+                    ((PointAccessor<TPoint>)PointAccessor).SetColorFloat3_32(ref points[i], color);
+                }
+            }
+
+            return points;
+        }
+
+        private static void MapChildNodesRecursive(IPointCloudOctant octreeNode, PotreeNode potreeNode)
+        {
+            octreeNode.NumberOfPointsInNode = (int)potreeNode.NumPoints;
+
+            for (int i = 0; i < potreeNode.Children.Length; i++)
+            {
+                if (potreeNode.Children[i] != null)
+                {
+                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, new OctantId(potreeNode.Name));
+
+                    if (potreeNode.Children[i].NodeType == NodeType.LEAF)
+                    {
+                        octant.IsLeaf = true;
+                    }
+
+                    MapChildNodesRecursive(octant, potreeNode.Children[i]);
+
+                    octreeNode.Children[i] = octant;
+                }
+            }
         }
     }
 }
