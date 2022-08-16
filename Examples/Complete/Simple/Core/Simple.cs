@@ -1,3 +1,4 @@
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -5,6 +6,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -69,10 +71,43 @@ namespace Fusee.Examples.Simple.Core
             };
             _rocketScene.Children.Add(camNode);
 
+            var xLine = new Mesh
+            {
+                MeshType = PrimitiveType.Lines,
+                Vertices = new[]
+            {
+                    new float3(0, 0, 0) - new float3(0.5f),
+                    new float3(1, 0, 0) - new float3(0.5f)
+                },
+                Triangles = new ushort[]
+                {
+                    0, 1
+                },
+                Colors = new[]
+                {
+                    (uint)ColorUint.Red,
+                    (uint)ColorUint.Red
+                }
+            };
+
+
+            _rocketScene.Children.Add(new SceneNode
+            {
+                Components = new System.Collections.Generic.List<SceneComponent>
+                {
+                      new Transform(),
+                      MakeEffect.FromLineShader(6f, float4.UnitY, false),
+                      xLine
+                }
+            });
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _picker = new ScenePicker(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
+
+        ScenePicker _picker;
 
         public override async Task InitAsync()
         {
@@ -88,7 +123,7 @@ namespace Fusee.Examples.Simple.Core
 
         public override void Update()
         {
-            _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
+           _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_angleVert, _angleHorz, 0);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -131,7 +166,15 @@ namespace Fusee.Examples.Simple.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+
+
             _sceneRenderer.Render(RC);
+
+            float2 pickPosClip = (Input.Mouse.Position * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
+
+            PickResult newPick = _picker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+            Console.WriteLine(newPick);
+
             _guiRenderer.Render(RC);
 
             //Constantly check for interactive objects.
