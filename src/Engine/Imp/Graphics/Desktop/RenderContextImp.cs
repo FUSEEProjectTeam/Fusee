@@ -638,7 +638,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // Compile vertex shader
             GL.ShaderSource(vertexObject, vs);
             GL.CompileShader(vertexObject);
-            GL.GetShaderInfoLog(vertexObject, out string info);
+            GL.GetShaderInfoLog(vertexObject, out string info); 
             GL.GetShader(vertexObject, ShaderParameter.CompileStatus, out int statusCode);
 
             if (statusCode != 1)
