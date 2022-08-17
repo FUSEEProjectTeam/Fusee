@@ -86,7 +86,7 @@ namespace Fusee.Tests.Render.Desktop
 
                 // Initialize canvas/app and canvas implementor
                 app.InitApp();
-                
+
                 ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoInit();
                 ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoResize(width, height);
                 ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoUpdate();
