@@ -666,9 +666,9 @@ namespace Fusee.Tests.Math.Core
 
             var actual = M.ScreenPointToWorld(data, 1, p, float4x4.Identity, p.Invert(), float4x4.Identity.Invert(), width, height);
 
-            Assert.Equal(expected.x, actual.x, 0.01f);
-            Assert.Equal(expected.y, actual.y, 0.01f);
-            Assert.Equal(expected.z, actual.z, 0.01f);
+            Assert.Equal(expected.x, actual.x);
+            Assert.Equal(expected.y, actual.y);
+            Assert.Equal(expected.z, actual.z);
         }
 
 
