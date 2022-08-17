@@ -771,10 +771,10 @@ namespace Fusee.Math.Core
         #region ScreenToWorldPoint
 
         /// <summary>
-        /// Calculates a world position from given screen point (e. g. mouse coordinates in clip space cooordinates)
+        /// Calculates a world position from given screen point (e. g. mouse coordinates in window space coordinates)
         /// at any desired z coordinate specified by <paramref name="zPosition"/>
         /// </summary>
-        /// <param name="pickPosClipIn">Position in clip space coordinates</param>
+        /// <param name="windowCoordIn">Position in window space coordinates</param>
         /// <param name="zPosition">Desired z coordinate in clip space</param>
         /// <param name="Projection">Projection matrix</param>
         /// <param name="View">View matrix</param>
@@ -783,11 +783,11 @@ namespace Fusee.Math.Core
         /// <param name="windowWidth">Width of window</param>
         /// <param name="windowHeight">Height of window</param>
         /// <returns></returns>
-        public static float3 ScreenPointToWorld(float2 pickPosClipIn, float zPosition, float4x4 Projection, float4x4 View, float4x4 InvProjection, float4x4 InvView, int windowWidth, int windowHeight)
+        public static float3 ScreenPointToWorld(float2 windowCoordIn, float zPosition, float4x4 Projection, float4x4 View, float4x4 InvProjection, float4x4 InvView, int windowWidth, int windowHeight)
         {
             var oneInClipSpace = float4x4.TransformPerspective(Projection * View, new float4(0, 0, zPosition, 1));
 
-            var pickPosClip = (pickPosClipIn * new float2(2.0f / windowWidth, -2.0f / windowHeight)) + new float2(-1, 1);
+            var pickPosClip = (windowCoordIn * new float2(2.0f / windowWidth, -2.0f / windowHeight)) + new float2(-1, 1);
 
             var vec = new float4(pickPosClip.x, pickPosClip.y, oneInClipSpace.z, 1f);
 
