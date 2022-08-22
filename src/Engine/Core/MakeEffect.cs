@@ -27,13 +27,13 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Generates a line shader which can be used with a <see cref="Mesh"/> with <see cref="Mesh.MeshType"/> set to <see cref="PrimitiveType.Lines"/>.        /// Loads shader files via <see cref="AssetStorage.Get{T}(string)"/>
-        /// For an asynchronous version use <see cref="FromLineShaderAsync(float, float4, bool)"/>
+        /// For an asynchronous version use <see cref="LineEffectAsync(float, float4, bool)"/>
         /// </summary>
         /// <param name="lineThickness"></param>
         /// <param name="albedoColor"></param>
         /// <param name="enableVertexColors"></param>
         /// <returns></returns>
-        public static Effect FromLineShader(float lineThickness, float4 albedoColor, bool enableVertexColors = false)
+        public static Effect LineEffect(float lineThickness, float4 albedoColor, bool enableVertexColors = false)
         {
             var vs = AssetStorage.Get<string>("line.vert");
             var gs = AssetStorage.Get<string>("line.geom");
@@ -58,13 +58,13 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Generates a line shader which can be used with a <see cref="Mesh"/> with <see cref="Mesh.MeshType"/> set to <see cref="PrimitiveType.Lines"/>.
         /// Loads shader files via <see cref="AssetStorage.GetAsync{T}(string)"/>
-        /// For an non asynchronous version use <see cref="FromLineShader(float, float4, bool)"/>
+        /// For an non asynchronous version use <see cref="LineEffect(float, float4, bool)"/>
         /// </summary>
         /// <param name="lineThickness"></param>
         /// <param name="albedoColor"></param>
         /// <param name="enableVertexColors"></param>
         /// <returns></returns>
-        public static async Task<Effect> FromLineShaderAsync(float lineThickness, float4 albedoColor, bool enableVertexColors = false)
+        public static async Task<Effect> LineEffectAsync(float lineThickness, float4 albedoColor, bool enableVertexColors = false)
         {
             var vs = await AssetStorage.GetAsync<string>("line.vert");
             var gs = await AssetStorage.GetAsync<string>("line.geom");
