@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Common;
+using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +50,7 @@ namespace Fusee.Engine.Core
     /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/>, <see cref="Touch"/>,
     /// without even typing a namespace or class name.
     /// </remarks>
-    public class Input
+    public class Input : IDisposable
     {
         private readonly Dictionary<string, IInputDriverImp> _inputDrivers;
         /// <summary>

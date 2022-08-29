@@ -169,7 +169,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         ~WritableArrayTexture()
         {
-            Dispose();
+            Dispose(false);
         }
     }
 }

@@ -296,15 +296,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (_gameWindow.IsMultiThreaded)
                 _gameWindow.Context.MakeNoneCurrent();
         }
-
-        /// <summary>
-        /// Implementation of the Dispose pattern. Disposes of the OpenTK game window.
-        /// </summary>
-        public void Dispose()
-        {
-            _gameWindow.Dispose();
-        }
-
+        
         #endregion
 
         #region Members
