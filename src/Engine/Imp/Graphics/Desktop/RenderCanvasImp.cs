@@ -296,7 +296,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (_gameWindow.IsMultiThreaded)
                 _gameWindow.Context.MakeNoneCurrent();
         }
-        
+
         #endregion
 
         #region Members
