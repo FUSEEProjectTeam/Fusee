@@ -59,17 +59,11 @@ namespace Fusee.Engine.Core
 
             if (meshImp.BiTangentsSet)
                 _renderContextImp.RemoveBiTangents(meshImp);
-
-            // Force collection
-            GC.Collect();
         }
 
         private void Remove(IInstanceDataImp instanceData)
         {
             _renderContextImp.RemoveInstanceData(instanceData);
-
-            // Force collection
-            GC.Collect();
         }
 
         private void DisposeMesh(object sender, MeshChangedEventArgs meshDataEventArgs)

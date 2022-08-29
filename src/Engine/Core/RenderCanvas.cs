@@ -227,6 +227,8 @@ namespace Fusee.Engine.Core
                     RenderAFrame();
 
                 EndOfFrame?.Invoke(this, EventArgs.Empty);
+
+                RC.CleanupResourceManagers();
             };
 
             CanvasImplementor.Resize += delegate

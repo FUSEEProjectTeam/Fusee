@@ -1960,11 +1960,6 @@ namespace Fusee.Engine.Core
             UpdateAllActiveFxParams(cFx);
 
             _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
-
-            // After rendering always cleanup pending meshes, textures and shader effects
-            _meshManager.Cleanup();
-            _textureManager.Cleanup();
-            _effectManager.Cleanup();
         }
 
         /// <summary>
@@ -1992,11 +1987,6 @@ namespace Fusee.Engine.Core
             }
             else
                 _rci.Render(meshImp, null);
-
-            // After rendering always cleanup pending meshes, textures and shader effects
-            _meshManager.Cleanup();
-            _textureManager.Cleanup();
-            _effectManager.Cleanup();
         }
 
         /// <summary>
@@ -2017,8 +2007,13 @@ namespace Fusee.Engine.Core
 
             var meshImp = _meshManager.GetImpFromMesh(mesh);
             _rci.Render(meshImp);
+        }
 
-            // After rendering always cleanup pending meshes, textures and shader effects
+        /// <summary>
+        /// After rendering always cleanup pending meshes, textures and shader effects
+        /// </summary>
+        internal void CleanupResourceManagers()
+        {
             _meshManager.Cleanup();
             _textureManager.Cleanup();
             _effectManager.Cleanup();
