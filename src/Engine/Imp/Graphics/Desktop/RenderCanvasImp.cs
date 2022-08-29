@@ -215,27 +215,30 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <param name="icon">The window icon to use</param>
         /// <param name="startVisible">Define if window is visible from the start, default: true.</param>
-        public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false, bool startVisible = true)
+        /// <param name="width">Width of the game window.</param>
+        /// <param name="height">Height of the game window.</param>
+        /// <param name="minWidth"></param>
+        /// <param name="minHeight"></param>
+        public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false, bool startVisible = true, int width = 1280, int height = 720, int minWidth = 360, int minHeight = 640)
         {
             //TODO: Select correct monitor
             MonitorInfo mon = Monitors.GetMonitors()[0];
 
-            int width = 1280;
-            int height = 720;
-
             if (mon != null)
             {
+                minWidth = System.Math.Min(mon.HorizontalResolution - 100, minWidth);
+                minHeight = System.Math.Min(mon.VerticalResolution - 100, minHeight);
                 width = System.Math.Min(mon.HorizontalResolution - 100, width);
                 height = System.Math.Min(mon.VerticalResolution - 100, height);
             }
 
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible, minWidth, minHeight);
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible, minWidth, minHeight);
             }
 
             WindowHandle = new WindowHandle()
@@ -628,15 +631,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
+        /// <param name="minimumWidth">The minimum width of the game window.</param>
+        /// <param name="minimumHeight">The minimum height of the game window</param>
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <param name="startVisible">Should the window be visible from the start, default: true.</param>
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false, bool startVisible = true)
+        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false, bool startVisible = true, int minimumWidth = 1280, int minimumHeight = 720)
             : base(new GameWindowSettings(), new NativeWindowSettings
             {
                 Size = new OpenTK.Mathematics.Vector2i(width, height),
                 Profile = OpenTK.Windowing.Common.ContextProfile.Core,
                 Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible,
-                StartVisible = startVisible
+                StartVisible = startVisible,
+                MinimumSize = new OpenTK.Mathematics.Vector2i(minimumWidth, minimumHeight)
             })
         {
             IsMultiThreaded = isMultithreaded;
