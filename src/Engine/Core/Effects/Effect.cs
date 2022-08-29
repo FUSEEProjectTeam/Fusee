@@ -135,7 +135,7 @@ namespace Fusee.Engine.Core.Effects
         {
             return SessionUniqueIdentifier.GetHashCode();
         }
-        
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
