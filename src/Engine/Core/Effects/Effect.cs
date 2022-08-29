@@ -174,7 +174,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         ~Effect()
         {
-            Dispose();
+            Dispose(false);
         }
     }
 }

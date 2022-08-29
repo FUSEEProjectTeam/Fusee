@@ -16,6 +16,8 @@ namespace Fusee.Base.Core
         private readonly int _maxWidth;
 
         private int _currentPosition;
+        private bool disposedValue;
+
         public ScanLineEnumerator(byte[] pixelData, ImagePixelFormat pixelFormat, int xSrc, int ySrc, int width, int height, int maxWidth)
         {
             _pixelData = pixelData;
@@ -52,9 +54,6 @@ namespace Fusee.Base.Core
 
         object IEnumerator.Current => Current;
 
-        public void Dispose()
-        {
-        }
         private ScanLine GetCurrentScanLine()
         {
             int bytesPerLine = _width * _pixelFormat.BytesPerPixel;
@@ -65,6 +64,21 @@ namespace Fusee.Base.Core
             Buffer.BlockCopy(_pixelData, srcOffset, lineByteBuffer, 0, bytesPerLine); // copy amount of bytesPerLine from PixelData to lineByteBuffer == grab the ScanLine
             ScanLine scanLine = new(lineByteBuffer, 0, _width, _pixelFormat);
             return scanLine;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
