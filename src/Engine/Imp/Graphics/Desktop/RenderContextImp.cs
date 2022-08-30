@@ -1394,7 +1394,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTangents(IMeshImp mr, float4[] tangents)
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents)
         {
             if (tangents == null || tangents.Length == 0)
             {
@@ -1413,7 +1413,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(tBo, tangentBytes, tangents, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(tBo, tangentBytes, ref MemoryMarshal.GetReference(tangents), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.TangentAttribBindingIndex, tBo, IntPtr.Zero, sizeOfTangent);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.TangentAttribLocation, 4, VertexAttribType.Float, false, 0);
@@ -1430,12 +1430,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out tBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(tBo, tangentBytes, tangents, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(tBo, tangentBytes, ref MemoryMarshal.GetReference(tangents), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.TangentAttribLocation, tBo, IntPtr.Zero, sizeOfTangent);
 
                 }
                 else
-                    GL.NamedBufferSubData(tBo, IntPtr.Zero, tangentBytes, tangents);
+                    GL.NamedBufferSubData(tBo, IntPtr.Zero, tangentBytes, ref MemoryMarshal.GetReference(tangents));
             }
 
 #if DEBUG
@@ -1452,7 +1452,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="bitangents">The BiTangents.</param>
         /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents)
         {
             if (bitangents == null || bitangents.Length == 0)
             {
@@ -1472,7 +1472,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(btBo, bitangentBytes, bitangents, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(btBo, bitangentBytes, ref MemoryMarshal.GetReference(bitangents), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.BitangentAttribBindingIndex, btBo, IntPtr.Zero, sizeOfBiTangent);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.BitangentAttribLocation, 3, VertexAttribType.Float, false, 0);
@@ -1489,12 +1489,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out btBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(btBo, bitangentBytes, bitangents, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(btBo, bitangentBytes, ref MemoryMarshal.GetReference(bitangents), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BitangentAttribLocation, btBo, IntPtr.Zero, sizeOfBiTangent);
 
                 }
                 else
-                    GL.NamedBufferSubData(btBo, IntPtr.Zero, bitangentBytes, bitangents);
+                    GL.NamedBufferSubData(btBo, IntPtr.Zero, bitangentBytes, ref MemoryMarshal.GetReference(bitangents));
             }
 
 #if DEBUG
@@ -1511,7 +1511,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="normals">The normals.</param>
         /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetNormals(IMeshImp mr, float3[] normals)
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals)
         {
             if (normals == null || normals.Length == 0)
             {
@@ -1531,7 +1531,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(nBo, normsBytes, normals, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(nBo, normsBytes, ref MemoryMarshal.GetReference(normals), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.NormalAttribBindingIndex, nBo, IntPtr.Zero, sizeOfNorm);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.NormalAttribLocation, 3, VertexAttribType.Float, false, 0);
@@ -1548,12 +1548,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out nBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(nBo, normsBytes, normals, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(nBo, normsBytes, ref MemoryMarshal.GetReference(normals), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.NormalAttribLocation, nBo, IntPtr.Zero, sizeOfNorm);
 
                 }
                 else
-                    GL.NamedBufferSubData(nBo, IntPtr.Zero, normsBytes, normals);
+                    GL.NamedBufferSubData(nBo, IntPtr.Zero, normsBytes, ref MemoryMarshal.GetReference(normals));
             }
 
 #if DEBUG

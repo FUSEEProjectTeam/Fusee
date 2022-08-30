@@ -20,7 +20,7 @@ namespace Fusee.Engine.Core.Primitives
         {
             var verts = new List<float3>();
             var uvs = new List<float2>();
-            var triangles = new List<ushort>();
+            var triangles = new List<uint>();
             var normals = new List<float3>();
 
             var angleByStep = fillPercentage / 100f * (float)(System.Math.PI * 2f) / segments;
@@ -108,9 +108,9 @@ namespace Fusee.Engine.Core.Primitives
             }
 
             Vertices = new MeshAttributes<float3>(verts);
-            Normals = new MeshAttributes(normals);
-            Triangles = new MeshAttributes<float3>(triangles);
-            UVs = new MeshAttributes<float3>(uvs);
+            Normals = new MeshAttributes<float3>(normals);
+            Triangles = new MeshAttributes<uint>(triangles);
+            UVs = new MeshAttributes<float2>(uvs);
         }
 
         private float Normalize(float input, float max, float min)

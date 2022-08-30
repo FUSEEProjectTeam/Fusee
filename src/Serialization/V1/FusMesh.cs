@@ -71,7 +71,7 @@ namespace Fusee.Serialization.V1
         /// The triangles.
         /// </value>
         [ProtoMember(7)]
-        public ushort[] Triangles;
+        public uint[] Triangles;
 
         /// <summary>
         /// The bounding box of this geometry chunk.

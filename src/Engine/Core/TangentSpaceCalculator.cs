@@ -99,7 +99,7 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < m.Tangents.Length; i++)
                 bitangents[i] = float3.Cross(m.Normals[i], m.Tangents[i].xyz) * m.Tangents[i].w;
 
-            m.BiTangents = bitangents;
+            m.BiTangents = new MeshAttributes<float3>(bitangents);
         }
     }
 }

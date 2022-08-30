@@ -6,40 +6,61 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
+using System.Reflection.Emit;
 
 namespace Fusee.Engine.Core.Scene
 {
+    public sealed class DirtyIndexList
+    {
+        public void Init() {
+            IndexList = new List<(int, int)>();
+        }
+
+        public void ResetList() => Init();
+
+        public void Add(int idx) => IndexList.Append((idx, idx));
+
+        public void Add((int, int) idx) => IndexList.Append(idx);
+
+        public IEnumerable<(int, int)> IndexList { get; private set; }
+
+        public bool Empty => IndexList.Count() == 0;
+    }
+
     public sealed class MeshAttributes<T> where T : struct
     {
         private readonly T[] _attribData;
 
-        public bool UpdateDataAfterRender { get; set; } = true;
-
-        public bool DataChangedDirtyFlag { get; private set; }
-
-        public readonly List<(int, int)> ChangedIndices = new();
+        public readonly DirtyIndexList DirtyIndices = new();
 
         public int Length => _attribData.Length;
 
-        public MeshAttributes(in IEnumerable<T> data) => _attribData = (T[])data;
-
-        private MeshAttributes() { }
+        public MeshAttributes(in IEnumerable<T> data)
+        {
+            _attribData = (T[])data;
+            DirtyIndices.Init();
+        }
 
         /// <summary>
-        /// Quick readonly access to data for read purposes
+        /// Quick readonly access to data
         /// Use <see cref="MeshAttributes{T}"/> indexer for read/write access
         /// </summary>
-        public ReadOnlyCollection<T> ReadOnlyData => new(_attribData);
+        public ReadOnlySpan<T> ReadOnlyData => new(_attribData);
 
+        /// <summary>
+        /// Access read/write mesh attribute data
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
         public T this[int idx]
         {
             get => _attribData[idx];
             set
             {
                 _attribData[idx] = value;
-                DataChangedDirtyFlag = true;
-
                 // TODO: Track changed indices in a fast and memory efficient way
+                if (DirtyIndices.Empty)
+                    DirtyIndices.Add(0); /// add one element to notify <see cref="MeshManager"> that values have been changed
             }
         }
 
@@ -53,43 +74,39 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Fills the array with given value beginning at index <paramref name="pos"/> until <paramref name="length"/> is reached.
+        /// Fills the array with given value beginning at index <paramref name="start"/> until <paramref name="length"/> is reached.
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="pos">default = 0</param>
+        /// <param name="start">default = 0</param>
         /// <param name="length">default = -1, if -1 is given the entire length is being used</param>
-        public void Fill(in T data, int pos = 0, int length = -1)
+        public void Fill(in T data, int start = 0, int length = -1)
         {
-            Guard.IsGreaterThanOrEqualTo(pos, 0);
+            Guard.IsGreaterThanOrEqualTo(start, 0);
             Guard.IsGreaterThanOrEqualTo(length, -1);
             Guard.IsNotNull(data);
 
-            var calculatedLength = length == -1 ? (_attribData.Length + pos) : length;
+            var calculatedLength = length == -1 ? (_attribData.Length + start) : length;
             Guard.IsLessThan(calculatedLength, _attribData.Length);
 
-            Array.Fill(_attribData, data, pos, calculatedLength);
-
-            DataChangedDirtyFlag = true;
-            ChangedIndices.Add((0, calculatedLength - 1));
+            Array.Fill(_attribData, data, start, calculatedLength);
+            DirtyIndices.Add((0, calculatedLength - 1));
         }
 
         /// <summary>
-        /// Sets attributes by given <paramref name="data"/>, replacing all elements beginning at given <paramref name="startIdx"/>
+        /// Sets attributes by given <paramref name="data"/>, replacing all elements beginning at given <paramref name="start"/>
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="startIdx">default = 0</param>
-        public void SetAttributeData(in T[] data, int startIdx = 0)
+        /// <param name="start">default = 0</param>
+        public void SetAttributeData(in T[] data, int start = 0)
         {
             Guard.IsNotNull(data);
-            Guard.IsGreaterThanOrEqualTo(startIdx, 0);
+            Guard.IsGreaterThanOrEqualTo(start, 0);
 
-            var calculatedLength = data.Length + startIdx;
+            var calculatedLength = data.Length + start;
             Guard.IsLessThanOrEqualTo(calculatedLength, _attribData.Length);
 
-            Array.Copy(data, 0, _attribData, startIdx, data.Length);
-
-            DataChangedDirtyFlag = true;
-            ChangedIndices.Add((startIdx, _attribData.Length - 1));
+            Array.Copy(data, 0, _attribData, start, data.Length);
+            DirtyIndices.Add((start, _attribData.Length - 1));
         }
     }
 
@@ -110,27 +127,49 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public Suid SessionUniqueIdentifier { get; } = Suid.GenerateSuid();
 
+        public bool UpdatePerFrame { set; get; } = true;
+
+        public void UpdateGPU()
+        {
+            if (!UpdatePerFrame) return;
+
+            if(!Triangles.DirtyIndices.Empty)
+            {
+
+            }
+
+            // reset index lists
+            /*
+            Pos._dirtyIndexList.Init();
+            Label._dirtyIndexList.Init();
+            Instance._dirtyIndexList.Init();
+            GPSTime._dirtyIndexList.Init();
+            Color._dirtyIndexList.Init();
+            */
+        }
+
         #endregion
 
         #region Mesh data member
 
-        public readonly MeshAttributes<uint> Triangles;
-        public readonly MeshAttributes<float3> Vertices;
-        public readonly MeshAttributes<float3>? Normals;
-        public readonly MeshAttributes<float2>? UVs;
+        public  MeshAttributes<uint> Triangles { get; protected set; }
+        public  MeshAttributes<float3> Vertices { get; protected set; }
+        public  MeshAttributes<float3>? Normals { get; protected set; }
+        public  MeshAttributes<float2>? UVs { get; protected set; }
 
-        public readonly MeshAttributes<float4>? BoneWeights;
-        public readonly MeshAttributes<float4>? BoneIndices;
+        public  MeshAttributes<float4>? BoneWeights { get; internal set; } // set via SceneRenderer
+        public  MeshAttributes<float4>? BoneIndices { get; internal set; } // set via SceneRenderer
 
-        public readonly MeshAttributes<float4>? Tangents;
-        public readonly MeshAttributes<float3>? BiTangents;
+        public  MeshAttributes<float4>? Tangents { get; internal set; } // set via SceneRenderer
+        public  MeshAttributes<float3>? BiTangents { get; internal set; } // set via SceneRenderer
 
-        public readonly MeshAttributes<uint>? Colors;
-        public readonly MeshAttributes<uint>? Colors1;
-        public readonly MeshAttributes<uint>? Colors2;
+        public  MeshAttributes<uint>? Colors { get; protected set; }
+        public  MeshAttributes<uint>? Colors1 { get; protected set; }
+        public  MeshAttributes<uint>? Colors2 { get; protected set; }
 
         #endregion
 
+        protected Mesh() { }
 
         /// <summary>
         /// Generates a new <see cref="Mesh"/> instance

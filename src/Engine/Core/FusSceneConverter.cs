@@ -551,22 +551,12 @@ namespace Fusee.Engine.Core
             }
 
             // convert mesh
-            mesh = new Mesh
-            {
-                MeshType = (PrimitiveType)m.MeshType,
-                Active = true,
-                BiTangents = m.BiTangents,
-                BoneIndices = m.BoneIndices,
-                BoundingBox = m.BoundingBox,
-                BoneWeights = m.BoneWeights,
-                Colors = m.Colors,
-                Name = m.Name,
-                Normals = m.Normals,
-                Tangents = m.Tangents,
-                Triangles = m.Triangles,
-                UVs = m.UVs,
-                Vertices = m.Vertices
-            };
+            mesh = new Mesh(m.Triangles, m.Vertices, m.Normals, m.UVs, m.BoneWeights, m.BoneIndices, m.Tangents, m.BiTangents,
+                m.Colors);
+
+            mesh.MeshType = (PrimitiveType)m.MeshType;
+            mesh.Active = true;
+            mesh.Name = m.Name;
 
             if (_currentNode.Components == null)
             {
@@ -1253,10 +1243,6 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvMesh(Mesh m)
         {
-            var uintTriangles = m.Triangles.ToArray();
-            var triangles = new ushort[uintTriangles.Length];
-            Array.Copy(uintTriangles, triangles, uintTriangles.Length);
-
             // convert mesh
             var mesh = new FusMesh
             {
@@ -1269,7 +1255,7 @@ namespace Fusee.Engine.Core
                 Name = m.Name,
                 Normals = m.Normals?.ToArray(),
                 Tangents = m.Tangents?.ToArray(),
-                Triangles = triangles,
+                Triangles = m.Triangles.ToArray(),
                 UVs = m.UVs?.ToArray(),
                 Vertices = m.Vertices?.ToArray()
             };

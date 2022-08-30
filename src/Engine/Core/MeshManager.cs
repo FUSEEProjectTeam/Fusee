@@ -210,7 +210,7 @@ namespace Fusee.Engine.Core
             _renderContextImp.SetVertexArrayObject(meshImp);
 
             if (mesh.TrianglesSet)
-                _renderContextImp.SetTriangles(meshImp, mesh.Triangles);
+                _renderContextImp.SetTriangles(meshImp, mesh.Triangles.ReadOnlyData);
 
             if (mesh.VerticesSet)
                 _renderContextImp.SetVertices(meshImp, mesh.Vertices);

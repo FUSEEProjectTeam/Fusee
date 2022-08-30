@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core.Primitives
         {
             #region Fields
 
-            Vertices = new[]
+            Vertices = new MeshAttributes<float3>(new[]
             {
                 new float3 {x = -0.5f, y = -0.5f, z = 0},
                 new float3 {x = -0.5f, y = -1/6f, z = 0},
@@ -37,10 +37,10 @@ namespace Fusee.Engine.Core.Primitives
                 new float3 {x = -1/6f, y = 1/6f, z = 0},
                 new float3 {x = 1/6f, y = 1/6f, z = 0},
                 new float3 {x = 1/6f, y = -1/6f, z = 0},
-            };
+            });
 
 
-            Triangles = new ushort[]
+            Triangles = new MeshAttributes<uint>(new uint[]
             {
                 0,12,1,
                 0,11,12,
@@ -70,9 +70,9 @@ namespace Fusee.Engine.Core.Primitives
                 14,7,6
 
 
-            };
+            });
 
-            Normals = new[]
+            Normals = new MeshAttributes<float3>(new[]
             {
                 new float3(0, 0, -1),
                 new float3(0, 0, -1),
@@ -90,9 +90,9 @@ namespace Fusee.Engine.Core.Primitives
                 new float3(0, 0, -1),
                 new float3(0, 0, -1),
                 new float3(0, 0, -1)
-            };
+            });
 
-            UVs = Vertices.Select(vert => new float2(vert.x, vert.y) + new float2(0.5f, 0.5f)).ToArray();
+            UVs = new MeshAttributes<float2>(Vertices.ReadOnlyData.ToArray().Select(vert => new float2(vert.x, vert.y) + new float2(0.5f, 0.5f)));
         }
         #endregion
     }
