@@ -131,7 +131,7 @@ namespace Fusee.Engine.Core.Scene
 
         public void UpdateGPU()
         {
-            if (!UpdatePerFrame) return;
+
 
             if(!Triangles.DirtyIndices.Empty)
             {

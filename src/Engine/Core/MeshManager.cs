@@ -12,6 +12,8 @@ namespace Fusee.Engine.Core
         private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new();
         private readonly Stack<IInstanceDataImp> _toBeDeletedInstanceDataImps = new();
         private readonly Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new();
+        private readonly Dictionary<Suid, Mesh> _identifierToMeshDictionary = new();
+
         private readonly Dictionary<Suid, IInstanceDataImp> _identifierToInstanceDataImpDictionary = new();
 
         /// <summary>
@@ -76,6 +78,28 @@ namespace Fusee.Engine.Core
 
             // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
             _identifierToMeshImpDictionary.Remove(meshDataEventArgs.Mesh.SessionUniqueIdentifier);
+        }
+
+        internal void UpdateAllMeshes()
+        {
+            foreach(var kv in _identifierToMeshDictionary)
+            {
+                var mesh = kv.Value;
+                if (!mesh.UpdatePerFrame) continue;
+
+                var toBeUpdatedMeshImp = _identifierToMeshImpDictionary[kv.Key];
+                if (!mesh.Vertices.DirtyIndices.Empty)
+                {
+                    // update vertices
+                    _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices.ReadOnlyData);
+                }
+                if(mesh.UVsSet && !mesh.UVs.DirtyIndices.Empty)
+                {
+                    // update uvs
+                }
+
+                kv.Value.UpdateGPU(); // <- re-init all changed idx lists
+            }
         }
 
         private void MeshChanged(object sender, MeshChangedEventArgs meshDataEventArgs)
@@ -249,6 +273,7 @@ namespace Fusee.Engine.Core
             meshImp.MeshType = mesh.MeshType;
 
             _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, meshImp);
+            _identifierToMeshDictionary.Add(mesh.SessionUniqueIdentifier, mesh);
 
             return meshImp;
         }
