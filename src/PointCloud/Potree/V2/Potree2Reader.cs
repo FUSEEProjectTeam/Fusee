@@ -7,6 +7,7 @@ using Fusee.PointCloud.Core;
 using Fusee.PointCloud.Core.Accessors;
 using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2.Data;
+using System;
 using System.IO;
 
 namespace Fusee.PointCloud.Potree.V2
@@ -98,33 +99,26 @@ namespace Fusee.PointCloud.Potree.V2
 
         public TPoint[] LoadNodeData<TPoint>(PotreeNode potreeNode) where TPoint : new()
         {
-            var octreeFilePath = Path.Combine(_potreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName);
-
             TPoint[] points = null;
 
             if (potreeNode != null)
             {
-                var binaryReader = new BinaryReader(File.OpenRead(octreeFilePath));
-                points = LoadNodeData<TPoint>(potreeNode, binaryReader);
-
+                points = ReadNodeData<TPoint>(potreeNode);
                 potreeNode.IsLoaded = true;
-
-                binaryReader.Close();
-                binaryReader.Dispose();
             }
 
             return points;
         }
 
-        private TPoint[] LoadNodeData<TPoint>(PotreeNode node, BinaryReader binaryReader) where TPoint : new()
+        private TPoint[] ReadNodeData<TPoint>(PotreeNode node) where TPoint : new()
         {
-            CacheOffsets();
-
             var points = new TPoint[node.NumPoints];
             for (int i = 0; i < node.NumPoints; i++)
             {
                 points[i] = new TPoint();
             }
+
+            var binaryReader = new BinaryReader(File.OpenRead(OctreeFilePath));
 
             // Commented code is to read the entire Potree2 file format. Since we don't use everything atm unused 
             // things are commented for performance.
@@ -202,6 +196,110 @@ namespace Fusee.PointCloud.Potree.V2
                     ((PointAccessor<TPoint>)PointAccessor).SetColorFloat3_32(ref points[i], color);
                 }
             }
+
+            binaryReader.Close();
+            binaryReader.Dispose();
+
+            return points;
+        }
+
+        public TPotreePoint[] ReadRawPoints<TPotreePoint>(OctantId oid) where TPotreePoint : PotreePoint
+        {
+            var node = FindNode(ref _potreeData.Hierarchy, oid);
+
+            var points = new TPotreePoint[node.NumPoints];
+
+            var binaryReader = new BinaryReader(File.OpenRead(OctreeFilePath));
+
+            for (int i = 0; i < node.NumPoints; i++)
+            {
+                if (offsetPosition > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetPosition + i * _potreeData.Metadata.PointSize;
+
+                    double x = binaryReader.ReadInt32() * _potreeData.Metadata.Scale.x;
+                    double y = binaryReader.ReadInt32() * _potreeData.Metadata.Scale.y;
+                    double z = binaryReader.ReadInt32() * _potreeData.Metadata.Scale.z;
+
+                    double3 position = new(x, y, z);
+                    position = Potree2Consts.YZflip * position;
+
+                    points[i].Position = position;
+                }
+
+                if (offsetIntensity > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetIntensity + i * _potreeData.Metadata.PointSize;
+                    Int16 intensity = binaryReader.ReadInt16();
+
+                    points[i].Intensity = intensity;
+                }
+                if (offsetReturnNumber > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetReturnNumber + i * _potreeData.Metadata.PointSize;
+                    byte returnNumber = binaryReader.ReadByte();
+
+                    points[i].ReturnNumber = returnNumber;
+                }
+                if (offsetNumberOfReturns > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetNumberOfReturns + i * _potreeData.Metadata.PointSize;
+                    byte numberOfReturns = binaryReader.ReadByte();
+
+                    points[i].NumberOfReturns = numberOfReturns;
+                }
+
+                if (offsetClassification > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetClassification + i * _potreeData.Metadata.PointSize;
+
+                    byte label = binaryReader.ReadByte();
+
+                    points[i].Classification = label;
+                }
+
+                else if (offsetScanAngleRank > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetScanAngleRank + i * _potreeData.Metadata.PointSize;
+                    byte scanAngleRank = binaryReader.ReadByte();
+
+                    points[i].ScanAngleRank = scanAngleRank;
+                }
+                else if (offsetUserData > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetUserData + i * _potreeData.Metadata.PointSize;
+                    byte userData = binaryReader.ReadByte();
+
+                    points[i].UserData = userData;
+                }
+                else if (offsetPointSourceId > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetPointSourceId + i * _potreeData.Metadata.PointSize;
+                    byte pointSourceId = binaryReader.ReadByte();
+
+                    points[i].PointSourceId = pointSourceId;
+                }
+
+                if (offsetColor > -1)
+                {
+                    binaryReader.BaseStream.Position = node.ByteOffset + offsetColor + i * _potreeData.Metadata.PointSize;
+
+                    ushort r = binaryReader.ReadUInt16();
+                    ushort g = binaryReader.ReadUInt16();
+                    ushort b = binaryReader.ReadUInt16();
+
+                    float3 color = float3.Zero;
+
+                    color.r = ((byte)(r > 255 ? r / 256 : r));
+                    color.g = ((byte)(g > 255 ? g / 256 : g));
+                    color.b = ((byte)(b > 255 ? b / 256 : b));
+
+                    points[i].Color = color;
+                }
+            }
+
+            binaryReader.Close();
+            binaryReader.Dispose();
 
             return points;
         }

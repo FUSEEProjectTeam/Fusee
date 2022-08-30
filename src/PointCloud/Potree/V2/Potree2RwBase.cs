@@ -2,6 +2,7 @@
 using Fusee.PointCloud.Common.Accessors;
 using Fusee.PointCloud.Core.Accessors;
 using Fusee.PointCloud.Potree.V2.Data;
+using System.IO;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -21,10 +22,14 @@ namespace Fusee.PointCloud.Potree.V2
         protected int offsetPointSourceId = -1;
         protected int offsetColor = -1;
 
+        protected string OctreeFilePath => Path.Combine(_potreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName);
+
         public Potree2RwBase(ref PotreeData potreeData)
         {
             _potreeData = potreeData;
             PointAccessor = new PosD3ColF3LblBAccessor();
+
+            CacheOffsets();
         }
 
         /// <summary>

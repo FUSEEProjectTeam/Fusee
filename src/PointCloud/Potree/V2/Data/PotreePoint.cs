@@ -2,7 +2,7 @@
 
 namespace Fusee.PointCloud.Potree.V2.Data
 {
-    public struct PotreePoint
+    public class PotreePoint
     {
         public double3 Position;
         public short Intensity;

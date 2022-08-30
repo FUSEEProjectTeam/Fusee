@@ -1,4 +1,6 @@
+using Fusee.Base.Core;
 using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.IO;
@@ -22,10 +24,8 @@ namespace Fusee.PointCloud.Potree.V2
             long octantCount = 0;
             long pointsCount = 0;
 
-            var octreeFilePath = Path.Combine(_potreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName);
-
-            using (Stream readStream = File.Open(octreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (Stream writeStream = File.Open(octreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            using (Stream readStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (Stream writeStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
             {
                 BinaryReader binaryReader = new BinaryReader(readStream);
                 BinaryWriter binaryWriter = new BinaryWriter(writeStream);
@@ -207,10 +207,8 @@ namespace Fusee.PointCloud.Potree.V2
             long octantCount = 0;
             long pointsCount = 0;
 
-            var octreeFilePath = Path.Combine(_potreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName);
-
-            using (Stream readStream = File.Open(octreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (Stream writeStream = File.Open(octreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            using (Stream readStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (Stream writeStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
             {
                 BinaryReader binaryReader = new BinaryReader(readStream);
                 BinaryWriter binaryWriter = new BinaryWriter(writeStream);
@@ -253,6 +251,96 @@ namespace Fusee.PointCloud.Potree.V2
             }
 
             return (octantCount, pointsCount);
+        }
+
+        public void WriteRawPoints<TPotreePoint>(OctantId oid, TPotreePoint[] points) where TPotreePoint : PotreePoint
+        {
+            var node = FindNode(ref _potreeData.Hierarchy, oid);
+
+            if (points.Length != node.NumPoints)
+            {
+                //TODO: (throw) correct error
+                throw new Exception();
+            }
+
+            using (Stream writeStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            {
+                BinaryWriter binaryWriter = new BinaryWriter(writeStream);
+
+                for (int i = 0; i < points.Length; i++)
+                {
+                    var point = points[i];
+
+                    if (offsetPosition > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetPosition + i * _potreeData.Metadata.PointSize;
+
+                        var position = Potree2Consts.YZflip * point.Position;
+
+                        binaryWriter.Write(position.x);
+                        binaryWriter.Write(position.y);
+                        binaryWriter.Write(position.z);
+                    }
+
+                    if (offsetIntensity > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetIntensity + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.Intensity);
+                    }
+
+                    if (offsetReturnNumber > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetReturnNumber + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.ReturnNumber);
+                    }
+
+                    if (offsetNumberOfReturns > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetNumberOfReturns + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.NumberOfReturns);
+                    }
+
+                    if (offsetClassification > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetClassification + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.Classification);
+                    }
+
+                    if (offsetScanAngleRank > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetScanAngleRank + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.ScanAngleRank);
+                    }
+
+                    if (offsetUserData > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetUserData + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.UserData);
+                    }
+
+                    if (offsetPointSourceId > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetPointSourceId + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.PointSourceId);
+                    }
+
+                    if (offsetColor > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetColor + i * _potreeData.Metadata.PointSize;
+
+                        ushort r = (ushort)MathF.Floor(point.Color.r >= 1f ? 255 : point.Color.r * 256f);
+                        ushort g = (ushort)MathF.Floor(point.Color.g >= 1f ? 255 : point.Color.g * 256f);
+                        ushort b = (ushort)MathF.Floor(point.Color.b >= 1f ? 255 : point.Color.b * 256f);
+
+                        binaryWriter.Write(r);
+                        binaryWriter.Write(g);
+                        binaryWriter.Write(b);
+                    }
+                }
+
+                binaryWriter.Close();
+                binaryWriter.Dispose();
+            }
         }
     }
 }
