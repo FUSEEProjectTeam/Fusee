@@ -1,9 +1,12 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Base.Core;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -59,7 +62,7 @@ namespace Fusee.Engine.Core
         {
             a = Mesh.Vertices[Mesh.Triangles[Triangle + 0]];
             b = Mesh.Vertices[Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Vertices[Mesh.Triangles[Triangle + 2]];
+            c = Mesh.Triangles.Length > 2 ? Mesh.Vertices[Mesh.Triangles[Triangle + 2]] : float3.Zero;
         }
 
         /// <summary>
@@ -94,7 +97,7 @@ namespace Fusee.Engine.Core
         {
             a = Mesh.Normals[Mesh.Triangles[Triangle + 0]];
             b = Mesh.Normals[Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Normals[Mesh.Triangles[Triangle + 2]];
+            c = Mesh.Triangles.Length > 2 ? Mesh.Normals[Mesh.Triangles[Triangle + 2]] : float3.Zero; ;
         }
         /// <summary>
         /// Returns the normal at the center of the picked triangle.
@@ -157,7 +160,7 @@ namespace Fusee.Engine.Core
             {
                 float2 uva = Mesh.UVs[Mesh.Triangles[Triangle]];
                 float2 uvb = Mesh.UVs[Mesh.Triangles[Triangle + 1]];
-                float2 uvc = Mesh.UVs[Mesh.Triangles[Triangle + 2]];
+                float2 uvc = Mesh.Triangles.Length > 2 ? Mesh.UVs[Mesh.Triangles[Triangle + 2]] : float2.Zero;
 
                 return float2.Barycentric(uva, uvb, uvc, U, V);
             }
@@ -516,47 +519,92 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
-            if (!mesh.Active ||
-                (mesh.MeshType != PrimitiveType.Triangles &&
-                mesh.MeshType != PrimitiveType.TriangleFan &&
-                mesh.MeshType != PrimitiveType.TriangleStrip)) return;
+            if (!mesh.Active) return;
 
             var mvp = Projection * View * State.Model;
 
-            for (var i = 0; i < mesh.Triangles.Length; i += 3)
+            if (mesh.MeshType == PrimitiveType.Triangles ||
+                mesh.MeshType == PrimitiveType.TriangleFan ||
+                mesh.MeshType == PrimitiveType.TriangleStrip)
             {
-                // a, b c: current triangle's vertices in clip coordinates
-                var a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1);
-                a = float4x4.TransformPerspective(mvp, a);
-
-                var b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1);
-                b = float4x4.TransformPerspective(mvp, b);
-
-                var c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1);
-                c = float4x4.TransformPerspective(mvp, c);
-
-                // Point-in-Triangle-Test
-                if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out var u, out var v))
+                for (var i = 0; i < mesh.Triangles.Length; i += 3)
                 {
+                    // a, b c: current triangle's vertices in clip coordinates
+                    var a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1);
+                    a = float4x4.TransformPerspective(mvp, a);
 
-                    var pickPos = float3.Barycentric(a.xyz, b.xyz, c.xyz, u, v);
+                    var b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1);
+                    b = float4x4.TransformPerspective(mvp, b);
 
-                    if (pickPos.z >= -1 && pickPos.z <= 1)
+                    var c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1);
+                    c = float4x4.TransformPerspective(mvp, c);
+
+                    // Point-in-Triangle-Test
+                    if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out var u, out var v))
                     {
-                        if (State.CullMode == Cull.None || float2.IsTriangleCW(a.xy, b.xy, c.xy) == (State.CullMode == Cull.Clockwise))
+                        var pickPos = float3.Barycentric(a.xyz, b.xyz, c.xyz, u, v);
+
+                        if (pickPos.z >= -1 && pickPos.z <= 1)
                         {
-                            YieldItem(new PickResult
+                            if (State.CullMode == Cull.None || float2.IsTriangleCW(a.xy, b.xy, c.xy) == (State.CullMode == Cull.Clockwise))
                             {
-                                Mesh = mesh,
-                                Node = CurrentNode,
-                                Triangle = i,
-                                Model = State.Model,
-                                View = View,
-                                Projection = Projection,
-                                U = u,
-                                V = v
-                            });
+                                YieldItem(new PickResult
+                                {
+                                    Mesh = mesh,
+                                    Node = CurrentNode,
+                                    Triangle = i,
+                                    Model = State.Model,
+                                    View = View,
+                                    Projection = Projection,
+                                    U = u,
+                                    V = v
+                                });
+                            }
                         }
+                    }
+                }
+            }
+            else if (mesh.MeshType == PrimitiveType.Lines)
+            {
+                var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
+                if (matOfNode == null)
+                {
+                    Diagnostics.Warn("No shader effect for line renderer found!");
+                    return;
+                }
+                var thicknessFromShader = matOfNode.GetFxParam<float>("Thickness");
+
+                for (var i = 0; i < mesh.Triangles.Length; i += 2)
+                {
+                    var thickness = (thicknessFromShader / _rc.ViewportHeight);
+
+                    var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[mesh.Triangles[i + 0]]).xy;
+                    var pt2 = float4x4.TransformPerspective(mvp, mesh.Vertices[mesh.Triangles[i + 1]]).xy;
+                    var pt0 = PickPosClip;
+
+                    // Line Eq = ax + by + c = 0
+                    // A = (y1 - y2)
+                    // B = (x2 - x1)
+                    // C = (x1 * y2 - x2 * y1)
+
+                    // dist(line, pt) = |Ax + By + C| / A² + B²
+                    var a = pt1.y - pt2.y;
+                    var b = pt2.x - pt1.x;
+                    var c = pt1.x * pt2.y - pt2.x * pt1.y;
+
+                    var d = (MathF.Abs(a * pt0.x + b * pt0.y + c) / (a * a + b * b));
+
+                    if (d <= thickness)
+                    {
+                        YieldItem(new PickResult
+                        {
+                            Mesh = mesh,
+                            Node = CurrentNode,
+                            Triangle = i,
+                            Model = State.Model,
+                            View = View,
+                            Projection = Projection
+                        });
                     }
                 }
             }
