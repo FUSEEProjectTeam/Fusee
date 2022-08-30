@@ -80,48 +80,48 @@ namespace Fusee.Engine.Core
 
         private void MeshChanged(object sender, MeshChangedEventArgs meshDataEventArgs)
         {
-            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out IMeshImp toBeUpdatedMeshImp))
-                throw new KeyNotFoundException("Mesh is not registered.");
+            //if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out IMeshImp toBeUpdatedMeshImp))
+            //    throw new KeyNotFoundException("Mesh is not registered.");
 
-            var mesh = (Mesh)meshDataEventArgs.Mesh;
+            //var mesh = (Mesh)meshDataEventArgs.Mesh;
 
-            switch (meshDataEventArgs.ChangedEnum)
-            {
-                case MeshChangedEnum.Triangles:
-                    _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);
-                    break;
-                case MeshChangedEnum.Vertices:
-                    _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
-                    mesh.BoundingBox = new AABBf(mesh.Vertices);
-                    break;
-                case MeshChangedEnum.Colors:
-                    _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors);
-                    break;
-                case MeshChangedEnum.Colors1:
-                    _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors1);
-                    break;
-                case MeshChangedEnum.Colors2:
-                    _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors2);
-                    break;
-                case MeshChangedEnum.Normals:
-                    _renderContextImp.SetNormals(toBeUpdatedMeshImp, mesh.Normals);
-                    break;
-                case MeshChangedEnum.Uvs:
-                    _renderContextImp.SetUVs(toBeUpdatedMeshImp, mesh.UVs);
-                    break;
-                case MeshChangedEnum.BoneIndices:
-                    _renderContextImp.SetBoneIndices(toBeUpdatedMeshImp, mesh.BoneIndices);
-                    break;
-                case MeshChangedEnum.BoneWeights:
-                    _renderContextImp.SetBoneWeights(toBeUpdatedMeshImp, mesh.BoneWeights);
-                    break;
-                case MeshChangedEnum.Tangents:
-                    _renderContextImp.SetTangents(toBeUpdatedMeshImp, mesh.Tangents);
-                    break;
-                case MeshChangedEnum.BiTangents:
-                    _renderContextImp.SetBiTangents(toBeUpdatedMeshImp, mesh.BiTangents);
-                    break;
-            }
+            //switch (meshDataEventArgs.ChangedEnum)
+            //{
+            //    case MeshChangedEnum.Triangles:
+            //        _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);
+            //        break;
+            //    case MeshChangedEnum.Vertices:
+            //        _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
+            //        mesh.BoundingBox = new AABBf(mesh.Vertices);
+            //        break;
+            //    case MeshChangedEnum.Colors:
+            //        _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors);
+            //        break;
+            //    case MeshChangedEnum.Colors1:
+            //        _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors1);
+            //        break;
+            //    case MeshChangedEnum.Colors2:
+            //        _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors2);
+            //        break;
+            //    case MeshChangedEnum.Normals:
+            //        _renderContextImp.SetNormals(toBeUpdatedMeshImp, mesh.Normals);
+            //        break;
+            //    case MeshChangedEnum.Uvs:
+            //        _renderContextImp.SetUVs(toBeUpdatedMeshImp, mesh.UVs);
+            //        break;
+            //    case MeshChangedEnum.BoneIndices:
+            //        _renderContextImp.SetBoneIndices(toBeUpdatedMeshImp, mesh.BoneIndices);
+            //        break;
+            //    case MeshChangedEnum.BoneWeights:
+            //        _renderContextImp.SetBoneWeights(toBeUpdatedMeshImp, mesh.BoneWeights);
+            //        break;
+            //    case MeshChangedEnum.Tangents:
+            //        _renderContextImp.SetTangents(toBeUpdatedMeshImp, mesh.Tangents);
+            //        break;
+            //    case MeshChangedEnum.BiTangents:
+            //        _renderContextImp.SetBiTangents(toBeUpdatedMeshImp, mesh.BiTangents);
+            //        break;
+            //}
         }
 
         private void DisposeInstanceData(object sender, InstanceDataChangedEventArgs instanceDataEventArgs)
@@ -156,7 +156,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        public void RegisterNewMesh(GpuMesh mesh, float3[] vertices, ushort[] triangles = null, float2[] uvs = null,
+        public void RegisterNewMesh(GpuMesh mesh, float3[] vertices, uint[] triangles = null, float2[] uvs = null,
             float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null,
             float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)
         {
@@ -213,36 +213,37 @@ namespace Fusee.Engine.Core
                 _renderContextImp.SetTriangles(meshImp, mesh.Triangles.ReadOnlyData);
 
             if (mesh.VerticesSet)
-                _renderContextImp.SetVertices(meshImp, mesh.Vertices);
+                _renderContextImp.SetVertices(meshImp, mesh.Vertices.ReadOnlyData);
 
             if (mesh.UVsSet)
-                _renderContextImp.SetUVs(meshImp, mesh.UVs);
+                _renderContextImp.SetUVs(meshImp, mesh.UVs.ReadOnlyData);
 
             if (mesh.NormalsSet)
-                _renderContextImp.SetNormals(meshImp, mesh.Normals);
+                _renderContextImp.SetNormals(meshImp, mesh.Normals.ReadOnlyData);
 
             if (mesh.ColorsSet)
-                _renderContextImp.SetColors(meshImp, mesh.Colors);
+                _renderContextImp.SetColors(meshImp, mesh.Colors.ReadOnlyData);
 
             if (mesh.ColorsSet1)
-                _renderContextImp.SetColors1(meshImp, mesh.Colors1);
+                _renderContextImp.SetColors1(meshImp, mesh.Colors1.ReadOnlyData);
 
             if (mesh.ColorsSet2)
-                _renderContextImp.SetColors2(meshImp, mesh.Colors2);
+                _renderContextImp.SetColors2(meshImp, mesh.Colors2.ReadOnlyData);
 
             if (mesh.BoneIndicesSet)
-                _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices);
+                _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices.ReadOnlyData);
 
             if (mesh.BoneWeightsSet)
-                _renderContextImp.SetBoneWeights(meshImp, mesh.BoneWeights);
+                _renderContextImp.SetBoneWeights(meshImp, mesh.BoneWeights.ReadOnlyData);
 
             if (mesh.TangentsSet)
-                _renderContextImp.SetTangents(meshImp, mesh.Tangents);
+                _renderContextImp.SetTangents(meshImp, mesh.Tangents.ReadOnlyData);
 
             if (mesh.BiTangentsSet)
-                _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents);
+                _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents.ReadOnlyData);
 
-            mesh.MeshChanged += MeshChanged;
+            //mesh.MeshChanged += MeshChanged; // <- Replace with UpdateGPU method!
+
             mesh.DisposeData += DisposeMesh;
 
             meshImp.MeshType = mesh.MeshType;

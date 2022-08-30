@@ -37,7 +37,7 @@ namespace Fusee.Engine.Core.Scene
 
         public MeshAttributes(in IEnumerable<T> data)
         {
-            _attribData = (T[])data;
+            _attribData = data.ToArray();
             DirtyIndices.Init();
         }
 

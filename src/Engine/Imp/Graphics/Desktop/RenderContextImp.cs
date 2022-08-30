@@ -1337,7 +1337,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="vertices">The vertices.</param>
         /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetVertices(IMeshImp mr, float3[] vertices)
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices)
         {
             if (vertices == null || vertices.Length == 0)
             {
@@ -1357,7 +1357,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(vbo, vertsBytes, vertices, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(vbo, vertsBytes, ref MemoryMarshal.GetReference(vertices), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.VertexAttribBindingIndex, vbo, IntPtr.Zero, sizeOfVert);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.VertexAttribLocation, 3, VertexAttribType.Float, false, 0);
@@ -1373,12 +1373,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out vbo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(vbo, vertsBytes, vertices, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(vbo, vertsBytes, ref MemoryMarshal.GetReference(vertices), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.VertexAttribBindingIndex, vbo, IntPtr.Zero, sizeOfVert);
 
                 }
                 else
-                    GL.NamedBufferSubData(vbo, IntPtr.Zero, vertsBytes, vertices);
+                    GL.NamedBufferSubData(vbo, IntPtr.Zero, vertsBytes, ref MemoryMarshal.GetReference(vertices));
             }
 #if DEBUG
             GL.GetNamedBufferParameter(vbo, BufferParameterName.BufferSize, out int vboBytes);
@@ -1570,7 +1570,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="ArgumentException">BoneIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices)
         {
             if (boneIndices == null || boneIndices.Length == 0)
             {
@@ -1590,7 +1590,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(biBo, indicesBytes, boneIndices, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(biBo, indicesBytes, ref MemoryMarshal.GetReference(boneIndices), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.BoneIndexAttribAttribBindingIndex, biBo, IntPtr.Zero, sizeOfboneIndex);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribType.Float, false, 0);
@@ -1606,12 +1606,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out biBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(biBo, indicesBytes, boneIndices, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(biBo, indicesBytes, ref MemoryMarshal.GetReference(boneIndices), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BoneIndexAttribLocation, biBo, IntPtr.Zero, sizeOfboneIndex);
 
                 }
                 else
-                    GL.NamedBufferSubData(biBo, IntPtr.Zero, indicesBytes, boneIndices);
+                    GL.NamedBufferSubData(biBo, IntPtr.Zero, indicesBytes, ref MemoryMarshal.GetReference(boneIndices));
             }
 
 #if DEBUG
@@ -1628,7 +1628,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="ArgumentException">BoneWeights must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights)
         {
             if (boneWeights == null || boneWeights.Length == 0)
             {
@@ -1648,7 +1648,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(wBo, weightsBytes, boneWeights, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(wBo, weightsBytes, ref MemoryMarshal.GetReference(boneWeights), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.BoneIndexAttribAttribBindingIndex, wBo, IntPtr.Zero, sizeOfBoneWeight);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribType.Float, false, 0);
@@ -1664,12 +1664,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out wBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(wBo, weightsBytes, boneWeights, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(wBo, weightsBytes, ref MemoryMarshal.GetReference(boneWeights), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BoneIndexAttribLocation, wBo, IntPtr.Zero, sizeOfBoneWeight);
 
                 }
                 else
-                    GL.NamedBufferSubData(wBo, IntPtr.Zero, weightsBytes, boneWeights);
+                    GL.NamedBufferSubData(wBo, IntPtr.Zero, weightsBytes, ref MemoryMarshal.GetReference(boneWeights));
             }
 
 #if DEBUG
@@ -1686,7 +1686,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="ArgumentException">UVs must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetUVs(IMeshImp mr, float2[] uvs)
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs)
         {
             if (uvs == null || uvs.Length == 0)
             {
@@ -1706,7 +1706,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(uvBo, uvsBytes, uvs, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(uvBo, uvsBytes, ref MemoryMarshal.GetReference(uvs), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.UvAttribBindingIndex, uvBo, IntPtr.Zero, sizeOfUv);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.UvAttribLocation, 2, VertexAttribType.Float, false, 0);
@@ -1722,12 +1722,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out uvBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(uvBo, uvsBytes, uvs, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(uvBo, uvsBytes, ref MemoryMarshal.GetReference(uvs), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.UvAttribLocation, uvBo, IntPtr.Zero, sizeOfUv);
 
                 }
                 else
-                    GL.NamedBufferSubData(uvBo, IntPtr.Zero, uvsBytes, uvs);
+                    GL.NamedBufferSubData(uvBo, IntPtr.Zero, uvsBytes, ref MemoryMarshal.GetReference(uvs));
             }
 
 #if DEBUG
@@ -1744,7 +1744,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1764,7 +1764,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.ColorAttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.ColorAttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
@@ -1780,12 +1780,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out cBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.ColorAttribLocation, cBo, IntPtr.Zero, sizeOfColor);
 
                 }
                 else
-                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
+                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, ref MemoryMarshal.GetReference(colors));
             }
 
 #if DEBUG
@@ -1802,7 +1802,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors1(IMeshImp mr, uint[] colors)
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1822,7 +1822,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.ColorAttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.Color1AttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
@@ -1838,12 +1838,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out cBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.Color1AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 }
                 else
-                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
+                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, ref MemoryMarshal.GetReference(colors));
             }
 
 #if DEBUG
@@ -1860,7 +1860,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors2(IMeshImp mr, uint[] colors)
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1880,7 +1880,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     throw new ApplicationException("Create the VAO first!");
                 }
-                GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.Color2AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.Color2AttribLocation, 4, VertexAttribType.UnsignedByte, true, 0);
@@ -1896,12 +1896,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out cBo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(cBo, colorBytes, colors, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(cBo, colorBytes, ref MemoryMarshal.GetReference(colors), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.Color2AttribBindingIndex, cBo, IntPtr.Zero, sizeOfColor);
 
                 }
                 else
-                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, colors);
+                    GL.NamedBufferSubData(cBo, IntPtr.Zero, colorBytes, ref MemoryMarshal.GetReference(colors));
             }
 
 #if DEBUG
@@ -1918,7 +1918,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<uint> triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
             {
@@ -1926,7 +1926,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             ((MeshImp)mr).NElements = triangleIndices.Length;
 
-            int sizeOfTri = sizeof(ushort);
+            int sizeOfTri = sizeof(uint);
             int trisBytes = triangleIndices.Length * sizeOfTri;
 
             int ibo;
@@ -1940,7 +1940,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ApplicationException("Create the VAO first!");
                 }
                 // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
-                GL.NamedBufferStorage(ibo, trisBytes, triangleIndices, BufferStorageFlags.DynamicStorageBit);
+                GL.NamedBufferStorage(ibo, trisBytes, ref MemoryMarshal.GetReference(triangleIndices), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayElementBuffer(vao, ibo);
             }
             else
@@ -1953,12 +1953,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.CreateBuffers(1, out ibo);
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
-                    GL.NamedBufferStorage(ibo, trisBytes, triangleIndices, BufferStorageFlags.DynamicStorageBit);
+                    GL.NamedBufferStorage(ibo, trisBytes, ref MemoryMarshal.GetReference(triangleIndices), BufferStorageFlags.DynamicStorageBit);
                     GL.VertexArrayElementBuffer(vao, ibo);
 
                 }
                 else
-                    GL.NamedBufferSubData(ibo, IntPtr.Zero, trisBytes, triangleIndices);
+                    GL.NamedBufferSubData(ibo, IntPtr.Zero, trisBytes, ref MemoryMarshal.GetReference(triangleIndices));
             }
 
 #if DEBUG
@@ -2185,7 +2185,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedColor);
             }
             else
-                GL.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                GL.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
             if (((MeshImp)mr).VertexBufferObject != 0)
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.VertexAttribLocation);

@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core.Primitives
         public WireframeCube()
         {
             MeshType = PrimitiveType.Lines;
-            Vertices = new float3[]
+            Vertices = new MeshAttributes<float3>(new float3[]
             {
                 new float3(+0.5f, +0.5f, +0.5f),
                 new float3(+0.5f, -0.5f, +0.5f),
@@ -27,8 +27,8 @@ namespace Fusee.Engine.Core.Primitives
                 new float3(-0.5f, -0.5f, +0.5f),
                 new float3(-0.5f, +0.5f, -0.5f),
                 new float3(-0.5f, -0.5f, -0.5f)
-            };
-            Triangles = new ushort[] // these are our lines
+            });
+            Triangles = new MeshAttributes<uint>(new uint[] // these are our lines
             {
                 0,4, // back
                 4,5,
@@ -45,7 +45,7 @@ namespace Fusee.Engine.Core.Primitives
 
                 6,4, // left, the rest
                 7,5
-            };
+            });
         }
     }
 
@@ -63,7 +63,7 @@ namespace Fusee.Engine.Core.Primitives
             #region Fields
 
             // TODO: Remove redundant vertices
-            Vertices = new[]
+            Vertices = new MeshAttributes<float3>(new[]
             {
                 new float3 {x = +0.5f, y = -0.5f, z = +0.5f},
                 new float3 {x = +0.5f, y = +0.5f, z = +0.5f},
@@ -90,9 +90,9 @@ namespace Fusee.Engine.Core.Primitives
                 new float3 {x = -0.5f, y = -0.5f, z = +0.5f},
                 new float3 {x = -0.5f, y = -0.5f, z = -0.5f}
 
-            };
+            });
 
-            Triangles = new ushort[]
+            Triangles = new MeshAttributes<uint>(new uint[]
             {
                 // front face
                 0, 2, 1, 0, 3, 2,
@@ -112,9 +112,9 @@ namespace Fusee.Engine.Core.Primitives
                 // bottom face
                 20, 22, 21, 20, 23, 22
 
-            };
+            });
 
-            Normals = new[]
+            Normals = new MeshAttributes<float3>(new[]
             {
                 new float3(0, 0, 1),
                 new float3(0, 0, 1),
@@ -140,9 +140,9 @@ namespace Fusee.Engine.Core.Primitives
                 new float3(0, -1, 0),
                 new float3(0, -1, 0),
                 new float3(0, -1, 0)
-            };
+            });
 
-            UVs = new[]
+            UVs = new MeshAttributes<float2>(new[]
             {
                 new float2(1, 0),
                 new float2(1, 1),
@@ -168,8 +168,8 @@ namespace Fusee.Engine.Core.Primitives
                 new float2(1, 1),
                 new float2(0, 1),
                 new float2(0, 0)
-            };
-            BoundingBox = new AABBf(Vertices);
+            });
+            BoundingBox = new AABBf(Vertices.ToArray());
 
         }
         #endregion

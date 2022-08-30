@@ -2054,7 +2054,7 @@ namespace Fusee.Engine.Core
         /// <param name="boneIndices">The bone indices of the mesh.</param>
         /// <param name="boneWeights">The bone weights of the mesh.</param>
         /// <returns></returns>
-        public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, ushort[] triangles = null,
+        public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, uint[] triangles = null,
             float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null, float2[] uvs = null,
             float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)
         {

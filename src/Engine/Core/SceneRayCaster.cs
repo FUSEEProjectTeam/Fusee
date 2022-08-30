@@ -38,9 +38,9 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                float2 uva = Mesh.UVs[Mesh.Triangles[Triangle]];
-                float2 uvb = Mesh.UVs[Mesh.Triangles[Triangle + 1]];
-                float2 uvc = Mesh.UVs[Mesh.Triangles[Triangle + 2]];
+                float2 uva = Mesh.UVs[(int)Mesh.Triangles[Triangle]];
+                float2 uvb = Mesh.UVs[(int)Mesh.Triangles[Triangle + 1]];
+                float2 uvc = Mesh.UVs[(int)Mesh.Triangles[Triangle + 2]];
 
                 return float2.Barycentric(uva, uvb, uvc, U, V);
             }
@@ -59,9 +59,9 @@ namespace Fusee.Engine.Core
         /// <param name="c"></param>
         public void GetTriangle(out float3 a, out float3 b, out float3 c)
         {
-            a = Mesh.Vertices[Mesh.Triangles[Triangle + 0]];
-            b = Mesh.Vertices[Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Vertices[Mesh.Triangles[Triangle + 2]];
+            a = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 0]];
+            b = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 1]];
+            c = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 2]];
         }
 
         /// <summary>
@@ -249,13 +249,13 @@ namespace Fusee.Engine.Core
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // Vertices of the picked triangle in world space
-                var a = new float3(mesh.Vertices[mesh.Triangles[i + 0]]);
+                var a = new float3(mesh.Vertices[(int)mesh.Triangles[i + 0]]);
                 a = float4x4.Transform(State.Model, a);
 
-                var b = new float3(mesh.Vertices[mesh.Triangles[i + 1]]);
+                var b = new float3(mesh.Vertices[(int)mesh.Triangles[i + 1]]);
                 b = float4x4.Transform(State.Model, b);
 
-                var c = new float3(mesh.Vertices[mesh.Triangles[i + 2]]);
+                var c = new float3(mesh.Vertices[(int)mesh.Triangles[i + 2]]);
                 c = float4x4.Transform(State.Model, c);
 
                 // Normal of the plane defined by a, b, and c.
