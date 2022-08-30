@@ -22,7 +22,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// <summary>
     /// This is a default render canvas implementation creating its own rendering window.
     /// </summary>
-    public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp, IDisposable
+    public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp
     {
         #region Fields
 
@@ -295,14 +295,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (_gameWindow.IsMultiThreaded)
                 _gameWindow.Context.MakeNoneCurrent();
-        }
-
-        /// <summary>
-        /// Implementation of the Dispose pattern. Disposes of the OpenTK game window.
-        /// </summary>
-        public void Dispose()
-        {
-            _gameWindow.Dispose();
         }
 
         #endregion
@@ -677,7 +669,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         protected override void OnUnload()
         {
             _renderCanvasImp.DoUnLoad();
-            _renderCanvasImp.Dispose();
         }
 
         protected override void OnResize(OpenTK.Windowing.Common.ResizeEventArgs e)

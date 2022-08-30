@@ -43,7 +43,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private static DebugProc _openGlDebugDelegate;
 #endif
 
-
+        /// <summary>
+        /// Current workaround to differentiate between "Desktop" and "Mesa" (Software Rasterizer used for the RenderTests in the CI)
+        /// </summary>
+        /// <param name="renderCanvas"></param>
+        /// <param name="platformID"></param>
         public RenderContextImp(IRenderCanvasImp renderCanvas, FuseePlatformId platformID) : this(renderCanvas)
         {
             FuseePlatformId = platformID;
@@ -2589,8 +2593,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="input">WritableMultisampleTexture</param>
         /// <param name="output">WritableTexture</param>
-        /// <param name="height">Texture height</param>
-        /// <param name="width">Texture width</param>
         public void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output)
         {
             if (input == null || output == null) return;

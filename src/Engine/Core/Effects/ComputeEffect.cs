@@ -6,7 +6,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// Class that contains information on how to build a compute shader program.
     /// </summary>
-    public class ComputeEffect : Effect, IDisposable
+    public class ComputeEffect : Effect
     {
         /// <summary>
         /// The Compute Shader code.
@@ -31,22 +31,6 @@ namespace Fusee.Engine.Core.Effects
 
             RendererStates = RenderStateSet.Default;
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
-        }
-
-        /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
-        /// </summary>
-        ~ComputeEffect()
-        {
-            Dispose();
-        }
-
-        /// <summary>
-        /// Is called when GC of this shader effect kicks in
-        /// </summary>
-        public void Dispose()
-        {
-            EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
         }
     }
 }

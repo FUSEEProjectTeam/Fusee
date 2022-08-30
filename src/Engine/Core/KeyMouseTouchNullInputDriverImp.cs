@@ -557,12 +557,5 @@ namespace Fusee.Engine.Core
         /// Never fired by this driver.
         /// </summary>
         public event EventHandler<DeviceImpDisconnectedArgs> DeviceDisconnected;
-
-        /// <summary>
-        /// Dispose pattern implementation.
-        /// </summary>
-        public void Dispose()
-        {
-        }
     }
 }

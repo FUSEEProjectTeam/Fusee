@@ -31,7 +31,7 @@ namespace Fusee.Tests.Render.Desktop
             {
                 // Inject Fusee.Engine.Base InjectMe dependencies
                 IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
-                AssetStorage.UnRegisterAllAssetProviders();
+                AssetStorage.Instance.Dispose();
 
                 var baseDirOfExample = new Uri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
                 FilePath = baseDirOfExample.LocalPath;
@@ -94,7 +94,7 @@ namespace Fusee.Tests.Render.Desktop
                 SpinWait.SpinUntil(() => app.IsLoaded);
 
                 // skip the first frame, empty, skip the second as deferred needs three, second pass has an empty frame, too
-                for (var i = 0; i < 60; i++)
+                for (var i = 0; i < 3; i++)
                 {
                     ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoRender();
                 }

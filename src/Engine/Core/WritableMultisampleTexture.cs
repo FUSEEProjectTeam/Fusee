@@ -8,7 +8,7 @@ namespace Fusee.Engine.Core
     /// Use writable textures if you want to render into a texture.
     /// Does NOT offer access to the pixel data.
     /// </summary>
-    public class WritableMultisampleTexture : IWritableTexture, IDisposable
+    public class WritableMultisampleTexture : IWritableTexture
     {
 
         /// <summary>
@@ -103,7 +103,6 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a new instance of type "WritableTexture".
         /// </summary>
-        /// <param name="rc">Currently used <see cref="RenderContext"/>, needed for final texture blitting</param>
         /// <param name="texType">Defines the type of the render texture.</param>
         /// <param name="colorFormat">The color format of the texture, <see cref="ImagePixelFormat"/></param>
         /// <param name="width">Width in px.</param>
@@ -143,7 +142,6 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Convenience method, creates a new instance of type "WritableTexture".
         /// </summary>
-        /// <param name="rc">Currently used <see cref="RenderContext"/>, needed for final texture blitting</param>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
         /// <param name="multisampleFactor">Define how many samples are being used to sample this texture, default: 4</param>
@@ -167,9 +165,10 @@ namespace Fusee.Engine.Core
             {
                 if (disposing)
                 {
-                    TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
-                    InternalResultTexture.Dispose();
+
                 }
+
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
 
                 disposedValue = true;
             }

@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
+namespace Fusee.Examples.PointCloudPotree2.Gui
 {
     public class PointCloudPotree2ImGui
     {
@@ -56,7 +56,7 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             AssetStorage.RegisterProvider(fap);
 
             // no injection or shared base project, as we are currently limited to desktop only with ImGui.NET
-            var app = new Core();
+            var app = new ImGuiApp();
 
             var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
             app.CanvasImplementor = new Fusee.ImGuiImp.Desktop.ImGuiRenderCanvasImp(icon);

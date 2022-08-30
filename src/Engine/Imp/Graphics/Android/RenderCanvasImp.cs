@@ -197,14 +197,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
             WindowHandle = new WindowHandle() { WinId = _gameView.WindowId };
         }
 
-        /// <summary>
-        /// Implementation of the Dispose pattern. Disposes of the OpenTK game window.
-        /// </summary>
-        public void Dispose()
-        {
-            _gameView.Dispose();
-        }
-
         #endregion Constructors
 
         #region Members

@@ -88,7 +88,6 @@ namespace Fusee.Base.Common
         public async Task<object> GetAssetAsync(string id, Type type)
         {
             var stream = await GetStreamAsync(id);
-
             if (stream == null)
             {
                 return null;
@@ -100,7 +99,6 @@ namespace Fusee.Base.Common
                 return await handler.DecoderAsync(id, stream).ConfigureAwait(false);
             }
 
-            stream.Close();
             await stream.DisposeAsync();
 
             return null;

@@ -1,5 +1,4 @@
 ﻿using Fusee.Base.Core;
-using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -345,8 +344,10 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 if (disposing)
                 {
-                    ImGui.DestroyContext(_context);
+
                 }
+
+                ImGui.DestroyContext(_context);
 
                 disposedValue = true;
             }

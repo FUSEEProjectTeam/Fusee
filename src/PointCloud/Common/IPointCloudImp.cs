@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Core;
 using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Common

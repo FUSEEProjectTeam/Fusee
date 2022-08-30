@@ -2,18 +2,14 @@
 using Fusee.Engine.Core.Effects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core
 {
-    internal class EffectManager : IDisposable
+    internal class EffectManager
     {
         private readonly RenderContext _rc;
         private readonly Stack<Effect> _effectsToBeDeleted = new();
         private readonly Dictionary<Suid, Effect> _allEffects = new();
-
-        // Track whether Dispose has been called.
-        private bool disposed = false;
 
         private void EffectChanged(object sender, EffectManagerEventArgs args)
         {
@@ -72,37 +68,6 @@ namespace Fusee.Engine.Core
                 // Remove one Effect from Memory
                 _rc.RemoveShader(tmPop);
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            // Check to see if Dispose has already been called.
-            if (!disposed)
-            {
-                Cleanup();
-
-                for (int i = 0; i < _allEffects.Count; i++)
-                {
-                    var fx = _allEffects.ElementAt(i);
-                    _allEffects.Remove(fx.Key);
-                    // Remove one Effect from Memory
-                    _rc.RemoveShader(fx.Value);
-                }
-
-                // Note disposing has been done.
-                disposed = true;
-            }
-        }
-
-        ~EffectManager()
-        {
-            Dispose(disposing: false);
         }
     }
 }

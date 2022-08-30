@@ -6,7 +6,7 @@ using System;
 
 namespace Fusee.ImGuiImp.Desktop.Templates
 {
-    public abstract class FuseeControlToTexture
+    public abstract class FuseeSceneToTexture
     {
         private int _originalWidth;
         private int _originalHeight;
@@ -14,7 +14,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         private int _lastWidth;
         private int _lastHeight;
 
-        private IShaderHandle prgmHndl;
+        private IShaderHandle? prgmHndl;
 
         protected RenderContext _rc;
 
@@ -38,16 +38,16 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         }
 
         /// <summary>
-        /// This method is called from within the base class, do not change anything inside base class
-        /// Insert your usual render loop
+        /// This method is called from within <see cref="RenderToTexture(int, int)"/>.
+        /// Insert your usual render loop.
         /// </summary>
         protected virtual ITextureHandle RenderAFrame()
         {
-            return new Engine.Imp.Graphics.Desktop.TextureHandle();
+            return new TextureHandle();
         }
 
         /// <summary>
-        /// This method is called from within the base class, do not change anything inside base class
+        /// This method is called from within <see cref="RenderToTexture(int, int)"/>.
         /// Insert your usual changes during resize, if necessary
         /// </summary>
         protected virtual void Resize(int width, int height)
@@ -65,7 +65,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// </summary>
         /// <param name="samplingFactor">MSAA sampling factor, default = 4</param>
         /// <exception cref="Exception"></exception>
-        public FuseeControlToTexture(RenderContext rc) => _rc = rc;
+        public FuseeSceneToTexture(RenderContext rc) => _rc = rc;
 
 
         /// <summary>
@@ -109,7 +109,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             _rc.SetRenderTarget();
             _rc.Viewport(0, 0, _originalWidth, _originalHeight);
 
-            // Warning: wolves ahead
             if (prgmHndl == null)
                 prgmHndl = new ShaderHandle() { Handle = ImGuiController.ShaderProgram };
             _rc.CurrentShaderProgram = prgmHndl;

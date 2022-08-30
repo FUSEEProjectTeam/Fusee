@@ -7,7 +7,7 @@ namespace Fusee.Engine.Common
     /// Use a RenderTarget if you want to render into buffer object, associated with one or more textures.
     /// If only a single texture is needed, the usage of a <see cref="IWritableTexture"/> as a render target is preferred.
     /// </summary>
-    public interface IRenderTarget
+    public interface IRenderTarget : IDisposable
     {
         /// <summary>
         /// The gpu handle that represents the G-buffer object.

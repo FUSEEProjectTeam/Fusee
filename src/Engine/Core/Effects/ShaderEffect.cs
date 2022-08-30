@@ -8,7 +8,7 @@ namespace Fusee.Engine.Core.Effects
     /// Use this if you want to write the shader code on your own. 
     /// The values of uniform variables you defined (<see cref="Effect.UniformParameters"/>) can be set using <see cref="Effect.SetFxParam{T}(int, T)"/> or <see cref="Effect.SetFxParam{T}(string, T)"/>. 
     /// </summary>
-    public class ShaderEffect : Effect, IDisposable
+    public class ShaderEffect : Effect
     {
         /// <summary>
         /// The Vertex shader code.
@@ -51,22 +51,6 @@ namespace Fusee.Engine.Core.Effects
             }
 
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
-        }
-
-        /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
-        /// </summary>
-        ~ShaderEffect()
-        {
-            Dispose();
-        }
-
-        /// <summary>
-        /// Is called when GC of this shader effect kicks in
-        /// </summary>
-        public void Dispose()
-        {
-            EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
         }
     }
 }

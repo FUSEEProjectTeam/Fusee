@@ -10,7 +10,7 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2CloudInstanced : IPointCloudImp<InstanceData>, IDisposable
+    public class Potree2CloudInstanced : IPointCloudImp<InstanceData>
     {
         /// <summary>
         /// The complete list of meshes that can be rendered.
@@ -135,47 +135,6 @@ namespace Fusee.PointCloud.Potree
 
                 GpuDataToRender.AddRange(instanceData);
             }
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <param name="disposing">If disposing equals true, the method has been called directly
-        /// or indirectly by a user's code. Managed and unmanaged resources
-        /// can be disposed.
-        /// If disposing equals false, the method has been called by the
-        /// runtime from inside the finalizer and you should not reference
-        /// other objects. Only unmanaged resources can be disposed.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    foreach (var data in GpuDataToRender)
-                    {
-                        data.Dispose();
-                    }
-                }
-                _disposed = true;
-            }
-        }
-
-        /// <summary>
-        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
-        /// </summary>
-        ~Potree2CloudInstanced()
-        {
-            Dispose(disposing: false);
         }
     }
 }

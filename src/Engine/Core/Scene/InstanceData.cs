@@ -7,7 +7,7 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// 
     /// </summary>
-    public class InstanceData : SceneComponent, IDisposable, IManagedInstanceData
+    public class InstanceData : SceneComponent, IManagedInstanceData
     {
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
@@ -160,8 +160,9 @@ namespace Fusee.Engine.Core.Scene
             {
                 if (disposing)
                 {
-                    DisposeData?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Disposed));
+
                 }
+                DisposeData?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Disposed));
 
                 disposed = true;
             }

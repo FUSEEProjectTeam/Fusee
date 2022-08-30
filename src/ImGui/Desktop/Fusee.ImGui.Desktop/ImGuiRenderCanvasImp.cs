@@ -4,7 +4,6 @@ using Fusee.Engine.Core;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Desktop;
 using System;
-using System.Threading;
 
 namespace Fusee.ImGuiImp.Desktop
 {
