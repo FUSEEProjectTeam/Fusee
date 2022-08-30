@@ -100,7 +100,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// First looks in the mesh cache, if there are meshes return, 
+        /// First looks in the mesh cache, if there are meshes return,
         /// else look in the DisposeQueue, if there are meshes return,
         /// else look in the point cache, if there are points create a mesh and add to the _meshCache.
         /// </summary>

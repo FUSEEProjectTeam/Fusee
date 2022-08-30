@@ -127,7 +127,7 @@ namespace Fusee.Engine.Core.Primitives
             if (recursionLevel == 0) return mesh;
 
             //Add Verts to temp vert list
-            foreach (var vert in mesh.Vertices.ReadOnlyData)
+            foreach (var vert in mesh.Vertices.AsReadOnlySpan)
             {
                 AddNormalizedVertex(vert);
             }
@@ -233,7 +233,7 @@ namespace Fusee.Engine.Core.Primitives
 
             var triVerts = new List<float3>();
             var triIndeices = new List<uint>();
-            foreach (var tri in mesh.Triangles.ReadOnlyData)
+            foreach (var tri in mesh.Triangles.AsReadOnlySpan)
             {
                 triVerts.Add(mesh.Vertices[(int)tri]);
                 triIndeices.Add(tri);

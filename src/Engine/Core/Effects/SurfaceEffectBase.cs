@@ -107,14 +107,14 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public string VertColorIn = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
+        public string VertColorIn = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color0);
 
         /// <summary>
         /// Vertex shader "out" declaration for the vertex colors.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
+        public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color0);
 
         /// <summary>
         /// Fragment shader "in" declaration for the vertex colors.

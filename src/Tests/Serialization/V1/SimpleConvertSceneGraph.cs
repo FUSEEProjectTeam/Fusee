@@ -131,7 +131,7 @@ namespace Fusee.Tests.Serialization.V1
                 {
                     Assert.Equal(mesh.Name, ((FusMesh)fusFileComp).Name);
                     Assert.Equal(mesh.BoundingBox, ((FusMesh)fusFileComp).BoundingBox);
-                    Assert.Equal(mesh.Colors, ((FusMesh)fusFileComp).Colors);
+                    Assert.Equal(mesh.Colors0, ((FusMesh)fusFileComp).Colors);
                     Assert.Equal(mesh.Vertices, ((FusMesh)fusFileComp).Vertices);
                     Assert.Equal(mesh.Triangles, ((FusMesh)fusFileComp).Triangles);
                     Assert.Equal(mesh.UVs, ((FusMesh)fusFileComp).UVs);

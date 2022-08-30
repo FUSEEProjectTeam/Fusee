@@ -1,6 +1,10 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Base.Common;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
+using System;
+using System.Collections;
+using System.Linq;
 
 namespace Fusee.Engine.Core.Primitives
 {
@@ -169,7 +173,13 @@ namespace Fusee.Engine.Core.Primitives
                 new float2(0, 1),
                 new float2(0, 0)
             });
-            BoundingBox = new AABBf(Vertices.ToArray());
+
+            var colorsArray = new uint[Vertices.Length];
+
+            Array.Fill(colorsArray, (uint)ColorUint.Greenery);
+            Colors0 = new MeshAttributes<uint>(colorsArray);
+
+            BoundingBox = new AABBf(Vertices.AsReadOnlySpan);
 
         }
         #endregion

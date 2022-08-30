@@ -81,19 +81,19 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             {
                 vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * changedVert;");
                 vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Projection} * {UniformNameDeclarations.View} * ({UniformNameDeclarations.InstanceModelMat} * {UniformNameDeclarations.Model}) * changedVert;");
-                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.InstanceColor};");
+                vertMainBody.Add($"{VaryingNameDeclarations.Color0} = {UniformNameDeclarations.InstanceColor};");
             }
             else if (renderMod.HasFlag(RenderFlags.Instanced) && renderMod.HasFlag(RenderFlags.PointCloud))
             {
                 vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * changedVert;");
                 vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Projection} * changedVert;");
-                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.InstanceColor};");
+                vertMainBody.Add($"{VaryingNameDeclarations.Color0} = {UniformNameDeclarations.InstanceColor};");
             }
             else
             {
                 vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * changedVert;");
                 vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * changedVert;");
-                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
+                vertMainBody.Add($"{VaryingNameDeclarations.Color0} = {UniformNameDeclarations.VertexColor};");
             }
 
 

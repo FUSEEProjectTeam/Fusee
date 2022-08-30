@@ -85,7 +85,7 @@ namespace Fusee.PointCloud.Core
             numberOfPointsInMesh = points.Length;
             var firstPos = (float3)pointAccessor.GetPositionFloat3_64(ref points[0]);
             var vertices = new float3[numberOfPointsInMesh];
-            var triangles = new ushort[numberOfPointsInMesh];
+            var triangles = new uint[numberOfPointsInMesh];
             var boundingBox = new AABBf(firstPos, firstPos);
 
             for (int i = 0; i < points.Length; i++)
@@ -94,7 +94,7 @@ namespace Fusee.PointCloud.Core
 
                 vertices[i] = pos;
                 boundingBox |= pos;
-                triangles[i] = (ushort)i;
+                triangles[i] = (uint)i;
             }
             var mesh = ModuleExtensionPoint.CreateGpuMesh(PrimitiveType.Points, vertices, triangles);
             mesh.BoundingBox = boundingBox;
@@ -113,7 +113,7 @@ namespace Fusee.PointCloud.Core
 
             var firstPos = (float3)pointAccessor.GetPositionFloat3_64(ref points[0]);
             var vertices = new float3[numberOfPointsInMesh];
-            var triangles = new ushort[numberOfPointsInMesh];
+            var triangles = new uint[numberOfPointsInMesh];
             var colors = new uint[numberOfPointsInMesh];
             var boundingBox = new AABBf(firstPos, firstPos);
 
@@ -124,7 +124,7 @@ namespace Fusee.PointCloud.Core
                 vertices[i] = pos;
                 boundingBox |= vertices[i];
 
-                triangles[i] = (ushort)i;
+                triangles[i] = (uint)i;
                 var col = pointAccessor.GetColorFloat3_32(ref points[i]);//points[i].Color;
                 colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
 

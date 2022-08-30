@@ -92,7 +92,7 @@ namespace Fusee.Engine.Core.Primitives
                 new float3(0, 0, -1)
             });
 
-            UVs = new MeshAttributes<float2>(Vertices.ReadOnlyData.ToArray().Select(vert => new float2(vert.x, vert.y) + new float2(0.5f, 0.5f)));
+            UVs = new MeshAttributes<float2>(Vertices.AsReadOnlySpan.ToArray().Select(vert => new float2(vert.x, vert.y) + new float2(0.5f, 0.5f)));
         }
         #endregion
     }

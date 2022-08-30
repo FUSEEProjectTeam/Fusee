@@ -35,12 +35,12 @@ in float vWorldSpacePointRad;
 in vec3 vIntensity;
 out vec4 oColor;
 
-float LinearizeDepth(float depth) 
+float LinearizeDepth(float depth)
 {
 	float near = ClipPlaneDist.x;
 	float far = ClipPlaneDist.y;
 
-	float z = depth * 2.0 - 1.0; // back to NDC 
+	float z = depth * 2.0 - 1.0; // back to NDC
 	return  (2.0 * near * far) / (far + near - z * (far - near));
 }
 
@@ -60,8 +60,8 @@ float EDLResponse(float pixelSize, float linearDepth, vec2 thisUv)
 		pixelSize * vec2( -pxToUv.x, 0 ), 			// left middle
 		pixelSize * vec2( -pxToUv.x, pxToUv.y ) 	// left top
 	);
-	
-	float response = 0.0;	
+
+	float response = 0.0;
 	int neighbourCount = 0;
 
 	for(int i = 0; i < 8; i++)
@@ -72,22 +72,22 @@ float EDLResponse(float pixelSize, float linearDepth, vec2 thisUv)
 
 		if(neighbourDepth == 0.0)
 			neighbourDepth = 1.0/0.0; //infinity!
-			
+
 		response += max(0.0, log2(linearDepth) - log2(neighbourDepth));
-		neighbourCount += 1; 
-	}	
+		neighbourCount += 1;
+	}
 
 	if(neighbourCount == 0)
 		return 1.0;
 
-	return response = response / float(neighbourCount);	
+	return response = response / float(neighbourCount);
 }
 
 float EDLShadingFactor(float edlStrength, int pixelSize, float linearDepth, vec2 thisUv)
 {
 	float response = EDLResponse(float(pixelSize), linearDepth, thisUv);
 
-	if(linearDepth == 0.0 && response == 0.0)	
+	if(linearDepth == 0.0 && response == 0.0)
 		discard;
 
 	if(response > 1.0)
@@ -107,25 +107,25 @@ vec4 GetDiffuseReflection(vec3 normalDir, vec3 lightDir, vec3 lightColor, vec3 a
 		return vec4(diffuse *  oColor.rgb, 1);
 }
 
-vec3 ViewNormalFromDepth(float depth, vec2 texcoords) 
+vec3 ViewNormalFromDepth(float depth, vec2 texcoords)
 {
 	const vec2 offset1 = vec2(0.0,0.001);
 	const vec2 offset2 = vec2(0.001,0.0);
-  
+
 	float depth1 = texture(DepthTex, texcoords + offset1).r;
 	float depth2 = texture(DepthTex, texcoords + offset2).r;
-  
+
 	vec3 p1 = vec3(offset1, depth1 - depth);
 	vec3 p2 = vec3(offset2, depth2 - depth);
-  
+
 	vec3 normal = cross(p1, p2);
 	normal.z = normal.z;
-  
+
 	return normalize(normal);
 }
 
 void main(void)
-{	
+{
 	vec2 distanceVector = (2.0 * gl_PointCoord) - 1.0; //[-1,1]
 	vec4 position;
 	float weight;
@@ -136,13 +136,13 @@ void main(void)
 		default:
 			gl_FragDepth = gl_FragCoord.z;
 			break;
-		case 1: // circle						
+		case 1: // circle
 
 			float distanceFromCenter = length(2.0 * gl_PointCoord - 1.0);
-			
+
 			if(distanceFromCenter > 1.0)
 				discard;
-			
+
 			gl_FragDepth = gl_FragCoord.z;
 
 			break;
@@ -172,7 +172,7 @@ void main(void)
 
 		case 4: //sphere
 
-			//prevent sqrt(x < 0) - z values can (and should, in this case) become negative 
+			//prevent sqrt(x < 0) - z values can (and should, in this case) become negative
 			float zwerg = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0));
 			if (zwerg < 0.0)
 				weight = -1.0;
@@ -190,7 +190,7 @@ void main(void)
 
 	switch (ColorMode)
 	{
-		case 0: // default = point cloud rgb			
+		case 0: // default = point cloud rgb
 			oColor = vec4(vColor, 1.0); //vColor = vertex color
 			break;
 		case 1:
@@ -206,31 +206,31 @@ void main(void)
 		case 4:
 			oColor = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);
 			break;
-		case 5:		
+		case 5:
 			oColor = vec4(vIntensity, 1.0);
 			break;
 	}
 
-	// SSAO - kind of depth only. 
-	// See: 
+	// SSAO - kind of depth only.
+	// See:
 	// https://learnopengl.com/Advanced-Lighting/SSAO
-	// http://john-chapman-graphics.blogspot.com/2013/01/ssao-tutorial.html 
+	// http://john-chapman-graphics.blogspot.com/2013/01/ssao-tutorial.html
 	// http://theorangeduck.com/page/pure-depth-ssao
 
 	float radius = 20.0;
 	float occlusion = 0.0;
 	float bias = 0.025;
-	
+
 	vec2 uv = vec2(gl_FragCoord.x/float(FUSEE_ViewportPx.x), gl_FragCoord.y/float(FUSEE_ViewportPx.y));
 	float z = texture(DepthTex, uv).x;
-	
+
 	vec3 viewNormal = ViewNormalFromDepth(z, uv);
 
 	//Optimizations: http://developer.download.nvidia.com/presentations/2009/SIGGRAPH/Bavoil_MultiLayerDualResolutionSSAO.pdf
 	if(CalcSSAO == 1)
 	{
 		vec2 tiles = vec2(float(FUSEE_ViewportPx.x)/4.0, float(FUSEE_ViewportPx.y)/4.0);
-		
+
 		vec3 rvec = normalize(texture(NoiseTex, uv * tiles ).xyz);
 		vec3 tangent = normalize(rvec - viewNormal * dot(rvec, viewNormal));
 		vec3 bitangent = normalize(cross(viewNormal, tangent));
@@ -238,32 +238,32 @@ void main(void)
 
 		int kernelLength = 32;
 
-		for (int i = 0; i < kernelLength; ++i) 
+		for (int i = 0; i < kernelLength; ++i)
 		{
 			// get sample position:
 			vec3 sampleVal = tbn * SSAOKernel[i];
 			sampleVal = sampleVal * radius + vViewPos.xyz;
-  
+
 			// project sample position:
 			vec4 offset = vec4(sampleVal, 1.0);
-			offset = FUSEE_P * offset;		
+			offset = FUSEE_P * offset;
 			offset.xy /= offset.w;
 			offset.xy = offset.xy * 0.5 + 0.5;
-			
+
 			// get sample depth:
 			// ----- EXPENSIVE TEXTURE LOOKUP - graphics card workload goes up and frame rate goes down the nearer the camera is to the model.
 			// keyword: dependent texture look up, see also: https://stackoverflow.com/questions/31682173/strange-performance-behaviour-with-ssao-algorithm-using-opengl-and-glsl
 			float sampleDepth = texture(DepthTex, offset.xy).r;
 			sampleDepth = LinearizeDepth(sampleDepth);
-  
+
 			// range check & accumulate:
 			float rangeCheck = smoothstep(0.0, 1.0, radius / abs(vViewPos.z - sampleDepth));
 			occlusion += (sampleDepth <= sampleVal.z + bias ? 1.0 : 0.0) * rangeCheck;
 		}
 
-		occlusion = clamp(1.0 - (occlusion / float(kernelLength)), 0.0, 1.0);		
-	}	
-	
+		occlusion = clamp(1.0 - (occlusion / float(kernelLength)), 0.0, 1.0);
+	}
+
 	vec3 lightColor = vec3(1,1,1);
 
 	switch (Lighting)
@@ -279,7 +279,7 @@ void main(void)
 
 			if(linearDepth > 0.1)
 				oColor.xyz *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);
-			
+
 			if(CalcSSAO == 1)
 			{
 				vec3 ambient = oColor.xyz * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
@@ -304,7 +304,7 @@ void main(void)
 			}
 			else
 				oColor = vec4(diffuseColor, oColor.a);
-			
+
 			break;
 		}
 
@@ -314,7 +314,7 @@ void main(void)
 			vec3 lightDir = vec3(0,0, -1.0);
 			float intensityDiff = dot(viewNormal, lightDir);
 			vec3 diffuse = intensityDiff * lightColor;
-			
+
 			float intensitySpec = 0.0;
 			if (intensityDiff > 0.0)
 			{
@@ -322,25 +322,25 @@ void main(void)
 				vec3 h = normalize(viewdir+lightDir);
 				intensitySpec = pow(max(0.0, dot(h, viewNormal)), Shininess);
 			}
-			
+
 			vec3 diffuseColor = intensityDiff * oColor.xyz;
 			vec3 colorResult = diffuseColor + ((intensitySpec * SpecularColor.xyz) * SpecularStrength);
 
 			if(CalcSSAO == 1)
-			{				
-				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;				
+			{
+				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
 				oColor = vec4(ambient + colorResult, oColor.a);
 			}
-			else			
+			else
 				oColor = vec4(colorResult, oColor.a);
-			
+
 			break;
-		}		
+		}
 		case 4: //ambient only
 		{
 			oColor = vec4(occlusion, occlusion, occlusion, 1.0);
 			break;
-		}	
+		}
 
 	}
 

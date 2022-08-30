@@ -2019,6 +2019,14 @@ namespace Fusee.Engine.Core
             _effectManager.Cleanup();
         }
 
+        /// <summary>
+        /// Calls the mesh manager which traverses all known meshes and updates GPU data if necessary
+        /// </summary>
+        internal void UpdateAllMeshes()
+        {
+            _meshManager.UpdateAllMeshes();
+        }
+
         private void CalculateClippingPlanesFromProjection(out float2 clippingPlanes)
         {
             var C = Projection.M33;

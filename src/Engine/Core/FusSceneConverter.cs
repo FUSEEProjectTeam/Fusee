@@ -1251,7 +1251,7 @@ namespace Fusee.Engine.Core
                 BoneIndices = m.BoneIndices?.ToArray(),
                 BoundingBox = m.BoundingBox,
                 BoneWeights = m.BoneWeights?.ToArray(),
-                Colors = m.Colors?.ToArray(),
+                Colors = m.Colors0?.ToArray(),
                 Name = m.Name,
                 Normals = m.Normals?.ToArray(),
                 Tangents = m.Tangents?.ToArray(),

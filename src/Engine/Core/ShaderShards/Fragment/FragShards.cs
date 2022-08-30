@@ -13,22 +13,23 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         private static List<string> ColorModeSwitch() => new()
         {
+            // TODO: Refactor with C#11
             "vec4 resColor;",
             $"switch({UniformNameDeclarations.ColorMode})",
-            @"{
-      case 0:
-         resColor = IN.Albedo;
-         break;
-      case 1:
-         resColor = vColor;
-         break;
-      case 2:
-         resColor = vColor1;
-         break;
-      case 3:
-         resColor = vColor2;
-         break;
-    }"
+            "{\n",
+      "case 0:\n",
+         "resColor = IN.Albedo;\n",
+         "break;\n",
+      "case 1:\n",
+         $"resColor = {VaryingNameDeclarations.Color0};\n",
+         "break;\n",
+      "case 2:\n",
+         $"resColor = {VaryingNameDeclarations.Color1};\n",
+         "break;\n",
+      "case 3:\n",
+         $"resColor = {VaryingNameDeclarations.Color2};\n",
+         "break;\n",
+    "}"
         };
 
 
@@ -91,7 +92,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 {
                     res.Add("if(ColorMode == 0)");
                     res.Add("{");
-                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color};");
+                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color0};");
                     res.Add("}");
                     res.Add("else");
                     res.Add("{");

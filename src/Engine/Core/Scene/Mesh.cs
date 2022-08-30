@@ -3,28 +3,26 @@ using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
-using System.Reflection.Emit;
 
 namespace Fusee.Engine.Core.Scene
 {
     public sealed class DirtyIndexList
     {
-        public void Init() {
+        public void Init()
+        {
             IndexList = new List<(int, int)>();
         }
 
         public void ResetList() => Init();
 
-        public void Add(int idx) => IndexList.Append((idx, idx));
+        public void Add(int idx) => IndexList.Add((idx, idx));
 
-        public void Add((int, int) idx) => IndexList.Append(idx);
+        public void Add((int, int) idx) => IndexList.Add(idx);
 
-        public IEnumerable<(int, int)> IndexList { get; private set; }
+        public List<(int, int)> IndexList { get; private set; }
 
-        public bool Empty => IndexList.Count() == 0;
+        public bool Empty => IndexList.Count == 0;
     }
 
     public sealed class MeshAttributes<T> where T : struct
@@ -32,6 +30,8 @@ namespace Fusee.Engine.Core.Scene
         private readonly T[] _attribData;
 
         public readonly DirtyIndexList DirtyIndices = new();
+
+        public bool DirtyIndex { get; internal set; }
 
         public int Length => _attribData.Length;
 
@@ -45,7 +45,7 @@ namespace Fusee.Engine.Core.Scene
         /// Quick readonly access to data
         /// Use <see cref="MeshAttributes{T}"/> indexer for read/write access
         /// </summary>
-        public ReadOnlySpan<T> ReadOnlyData => new(_attribData);
+        public ReadOnlySpan<T> AsReadOnlySpan => new(_attribData);
 
         /// <summary>
         /// Access read/write mesh attribute data
@@ -58,9 +58,11 @@ namespace Fusee.Engine.Core.Scene
             set
             {
                 _attribData[idx] = value;
+                DirtyIndex = true;
+
                 // TODO: Track changed indices in a fast and memory efficient way
-                if (DirtyIndices.Empty)
-                    DirtyIndices.Add(0); /// add one element to notify <see cref="MeshManager"> that values have been changed
+                //if (DirtyIndices.Empty)
+                //    DirtyIndices.Add(0); /// add one element to notify <see cref="MeshManager"> that values have been changed
             }
         }
 
@@ -86,10 +88,11 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsNotNull(data);
 
             var calculatedLength = length == -1 ? (_attribData.Length + start) : length;
-            Guard.IsLessThan(calculatedLength, _attribData.Length);
+            Guard.IsLessThanOrEqualTo(calculatedLength, _attribData.Length);
 
             Array.Fill(_attribData, data, start, calculatedLength);
-            DirtyIndices.Add((0, calculatedLength - 1));
+            DirtyIndex = true;
+            //DirtyIndices.Add((0, calculatedLength - 1));
         }
 
         /// <summary>
@@ -106,7 +109,8 @@ namespace Fusee.Engine.Core.Scene
             Guard.IsLessThanOrEqualTo(calculatedLength, _attribData.Length);
 
             Array.Copy(data, 0, _attribData, start, data.Length);
-            DirtyIndices.Add((start, _attribData.Length - 1));
+            DirtyIndex = true;
+            //DirtyIndices.Add((start, _attribData.Length - 1));
         }
     }
 
@@ -129,43 +133,66 @@ namespace Fusee.Engine.Core.Scene
 
         public bool UpdatePerFrame { set; get; } = true;
 
-        public void UpdateGPU()
+        public void ResetIndexLists()
         {
 
+            Vertices.DirtyIndex = false;
+            Triangles.DirtyIndex = false;
 
-            if(!Triangles.DirtyIndices.Empty)
-            {
+            if (NormalsSet)
+                Normals.DirtyIndex = false;
+            if (UVsSet)
+                UVs.DirtyIndex = false;
+            if (TangentsSet)
+                Tangents.DirtyIndex = false;
+            if (BiTangentsSet)
+                BiTangents.DirtyIndex = false;
+            if (BoneIndicesSet)
+                BoneIndices.DirtyIndex = false;
+            if (BoneWeightsSet)
+                BoneWeights.DirtyIndex = false;
+            if (Colors0Set)
+                Colors0.DirtyIndex = false;
+            if (Colors1Set)
+                Colors1.DirtyIndex = false;
+            if (Colors2Set)
+                Colors2.DirtyIndex = false;
 
-            }
 
+
+            // TODO: Prepared for next change with index list
             // reset index lists
-            /*
-            Pos._dirtyIndexList.Init();
-            Label._dirtyIndexList.Init();
-            Instance._dirtyIndexList.Init();
-            GPSTime._dirtyIndexList.Init();
-            Color._dirtyIndexList.Init();
-            */
+            //Vertices.DirtyIndices.ResetList();
+            //Triangles.DirtyIndices.ResetList();
+            //Normals?.DirtyIndices.ResetList();
+            //UVs?.DirtyIndices.ResetList();
+            //Tangents?.DirtyIndices.ResetList();
+            //BiTangents?.DirtyIndices.ResetList();
+            //BoneIndices?.DirtyIndices.ResetList();
+            //BoneWeights?.DirtyIndices.ResetList();
+            //Colors0?.DirtyIndices.ResetList();
+            //Colors1?.DirtyIndices.ResetList();
+            //Colors2?.DirtyIndices.ResetList();
         }
 
         #endregion
 
         #region Mesh data member
 
-        public  MeshAttributes<uint> Triangles { get; protected set; }
-        public  MeshAttributes<float3> Vertices { get; protected set; }
-        public  MeshAttributes<float3>? Normals { get; protected set; }
-        public  MeshAttributes<float2>? UVs { get; protected set; }
+        public MeshAttributes<uint> Triangles { get; protected set; }
+        public MeshAttributes<float3> Vertices { get; protected set; }
+        public MeshAttributes<float3>? Normals { get; protected set; }
+        public MeshAttributes<float2>? UVs { get; protected set; }
 
-        public  MeshAttributes<float4>? BoneWeights { get; internal set; } // set via SceneRenderer
-        public  MeshAttributes<float4>? BoneIndices { get; internal set; } // set via SceneRenderer
+        public MeshAttributes<float4>? BoneWeights { get; internal set; } // set via SceneRenderer
+        public MeshAttributes<float4>? BoneIndices { get; internal set; } // set via SceneRenderer
 
-        public  MeshAttributes<float4>? Tangents { get; internal set; } // set via SceneRenderer
-        public  MeshAttributes<float3>? BiTangents { get; internal set; } // set via SceneRenderer
+        public MeshAttributes<float4>? Tangents { get; internal set; } // set via SceneRenderer
+        public MeshAttributes<float3>? BiTangents { get; internal set; } // set via SceneRenderer
 
-        public  MeshAttributes<uint>? Colors { get; protected set; }
-        public  MeshAttributes<uint>? Colors1 { get; protected set; }
-        public  MeshAttributes<uint>? Colors2 { get; protected set; }
+        public MeshAttributes<uint>? Colors0 { get; protected set; }
+        public MeshAttributes<uint>? Colors1 { get; protected set; }
+        public MeshAttributes<uint>? Colors2 { get; protected set; }
 
         #endregion
 
@@ -244,19 +271,19 @@ namespace Fusee.Engine.Core.Scene
             if (colors != null)
             {
                 Guard.IsEqualTo(colors.Count(), vertices.Count());
-                Colors = new MeshAttributes<uint>(colors);
+                Colors0 = new MeshAttributes<uint>(colors);
             }
 
             if (colors1 != null)
             {
                 Guard.IsEqualTo(colors1.Count(), vertices.Count());
-                Colors = new MeshAttributes<uint>(colors1);
+                Colors0 = new MeshAttributes<uint>(colors1);
             }
 
             if (colors2 != null)
             {
                 Guard.IsEqualTo(colors2.Count(), vertices.Count());
-                Colors = new MeshAttributes<uint>(colors2);
+                Colors0 = new MeshAttributes<uint>(colors2);
             }
         }
 
@@ -290,7 +317,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
-        public bool ColorsSet => Colors?.Length > 0;
+        public bool Colors0Set => Colors0?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether a color is set.
@@ -298,7 +325,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
-        public bool ColorsSet1 => Colors1?.Length > 0;
+        public bool Colors1Set => Colors1?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether a color is set.
@@ -306,7 +333,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
-        public bool ColorsSet2 => Colors2?.Length > 0;
+        public bool Colors2Set => Colors2?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether normals are set.

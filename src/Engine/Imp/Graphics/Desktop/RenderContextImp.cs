@@ -2176,7 +2176,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 //Needed in case of one Mesh / VBO used for more than one InstanceData / InstanceTransformBufferObject -> reset pointer
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.InstancedModelMatBindingIndex, ((InstanceDataImp)instanceData).InstanceTransformBufferObject, IntPtr.Zero, 16 * sizeof(float));
 
-                GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero, instanceData.Amount);
+                GL.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceData.Amount);
 
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat1);
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.InstancedModelMat2);

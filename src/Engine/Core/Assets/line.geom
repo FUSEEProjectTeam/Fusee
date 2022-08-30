@@ -3,7 +3,7 @@
 layout (lines) in;// now we can access 2 vertices
 layout (triangle_strip, max_vertices = 4) out;// always (for now) producing 2 triangles (so 4 vertices)
 
-in vec4 vColor[];
+in vec4 vColor0[];
 out vec4 gColor;
 
 uniform float Thickness = 4;// just a test default
@@ -32,19 +32,19 @@ void main()
     vec2 normal_a  = vec2(line_width/u_width, line_width/u_height) * normal;
     vec2 normal_b  = vec2(line_width/u_width, line_width/u_height) * normal;
 
-    gColor = vColor[0];
+    gColor = vColor0[0];
     gl_Position = vec4((ndc_a + normal_a) * gl_in[0].gl_Position.w, gl_in[0].gl_Position.zw);
     EmitVertex();
 
-    gColor = vColor[0];
+    gColor = vColor0[0];
     gl_Position = vec4((ndc_a - normal_a) * gl_in[0].gl_Position.w, gl_in[0].gl_Position.zw);
     EmitVertex();
 
-    gColor = vColor[1];
+    gColor = vColor0[1];
     gl_Position = vec4((ndc_b + normal_b) * gl_in[1].gl_Position.w, gl_in[1].gl_Position.zw);
     EmitVertex();
 
-    gColor = vColor[1];
+    gColor = vColor0[1];
     gl_Position = vec4((ndc_b - normal_b) * gl_in[1].gl_Position.w, gl_in[1].gl_Position.zw);
     EmitVertex();
 

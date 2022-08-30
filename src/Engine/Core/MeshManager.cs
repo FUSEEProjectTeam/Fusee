@@ -3,6 +3,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -11,8 +12,7 @@ namespace Fusee.Engine.Core
         private readonly IRenderContextImp _renderContextImp;
         private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new();
         private readonly Stack<IInstanceDataImp> _toBeDeletedInstanceDataImps = new();
-        private readonly Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new();
-        private readonly Dictionary<Suid, Mesh> _identifierToMeshDictionary = new();
+        private readonly Dictionary<Suid, (IMeshImp IMeshImp, Mesh? Mesh)> _identifierToMeshImpDictionary = new();
 
         private readonly Dictionary<Suid, IInstanceDataImp> _identifierToInstanceDataImpDictionary = new();
 
@@ -70,82 +70,134 @@ namespace Fusee.Engine.Core
 
         private void DisposeMesh(object sender, MeshChangedEventArgs meshDataEventArgs)
         {
-            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out IMeshImp toBeUpdatedMeshImp))
+            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out var toBeUpdatedMeshImp))
                 throw new KeyNotFoundException("Mesh is not registered.");
 
             // Add the meshImp to the toBeDeleted Stack...#
-            _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp);
+            _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp.IMeshImp);
 
             // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
-            _identifierToMeshImpDictionary.Remove(meshDataEventArgs.Mesh.SessionUniqueIdentifier);
+            _ = _identifierToMeshImpDictionary.Remove(meshDataEventArgs.Mesh.SessionUniqueIdentifier);
         }
 
         internal void UpdateAllMeshes()
         {
-            foreach(var kv in _identifierToMeshDictionary)
+            foreach (var (kv, mesh) in from kv in _identifierToMeshImpDictionary
+                                       let mesh = kv.Value.Mesh
+                                       select (kv, mesh))
             {
-                var mesh = kv.Value;
+                if (mesh == null) continue;
                 if (!mesh.UpdatePerFrame) continue;
 
-                var toBeUpdatedMeshImp = _identifierToMeshImpDictionary[kv.Key];
-                if (!mesh.Vertices.DirtyIndices.Empty)
+                var meshImp = kv.Value.IMeshImp;
+                if (mesh.Vertices.DirtyIndex)
                 {
-                    // update vertices
-                    _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices.ReadOnlyData);
-                }
-                if(mesh.UVsSet && !mesh.UVs.DirtyIndices.Empty)
-                {
-                    // update uvs
+                    // update all vertices
+                    // TODO: use BufferSubData() if possible, implement in interface in implement in imp
+                    _renderContextImp.SetVertices(meshImp, mesh.Vertices.AsReadOnlySpan);
+                    mesh.BoundingBox = new AABBf(mesh.Vertices.AsReadOnlySpan);
                 }
 
-                kv.Value.UpdateGPU(); // <- re-init all changed idx lists
+                if (mesh.Triangles.DirtyIndex)
+                {
+                    _renderContextImp.SetTriangles(meshImp, mesh.Triangles.AsReadOnlySpan);
+                }
+
+                if (mesh.Normals != null && mesh.Normals.DirtyIndex)
+                {
+                    _renderContextImp.SetNormals(meshImp, mesh.Normals.AsReadOnlySpan);
+                }
+
+                if (mesh.UVsSet && mesh.UVs.DirtyIndex)
+                {
+                    _renderContextImp.SetUVs(meshImp, mesh.UVs.AsReadOnlySpan);
+                }
+
+                if (mesh.TangentsSet && mesh.Tangents.DirtyIndex)
+                {
+                    _renderContextImp.SetTangents(meshImp, mesh.Tangents.AsReadOnlySpan);
+                }
+
+                if (mesh.BiTangentsSet && mesh.BiTangents.DirtyIndex)
+                {
+                    _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents.AsReadOnlySpan);
+                }
+
+                if (mesh.BoneWeightsSet && mesh.BoneWeights.DirtyIndex)
+                {
+                    _renderContextImp.SetBoneWeights(meshImp, mesh.BoneWeights.AsReadOnlySpan);
+                }
+
+                if (mesh.BoneIndicesSet && mesh.BoneIndices.DirtyIndex)
+                {
+                    _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices.AsReadOnlySpan);
+                }
+
+                if (mesh.Colors0Set && mesh.Colors0.DirtyIndex)
+                {
+                    _renderContextImp.SetColors(meshImp, mesh.Colors0.AsReadOnlySpan);
+                }
+
+                if (mesh.Colors1Set && mesh.Colors1.DirtyIndex)
+                {
+                    _renderContextImp.SetColors1(meshImp, mesh.Colors1.AsReadOnlySpan);
+                }
+
+                if (mesh.Colors2Set && mesh.Colors2.DirtyIndex)
+                {
+                    _renderContextImp.SetColors2(meshImp, mesh.Colors2.AsReadOnlySpan);
+                }
+
+                // TODO: Prepared for next change with index list
+                //if (!mesh.Vertices.DirtyIndices.Empty)
+                //{
+                //    // update all vertices
+                //    // TODO: use BufferSubData() if possible, implement in interface in implement in imp
+                //    _renderContextImp.SetVertices(meshImp, mesh.Vertices.AsReadOnlySpan);
+                //    mesh.BoundingBox = new AABBf(mesh.Vertices.AsReadOnlySpan);
+                //}
+                //if (mesh.Triangles.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetTriangles(meshImp, mesh.Triangles.AsReadOnlySpan);
+                //}
+                //if (mesh.NormalsSet && mesh.Normals.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetNormals(meshImp, mesh.Normals.AsReadOnlySpan);
+                //}
+                //if (mesh.UVsSet && mesh.UVs.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetUVs(meshImp, mesh.UVs.AsReadOnlySpan);
+                //}
+                //if (mesh.TangentsSet && mesh.Tangents.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetTangents(meshImp, mesh.Tangents.AsReadOnlySpan);
+                //}
+                //if (mesh.BiTangentsSet && mesh.BiTangents.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents.AsReadOnlySpan);
+                //}
+                //if (mesh.BoneWeightsSet && mesh.BoneWeights.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetBoneWeights(meshImp, mesh.BoneWeights.AsReadOnlySpan);
+                //}
+                //if (mesh.BoneIndicesSet && mesh.BoneIndices.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices.AsReadOnlySpan);
+                //}
+                //if (mesh.Colors0Set && mesh.Colors0.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetColors(meshImp, mesh.Colors0.AsReadOnlySpan);
+                //}
+                //if (mesh.Colors1Set && mesh.Colors1.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetColors1(meshImp, mesh.Colors1.AsReadOnlySpan);
+                //}
+                //if (mesh.Colors2Set && mesh.Colors2.DirtyIndices.Empty)
+                //{
+                //    _renderContextImp.SetColors2(meshImp, mesh.Colors2.AsReadOnlySpan);
+                //}
+                mesh.ResetIndexLists();
             }
-        }
-
-        private void MeshChanged(object sender, MeshChangedEventArgs meshDataEventArgs)
-        {
-            //if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out IMeshImp toBeUpdatedMeshImp))
-            //    throw new KeyNotFoundException("Mesh is not registered.");
-
-            //var mesh = (Mesh)meshDataEventArgs.Mesh;
-
-            //switch (meshDataEventArgs.ChangedEnum)
-            //{
-            //    case MeshChangedEnum.Triangles:
-            //        _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);
-            //        break;
-            //    case MeshChangedEnum.Vertices:
-            //        _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
-            //        mesh.BoundingBox = new AABBf(mesh.Vertices);
-            //        break;
-            //    case MeshChangedEnum.Colors:
-            //        _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors);
-            //        break;
-            //    case MeshChangedEnum.Colors1:
-            //        _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors1);
-            //        break;
-            //    case MeshChangedEnum.Colors2:
-            //        _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors2);
-            //        break;
-            //    case MeshChangedEnum.Normals:
-            //        _renderContextImp.SetNormals(toBeUpdatedMeshImp, mesh.Normals);
-            //        break;
-            //    case MeshChangedEnum.Uvs:
-            //        _renderContextImp.SetUVs(toBeUpdatedMeshImp, mesh.UVs);
-            //        break;
-            //    case MeshChangedEnum.BoneIndices:
-            //        _renderContextImp.SetBoneIndices(toBeUpdatedMeshImp, mesh.BoneIndices);
-            //        break;
-            //    case MeshChangedEnum.BoneWeights:
-            //        _renderContextImp.SetBoneWeights(toBeUpdatedMeshImp, mesh.BoneWeights);
-            //        break;
-            //    case MeshChangedEnum.Tangents:
-            //        _renderContextImp.SetTangents(toBeUpdatedMeshImp, mesh.Tangents);
-            //        break;
-            //    case MeshChangedEnum.BiTangents:
-            //        _renderContextImp.SetBiTangents(toBeUpdatedMeshImp, mesh.BiTangents);
-            //        break;
-            //}
         }
 
         private void DisposeInstanceData(object sender, InstanceDataChangedEventArgs instanceDataEventArgs)
@@ -157,7 +209,7 @@ namespace Fusee.Engine.Core
             _toBeDeletedInstanceDataImps.Push(instanceDataImp);
 
             // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
-            _identifierToInstanceDataImpDictionary.Remove(instanceDataEventArgs.InstanceData.SessionUniqueId);
+            _ = _identifierToInstanceDataImpDictionary.Remove(instanceDataEventArgs.InstanceData.SessionUniqueId);
         }
 
         private void InstanceDataChanged(object sender, InstanceDataChangedEventArgs instanceDataEventArgs)
@@ -223,7 +275,7 @@ namespace Fusee.Engine.Core
             mesh.DisposeData += DisposeMesh;
             meshImp.MeshType = mesh.MeshType;
 
-            _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, meshImp);
+            _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, (meshImp, null));
         }
 
         // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
@@ -234,37 +286,37 @@ namespace Fusee.Engine.Core
             _renderContextImp.SetVertexArrayObject(meshImp);
 
             if (mesh.TrianglesSet)
-                _renderContextImp.SetTriangles(meshImp, mesh.Triangles.ReadOnlyData);
+                _renderContextImp.SetTriangles(meshImp, mesh.Triangles.AsReadOnlySpan);
 
             if (mesh.VerticesSet)
-                _renderContextImp.SetVertices(meshImp, mesh.Vertices.ReadOnlyData);
+                _renderContextImp.SetVertices(meshImp, mesh.Vertices.AsReadOnlySpan);
 
             if (mesh.UVsSet)
-                _renderContextImp.SetUVs(meshImp, mesh.UVs.ReadOnlyData);
+                _renderContextImp.SetUVs(meshImp, mesh.UVs.AsReadOnlySpan);
 
             if (mesh.NormalsSet)
-                _renderContextImp.SetNormals(meshImp, mesh.Normals.ReadOnlyData);
+                _renderContextImp.SetNormals(meshImp, mesh.Normals.AsReadOnlySpan);
 
-            if (mesh.ColorsSet)
-                _renderContextImp.SetColors(meshImp, mesh.Colors.ReadOnlyData);
+            if (mesh.Colors0Set)
+                _renderContextImp.SetColors(meshImp, mesh.Colors0.AsReadOnlySpan);
 
-            if (mesh.ColorsSet1)
-                _renderContextImp.SetColors1(meshImp, mesh.Colors1.ReadOnlyData);
+            if (mesh.Colors1Set)
+                _renderContextImp.SetColors1(meshImp, mesh.Colors1.AsReadOnlySpan);
 
-            if (mesh.ColorsSet2)
-                _renderContextImp.SetColors2(meshImp, mesh.Colors2.ReadOnlyData);
+            if (mesh.Colors2Set)
+                _renderContextImp.SetColors2(meshImp, mesh.Colors2.AsReadOnlySpan);
 
             if (mesh.BoneIndicesSet)
-                _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices.ReadOnlyData);
+                _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices.AsReadOnlySpan);
 
             if (mesh.BoneWeightsSet)
-                _renderContextImp.SetBoneWeights(meshImp, mesh.BoneWeights.ReadOnlyData);
+                _renderContextImp.SetBoneWeights(meshImp, mesh.BoneWeights.AsReadOnlySpan);
 
             if (mesh.TangentsSet)
-                _renderContextImp.SetTangents(meshImp, mesh.Tangents.ReadOnlyData);
+                _renderContextImp.SetTangents(meshImp, mesh.Tangents.AsReadOnlySpan);
 
             if (mesh.BiTangentsSet)
-                _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents.ReadOnlyData);
+                _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents.AsReadOnlySpan);
 
             //mesh.MeshChanged += MeshChanged; // <- Replace with UpdateGPU method!
 
@@ -272,8 +324,7 @@ namespace Fusee.Engine.Core
 
             meshImp.MeshType = mesh.MeshType;
 
-            _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, meshImp);
-            _identifierToMeshDictionary.Add(mesh.SessionUniqueIdentifier, mesh);
+            _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, (meshImp, mesh));
 
             return meshImp;
         }
@@ -288,7 +339,7 @@ namespace Fusee.Engine.Core
             instanceData.DataChanged += InstanceDataChanged;
             instanceData.DisposeData += DisposeInstanceData;
 
-            var instanceDataImp = _renderContextImp.CreateInstanceDataImp(meshImp);
+            var instanceDataImp = _renderContextImp.CreateInstanceDataImp(meshImp.IMeshImp);
             instanceDataImp.Amount = instanceData.Amount;
 
             _identifierToInstanceDataImpDictionary.Add(instanceData.SessionUniqueId, instanceDataImp);
@@ -300,20 +351,20 @@ namespace Fusee.Engine.Core
 
         public IMeshImp GetImpFromMesh(Mesh m)
         {
-            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out IMeshImp foundMeshImp))
+            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out var foundMeshImp))
             {
                 return RegisterNewMesh(m);
             }
-            return foundMeshImp;
+            return foundMeshImp.IMeshImp;
         }
 
         public IMeshImp GetImpFromMesh(GpuMesh m)
         {
-            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out IMeshImp foundMeshImp))
+            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out var foundMeshImp))
             {
                 throw new ArgumentException("GpuMesh not found, make sure you created it first.");
             }
-            return foundMeshImp;
+            return foundMeshImp.IMeshImp;
         }
 
         public IInstanceDataImp GetImpFromInstanceData(Mesh m, InstanceData instanceData)

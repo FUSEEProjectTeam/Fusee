@@ -37,7 +37,7 @@ namespace Fusee.Math.Core
         /// Create a new axis aligned bounding box.
         /// </summary>
         /// <param name="vertices">The list of vertices the bounding box is created for.</param>
-        public AABBd(IList<double3> vertices)
+        public AABBd(ReadOnlySpan<double3> vertices)
         {
             min = vertices[0];
             max = vertices[0];
@@ -188,7 +188,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Checks if a viewing frustum lies within or intersects this AABB.      
+        /// Checks if a viewing frustum lies within or intersects this AABB.
         /// </summary>
         /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
@@ -211,7 +211,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Checks if a plane lies within or intersects this AABB.      
+        /// Checks if a plane lies within or intersects this AABB.
         /// </summary>
         /// <param name="plane">The plane to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
@@ -277,7 +277,7 @@ namespace Fusee.Math.Core
         /// Operator override for equality.
         /// </summary>
         /// <param name="left">The AABBd.</param>
-        /// <param name="right">The scalar value.</param>        
+        /// <param name="right">The scalar value.</param>
         public static bool operator ==(AABBd left, AABBd right)
         {
             return left.Equals(right);
