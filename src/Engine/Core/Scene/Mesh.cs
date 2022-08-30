@@ -1,20 +1,104 @@
-﻿using Fusee.Engine.Common;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Linq;
 
 namespace Fusee.Engine.Core.Scene
 {
+    public sealed class MeshAttributes<T> where T : struct
+    {
+        private readonly T[] _attribData;
+
+        public bool UpdateDataAfterRender { get; set; } = true;
+
+        public bool DataChangedDirtyFlag { get; private set; }
+
+        public readonly List<(int, int)> ChangedIndices = new();
+
+        public int Length => _attribData.Length;
+
+        public MeshAttributes(in IEnumerable<T> data) => _attribData = (T[])data;
+
+        private MeshAttributes() { }
+
+        /// <summary>
+        /// Quick readonly access to data for read purposes
+        /// Use <see cref="MeshAttributes{T}"/> indexer for read/write access
+        /// </summary>
+        public ReadOnlyCollection<T> ReadOnlyData => new(_attribData);
+
+        public T this[int idx]
+        {
+            get => _attribData[idx];
+            set
+            {
+                _attribData[idx] = value;
+                DataChangedDirtyFlag = true;
+
+                // TODO: Track changed indices in a fast and memory efficient way
+            }
+        }
+
+        /// <summary>
+        /// Returns the backing field value as array
+        /// </summary>
+        /// <returns></returns>
+        public T[] ToArray()
+        {
+            return _attribData;
+        }
+
+        /// <summary>
+        /// Fills the array with given value beginning at index <paramref name="pos"/> until <paramref name="length"/> is reached.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="pos">default = 0</param>
+        /// <param name="length">default = -1, if -1 is given the entire length is being used</param>
+        public void Fill(in T data, int pos = 0, int length = -1)
+        {
+            Guard.IsGreaterThanOrEqualTo(pos, 0);
+            Guard.IsGreaterThanOrEqualTo(length, -1);
+            Guard.IsNotNull(data);
+
+            var calculatedLength = length == -1 ? (_attribData.Length + pos) : length;
+            Guard.IsLessThan(calculatedLength, _attribData.Length);
+
+            Array.Fill(_attribData, data, pos, calculatedLength);
+
+            DataChangedDirtyFlag = true;
+            ChangedIndices.Add((0, calculatedLength - 1));
+        }
+
+        /// <summary>
+        /// Sets attributes by given <paramref name="data"/>, replacing all elements beginning at given <paramref name="startIdx"/>
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="startIdx">default = 0</param>
+        public void SetAttributeData(in T[] data, int startIdx = 0)
+        {
+            Guard.IsNotNull(data);
+            Guard.IsGreaterThanOrEqualTo(startIdx, 0);
+
+            var calculatedLength = data.Length + startIdx;
+            Guard.IsLessThanOrEqualTo(calculatedLength, _attribData.Length);
+
+            Array.Copy(data, 0, _attribData, startIdx, data.Length);
+
+            DataChangedDirtyFlag = true;
+            ChangedIndices.Add((startIdx, _attribData.Length - 1));
+        }
+    }
+
     /// <summary>
     /// Provides the ability to create or interact directly with the point data.
     /// </summary>
     public class Mesh : SceneComponent, IManagedMesh
     {
         #region RenderContext Asset Management
-
-        /// <summary>
-        /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
-        /// </summary>
-        public event EventHandler<MeshChangedEventArgs> MeshChanged;
 
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
@@ -28,38 +112,112 @@ namespace Fusee.Engine.Core.Scene
 
         #endregion
 
-        #region Private mesh data member
+        #region Mesh data member
 
-        private float4[] _boneWeights;
-        private float4[] _boneIndices;
-        private float4[] _tangents;
+        public readonly MeshAttributes<uint> Triangles;
+        public readonly MeshAttributes<float3> Vertices;
+        public readonly MeshAttributes<float3>? Normals;
+        public readonly MeshAttributes<float2>? UVs;
 
-        private float3[] _biTangents;
-        private float3[] _vertices;
-        private float3[] _normals;
+        public readonly MeshAttributes<float4>? BoneWeights;
+        public readonly MeshAttributes<float4>? BoneIndices;
 
-        private float2[] _uvs;
+        public readonly MeshAttributes<float4>? Tangents;
+        public readonly MeshAttributes<float3>? BiTangents;
 
-        private ushort[] _triangles;
-        private uint[] _colors;
-        private uint[] _colors1;
-        private uint[] _colors2;
+        public readonly MeshAttributes<uint>? Colors;
+        public readonly MeshAttributes<uint>? Colors1;
+        public readonly MeshAttributes<uint>? Colors2;
 
         #endregion
 
+
         /// <summary>
-        /// Gets and sets the vertices.
+        /// Generates a new <see cref="Mesh"/> instance
         /// </summary>
-        /// <value>
-        /// The vertices.
-        /// </value>
-        public float3[] Vertices
+        /// <param name="triangles"></param>
+        /// <param name="vertices"></param>
+        /// <param name="normals"></param>
+        /// <param name="uvs"></param>
+        /// <param name="boneWeights"></param>
+        /// <param name="boneIndices"></param>
+        /// <param name="tangents"></param>
+        /// <param name="biTangents"></param>
+        /// <param name="colors"></param>
+        /// <param name="colors1"></param>
+        /// <param name="colors2"></param>
+        public Mesh
+        (
+            IEnumerable<uint> triangles,
+            IEnumerable<float3> vertices,
+            IEnumerable<float3>? normals = null,
+            IEnumerable<float2>? uvs = null,
+            IEnumerable<float4>? boneWeights = null,
+            IEnumerable<float4>? boneIndices = null,
+            IEnumerable<float4>? tangents = null,
+            IEnumerable<float3>? biTangents = null,
+            IEnumerable<uint>? colors = null,
+            IEnumerable<uint>? colors1 = null,
+            IEnumerable<uint>? colors2 = null)
         {
-            get => _vertices;
-            set
+            Guard.IsGreaterThan(triangles.Count(), 0);
+            Guard.IsGreaterThan(vertices.Count(), 0);
+
+            Triangles = new MeshAttributes<uint>(triangles);
+            Vertices = new MeshAttributes<float3>(vertices);
+
+            if (normals != null)
             {
-                _vertices = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Vertices));
+                Guard.IsEqualTo(normals.Count(), vertices.Count());
+                Normals = new MeshAttributes<float3>(normals);
+            }
+
+            if (uvs != null)
+            {
+                Guard.IsEqualTo(uvs.Count(), vertices.Count());
+                UVs = new MeshAttributes<float2>(uvs);
+            }
+
+            if (boneWeights != null)
+            {
+                Guard.IsEqualTo(boneWeights.Count(), vertices.Count());
+                BoneWeights = new MeshAttributes<float4>(boneWeights);
+            }
+
+            if (boneIndices != null)
+            {
+                Guard.IsEqualTo(boneIndices.Count(), vertices.Count());
+                BoneIndices = new MeshAttributes<float4>(boneIndices);
+            }
+
+            if (tangents != null)
+            {
+                Guard.IsEqualTo(tangents.Count(), vertices.Count());
+                Tangents = new MeshAttributes<float4>(tangents);
+            }
+
+            if (biTangents != null)
+            {
+                Guard.IsEqualTo(biTangents.Count(), vertices.Count());
+                BiTangents = new MeshAttributes<float3>(biTangents);
+            }
+
+            if (colors != null)
+            {
+                Guard.IsEqualTo(colors.Count(), vertices.Count());
+                Colors = new MeshAttributes<uint>(colors);
+            }
+
+            if (colors1 != null)
+            {
+                Guard.IsEqualTo(colors1.Count(), vertices.Count());
+                Colors = new MeshAttributes<uint>(colors1);
+            }
+
+            if (colors2 != null)
+            {
+                Guard.IsEqualTo(colors2.Count(), vertices.Count());
+                Colors = new MeshAttributes<uint>(colors2);
             }
         }
 
@@ -69,7 +227,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if vertices are set; otherwise, <c>false</c>.
         /// </value>
-        public bool VerticesSet => _vertices?.Length > 0;
+        public bool VerticesSet => Vertices?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether tangents are set.
@@ -77,7 +235,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if tangents are set; otherwise, <c>false</c>.
         /// </value>
-        public bool TangentsSet => _tangents?.Length > 0;
+        public bool TangentsSet => Tangents?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether bi tangents are set.
@@ -85,24 +243,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if bi tangents are set; otherwise, <c>false</c>.
         /// </value>
-        public bool BiTangentsSet => _biTangents?.Length > 0;
-
-
-        /// <summary>
-        /// Gets and sets the color of a single vertex.
-        /// </summary>
-        /// <value>
-        /// The color.
-        /// </value>
-        public uint[] Colors
-        {
-            get => _colors;
-            set
-            {
-                _colors = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors));
-            }
-        }
+        public bool BiTangentsSet => BiTangents?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether a color is set.
@@ -110,23 +251,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
-        public bool ColorsSet => _colors?.Length > 0;
-
-        /// <summary>
-        /// Gets and sets the color of a single vertex.
-        /// </summary>
-        /// <value>
-        /// The color.
-        /// </value>
-        public uint[] Colors1
-        {
-            get => _colors1;
-            set
-            {
-                _colors1 = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors1));
-            }
-        }
+        public bool ColorsSet => Colors?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether a color is set.
@@ -134,23 +259,7 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
-        public bool ColorsSet1 => _colors1?.Length > 0;
-
-        /// <summary>
-        /// Gets and sets the color of a single vertex.
-        /// </summary>
-        /// <value>
-        /// The color.
-        /// </value>
-        public uint[] Colors2
-        {
-            get => _colors2;
-            set
-            {
-                _colors2 = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Colors2));
-            }
-        }
+        public bool ColorsSet1 => Colors1?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether a color is set.
@@ -158,47 +267,15 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
-        public bool ColorsSet2 => _colors2?.Length > 0;
+        public bool ColorsSet2 => Colors2?.Length > 0;
 
-
-        /// <summary>
-        /// Gets and sets the normals.
-        /// </summary>
-        /// <value>
-        /// The normals..
-        /// </value>
-        public float3[] Normals
-        {
-            get => _normals;
-            set
-            {
-                _normals = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Normals));
-            }
-        }
         /// <summary>
         /// Gets a value indicating whether normals are set.
         /// </summary>
         /// <value>
         ///   <c>true</c> if normals are set; otherwise, <c>false</c>.
         /// </value>
-        public bool NormalsSet => _normals?.Length > 0;
-
-        /// <summary>
-        /// Gets and sets the UV-coordinates.
-        /// </summary>
-        /// <value>
-        /// The UV-coordinates.
-        /// </value>
-        public float2[] UVs
-        {
-            get => _uvs;
-            set
-            {
-                _uvs = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Uvs));
-            }
-        }
+        public bool NormalsSet => Normals?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether UVs are set.
@@ -206,70 +283,23 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if UVs are set; otherwise, <c>false</c>.
         /// </value>
-        public bool UVsSet => _uvs?.Length > 0;
+        public bool UVsSet => UVs?.Length > 0;
 
-        /// <summary>
-        /// Gets and sets the bone weights.
-        /// </summary>
-        /// <value>
-        /// The bone weights.
-        /// </value>
-        public float4[] BoneWeights
-        {
-            get => _boneWeights;
-            set
-            {
-                _boneWeights = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneWeights));
-            }
-        }
         /// <summary>
         /// Gets a value indicating whether bone weights are set.
         /// </summary>
         /// <value>
         ///   <c>true</c> if bone weights are set; otherwise, <c>false</c>.
         /// </value>
-        public bool BoneWeightsSet => _boneWeights?.Length > 0;
+        public bool BoneWeightsSet => BoneWeights?.Length > 0;
 
-        /// <summary>
-        /// Gets and sets the bone indices.
-        /// </summary>
-        /// <value>
-        /// The bone indices.
-        /// </value>
-        public float4[] BoneIndices
-        {
-            get => _boneIndices;
-            set
-            {
-                _boneIndices = value;
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BoneIndices));
-            }
-        }
         /// <summary>
         /// Gets a value indicating whether bone indices are set.
         /// </summary>
         /// <value>
         ///   <c>true</c> if bone indices are set; otherwise, <c>false</c>.
         /// </value>
-        public bool BoneIndicesSet => _boneIndices?.Length > 0;
-
-        /// <summary>
-        /// Gets and sets the triangles.
-        /// </summary>
-        /// <value>
-        /// The triangles.
-        /// </value>
-        public ushort[] Triangles
-        {
-            get => _triangles;
-            set
-            {
-                _triangles = value;
-
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Triangles));
-            }
-        }
+        public bool BoneIndicesSet => BoneIndices?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether triangles are set.
@@ -277,41 +307,12 @@ namespace Fusee.Engine.Core.Scene
         /// <value>
         ///   <c>true</c> if triangles are set; otherwise, <c>false</c>.
         /// </value>
-        public bool TrianglesSet => _triangles?.Length > 0;
+        public bool TrianglesSet => Triangles?.Length > 0;
 
         /// <summary>
         /// The bounding box of this geometry chunk.
         /// </summary>
-        public AABBf BoundingBox;
-
-        /// <summary>
-        /// The tangent of each triangle for normal mapping.
-        /// w-component is handedness
-        /// </summary>
-        public float4[] Tangents
-        {
-            get => _tangents;
-            set
-            {
-                _tangents = value;
-
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Tangents));
-            }
-        }
-
-        /// <summary>
-        /// The bi tangent of each triangle for normal mapping.
-        /// </summary>
-        public float3[] BiTangents
-        {
-            get => _biTangents;
-            set
-            {
-                _biTangents = value;
-
-                MeshChanged?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.BiTangents));
-            }
-        }
+        public AABBf BoundingBox { internal set; get; }
 
         /// <summary>
         /// The type of mesh which is represented by this instance (e. g. triangle mesh, point, line, etc...)
@@ -328,7 +329,6 @@ namespace Fusee.Engine.Core.Scene
         public void Dispose()
         {
             Dispose(true);
-
             GC.SuppressFinalize(this);
         }
 

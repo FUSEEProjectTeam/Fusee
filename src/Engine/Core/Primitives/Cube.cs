@@ -99,13 +99,13 @@ namespace Fusee.Engine.Core.Primitives
 
                 // right face
                 4, 6, 5, 4, 7, 6,
-                
+
                 // back face
                 8, 10, 9, 8, 11, 10,
-               
+
                 // left face
                 12, 14, 13, 12, 15, 14,
-                
+
                 // top face
                 16, 18, 17, 16, 19, 18,
 

@@ -1253,21 +1253,25 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvMesh(Mesh m)
         {
+            var uintTriangles = m.Triangles.ToArray();
+            var triangles = new ushort[uintTriangles.Length];
+            Array.Copy(uintTriangles, triangles, uintTriangles.Length);
+
             // convert mesh
             var mesh = new FusMesh
             {
                 MeshType = (int)m.MeshType,
-                BiTangents = m.BiTangents,
-                BoneIndices = m.BoneIndices,
+                BiTangents = m.BiTangents?.ToArray(),
+                BoneIndices = m.BoneIndices?.ToArray(),
                 BoundingBox = m.BoundingBox,
-                BoneWeights = m.BoneWeights,
-                Colors = m.Colors,
+                BoneWeights = m.BoneWeights?.ToArray(),
+                Colors = m.Colors?.ToArray(),
                 Name = m.Name,
-                Normals = m.Normals,
-                Tangents = m.Tangents,
-                Triangles = m.Triangles,
-                UVs = m.UVs,
-                Vertices = m.Vertices
+                Normals = m.Normals?.ToArray(),
+                Tangents = m.Tangents?.ToArray(),
+                Triangles = triangles,
+                UVs = m.UVs?.ToArray(),
+                Vertices = m.Vertices?.ToArray()
             };
 
             _currentNode.AddComponent(mesh);
