@@ -1085,7 +1085,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="vertices">The vertices.</param>
         /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetVertices(IMeshImp mr, float3[] vertices)
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices)
         {
             if (vertices == null || vertices.Length == 0)
             {
@@ -1264,7 +1264,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTangents(IMeshImp mr, float4[] tangents)
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents)
         {
             if (tangents == null || tangents.Length == 0)
             {
@@ -1306,7 +1306,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="bitangents">The BiTangents.</param>
         /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents)
         {
             if (bitangents == null || bitangents.Length == 0)
             {
@@ -1352,7 +1352,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="normals">The normals.</param>
         /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetNormals(IMeshImp mr, float3[] normals)
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals)
         {
             if (normals == null || normals.Length == 0)
             {
@@ -1399,7 +1399,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="ArgumentException">BoneIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices)
         {
             if (boneIndices == null || boneIndices.Length == 0)
             {
@@ -1446,7 +1446,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="ArgumentException">BoneWeights must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights)
         {
             if (boneWeights == null || boneWeights.Length == 0)
             {
@@ -1494,7 +1494,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="ArgumentException">UVs must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetUVs(IMeshImp mr, float2[] uvs)
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs)
         {
             if (uvs == null || uvs.Length == 0)
             {
@@ -1540,7 +1540,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1554,7 +1554,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
             gl2.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
-            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, colors.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1567,7 +1567,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors1(IMeshImp mr, uint[] colors)
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1581,7 +1581,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color1BufferObject);
             gl2.VertexAttribPointer((uint)AttributeLocations.Color1AttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
-            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, colors.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1594,7 +1594,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors2(IMeshImp mr, uint[] colors)
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1608,7 +1608,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color2BufferObject);
             gl2.VertexAttribPointer((uint)AttributeLocations.Color2AttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
-            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, colors.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1621,7 +1621,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<uint> triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
             {
@@ -1629,13 +1629,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
             ((MeshImp)mr).NElements = triangleIndices.Length;
             int vboBytes;
-            int trisBytes = triangleIndices.Length * sizeof(short);
+            int trisBytes = triangleIndices.Length * sizeof(uint);
 
             if (((MeshImp)mr).ElementBufferObject == null)
                 ((MeshImp)mr).ElementBufferObject = gl2.CreateBuffer();
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
-            gl2.BufferData(ELEMENT_ARRAY_BUFFER, triangleIndices, STATIC_DRAW);
+            gl2.BufferData(ELEMENT_ARRAY_BUFFER, triangleIndices.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ELEMENT_ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
@@ -1845,7 +1845,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat3, 4, FLOAT, false, sizeOfMat, (uint)(2 * sizeOfFloat4));
                     gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat4, 4, FLOAT, false, sizeOfMat, (uint)(3 * sizeOfFloat4));
 
-                    gl2.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0U, instanceData.Amount);
+                    gl2.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_BYTE, 0U, instanceData.Amount);
 
                     gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat1);
                     gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat2);
@@ -1854,7 +1854,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedColor);
                 }
                 else
-                    gl2.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                    gl2.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_INT, 0);
             }
 
             gl2.BindBuffer(ARRAY_BUFFER, null);
