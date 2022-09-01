@@ -127,9 +127,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                 int triangleNumber = rnd.Next(1, numberOfTriangles);
                 int triIndex = (triangleNumber - 1) * 3;
 
-                float3 triVert0 = _monkey.Vertices[_monkey.Triangles[triIndex]];
-                float3 triVert1 = _monkey.Vertices[_monkey.Triangles[triIndex + 1]];
-                float3 triVert2 = _monkey.Vertices[_monkey.Triangles[triIndex + 2]];
+                float3 triVert0 = _monkey.Vertices[(int)_monkey.Triangles[triIndex]];
+                float3 triVert1 = _monkey.Vertices[(int)_monkey.Triangles[triIndex + 1]];
+                float3 triVert2 = _monkey.Vertices[(int)_monkey.Triangles[triIndex + 2]];
 
                 float3 middle = (triVert0 + triVert1 + triVert2) / 3;
 
@@ -538,10 +538,10 @@ namespace Fusee.Examples.AdvancedUI.Core
                 if (mesh != null)
                 {
                     Line newLine = new(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
-                    mesh.Vertices = newLine.Vertices;
-                    mesh.Normals = newLine.Normals;
-                    mesh.Triangles = newLine.Triangles;
-                    mesh.UVs = newLine.UVs;
+                    mesh.Triangles.SetAttributeData(newLine.Triangles.ToArray()); 
+                    mesh.Vertices.SetAttributeData(newLine.Vertices.ToArray());
+                    mesh.Normals?.SetAttributeData(newLine.Normals?.ToArray()); 
+                    mesh.UVs?.SetAttributeData(newLine.UVs?.ToArray()); 
                 }
                 else
                 {

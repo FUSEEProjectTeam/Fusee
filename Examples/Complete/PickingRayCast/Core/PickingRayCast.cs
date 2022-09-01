@@ -191,7 +191,6 @@ namespace Fusee.Examples.PickingRayCast.Core
                 var z = rand.Next(-10, 10);
 
                 var mesh = new Engine.Core.Primitives.Cube();
-                mesh.BoundingBox = new AABBf(mesh.Vertices);
 
                 var cube = new SceneNode()
                 {

@@ -7,38 +7,81 @@ using System.Linq;
 
 namespace Fusee.Engine.Core.Scene
 {
+    /// <summary>
+    /// List of indices that needs to be updated on the GPU
+    /// </summary>
     public sealed class DirtyIndexList
     {
+        /// <summary>
+        /// Ctor as init method
+        /// </summary>
         public void Init()
         {
             IndexList = new List<(int, int)>();
         }
 
+        /// <summary>
+        /// Reset the dirty index list
+        /// </summary>
         public void ResetList() => Init();
 
-        public void Add(int idx) => IndexList.Add((idx, idx));
+        /// <summary>
+        /// Adds one element to dirty index list as tuple
+        /// e. g. idx: 1 => Add(1,1)
+        /// </summary>
+        /// <param name="idx"></param>
+        public void Add(int idx) => IndexList?.Add((idx, idx));
 
-        public void Add((int, int) idx) => IndexList.Add(idx);
+        /// <summary>
+        /// Add index range to dirty index list
+        /// </summary>
+        /// <param name="idx"></param>
+        public void Add((int, int) idx) => IndexList?.Add(idx);
 
-        public List<(int, int)> IndexList { get; private set; }
+        /// <summary>
+        /// The dirty index list
+        /// </summary>
+        public List<(int, int)>? IndexList { get; private set; }
 
-        public bool Empty => IndexList.Count == 0;
+        /// <summary>
+        /// Is list empty
+        /// </summary>
+        public bool Empty => IndexList?.Count == 0;
     }
 
+    /// <summary>
+    /// Attribute class which contains the mesh data, as well as methods to modify the underlying data fields 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public sealed class MeshAttributes<T> where T : struct
     {
         private readonly T[] _attribData;
 
-        public readonly DirtyIndexList DirtyIndices = new();
+        /* TODO
+        /// <summary>
+        /// List of dirty indices which needs to be updated on the GPU
+        /// </summary>
+        // public readonly DirtyIndexList DirtyIndices = new();
+        */
 
+        /// <summary>
+        /// Are there any dirty indices which need to be updated on the GPU?
+        /// </summary>
         public bool DirtyIndex { get; internal set; }
 
+        /// <summary>
+        /// Get length of data
+        /// </summary>
         public int Length => _attribData.Length;
 
-        public MeshAttributes(in IEnumerable<T> data)
+        /// <summary>
+        /// Generate data
+        /// </summary>
+        /// <param name="data"></param>
+        public MeshAttributes(in ICollection<T> data)
         {
             _attribData = data.ToArray();
-            DirtyIndices.Init();
+            //DirtyIndices.Init();
         }
 
         /// <summary>
@@ -124,18 +167,23 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
         /// </summary>
-        public event EventHandler<MeshChangedEventArgs> DisposeData;
+        public event EventHandler<MeshChangedEventArgs>? DisposeData;
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
         /// </summary>
         public Suid SessionUniqueIdentifier { get; } = Suid.GenerateSuid();
 
+        /// <summary>
+        /// Update all changed <see cref="MeshAttributes{T}"/> data after each frame?
+        /// </summary>
         public bool UpdatePerFrame { set; get; } = true;
 
+        /// <summary>
+        /// Reset all dirty flags
+        /// </summary>
         public void ResetIndexLists()
         {
-
             Vertices.DirtyIndex = false;
             Triangles.DirtyIndex = false;
 
@@ -179,23 +227,59 @@ namespace Fusee.Engine.Core.Scene
 
         #region Mesh data member
 
-        public MeshAttributes<uint> Triangles { get; protected set; }
-        public MeshAttributes<float3> Vertices { get; protected set; }
+        /// <summary>
+        /// The triangles
+        /// </summary>
+        public MeshAttributes<uint>? Triangles { get; protected set; }
+        /// <summary>
+        /// The vertices
+        /// </summary>
+        public MeshAttributes<float3>? Vertices { get; protected set; }
+        /// <summary>
+        /// The normals
+        /// </summary>
         public MeshAttributes<float3>? Normals { get; protected set; }
+        /// <summary>
+        /// The UV coordinates
+        /// </summary>
         public MeshAttributes<float2>? UVs { get; protected set; }
 
+        /// <summary>
+        /// The bine weights
+        /// </summary>
         public MeshAttributes<float4>? BoneWeights { get; internal set; } // set via SceneRenderer
+        /// <summary>
+        /// The bone indices
+        /// </summary>
         public MeshAttributes<float4>? BoneIndices { get; internal set; } // set via SceneRenderer
 
+        /// <summary>
+        /// The tangents
+        /// </summary>
         public MeshAttributes<float4>? Tangents { get; internal set; } // set via SceneRenderer
+        /// <summary>
+        /// The bi tangents
+        /// </summary>
         public MeshAttributes<float3>? BiTangents { get; internal set; } // set via SceneRenderer
 
+        /// <summary>
+        /// The vertex color field 0
+        /// </summary>
         public MeshAttributes<uint>? Colors0 { get; protected set; }
+        /// <summary>
+        /// The vertex color field 1
+        /// </summary>
         public MeshAttributes<uint>? Colors1 { get; protected set; }
+        /// <summary>
+        /// The vertex color field 2
+        /// </summary>
         public MeshAttributes<uint>? Colors2 { get; protected set; }
 
         #endregion
 
+        /// <summary>
+        /// Protected ctor
+        /// </summary>
         protected Mesh() { }
 
         /// <summary>
@@ -214,75 +298,75 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="colors2"></param>
         public Mesh
         (
-            IEnumerable<uint> triangles,
-            IEnumerable<float3> vertices,
-            IEnumerable<float3>? normals = null,
-            IEnumerable<float2>? uvs = null,
-            IEnumerable<float4>? boneWeights = null,
-            IEnumerable<float4>? boneIndices = null,
-            IEnumerable<float4>? tangents = null,
-            IEnumerable<float3>? biTangents = null,
-            IEnumerable<uint>? colors = null,
-            IEnumerable<uint>? colors1 = null,
-            IEnumerable<uint>? colors2 = null)
+            ICollection<uint> triangles,
+            ICollection<float3> vertices,
+            ICollection<float3>? normals = null,
+            ICollection<float2>? uvs = null,
+            ICollection<float4>? boneWeights = null,
+            ICollection<float4>? boneIndices = null,
+            ICollection<float4>? tangents = null,
+            ICollection<float3>? biTangents = null,
+            ICollection<uint>? colors = null,
+            ICollection<uint>? colors1 = null,
+            ICollection<uint>? colors2 = null)
         {
-            Guard.IsGreaterThan(triangles.Count(), 0);
-            Guard.IsGreaterThan(vertices.Count(), 0);
+            Guard.IsGreaterThan(triangles.Count, 0);
+            Guard.IsGreaterThan(vertices.Count, 0);
 
             Triangles = new MeshAttributes<uint>(triangles);
             Vertices = new MeshAttributes<float3>(vertices);
 
             if (normals != null)
             {
-                Guard.IsEqualTo(normals.Count(), vertices.Count());
+                Guard.IsEqualTo(normals.Count, vertices.Count);
                 Normals = new MeshAttributes<float3>(normals);
             }
 
             if (uvs != null)
             {
-                Guard.IsEqualTo(uvs.Count(), vertices.Count());
+                Guard.IsEqualTo(uvs.Count, vertices.Count());
                 UVs = new MeshAttributes<float2>(uvs);
             }
 
             if (boneWeights != null)
             {
-                Guard.IsEqualTo(boneWeights.Count(), vertices.Count());
+                Guard.IsEqualTo(boneWeights.Count, vertices.Count);
                 BoneWeights = new MeshAttributes<float4>(boneWeights);
             }
 
             if (boneIndices != null)
             {
-                Guard.IsEqualTo(boneIndices.Count(), vertices.Count());
+                Guard.IsEqualTo(boneIndices.Count, vertices.Count);
                 BoneIndices = new MeshAttributes<float4>(boneIndices);
             }
 
             if (tangents != null)
             {
-                Guard.IsEqualTo(tangents.Count(), vertices.Count());
+                Guard.IsEqualTo(tangents.Count, vertices.Count);
                 Tangents = new MeshAttributes<float4>(tangents);
             }
 
             if (biTangents != null)
             {
-                Guard.IsEqualTo(biTangents.Count(), vertices.Count());
+                Guard.IsEqualTo(biTangents.Count, vertices.Count);
                 BiTangents = new MeshAttributes<float3>(biTangents);
             }
 
             if (colors != null)
             {
-                Guard.IsEqualTo(colors.Count(), vertices.Count());
+                Guard.IsEqualTo(colors.Count, vertices.Count);
                 Colors0 = new MeshAttributes<uint>(colors);
             }
 
             if (colors1 != null)
             {
-                Guard.IsEqualTo(colors1.Count(), vertices.Count());
+                Guard.IsEqualTo(colors1.Count, vertices.Count);
                 Colors0 = new MeshAttributes<uint>(colors1);
             }
 
             if (colors2 != null)
             {
-                Guard.IsEqualTo(colors2.Count(), vertices.Count());
+                Guard.IsEqualTo(colors2.Count, vertices.Count);
                 Colors0 = new MeshAttributes<uint>(colors2);
             }
         }
