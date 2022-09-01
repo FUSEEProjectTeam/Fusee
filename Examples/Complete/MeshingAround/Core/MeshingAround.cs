@@ -117,7 +117,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 }
             };
             ///////////////////////////////////////////////////////////
-            
+
             var cubeM = new Mesh(cube.Triangles.ToArray(), cube.Vertices.ToArray(), cube.Normals?.ToArray());
             SceneNode sceneNodeCube = new()
             {

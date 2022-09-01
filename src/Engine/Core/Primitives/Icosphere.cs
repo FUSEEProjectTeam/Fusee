@@ -168,7 +168,7 @@ namespace Fusee.Engine.Core.Primitives
             var tmpVerts = _sphereVertices.ToArray();
             var tmpNormals = NormalAndUvHelper.CreateVertexNormals(mesh);
 
-           var tmpUvs = new float2[mesh.Vertices.Length];
+            var tmpUvs = new float2[mesh.Vertices.Length];
 
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {

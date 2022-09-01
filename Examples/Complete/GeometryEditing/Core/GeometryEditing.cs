@@ -281,7 +281,7 @@ namespace Fusee.Examples.GeometryEditing.Core
                 JometriMesh geometryMesh = new(currentSelectedGeometry);
                 Mesh meshComponent = new(geometryMesh.Triangles.ToArray(), geometryMesh.Vertices.ToArray(),
                     geometryMesh.Normals?.ToArray());
-               
+
                 currentSelection.Components[2] = meshComponent;
             }
 

@@ -17,19 +17,19 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "vec4 resColor;",
             $"switch({UniformNameDeclarations.ColorMode})",
             "{\n",
-      "case 0:\n",
-         "resColor = IN.Albedo;\n",
-         "break;\n",
-      "case 1:\n",
-         $"resColor = {VaryingNameDeclarations.Color0};\n",
-         "break;\n",
-      "case 2:\n",
-         $"resColor = {VaryingNameDeclarations.Color1};\n",
-         "break;\n",
-      "case 3:\n",
-         $"resColor = {VaryingNameDeclarations.Color2};\n",
-         "break;\n",
-    "}"
+            "case 0:\n",
+            "resColor = IN.Albedo;\n",
+            "break;\n",
+            "case 1:\n",
+            $"resColor = {VaryingNameDeclarations.Color0};\n",
+            "break;\n",
+            "case 2:\n",
+            $"resColor = {VaryingNameDeclarations.Color1};\n",
+            "break;\n",
+            "case 3:\n",
+            $"resColor = {VaryingNameDeclarations.Color2};\n",
+            "break;\n",
+            "}"
         };
 
 

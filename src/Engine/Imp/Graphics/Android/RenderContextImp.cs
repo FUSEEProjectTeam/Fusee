@@ -1607,7 +1607,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetColors1(IMeshImp mr,  ReadOnlySpan<uint> colors)
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1638,7 +1638,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetColors2(IMeshImp mr,  ReadOnlySpan<uint> colors)
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
