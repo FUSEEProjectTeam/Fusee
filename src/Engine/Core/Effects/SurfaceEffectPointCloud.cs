@@ -190,7 +190,7 @@ namespace Fusee.Engine.Core.Effects
             else
             {
                 return new List<string>() {
-                    $"mat4 mv = FUSEE_V * {UniformNameDeclarations.InstanceModelMat};",
+                    $"mat4 mv = FUSEE_V * FUSEE_M * {UniformNameDeclarations.InstanceModelMat};",
 
                     //assumption: position x and y are in range [-0.5, 0.5].
                     $"{VaryingNameDeclarations.PointCoord} = vec2(0.5) / {UniformNameDeclarations.Vertex}.xy;",
