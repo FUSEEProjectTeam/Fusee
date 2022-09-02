@@ -10,7 +10,7 @@ namespace Fusee.PointCloud.Potree.V2
     {
         protected PotreeData _potreeData;
 
-        protected bool cachedOffsets = false;
+        protected bool cachedMetadata = false;
 
         protected int offsetPosition = -1;
         protected int offsetIntensity = -1;
@@ -29,7 +29,7 @@ namespace Fusee.PointCloud.Potree.V2
             _potreeData = potreeData;
             PointAccessor = new PosD3ColF3LblBAccessor();
 
-            CacheOffsets();
+            CacheMetadata();
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         public IPointAccessor PointAccessor { get; protected set; }
 
-        protected void CacheOffsets()
+        protected void CacheMetadata()
         {
-            if (!cachedOffsets)
+            if (!cachedMetadata)
             {
                 if (_potreeData.Metadata.Attributes.ContainsKey("position"))
                 {
@@ -83,7 +83,19 @@ namespace Fusee.PointCloud.Potree.V2
                     offsetColor = _potreeData.Metadata.Attributes["rgb"].AttributeOffset;
                 }
 
-                cachedOffsets = true;
+                int pointSize = 0;
+
+                if (_potreeData.Metadata != null)
+                {
+                    foreach (var metaAttributeItem in _potreeData.Metadata.AttributesList)
+                    {
+                        pointSize += metaAttributeItem.Size;
+                    }
+
+                    _potreeData.Metadata.PointSize = pointSize;
+                }
+
+                cachedMetadata = true;
             }
         }
 

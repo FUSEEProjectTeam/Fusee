@@ -1,3 +1,4 @@
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
@@ -203,11 +204,13 @@ namespace Fusee.PointCloud.Potree.V2
             return points;
         }
 
-        public TPotreePoint[] ReadRawPoints<TPotreePoint>(OctantId oid) where TPotreePoint : PotreePoint
+        public TPotreePoint[] ReadRawPoints<TPotreePoint>(OctantId oid) where TPotreePoint : PotreePoint, new()
         {
             var node = FindNode(ref _potreeData.Hierarchy, oid);
 
             var points = new TPotreePoint[node.NumPoints];
+
+            Array.Fill(points, new TPotreePoint());
 
             var binaryReader = new BinaryReader(File.OpenRead(OctreeFilePath));
 
