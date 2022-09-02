@@ -171,12 +171,14 @@ namespace Fusee.PointCloud.Core
 
         private void DetermineVisibilityForNode(PointCloudOctant node)
         {
+            var scale = float3.One; //Model.Scale()
+            var translation = Model.Translation();
             // gets pixel radius of the node
-            node.ComputeScreenProjectedSize(_camPosD, ViewportHeight, Fov, Model);
+            node.ComputeScreenProjectedSize(_camPosD, ViewportHeight, Fov, translation, scale);
 
             //If node does not intersect the viewing frustum or is smaller than the minimal projected size:
             //Return -> will not be added to _visibleNodesOrderedByProjectionSize -> traversal of this branch stops.
-            if (!node.InsideOrIntersectingFrustum(RenderFrustum, Model) || node.ProjectedScreenSize < _minScreenProjectedSize)
+            if (!node.InsideOrIntersectingFrustum(RenderFrustum, translation, scale) || node.ProjectedScreenSize < _minScreenProjectedSize)
             {
                 return;
             }
@@ -188,7 +190,7 @@ namespace Fusee.PointCloud.Core
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
         {
-            ((PointCloudOctant)Octree.Root).ComputeScreenProjectedSize(camPos, ViewportHeight, fov, Model);
+            ((PointCloudOctant)Octree.Root).ComputeScreenProjectedSize(camPos, ViewportHeight, fov, Model.Translation(), float3.One);
             _minScreenProjectedSize = ((PointCloudOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
         }
     }
