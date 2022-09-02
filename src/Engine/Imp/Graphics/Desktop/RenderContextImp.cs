@@ -1587,10 +1587,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ApplicationException("Create the VAO first!");
                 }
                 GL.NamedBufferStorage(biBo, indicesBytes, boneIndices, BufferStorageFlags.DynamicStorageBit);
-                GL.VertexArrayVertexBuffer(vao, AttributeLocations.BoneIndexAttribAttribBindingIndex, biBo, IntPtr.Zero, sizeOfboneIndex);
+                GL.VertexArrayVertexBuffer(vao, AttributeLocations.BoneIndexAttribBindingIndex, biBo, IntPtr.Zero, sizeOfboneIndex);
 
                 GL.VertexArrayAttribFormat(vao, AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribType.Float, false, 0);
-                GL.VertexArrayAttribBinding(vao, AttributeLocations.BoneIndexAttribLocation, AttributeLocations.BoneIndexAttribAttribBindingIndex);
+                GL.VertexArrayAttribBinding(vao, AttributeLocations.BoneIndexAttribLocation, AttributeLocations.BoneIndexAttribBindingIndex);
             }
             else
             {
@@ -1634,10 +1634,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int sizeOfBoneWeight = 4 * sizeof(float);
             int weightsBytes = boneWeights.Length * sizeOfBoneWeight;
             int wBo;
-            if (((MeshImp)mr).BoneIndexBufferObject == 0)
+            if (((MeshImp)mr).BoneWeightBufferObject == 0)
             {
                 GL.CreateBuffers(1, out wBo);
-                ((MeshImp)mr).BoneIndexBufferObject = wBo;
+                ((MeshImp)mr).BoneWeightBufferObject = wBo;
 
                 var vao = ((MeshImp)mr).VertexArrayObject;
                 if (vao == 0)
@@ -1645,14 +1645,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ApplicationException("Create the VAO first!");
                 }
                 GL.NamedBufferStorage(wBo, weightsBytes, boneWeights, BufferStorageFlags.DynamicStorageBit);
-                GL.VertexArrayVertexBuffer(vao, AttributeLocations.BoneIndexAttribAttribBindingIndex, wBo, IntPtr.Zero, sizeOfBoneWeight);
+                GL.VertexArrayVertexBuffer(vao, AttributeLocations.BoneWeightAttribBindingIndex, wBo, IntPtr.Zero, sizeOfBoneWeight);
 
-                GL.VertexArrayAttribFormat(vao, AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribType.Float, false, 0);
-                GL.VertexArrayAttribBinding(vao, AttributeLocations.BoneIndexAttribLocation, AttributeLocations.BoneIndexAttribAttribBindingIndex);
+                GL.VertexArrayAttribFormat(vao, AttributeLocations.BoneWeightAttribLocation, 4, VertexAttribType.Float, false, 0);
+                GL.VertexArrayAttribBinding(vao, AttributeLocations.BoneWeightAttribLocation, AttributeLocations.BoneWeightAttribBindingIndex);
             }
             else
             {
-                wBo = ((MeshImp)mr).BoneIndexBufferObject;
+                wBo = ((MeshImp)mr).BoneWeightBufferObject;
                 GL.GetNamedBufferParameter(wBo, BufferParameterName.BufferSize, out int size);
                 if (size < weightsBytes)
                 {
@@ -1661,7 +1661,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                     var vao = ((MeshImp)mr).VertexArrayObject;
                     GL.NamedBufferStorage(wBo, weightsBytes, boneWeights, BufferStorageFlags.DynamicStorageBit);
-                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BoneIndexAttribLocation, wBo, IntPtr.Zero, sizeOfBoneWeight);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.BoneWeightAttribLocation, wBo, IntPtr.Zero, sizeOfBoneWeight);
 
                 }
                 else

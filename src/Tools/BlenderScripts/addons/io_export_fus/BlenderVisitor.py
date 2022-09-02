@@ -1,4 +1,6 @@
 #from .FusSceneWriter import FusSceneWriter
+import math
+from threading import local
 from FusSceneWriter import FusSceneWriter
 
 import subprocess,os,sys, time
@@ -12,6 +14,7 @@ from bpy.props import (
         )
 from bpy_extras.io_utils import (
         ExportHelper,
+        axis_conversion
         )
 import bmesh
 import mathutils
@@ -60,9 +63,10 @@ class BlenderVisitor:
         self.__transformStack = [(mathutils.Vector((0, 0, 0)), mathutils.Quaternion(), mathutils.Vector((0, 0, 0)))]
         self.__fusWriter = FusSceneWriter()
         self.__textures = []
+        self.__vertsPerMat = []
         self.__visitors = {
-            'ARMATURE': self.VisitArmature,
             'MESH':     self.VisitMesh,
+            'ARMATURE': self.VisitArmature,
             'LIGHT':    self.VisitLight,
             'CAMERA':   self.VisitCamera,
         }
@@ -610,11 +614,10 @@ class BlenderVisitor:
 
         materialCount = max(1, len(mesh.material_slots))
 
-        vertsPerMat = []
-
+        self.__vertsPerMat.clear()
         # <Sort vertices into material bins>
         for iMaterial in range(materialCount):
-            vertsPerMat.append([])            
+            self.__vertsPerMat.append([])            
 
         bm = self.__GetProcessedBMesh(mesh)
 
@@ -629,9 +632,11 @@ class BlenderVisitor:
             # print("Triangle with material ", f.material_index)
             for fl in f.loops:
                 vertex = fl.vert.co
+                orginalIndex = fl.vert.index
                 normal = fl.vert.normal if f.smooth else f.normal
                 uv = fl[uv_layer].uv if uv_layer is not None else mathutils.Vector((0, 0))
-                vertsPerMat[f.material_index].append((
+                self.__vertsPerMat[f.material_index].append((
+                    orginalIndex,
                     (vertex[0], vertex[2], vertex[1]), 
                     (normal[0], normal[2], normal[1]),
                     (uv[0], uv[1])))
@@ -643,7 +648,6 @@ class BlenderVisitor:
         bm.free()
         del bm
         # </Sort vertices into material bins>
-
         # <For each material: Write out vertices into FUSEE objects>
         for iMaterial in range(materialCount):
 
@@ -664,10 +668,10 @@ class BlenderVisitor:
             else:
                 self.__AddDefaultMaterial()
 
-            nVertsTotal = len(vertsPerMat[iMaterial])
+            nVertsTotal = len(self.__vertsPerMat[iMaterial])
             iVert = 0
             iChunk = 0
-
+            orgiIdx = [None]; 
             while iVert < nVertsTotal:
                 meshName = mesh.data.name + '_mat' + str(iMaterial) + '_chnk' + str(iChunk) + appliedScaleStr
                 if iChunk > 0:
@@ -677,25 +681,29 @@ class BlenderVisitor:
                 if self.__fusWriter.TryReferenceMesh(meshName):
                     iVert = iVert + self.__fusWriter.GetReferencedMeshTriVertCount(meshName)
                 else:
-                    vert = vertsPerMat[iMaterial][iVert]
-                    self.__fusWriter.BeginMesh(
-                        vert[0],    # Vertex 
-                        vert[1],    # Normal
-                        vert[2],    # UV
+                    vert = self.__vertsPerMat[iMaterial][iVert]
+                    idx = self.__fusWriter.BeginMesh(
+                        vert[0],
+                        vert[1],    # Vertex 
+                        vert[2],    # Normal
+                        vert[3],    # UV
                         name=meshName
                     )
+                    orgiIdx[0] = idx
                     iVert = iVert + 1
                     iVertPerChunk = 1
                     while self.__fusWriter.MeshHasCapacity() and iVert < nVertsTotal:
-                        vert = vertsPerMat[iMaterial][iVert]
-                        self.__fusWriter.AddVertex(
-                            vert[0],    # Vertex 
-                            vert[1],    # Normal
-                            vert[2]     # UV
+                        vert = self.__vertsPerMat[iMaterial][iVert]
+                        idx = self.__fusWriter.AddVertex(
+                            vert[0],
+                            vert[1],    # Vertex 
+                            vert[2],    # Normal
+                            vert[3],    # UV
                         )
                         iVert = iVert + 1
                         iVertPerChunk = iVertPerChunk + 1
-
+                        if(idx > -1):
+                            orgiIdx.append(idx)
                     self.__fusWriter.EndMesh()  
 
                 if iChunk > 0:
@@ -706,6 +714,10 @@ class BlenderVisitor:
             if materialCount > 1:
                 self.__fusWriter.Pop()
         # </For each material: Write out vertices into FUSEE objects>
+        for modifiers in mesh.modifiers:
+            if(modifiers.type == "ARMATURE"):
+                armature = mesh.parent
+                self.WeightGen(orgiIdx, mesh, armature)
 
 
     def VisitLight(self, light):
@@ -773,15 +785,14 @@ class BlenderVisitor:
         for bone in armature.pose.bones:
             if(bone.parent == None):
                 self.TraverseBones(bone)
-        print('Armature: ' + armature.name)
-        for mesh in armature.children:
-            self.WeightGen(mesh, armature);    
+        print('Armature: ' + armature.name)   
         self.__AddBoneAnimationIfPresent(armature)   
 
     def TraverseBones(self, bones):
         self.__fusWriter.Push()
         self.__fusWriter.AddChild(bones.name)
         self.AddBoneTransform(bones, bones.parent)
+        self.__fusWriter.Bone()
         self.__fusWriter.Push()
         self.CreateBoneMesh(bones)
         self.__fusWriter.Pop()
@@ -794,6 +805,7 @@ class BlenderVisitor:
                 self.__fusWriter.Push()
                 self.__fusWriter.AddChild(bone.name)
                 self.AddBoneTransform(bone, bone.parent)
+                self.__fusWriter.Bone()
                 self.__fusWriter.Push()
                 self.CreateBoneMesh(bone)
                 self.__fusWriter.Pop()
@@ -806,17 +818,21 @@ class BlenderVisitor:
         if(boneparent is None):
             bone_quaternion = bone_quaternion.inverted()
             self.__fusWriter.AddBoneTransform(
-            
                 (bone.bone.head_local.x, bone.bone.head_local.z, bone.bone.head_local.y),
             
-            ((bone_quaternion.x , bone_quaternion.z, bone_quaternion.y, bone_quaternion.w)),
+            ((bone_quaternion.x , 
+            bone_quaternion.z, 
+            bone_quaternion.y, 
+            bone_quaternion.w)),
             bone.name
         )
         else:
             bone_parent_quaternion = boneparent.matrix.to_quaternion()
             bone_parent_quaternion_dif = bone_parent_quaternion.rotation_difference(bone_quaternion).inverted()
             if(bone.bone.use_connect is False):
-                boneloc = mathutils.Vector((0 + bone.bone.head.x,0 + bone.bone.head.z,boneparent.length + bone.bone.head.y))
+                boneloc = mathutils.Vector((bone.bone.head.x ,                                          
+                                            bone.bone.head.z,
+                                            boneparent.length + bone.bone.head.y))
             else:
                 
                 boneloc = mathutils.Vector((0,0,boneparent.length))
@@ -824,29 +840,27 @@ class BlenderVisitor:
                 
                 (boneloc.x, boneloc.y, boneloc.z),
             
-                ((bone_parent_quaternion_dif.x , bone_parent_quaternion_dif.z, bone_parent_quaternion_dif.y, bone_parent_quaternion_dif.w)),
+                ((bone_parent_quaternion_dif.x , 
+                  bone_parent_quaternion_dif.z, 
+                  bone_parent_quaternion_dif.y, 
+                  bone_parent_quaternion_dif.w)),
                 bone.name
             )
 
-
-
-    def WeightGen(self, ob, armature):
+    def WeightGen(self, originalIndexList, mesh, armature):
         self.__fusWriter.Weight()
-        armature.select_set(True)
-        bpy.context.view_layer.objects.active = armature
-        bpy.ops.object.mode_set(mode='EDIT')
-        for bone in armature.pose.bones:
-            bM = self.__fusWriter.BindingMatrices(bone.matrix_basis)
-        bpy.ops.object.mode_set(mode='OBJECT')
-        armature.select_set(False)
-        for v in ob.data.vertices:
+        for v in originalIndexList:
             self.__fusWriter.VertexWeightList()
-            for grp in ob.vertex_groups:
-                try:
-                    weight = grp.weight(v.index)
-                    self.__fusWriter.VertexWeight(grp.index,weight)
-                except:
-                    pass
+            idx = 0
+            for grp in mesh.vertex_groups:
+                if idx < 4:
+                    try:
+                        weight = grp.weight(v)
+                        self.__fusWriter.VertexWeight(grp.index,weight)
+                        idx += 1
+                    except:
+                        pass
+
     def VisitUnknown(self, ob):
         print('WARNING: Type: ' + ob.type + ' of object ' + ob.name + ' not handled ')       
 
@@ -854,55 +868,65 @@ class BlenderVisitor:
         try:
             nla_tracks = [nla_track for nla_track in ob.animation_data.nla_tracks]
             for nla_strips in nla_tracks:
-                for nla_strip in nla_strips.strips:
-                    self.__fusWriter.BeginAnimation()
-                    action = nla_strip.action
-                    frames = self.OrderKeyframes(nla_strip)
-                    bpy.data.scenes['Scene'].frame_set(int(frames[0]))
-                    old_data_path = ""                 
-                    for af in action.fcurves:
-                        if(old_data_path != af.data_path):
-                            old_data_path = af.data_path
-                            bone_name = af.data_path.rpartition('"')[0].rpartition('"')[2]
-                            data_path = af.data_path.rpartition('.')[2]
-                            if(data_path == "location"):
-                                self.__fusWriter.BeginAnimationChannel(bone_name, "Translation", FusSer.Float3, FusSer.Lerp)
-                                for frame in frames:
-                                    frame = int(frame)
-                                    bpy.data.scenes['Scene'].frame_set(frame)
-                                    bone = bone_name
-                                    bone = ob.pose.bones[bone]
-                                    if(bone.parent == None):
-                                        bone_positon =  (bone.bone.head_local.x, bone.bone.head_local.z, bone.bone.head_local.y)
-                                    else:
-                                        if(bone.bone.use_connect is False):
-                                            bone_positon = mathutils.Vector((0 + bone.bone.head.x,0 + bone.bone.head.z,bone.parent.length + bone.bone.head.y))
+                if(not nla_strips.mute):
+
+                    for nla_strip in nla_strips.strips:
+                        self.__fusWriter.BeginAnimation()
+                        action = nla_strip.action
+                        frames = self.OrderKeyframes(nla_strip)
+                        bpy.data.scenes['Scene'].frame_set(int(frames[0]))
+                        old_data_path = ""                 
+                        for af in action.fcurves:
+                            if(old_data_path != af.data_path):
+                                old_data_path = af.data_path
+                                bone_name = af.data_path.rpartition('"')[0].rpartition('"')[2]
+                                data_path = af.data_path.rpartition('.')[2]
+                                if(data_path == "location"):
+                                    self.__fusWriter.BeginAnimationChannel(bone_name, "Translation", FusSer.Float3, FusSer.Lerp)
+                                    for frame in frames:
+                                        frame = int(frame)
+                                        bpy.data.scenes['Scene'].frame_set(frame)
+                                        bone = bone_name
+                                        bone = ob.pose.bones[bone]
+                                        if(bone.parent == None):
+                                            position = ob.matrix_basis @ bone.location
+                                            bone_positon =  (bone.bone.head_local.x + 
+                                                            position.x, bone.bone.head_local.z + 
+                                                            position.y , bone.bone.head_local.y + 
+                                                            position.z)
+                                        
                                         else:
-                                            bone_positon = mathutils.Vector((0,0,bone.parent.length))
-                                    self.__fusWriter.AddKeyframe(frame / self.fps,  bone_positon)
-                                self.__fusWriter.EndAnimationChannel()
-                            elif(data_path == "rotation_quaternion"):
-                                self.__fusWriter.BeginAnimationChannel(bone_name, "RotationQuaternion", FusSer.Float4, FusSer.Slerp)
-                                for frame in frames:
-                                    frame = int(frame)
-                                    bpy.data.scenes['Scene'].frame_set(frame)
-                                    bone = bone_name
-                                    bone = ob.pose.bones[bone]
-                                    bone_quaternion = bone.matrix.to_quaternion()
-                                    if(bone.parent is not None):
-                                        bone_parent_quaternion = bone.parent.matrix.to_quaternion().rotation_difference(bone.matrix.to_quaternion())
-                                    elif(bone.parent is None):
-                                        bone_parent_quaternion = bone_quaternion
-                                    rot = bone_parent_quaternion.inverted()
-                                    self.__fusWriter.AddKeyframe(frame / self.fps, (rot.x, rot.z, rot.y, rot. w))
-                                self.__fusWriter.EndAnimationChannel()
-                    self.__fusWriter.EndAnimation()
-                    bpy.data.scenes['Scene'].frame_set(int(frames[0]))
+                                            if(bone.bone.use_connect is False):
+                                                bone_positon = mathutils.Vector((0 + bone.bone.head.x,
+                                                                                0 +bone.bone.head.z,
+                                                                                bone.parent.length + bone.bone.head.y))
+                                            else:
+                                                bone_positon = mathutils.Vector((0,0,bone.parent.length))
+                                        self.__fusWriter.AddKeyframe(frame / self.fps,  bone_positon)
+                                    self.__fusWriter.EndAnimationChannel()
+                                elif("rotation" in data_path):
+                                    self.__fusWriter.BeginAnimationChannel(bone_name, "RotationQuaternion", FusSer.Float4, FusSer.Slerp)
+                                    for frame in frames:
+                                        frame = int(frame)
+                                        bpy.data.scenes['Scene'].frame_set(frame)
+                                        bone = bone_name
+                                        bone = ob.pose.bones[bone]
+                                        bone_quaternion = bone.matrix.to_quaternion()
+                                        if(bone.parent is not None):
+                                            bone_parent_quaternion = bone.parent.matrix.to_quaternion().rotation_difference(bone.matrix.to_quaternion())
+                                        elif(bone.parent is None):
+                                            bone_parent_quaternion = bone_quaternion
+                                        rot = bone_parent_quaternion.inverted()
+                                        self.__fusWriter.AddKeyframe(frame / self.fps, (rot.x, rot.z, rot.y, rot. w))
+                                    self.__fusWriter.EndAnimationChannel()
+                        self.__fusWriter.EndAnimation()
+                        bpy.data.scenes['Scene'].frame_set(int(frames[0]))
         except Exception:       
             print(traceback.format_exc())
             selected_strips = []
         self.__fusWriter.EndAnimation()
-        bpy.data.scenes['Scene'].frame_set(int(frames[0]))
+        if('frames' in locals()):
+            bpy.data.scenes['Scene'].frame_set(int(frames[0]))
     def OrderKeyframes(self, nla_strip):
         action = nla_strip.action
         kps = []
@@ -941,3 +965,4 @@ class BlenderVisitor:
         armature = bone.id_data
         mesh.matrix_world = armature.matrix_world 
         self.TraverseOb(mesh)
+        bpy.data.objects.remove(mesh)

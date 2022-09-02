@@ -150,7 +150,7 @@ namespace Fusee.Engine.Core
         private readonly Dictionary<FusMaterialBase, Effect> _matMap;
         private readonly Dictionary<FusMesh, Mesh> _meshMap;
         private readonly ConcurrentDictionary<string, Texture> _texMap;
-        private readonly Stack<SceneNode> _boneContainers;
+        private readonly Queue<SceneNode> _boneContainers;
         private readonly Dictionary<FusComponent, SceneComponent> _componentMap;
         private readonly Dictionary<FusMaterialBase, List<SceneNode>> _allEffects;
 
@@ -170,7 +170,7 @@ namespace Fusee.Engine.Core
             _matMap = new Dictionary<FusMaterialBase, Effect>();
             _meshMap = new Dictionary<FusMesh, Mesh>();
             _texMap = new ConcurrentDictionary<string, Texture>();
-            _boneContainers = new Stack<SceneNode>();
+            _boneContainers = new Queue<SceneNode>();
             _componentMap = new Dictionary<FusComponent, SceneComponent>();
             _allEffects = new Dictionary<FusMaterialBase, List<SceneNode>>();
         }
@@ -779,10 +779,6 @@ namespace Fusee.Engine.Core
             {
                 _currentNode.Components = new List<SceneComponent>();
             }
-            if(_currentNode.Parent.GetWeights() != null)
-            {
-            AddWeightToMesh(mesh, _currentNode.Parent.GetWeights());
-            }
             _currentNode.Components.Add(mesh);
 
             _meshMap.Add(m, mesh);
@@ -834,7 +830,7 @@ namespace Fusee.Engine.Core
             });
 
             // Collect all bones, later, when a WeightComponent is found, we can set all Joints
-            _boneContainers.Push(_currentNode);
+            _boneContainers.Enqueue(_currentNode);
         }
 
         /// <summary>
@@ -882,11 +878,31 @@ namespace Fusee.Engine.Core
                 // set all bones found until this WeightComponent
                 while (_boneContainers.Count != 0)
                 {
-                    weight.Bones.Add(_boneContainers.Pop());
+                    weight.Bones.Add(_boneContainers.Dequeue());
+                }
+
+
+            }
+            if(weight.BindingMatrices.Count == 0)
+            {
+                Dictionary<string, float4x4> x = new Dictionary<string, float4x4>();
+                foreach(SceneNode bone in weight.Bones)
+                {
+                    if (bone.Parent.GetComponent<Bone>() == null)
+                    {
+                        weight.BindingMatrices.Add((bone.Parent.GetTransform().Matrix * bone.GetTransform().Matrix).Invert());
+                        x[bone.Name] = bone.Parent.GetTransform().Matrix * bone.GetTransform().Matrix;
+                    }
+                    else
+                    {
+                        float4x4 parent = x[bone.Parent.Name];
+                        weight.BindingMatrices.Add((parent * bone.GetTransform().Matrix).Invert());
+                        x[bone.Name] = parent * bone.GetTransform().Matrix;
+                    }
                 }
             }
-
             _currentNode.Components.Add(weight);
+            AddWeightToMesh(_currentNode.GetMesh(), _currentNode.GetWeights());
         }
 
         #endregion
@@ -898,56 +914,27 @@ namespace Fusee.Engine.Core
         /// <param name="wc"></param>
         protected void AddWeightToMesh(Mesh mesh, Weight wc)
         {
-            var boneWeights = new float4[wc.WeightMap.Count];
-            var boneIndices = new float4[wc.WeightMap.Count];
-
-            // Iterate over the vertices
-            for (var iVert = 0; iVert < wc.WeightMap.Count; iVert++)
+            mesh.BoneIndices = new float4[wc.WeightMap.Count];
+            mesh.BoneWeights = new float4[wc.WeightMap.Count];
+            for (int i = 0; i < wc.WeightMap.Count; i++)
             {
-                var vwl = wc.WeightMap[iVert];
-
-                // Security guard. Sometimes a vertex has no weight. This should be fixed in the model. But
-                // let's just not crash here. Instead of having a completely unweighted vertex, bind it to
-                // the root bone (index 0).
-                if (vwl == null)
-                    vwl = new Scene.VertexWeightList();
-                if (vwl.VertexWeights == null)
+                var weightList = wc.WeightMap[i];
+                if(weightList.VertexWeights.Count > 4)
                 {
-                    vwl.VertexWeights =
-                        new List<Scene.VertexWeight>(new[] { new Scene.VertexWeight { BoneIndex = 0, Weight = 1.0f } });
+                    throw new ArgumentException("Invalid number of vertex weights.");
+                }
+                var boneIndex = float4.Zero;
+                var boneWeight = float4.Zero;
+                for (int j = 0; j < weightList.VertexWeights.Count; j++)
+                {
+                    boneIndex[j] = weightList.VertexWeights[j].BoneIndex;
+                    boneWeight[j] = weightList.VertexWeights[j].Weight;
                 }
 
-                var nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
-                for (var iJoint = 0; iJoint < nJoints; iJoint++)
-                {
-                    // boneWeights[iVert][iJoint] = vwl.VertexWeights[iJoint].Weight;
-                    // boneIndices[iVert][iJoint] = vwl.VertexWeights[iJoint].JointIndex;
-                    // JSIL cannot handle float4 indexer. Map [0..3] to [x..z] by hand
-                    switch (iJoint)
-                    {
-                        case 0:
-                            boneWeights[iVert].x = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].x = vwl.VertexWeights[iJoint].BoneIndex;
-                            break;
-                        case 1:
-                            boneWeights[iVert].y = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].y = vwl.VertexWeights[iJoint].BoneIndex;
-                            break;
-                        case 2:
-                            boneWeights[iVert].z = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].z = vwl.VertexWeights[iJoint].BoneIndex;
-                            break;
-                        case 3:
-                            boneWeights[iVert].w = vwl.VertexWeights[iJoint].Weight;
-                            boneIndices[iVert].w = vwl.VertexWeights[iJoint].BoneIndex;
-                            break;
-                    }
-                }
-                boneWeights[iVert].Normalize1();
+                mesh.BoneIndices[i] = boneIndex;
+                mesh.BoneWeights[i] = boneWeight;
             }
 
-            mesh.BoneIndices = boneIndices;
-            mesh.BoneWeights = boneWeights;
         }
         #region Make Effect
 

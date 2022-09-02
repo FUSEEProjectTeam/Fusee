@@ -104,7 +104,7 @@
         /// <summary>
         /// The binding index for the Bone Index buffer.
         /// </summary>
-        public static readonly int BoneIndexAttribAttribBindingIndex = BoneIndexAttribLocation;
+        public static readonly int BoneIndexAttribBindingIndex = BoneIndexAttribLocation;
 
         /// <summary>
         /// First attribute location for the instanced model matrix.

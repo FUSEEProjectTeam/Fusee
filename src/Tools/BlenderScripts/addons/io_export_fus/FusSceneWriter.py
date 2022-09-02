@@ -41,8 +41,10 @@ class FusSceneWriter:
         self.__curAnimationChannel = None
         self.__curWeightMap = None
         self.__curVertexWeightList = None
+        self.__curBone = None
         self.__typeId = None
         self.__inx = 0
+        self.__vertIndex = [None]
         self.__boneDict = {}
 
     def CurrentNode(self):
@@ -182,6 +184,11 @@ class FusSceneWriter:
     def EndAnimation(self):
         self.__curAnimation = None
         self.__curComponent = None
+
+    def Bone(self, name = ""):
+        comp, inx = self.AddComponent(name)    
+        curBone = comp.FusBone    
+        curBone.Name = name
 
     def Weight(self, name = ""):
         if self.__curComponent == None:
@@ -362,7 +369,7 @@ class FusSceneWriter:
 # public float3[] BiTangents;
 # public AABBf BoundingBox;
 
-    def AddVertex(self, vertex, normal=None, uv=None, tangent=None, bitangent=None):
+    def AddVertex(self, originalVertex, vertex, normal=None, uv=None,  tangent=None, bitangent=None):
         self.__checkMeshOpen()
         vx, vy, vz = vertex
         nx, ny, nz = normal if normal != None else (1, 1, 1)
@@ -400,8 +407,9 @@ class FusSceneWriter:
         else:
             if not (vertex[0] == self.__curMesh.Vertices[inx].x and vertex[1] == self.__curMesh.Vertices[inx].y and vertex[2] == self.__curMesh.Vertices[inx].z):
                 print('WARNING: New vertex: ' + str(vertex) + ' has same hash as existing: ' + str(self.__curMesh.Vertices[inx]))
-
+            originalVertex = -1
         self.__curMesh.Triangles.append(inx)
+        return originalVertex
 
     def __AddVertexToBoundingBox(self, vertex):
         if vertex[0] < self.__curMesh.BoundingBox.min.x: self.__curMesh.BoundingBox.min.x = vertex[0]
@@ -436,7 +444,7 @@ class FusSceneWriter:
         else:
             return -1
 
-    def BeginMesh(self, vertex, normal=None, uv=None, tangent=None, bitangent=None, name=""):
+    def BeginMesh(self,originalVertex, vertex, normal=None, uv=None, tangent=None, bitangent=None, name=""):
         if self.__curComponent == None:
             self.__curComponent, inx = self.AddComponent(name)
             self.__curMesh = self.__curComponent.FusMesh
@@ -448,8 +456,9 @@ class FusSceneWriter:
             self.__curMesh.BoundingBox.max.y = vertex[1]
             self.__curMesh.BoundingBox.max.z = vertex[2]
             self.__vertCache = {}
-            self.AddVertex(vertex, normal, uv, tangent, bitangent)
-
+            idx = self.AddVertex(originalVertex, vertex, normal, uv, tangent, bitangent)
+            if(idx > -1):
+                return idx
         else:
             raise RuntimeError('Cannot begin a mesh component with another component not ended. Call EndXYZ() to close the currently open component.')
 

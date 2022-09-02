@@ -16,6 +16,8 @@ bl_info = {
 }
 
 #import dependencies
+import imp
+from .FusSceneWriter import FusSceneWriter
 import bpy
 from bpy.props import (
         StringProperty,

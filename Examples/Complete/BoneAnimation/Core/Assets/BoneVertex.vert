@@ -3,38 +3,38 @@
 in vec3 fuVertex;
 in vec3 fuNormal;
 in vec2 tex;
-in ivec4 fuBoneIndex; 
+in vec4 fuBoneIndex; 
 in vec4 fuBoneWeight;
-
-uniform vec3 bPos;
 uniform mat4 FUSEE_MVP;
+uniform mat4 FUSEE_MV;
+uniform mat4 FUSEE_ITMV;
+
 	
 const int MAX_BONES = 100;
 const int MAX_BONE_INFLUENCE = 4;
 //const ivec4 fuBoneIndex = ivec4(0,0,0,0); 
 //const vec4 fuBoneWeight= vec4(0,1,0,0);
 uniform mat4 finalBonesMatrices[MAX_BONES];
-	
-out vec4 TexCoords;
+uniform mat4 boneMatrices[MAX_BONES];
+
+out vec4 oColor;
+out vec3 oNormal;
+out vec4 oPos;
 	
 void main()
 {
     vec4 totalPosition = vec4(0.0f);
     for(int i = 0 ; i < MAX_BONE_INFLUENCE ; i++)
-    {
-        if(fuBoneIndex[i] == -1) 
-            continue;
-        if(fuBoneIndex[i] >=MAX_BONES) 
         {
-            totalPosition = vec4(fuVertex,1.0f);
-            break;
+            int idx = int(fuBoneIndex[i]);
+            vec4 localPosition = (boneMatrices[idx] * finalBonesMatrices[idx]) * vec4(fuVertex,1.0f);
+            totalPosition += localPosition * fuBoneWeight[i];
+            //vec3 localNormal = mat3(finalBonesMatrices[fuBoneIndex[i]]) * fuNormal;
         }
-        vec4 localPosition = finalBonesMatrices[fuBoneIndex[i]] * vec4(fuVertex,1.0f);
-        totalPosition += localPosition * fuBoneWeight[i];
-        vec3 localNormal = mat3(finalBonesMatrices[fuBoneIndex[i]]) * fuNormal;
-    }
-    gl_Position =  FUSEE_MVP * totalPosition;
-    TexCoords = vec4(fuBoneIndex.xyz, 1);
+    gl_Position = FUSEE_MVP * totalPosition;
+    oNormal = (FUSEE_ITMV * vec4(fuNormal,1)).xyz;
+    oPos = FUSEE_MV * totalPosition;
+    oColor = vec4(0,0, 1, 1);
 }
 //in vec3 aPos; // the position variable has attribute position 0
 //  
