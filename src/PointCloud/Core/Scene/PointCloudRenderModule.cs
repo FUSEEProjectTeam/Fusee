@@ -41,10 +41,7 @@ namespace Fusee.PointCloud.Core.Scene
             if (rc == null)
                 throw new ArgumentNullException(nameof(rc));
 
-            if (rc != _rc)
-            {
-                _rc = rc;
-            }
+            _rc = rc;
         }
 
         /// <summary>
@@ -56,10 +53,7 @@ namespace Fusee.PointCloud.Core.Scene
             if (state == null)
                 throw new ArgumentNullException(nameof(state));
 
-            if (state != _state)
-            {
-                _state = state;
-            }
+            _state = state;
         }
 
         /// <summary>
@@ -110,7 +104,7 @@ namespace Fusee.PointCloud.Core.Scene
             else if (pointCloud.Camera == _camera)
             {
                 var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
-                pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
+                pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz, _rc.Model);
             }
 
             switch (pointCloud.RenderMode)

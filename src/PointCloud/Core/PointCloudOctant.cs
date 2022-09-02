@@ -86,13 +86,15 @@ namespace Fusee.PointCloud.Core
         /// <param name="camPos">Position of the camera.</param>
         /// <param name="screenHeight">Hight of the canvas.</param>
         /// <param name="fov">Field of view.</param>
-        public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
+        public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov, float4x4 model)
         {
-            var distance = (Center - camPos).Length;
-            if (Center == camPos)
+            var translatedCenter = Center + new double3(model.Translation());
+            var scaledRad = Size / 2f * new double3(model.Scale());
+            var distance = (translatedCenter - camPos).Length;
+            if (translatedCenter == camPos)
                 distance = 0.0001f;
             var slope = (float)System.Math.Tan(fov / 2d);
-            ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
+            ProjectedScreenSize = screenHeight / 2d * scaledRad.x / (slope * distance);
         }
 
         /// <summary>
@@ -102,6 +104,23 @@ namespace Fusee.PointCloud.Core
         public IEmptyOctant<double3, double> CreateChild(int atPosInParent)
         {
             throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Checks if this Octant lies within or intersects a Frustum.
+        /// Returns true if one of the Frustum planes is intersecting this octant.
+        /// </summary>
+        /// <param name="frustum">The frustum to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(FrustumF frustum, float4x4 model)
+        {
+            var translatedCenter = new float3(Center) + model.Translation();
+            return frustum.Near.InsideOrIntersecting(translatedCenter, (float)Size) &
+                frustum.Far.InsideOrIntersecting(translatedCenter, (float)Size) &
+                frustum.Left.InsideOrIntersecting(translatedCenter, (float)Size) &
+                frustum.Right.InsideOrIntersecting(translatedCenter, (float)Size) &
+                frustum.Top.InsideOrIntersecting(translatedCenter, (float)Size) &
+                frustum.Bottom.InsideOrIntersecting(translatedCenter, (float)Size);
         }
 
         /// <summary>
