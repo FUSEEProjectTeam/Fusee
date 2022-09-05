@@ -862,12 +862,12 @@ namespace Fusee.Examples.Labyrinth.Core
             _cornerbox = new AABBf(cornerstone.Vertices.AsReadOnlySpan).Size.xyz;
 
             var wallZ = mazeScene.Children.FindNodes(node => node.Name == "WallZ")?.FirstOrDefault()?.GetMesh();
-            _wallZbox = new AABBf(wallZ.Vertices.AsReadOnlySpan).Size.xyz; 
+            _wallZbox = new AABBf(wallZ.Vertices.AsReadOnlySpan).Size.xyz;
 
             var wallX = mazeScene.Children.FindNodes(node => node.Name == "WallX")?.FirstOrDefault()?.GetMesh();
-            _wallXbox = new AABBf(wallX.Vertices.AsReadOnlySpan).Size.xyz; 
+            _wallXbox = new AABBf(wallX.Vertices.AsReadOnlySpan).Size.xyz;
             var ball = mazeScene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault()?.GetMesh();
-            _ballradius = new AABBf(ball.Vertices.AsReadOnlySpan).Size.x / 2f; 
+            _ballradius = new AABBf(ball.Vertices.AsReadOnlySpan).Size.x / 2f;
 
             _groundbox = new float2(_wallXbox.x, _wallZbox.z);
         }
