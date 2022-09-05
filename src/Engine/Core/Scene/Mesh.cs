@@ -280,8 +280,9 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Protected ctor
         /// </summary>
-        protected Mesh() {
-            if(VerticesSet)
+        protected Mesh()
+        {
+            if (VerticesSet)
                 BoundingBox = new AABBf(Vertices.AsReadOnlySpan);
         }
 
