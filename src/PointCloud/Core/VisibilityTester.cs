@@ -30,8 +30,9 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Current camera position - set by the SceneRenderer if a PointCloud Component is visited.
         /// </summary>
-        public float3 CamPos { 
-            get => _camPos; 
+        public float3 CamPos
+        {
+            get => _camPos;
             set
             {
                 _camPos = value;
