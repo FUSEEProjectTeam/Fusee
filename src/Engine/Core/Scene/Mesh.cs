@@ -461,6 +461,7 @@ namespace Fusee.Engine.Core.Scene
 
         /// <summary>
         /// The bounding box of this geometry chunk.
+        /// ATTENTION: Default empty first frame! Do not use this parameter inside any Init() or Setup() methods!
         /// </summary>
         public AABBf BoundingBox { internal set; get; }
 
