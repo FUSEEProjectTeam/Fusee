@@ -859,15 +859,15 @@ namespace Fusee.Examples.Labyrinth.Core
             SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
 
             var cornerstone = mazeScene.Children.FindNodes(node => node.Name == "Cornerstone")?.FirstOrDefault()?.GetMesh();
-            _cornerbox = new AABBf(cornerstone.Vertices.AsReadOnlySpan).Size.xyz;
+            _cornerbox = cornerstone.BoundingBox.Size.xyz;
 
             var wallZ = mazeScene.Children.FindNodes(node => node.Name == "WallZ")?.FirstOrDefault()?.GetMesh();
-            _wallZbox = new AABBf(wallZ.Vertices.AsReadOnlySpan).Size.xyz;
+            _wallZbox = wallZ.BoundingBox.Size.xyz;
 
             var wallX = mazeScene.Children.FindNodes(node => node.Name == "WallX")?.FirstOrDefault()?.GetMesh();
-            _wallXbox = new AABBf(wallX.Vertices.AsReadOnlySpan).Size.xyz;
+            _wallXbox = wallX.BoundingBox.Size.xyz;
             var ball = mazeScene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault()?.GetMesh();
-            _ballradius = new AABBf(ball.Vertices.AsReadOnlySpan).Size.x / 2f;
+            _ballradius = ball.BoundingBox.Size.x / 2f;
 
             _groundbox = new float2(_wallXbox.x, _wallZbox.z);
         }

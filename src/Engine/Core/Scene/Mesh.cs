@@ -280,7 +280,10 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Protected ctor
         /// </summary>
-        protected Mesh() { }
+        protected Mesh() {
+            if(VerticesSet)
+                BoundingBox = new AABBf(Vertices.AsReadOnlySpan);
+        }
 
         /// <summary>
         /// Generates a new <see cref="Mesh"/> instance
@@ -369,6 +372,8 @@ namespace Fusee.Engine.Core.Scene
                 Guard.IsEqualTo(colors2.Count, vertices.Count);
                 Colors0 = new MeshAttributes<uint>(colors2);
             }
+
+            BoundingBox = new AABBf(Vertices.AsReadOnlySpan);
         }
 
         /// <summary>
@@ -461,7 +466,6 @@ namespace Fusee.Engine.Core.Scene
 
         /// <summary>
         /// The bounding box of this geometry chunk.
-        /// ATTENTION: Default empty first frame! Do not use this parameter inside any Init() or Setup() methods!
         /// </summary>
         public AABBf BoundingBox { internal set; get; }
 
