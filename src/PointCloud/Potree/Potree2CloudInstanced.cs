@@ -2,7 +2,6 @@
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
-using System;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Potree
@@ -85,7 +84,6 @@ namespace Fusee.PointCloud.Potree
 
         private readonly GetInstanceData _getInstanceData;
         private bool _doUpdate = true;
-        private bool _disposed;
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
@@ -106,7 +104,8 @@ namespace Fusee.PointCloud.Potree
         /// <param name="viewportHeight">The viewport height.</param>
         /// <param name="renderFrustum">The camera's frustum.</param>
         /// <param name="camPos">The camera position in world coordinates.</param>
-        public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos)
+        /// <param name="modelMat">The model matrix of the SceneNode the PointCloud(Component) is part of.</param>
+        public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos, float4x4 modelMat)
         {
             DataHandler.ProcessDisposeQueue();
 
@@ -122,6 +121,7 @@ namespace Fusee.PointCloud.Potree
             VisibilityTester.ViewportHeight = viewportHeight;
             VisibilityTester.Fov = fov;
             VisibilityTester.CamPos = camPos;
+            VisibilityTester.Model = modelMat;
 
             VisibilityTester.Update();
 

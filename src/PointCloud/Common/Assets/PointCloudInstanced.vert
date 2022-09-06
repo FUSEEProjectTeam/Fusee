@@ -24,7 +24,7 @@ in mat4 fuInstanceModelMat;
 
 void main(void)
 {	
-	mat4 mv = FUSEE_V * fuInstanceModelMat;
+	mat4 mv = FUSEE_V * FUSEE_M * fuInstanceModelMat;
 
     //vColor = fuInstanceColor;
 
@@ -52,7 +52,7 @@ void main(void)
         case 1:
         {
             //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away"                    "",
-            sizeInPx = (billboardHeight / (2.0 * slope)) * float(FUSEE_ViewportPx);               
+            sizeInPx = (billboardHeight / (2.0 * slope)) * float(FUSEE_ViewportPx);
             break;
         }
     }
@@ -62,5 +62,5 @@ void main(void)
               + vec4(fuVertex.x, fuVertex.y, 0.0, 0.0)
               * vec4(scaleFactor, scaleFactor, 1.0, 1.0);
 
-    gl_Position =  FUSEE_P * FUSEE_M * vViewPos;
+    gl_Position =  FUSEE_P * vViewPos;
 }
