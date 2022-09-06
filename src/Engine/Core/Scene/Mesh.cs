@@ -50,7 +50,7 @@ namespace Fusee.Engine.Core.Scene
     }
 
     /// <summary>
-    /// Attribute class which contains the mesh data, as well as methods to modify the underlying data fields 
+    /// Attribute class which contains the mesh data, as well as methods to modify the underlying data fields
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public sealed class MeshAttributes<T> where T : struct
@@ -328,7 +328,7 @@ namespace Fusee.Engine.Core.Scene
 
             if (uvs != null)
             {
-                Guard.IsEqualTo(uvs.Count, vertices.Count());
+                Guard.IsEqualTo(uvs.Count, vertices.Count);
                 UVs = new MeshAttributes<float2>(uvs);
             }
 
