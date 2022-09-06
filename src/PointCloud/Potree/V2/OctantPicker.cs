@@ -1,9 +1,9 @@
-﻿using Fusee.Engine.Core;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
+using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Potree.V2.Data;
-using Fusee.Engine.Core.Effects;
 
 namespace Fusee.PointCloud.Potree.V2
 {
