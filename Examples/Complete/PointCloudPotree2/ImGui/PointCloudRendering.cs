@@ -47,6 +47,7 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
         private SceneNode _mainCam;
         private readonly Potree2Reader _potreeReader;
 
+        private OctantPicker _octantPicker;
         public void OnLoadNewFile(object sender, EventArgs e)
         {
             if (!RequestedNewFile) return;
@@ -135,6 +136,8 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
                 _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
 
                 _pointCloud.Camera = _cam;
+
+                _octantPicker = new OctantPicker(_potreeReader, _rc, _cam, _camTransform);
             }
             catch (Exception ex)
             {
@@ -218,6 +221,17 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
 
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
 
+            // Press spacebar to pick octant under mouse position.
+            if (Input.Keyboard.GetKey(KeyCodes.Space))
+            {
+                var clipSpaceMousePos = (Input.Mouse.Position * new float2(2.0f / RenderTexture.Width, -2.0f / RenderTexture.Height)) + new float2(-1, 1);
+                Fusee.PointCloud.Potree.V2.Data.PotreeNode octant = _octantPicker.PickClosestOctant(clipSpaceMousePos, new int2(RenderTexture.Width, RenderTexture.Height));
+                if (octant != null)
+                {
+                    SceneNode cube = _octantPicker.CreateCubeFromNode(octant);
+                    _scene.Children.Add(cube);
+                }
+            }
         }
 
         private void OnThresholdChanged(int newValue)
