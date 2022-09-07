@@ -59,9 +59,9 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
             var app = new ImGuiApp();
 
             var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
-            app.CanvasImplementor = new Fusee.ImGuiImp.Desktop.ImGuiRenderCanvasImp(icon);
-            app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
-            Input.AddDriverImp(new Fusee.ImGuiImp.Desktop.ImGuiInputImp(app.CanvasImplementor));
+            app.CanvasImplementor = new ImGuiImp.Desktop.ImGuiRenderCanvasImp(icon);
+            app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
+            Input.AddDriverImp(new ImGuiImp.Desktop.ImGuiInputImp(app.CanvasImplementor));
 
             app.InitApp();
 

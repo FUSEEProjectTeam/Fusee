@@ -310,12 +310,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         #endregion Events
 
-        #region Internal Members
-
         /// <summary>
         /// Does the initialize of this instance.
         /// </summary>
-        protected internal void DoInit()
+        public void DoInit()
         {
             Init?.Invoke(this, new InitEventArgs());
         }
@@ -323,7 +321,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Does the unload of this instance.
         /// </summary>
-        protected internal void DoUnLoad()
+        public void DoUnLoad()
         {
             UnLoad?.Invoke(this, new InitEventArgs());
         }
@@ -331,7 +329,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Does the update of this instance.
         /// </summary>
-        protected internal void DoUpdate()
+        public void DoUpdate()
         {
             Update?.Invoke(this, new RenderEventArgs());
         }
@@ -339,7 +337,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Does the render of this instance.
         /// </summary>
-        protected internal void DoRender()
+        public void DoRender()
         {
             Render?.Invoke(this, new RenderEventArgs());
         }
@@ -347,12 +345,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Does the resize on this instance.
         /// </summary>
-        protected internal void DoResize(int width, int height)
+        public void DoResize(int width, int height)
         {
             Resize?.Invoke(this, new ResizeEventArgs(width, height));
         }
-
-        #endregion Internal Members
+        
     }
 
     internal class RenderCanvasGameView : AndroidGameView

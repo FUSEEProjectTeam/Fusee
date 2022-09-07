@@ -196,6 +196,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
+        /// Does the unload of this instance.
+        /// </summary>
+        public void DoUnLoad()
+        {
+            UnLoad?.Invoke(this, new InitEventArgs());
+        }
+
+        /// <summary>
         /// Does perform the update of this instance
         /// </summary>
         public void DoUpdate()

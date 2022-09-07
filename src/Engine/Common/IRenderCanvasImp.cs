@@ -116,6 +116,31 @@ namespace Fusee.Engine.Common
         void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false);
 
         /// <summary>
+        /// Does the initialize of this instance.
+        /// </summary>
+        public void DoInit();
+
+        /// <summary>
+        /// Does the unload of this instance.
+        /// </summary>
+        public void DoUnLoad();
+
+        /// <summary>
+        /// Does the update of this instance.
+        /// </summary>
+        public void DoUpdate();
+
+        /// <summary>
+        /// Does the render of this instance.
+        /// </summary>
+        public void DoRender();
+
+        /// <summary>
+        /// Does the resize on this instance.
+        /// </summary>
+        public void DoResize(int width, int height);
+
+        /// <summary>
         /// Closes the GameWindow with a call to opentk.
         /// </summary>
         void CloseGameWindow();
