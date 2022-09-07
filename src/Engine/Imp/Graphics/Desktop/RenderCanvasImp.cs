@@ -305,7 +305,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         #endregion
 
-
         #region Events
         /// <summary>
         /// Occurs when [initialize].

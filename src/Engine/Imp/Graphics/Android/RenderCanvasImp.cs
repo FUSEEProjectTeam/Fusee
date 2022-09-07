@@ -349,7 +349,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             Resize?.Invoke(this, new ResizeEventArgs(width, height));
         }
-        
+
     }
 
     internal class RenderCanvasGameView : AndroidGameView
