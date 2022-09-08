@@ -1,7 +1,6 @@
 ﻿using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.PointCloud.Common;
-using System;
 using System.IO;
 
 namespace Fusee.Examples.PointCloudPotree2.Gui
