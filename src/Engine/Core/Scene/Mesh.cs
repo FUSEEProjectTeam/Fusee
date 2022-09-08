@@ -297,7 +297,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="boneIndices"></param>
         /// <param name="tangents"></param>
         /// <param name="biTangents"></param>
-        /// <param name="colors"></param>
+        /// <pa ram name="colors"></param>
         /// <param name="colors1"></param>
         /// <param name="colors2"></param>
         public Mesh
