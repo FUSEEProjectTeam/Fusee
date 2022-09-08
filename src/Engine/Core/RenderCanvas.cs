@@ -232,12 +232,14 @@ namespace Fusee.Engine.Core
                 RC.UpdateAllMeshes();
             };
 
-            CanvasImplementor.Resize += delegate
+            CanvasImplementor.Resize += (s, e) =>
             {
                 if (IsShuttingDown) return;
+                Width = e.Width;
+                Height = e.Height;
                 RC.DefaultState.CanvasWidth = Width;
                 RC.DefaultState.CanvasHeight = Height;
-                Resize(new ResizeEventArgs(Width, Height));
+                Resize(e);
             };
         }
 
@@ -388,7 +390,7 @@ namespace Fusee.Engine.Core
         public int Width
         {
             get { return CanvasImplementor.Width; }
-            set { CanvasImplementor.Width = value; }
+            private set { CanvasImplementor.Width = value; }
         }
 
         /// <summary>
@@ -400,7 +402,7 @@ namespace Fusee.Engine.Core
         public int Height
         {
             get { return CanvasImplementor.Height; }
-            set { CanvasImplementor.Height = value; }
+            private set { CanvasImplementor.Height = value; }
         }
 
         /// <summary>

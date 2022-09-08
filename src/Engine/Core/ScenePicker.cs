@@ -6,7 +6,6 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core
 {

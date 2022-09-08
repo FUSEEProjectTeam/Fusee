@@ -190,7 +190,7 @@ namespace Fusee.Engine.Core.Effects
             else
             {
                 return new List<string>() {
-                    $"mat4 mv = FUSEE_V * {UniformNameDeclarations.InstanceModelMat};",
+                    $"mat4 mv = FUSEE_V * FUSEE_M * {UniformNameDeclarations.InstanceModelMat};",
 
                     //assumption: position x and y are in range [-0.5, 0.5].
                     $"{VaryingNameDeclarations.PointCoord} = vec2(0.5) / {UniformNameDeclarations.Vertex}.xy;",
@@ -208,14 +208,14 @@ namespace Fusee.Engine.Core.Effects
                     "   // Fixed pixel size",
                     "   case 0:",
                     "   {",
-                    $"      sizeInPx = (billboardHeight / (2.0 * slope * z)) * float({UniformNameDeclarations.ViewportPx});",
+                    $"      sizeInPx = (billboardHeight / (2.0 * slope * z)) * float({UniformNameDeclarations.ViewportPx}.y);",
                     "       break;",
                     "   }",
                     "   //Fixed world size",
                     "   case 1:",
                     "   {",
                     "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",                    "",
-                    $"      sizeInPx = (billboardHeight / (2.0 * slope)) * float({UniformNameDeclarations.ViewportPx});",
+                    $"      sizeInPx = (billboardHeight / (2.0 * slope)) * float({UniformNameDeclarations.ViewportPx}.y);",
                     "       break;",
                     "   }",
                     "}",
