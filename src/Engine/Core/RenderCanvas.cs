@@ -226,10 +226,10 @@ namespace Fusee.Engine.Core
                 if (Width != 0 || Height != 0)
                     RenderAFrame();
 
-                EndOfFrame?.Invoke(this, EventArgs.Empty);
-
-                RC.CleanupResourceManagers();
                 RC.UpdateAllMeshes();
+                RC.CleanupResourceManagers();
+
+                EndOfFrame?.Invoke(this, EventArgs.Empty);
             };
 
             CanvasImplementor.Resize += (s, e) =>
