@@ -28,8 +28,6 @@ namespace Fusee.Engine.Core.Effects
         }
         private int _colorMode;
 
-        #region Internal/Global Uniforms (set by the Engine)
-
         /// <summary>
         /// Creates a new instance of type DefaultSurfaceEffect.
         /// </summary>
@@ -62,5 +60,4 @@ namespace Fusee.Engine.Core.Effects
             HandleFieldsAndProps();
         }
     }
-    #endregion
 }
