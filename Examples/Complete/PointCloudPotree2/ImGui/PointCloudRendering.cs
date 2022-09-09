@@ -217,7 +217,6 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
             _angleVelVert = 0;
 
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
-
         }
 
         private void OnThresholdChanged(int newValue)
