@@ -47,7 +47,6 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
         private SceneNode _mainCam;
         private readonly Potree2Reader _potreeReader;
 
-        private OctantPicker _octantPicker;
         public void OnLoadNewFile(object sender, EventArgs e)
         {
             if (!RequestedNewFile) return;
@@ -136,8 +135,6 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
                 _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
 
                 _pointCloud.Camera = _cam;
-
-                _octantPicker = new OctantPicker(_potreeReader, _rc, _cam, _camTransform);
             }
             catch (Exception ex)
             {
