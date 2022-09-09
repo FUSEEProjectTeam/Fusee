@@ -220,18 +220,6 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
             _angleVelVert = 0;
 
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
-
-            // Press spacebar to pick octant under mouse position.
-            if (Input.Keyboard.GetKey(KeyCodes.Space))
-            {
-                var clipSpaceMousePos = (Input.Mouse.Position * new float2(2.0f / RenderTexture.Width, -2.0f / RenderTexture.Height)) + new float2(-1, 1);
-                Fusee.PointCloud.Potree.V2.Data.PotreeNode octant = _octantPicker.PickClosestOctant(clipSpaceMousePos, new int2(RenderTexture.Width, RenderTexture.Height));
-                if (octant != null)
-                {
-                    SceneNode cube = _octantPicker.CreateCubeFromNode(octant);
-                    _scene.Children.Add(cube);
-                }
-            }
         }
 
         private void OnThresholdChanged(int newValue)

@@ -1,9 +1,11 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Potree.V2.Data;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -12,10 +14,10 @@ namespace Fusee.PointCloud.Potree.V2
     /// </summary>
     public class OctantPicker
     {
-        private Potree2Reader _reader;
-        private RenderContext _rc;
-        private Camera _cam;
-        private Transform _camTransform;
+        private readonly Potree2Reader _reader;
+        private readonly RenderContext _rc;
+        private readonly Camera _cam;
+        private readonly Transform _camTransform;
 
         /// <summary>
         /// Constructor for the octant picker.
@@ -36,26 +38,25 @@ namespace Fusee.PointCloud.Potree.V2
         /// Pick the densest octant under a given mouse position. 
         /// </summary>
         /// <param name="pickPosClip">The mouse position in clip space.</param>
-        /// <param name="textureSize">Width and height of the window.</param>
-        public PotreeNode? PickDensenstOctant(float2 pickPosClip, int2 textureSize)
+        /// <param name="viewportSize">Width and height of the viewport.</param>
+        public PotreeNode? PickDensenstOctant(float2 pickPosClip, int2 viewportSize)
         {
             // Create ray to intersect aabb's with.
-            RayD ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)_cam.GetProjectionMat(textureSize.x, textureSize.y, out _));
+            var ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)_cam.GetProjectionMat(viewportSize.x, viewportSize.y, out _));
 
             // Get octree hierarchy.
-            PotreeHierarchy hierarchy = _reader.LoadHierarchy(_reader.FileDataInstance.Metadata.FolderPath);
-            PotreeNode[] nodelist = hierarchy.Nodes.ToArray();
+            var nodeList = _reader.FileDataInstance.Hierarchy.Nodes;
 
             // Index based on octant density.
-            long highestNumberOfPoints = 0;
-            int densestIndex = -1;
+            var highestNumberOfPoints = 0L;
+            var densestIndex = -1;
 
             // Traverse hierarchy to get raycast hits.
-            for (int i = 0; i < nodelist.Length; i++)
+            for (var i = 0; i < nodeList.Count; i++)
             {
-                if (nodelist[i].Aabb.IntersectRay(ray) && nodelist[i].NodeType == NodeType.LEAF)
+                if (nodeList[i].NodeType == NodeType.LEAF && nodeList[i].Aabb.IntersectRay(ray))
                 {
-                    long numpoints = nodelist[i].NumPoints;
+                    var numpoints = nodeList[i].NumPoints;
 
                     // Save index of densest octant.
                     if (highestNumberOfPoints < numpoints)
@@ -68,9 +69,7 @@ namespace Fusee.PointCloud.Potree.V2
             // Return densest octant.
             if (densestIndex != -1)
             {
-
-                //Fusee.Base.Core.Diagnostics.Debug(nodelist[densestIndex].Name);
-                return nodelist[densestIndex];
+                return nodeList[densestIndex];
             }
             return null;
         }
@@ -79,30 +78,37 @@ namespace Fusee.PointCloud.Potree.V2
         /// Pick the octant that is closest to the camera under given mouse position.
         /// </summary>
         /// <param name="pickPosClip">The mouse position in clip space.</param>
-        /// <param name="textureSize">Width and height of the window.</param>
-        public PotreeNode? PickClosestOctant(float2 pickPosClip, int2 textureSize)
+        /// <param name="viewportSize">Width and height of the window.</param>
+        public PotreeNode? PickClosestOctant(float2 pickPosClip, int2 viewportSize)
         {
             // Create ray to intersect aabb's with.
-            RayD ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)_cam.GetProjectionMat(textureSize.x, textureSize.y, out _));
+            var ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)_cam.GetProjectionMat(viewportSize.x, viewportSize.y, out _));
 
             // Get octree hierarchy.
-            PotreeHierarchy hierarchy = _reader.LoadHierarchy(_reader.FileDataInstance.Metadata.FolderPath);
-            PotreeNode[] nodelist = hierarchy.Nodes.ToArray();
+            var nodeList = _reader.FileDataInstance.Hierarchy.Nodes;
 
             // Index based on nearest octant.
-            double lowestDistance = 10000000;
-            int nearestIndex = -1;
+            var lowestDistance = double.MaxValue;
+            var nearestIndex = -1;
 
             // Traverse hierarchy to get raycast hits.
-            for (int i = 0; i < nodelist.Length; i++)
+            for (int i = 0; i < nodeList.Count; i++)
             {
-                if (nodelist[i].Aabb.IntersectRay(ray) && nodelist[i].NodeType == PointCloud.Potree.V2.Data.NodeType.LEAF)
+                if (nodeList[i].NodeType == NodeType.LEAF && nodeList[i].Aabb.IntersectRay(ray))
                 {
-                    double3 aabb = nodelist[i].Aabb.Center;
-                    double3 camt = (double3)_camTransform.Translation;
+                    Debug.Assert(nodeList[i].Children.Any(x => x == null));
+
+                    var aabb = nodeList[i].Aabb.Center;
+                    var cameraTranslation = (double3)_camTransform.Translation;
 
                     // Calculate distance and save index of nearest octant.
-                    double distance = System.Math.Sqrt(System.Math.Pow(aabb.x - camt.x, 2) + System.Math.Pow(aabb.y - camt.y, 2) + System.Math.Pow(aabb.z - camt.z, 2));
+                    var distance = System.Math.Sqrt
+                        (
+                            System.Math.Pow(aabb.x - cameraTranslation.x, 2) +
+                            System.Math.Pow(aabb.y - cameraTranslation.y, 2) +
+                            System.Math.Pow(aabb.z - cameraTranslation.z, 2)
+                        );
+
                     if (distance < lowestDistance)
                     {
                         lowestDistance = distance;
@@ -110,11 +116,11 @@ namespace Fusee.PointCloud.Potree.V2
                     }
                 }
             }
+
             // Return octant closest to camera.
             if (nearestIndex != -1)
             {
-                //Fusee.Base.Core.Diagnostics.Debug(nodelist[nearestIndex].Name);
-                return nodelist[nearestIndex];
+                return nodeList[nearestIndex];
             }
             return null;
         }
@@ -125,147 +131,19 @@ namespace Fusee.PointCloud.Potree.V2
         /// <param name="node">The PotreeNode to extract information on size and position from.</param>
         public SceneNode CreateCubeFromNode(PotreeNode node)
         {
-            SceneNode cube = new SceneNode
+            return new SceneNode
             {
                 Components =
                 {
                     new Transform
                     {
                         Translation = (float3)node.Aabb.Center,
+                        Scale = (float3)node.Aabb.Size
                     },
                     MakeEffect.FromUnlit((float4)ColorUint.Blue),
-                    Cube.CreateCuboid((float3)node.Aabb.Size),
+                    new Cube(),
                 }
             };
-            return cube;
-        }
-    }
-
-    /// <summary>
-    /// Helper class to help visualising picked octant.
-    /// </summary>
-    public static class Cube
-    {
-        public static Mesh CreateCuboid(float3 size)
-        {
-            return new Mesh
-            {
-                Vertices = new[]
-                {
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z}
-                },
-
-                Triangles = new ushort[]
-                {
-                    // front face
-                    0, 2, 1, 0, 3, 2,
-
-                    // right face
-                    4, 6, 5, 4, 7, 6,
-
-                    // back face
-                    8, 10, 9, 8, 11, 10,
-
-                    // left face
-                    12, 14, 13, 12, 15, 14,
-
-                    // top face
-                    16, 18, 17, 16, 19, 18,
-
-                    // bottom face
-                    20, 22, 21, 20, 23, 22
-
-                },
-
-                Normals = new[]
-                {
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0)
-                },
-
-                UVs = new[]
-                {
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0)
-                },
-                BoundingBox = new AABBf(-0.5f * size, 0.5f * size)
-            };
-        }
-
-        public static SurfaceEffect MakeMaterial(float4 color)
-        {
-            return MakeEffect.FromDiffuseSpecular(
-                albedoColor: color,
-                emissionColor: float3.Zero,
-                shininess: 25.0f,
-                specularStrength: 1f);
         }
     }
 }
