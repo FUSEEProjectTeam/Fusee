@@ -289,11 +289,11 @@ namespace Fusee.ImGuiImp.Desktop
 
             if (!isBlendEnabled)
                 GL.Enable(EnableCap.Blend);
-            if(!isScissorEnabled)
+            if (!isScissorEnabled)
                 GL.Enable(EnableCap.ScissorTest);
-            if(isCullEnabled)
+            if (isCullEnabled)
                 GL.Disable(EnableCap.CullFace);
-            if(isDepthEnabled)
+            if (isDepthEnabled)
                 GL.Disable(EnableCap.DepthTest);
 
             GL.BlendEquation(BlendEquationMode.FuncAdd);
@@ -337,16 +337,16 @@ namespace Fusee.ImGuiImp.Desktop
                 }
             }
 
-            if(!isBlendEnabled)
+            if (!isBlendEnabled)
                 GL.Disable(EnableCap.Blend);
             if (!isScissorEnabled)
                 GL.Disable(EnableCap.ScissorTest);
             if (isCullEnabled)
                 GL.Enable(EnableCap.CullFace);
-            if(isDepthEnabled)
+            if (isDepthEnabled)
                 GL.Enable(EnableCap.DepthTest);
 
-                draw_data.Clear();
+            draw_data.Clear();
 
             GL.DisableVertexArrayAttrib(_vertexArray, 0);
             GL.DisableVertexArrayAttrib(_vertexArray, 1);
