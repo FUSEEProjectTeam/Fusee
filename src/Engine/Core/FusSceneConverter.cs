@@ -302,7 +302,7 @@ namespace Fusee.Engine.Core
                             {
                                 sceneComponent = LookupTransform(test);
                             }
-                            else if(testBone != null)
+                            else if (testBone != null)
                             {
                                 sceneComponent = LookupTransform(testBone);
                             }

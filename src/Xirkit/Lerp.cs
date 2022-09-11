@@ -81,7 +81,7 @@ namespace Fusee.Xirkit
         /// </summary>
         public static float4 Float4QuaternionSlerp(float4 val1, float4 val2, float time1, float time2)
         {
-            
+
             QuaternionF res = QuaternionF.Slerp(new QuaternionF(val1), new QuaternionF(val2), time2 / time1);
             return res.ToFloat4();
         }
