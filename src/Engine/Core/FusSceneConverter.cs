@@ -883,10 +883,10 @@ namespace Fusee.Engine.Core
 
 
             }
-            if(weight.BindingMatrices.Count == 0)
+            if (weight.BindingMatrices.Count == 0)
             {
                 Dictionary<string, float4x4> x = new Dictionary<string, float4x4>();
-                foreach(SceneNode bone in weight.Bones)
+                foreach (SceneNode bone in weight.Bones)
                 {
                     if (bone.Parent.GetComponent<Bone>() == null)
                     {
@@ -919,7 +919,7 @@ namespace Fusee.Engine.Core
             for (int i = 0; i < wc.WeightMap.Count; i++)
             {
                 var weightList = wc.WeightMap[i];
-                if(weightList.VertexWeights.Count > 4)
+                if (weightList.VertexWeights.Count > 4)
                 {
                     throw new ArgumentException("Invalid number of vertex weights.");
                 }
