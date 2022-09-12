@@ -12,12 +12,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private readonly RenderCanvasImp _renderCanvasImp;
 
         /// <summary>
-        /// True if the GameWindow/ the application uses multiple threads.
-        /// With OpenTK 4.7 we need to use the "new" modifier to hide the GameWindow.IsMultithreaded property, which became obsolete in this version.
-        /// </summary>
-        public new bool IsMultiThreaded { get; private set; } = false;
-
-        /// <summary>
         /// Gets the delta time.
         /// The delta time is the time that was required to render the last frame in milliseconds.
         /// This value can be used to determine the frames per second of the application.
@@ -74,7 +68,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="minimumHeight">The minimum height of the game window</param>
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <param name="startVisible">Should the window be visible from the start, default: true.</param>
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false, bool startVisible = true, int minimumWidth = 1280, int minimumHeight = 720)
+        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool startVisible = true, int minimumWidth = 1280, int minimumHeight = 720)
             : base(new GameWindowSettings(), new NativeWindowSettings
             {
                 Size = new OpenTK.Mathematics.Vector2i(width, height),
@@ -84,7 +78,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 MinimumSize = new OpenTK.Mathematics.Vector2i(minimumWidth, minimumHeight)
             })
         {
-            IsMultiThreaded = isMultithreaded;
             _renderCanvasImp = renderCanvasImp;
             _renderCanvasImp.Width = width;
             _renderCanvasImp.Height = height;
