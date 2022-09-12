@@ -15,7 +15,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         public PointThresholdHandler PointThresholdHandler;
         public ProjectedSizeModifierHandler ProjectedSizeModifierHandler;
 
-        public string PathToOocFile = "D:/PW_ooc/V2/DemoA2"; //Path.Combine("Assets", "Cube1030301", "Potree");
+        public string PathToOocFile = Path.Combine("Assets", "Cube1030301", "Potree");
 
         public ShaderEffect DepthPassEf;
         public SurfaceEffectPointCloud ColorPassEf;
