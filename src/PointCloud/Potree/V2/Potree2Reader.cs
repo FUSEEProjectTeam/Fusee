@@ -74,7 +74,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         /// <param name="renderMode">Determines which <see cref="RenderMode"/> is used to display the returned point cloud."/></param>
         /// <param name="fileFolderPath">Path to the file.</param>
-        public IPointCloud GetPointCloudComponent(string fileFolderPath, RenderMode renderMode = RenderMode.PointSize)
+        public IPointCloud GetPointCloudComponent(string fileFolderPath, RenderMode renderMode = RenderMode.StaticMesh)
         {
             _fileFolderPath = fileFolderPath;
             _instance = null; //set to null so a new file can be read at runtime - else FileDataInstance will return the wrong values
@@ -99,7 +99,7 @@ namespace Fusee.PointCloud.Potree.V2
                     switch (renderMode)
                     {
                         default:
-                        case RenderMode.PointSize:
+                        case RenderMode.StaticMesh:
                             {
                                 var dataHandler = new PointCloudDataHandler<GpuMesh, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>);
                                 var imp = new Potree2Cloud(dataHandler, GetOctree());
@@ -113,6 +113,12 @@ namespace Fusee.PointCloud.Potree.V2
                                 return new PointCloudComponent(imp, renderMode);
                             }
 
+                        case RenderMode.DynamicMesh:
+                            {
+                                var dataHandlerDynamic = new PointCloudDataHandler<Mesh, PosD3ColF3LblB>((PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateDynamicMeshPosD3ColF3LblB, LoadNodeData<PosD3ColF3LblB>, true);
+                                var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree());
+                                return new PointCloudComponent(imp, renderMode);
+                            }
                     }
             }
         }

@@ -141,6 +141,43 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="pointAccessor">The point accessor allows access to the point data without casting to explicit a explicit point type."/></param>
         /// <param name="points">The lists of "raw" points.</param>
+        public static Mesh CreateDynamicMeshPosD3ColF3LblB<TPoint>(PointAccessor<TPoint> pointAccessor, TPoint[] points)
+        {
+            int numberOfPointsInMesh;
+            numberOfPointsInMesh = points.Length;
+
+            var firstPos = (float3)pointAccessor.GetPositionFloat3_64(ref points[0]);
+            var vertices = new float3[numberOfPointsInMesh];
+            var triangles = new uint[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPos, firstPos);
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                var pos = (float3)pointAccessor.GetPositionFloat3_64(ref points[i]);
+
+                vertices[i] = pos;
+                boundingBox |= vertices[i];
+
+                triangles[i] = (uint)i;
+                var col = pointAccessor.GetColorFloat3_32(ref points[i]);//points[i].Color;
+                colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
+
+                //TODO: add labels correctly
+                var label = pointAccessor.GetLabelUInt_8(ref points[i]);//points[i].Label;
+            }
+
+            return new Mesh(triangles, vertices, null, null, null, null, null, null, colors)
+            {
+                MeshType = PrimitiveType.Points
+            };
+        }
+
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="PosD3LblB"/>.
+        /// </summary>
+        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to explicit a explicit point type."/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static InstanceData CreateInstanceDataPosD3ColF3LblB<TPoint>(PointAccessor<TPoint> pointAccessor, TPoint[] points)
         {
             int numberOfPointsInMesh;

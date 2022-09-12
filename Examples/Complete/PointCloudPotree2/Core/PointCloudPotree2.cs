@@ -63,16 +63,36 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public string AssetsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
+        public RenderMode PointRenderMode = RenderMode.DynamicMesh;
+
         public override void Init()
         {
             VSync = false;
             _spaceMouse = GetDevice<SixDOFDevice>();
 
-            PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPassInstanced(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
-            PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPassInstanced(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PointCloudColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
+            var potreeReader = new Potree2Reader();
+            switch (PointRenderMode)
+            {
+                default:
+                case RenderMode.DynamicMesh:
+                case RenderMode.StaticMesh:
+                    PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
+                    PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPass(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PointCloudColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
+
+                    break;
+                case RenderMode.Instanced:
+                    PtRenderingParams.Instance.DepthPassEf = MakePointCloudEffect.ForDepthPassInstanced(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape);
+                    PtRenderingParams.Instance.ColorPassEf = MakePointCloudEffect.ForColorPassInstanced(PtRenderingParams.Instance.Size, PtRenderingParams.Instance.PointCloudColorMode, PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.Shape, PtRenderingParams.Instance.EdlStrength, PtRenderingParams.Instance.EdlNoOfNeighbourPx);
+                    break;
+            }
+
             PtRenderingParams.Instance.DepthPassEf.Active = false;
             PtRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
             PtRenderingParams.Instance.ProjectedSizeModifierHandler = OnProjectedSizeModifierChanged;
+
+            _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(Path.Combine(AssetsPath, PtRenderingParams.Instance.PathToOocFile), PointRenderMode);
+            _pointCloud.PointCloudImp.MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
+            _pointCloud.PointCloudImp.PointThreshold = PtRenderingParams.Instance.PointThreshold;
 
             IsAlive = true;
 
@@ -104,10 +124,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 }
             };
 
-            var potreeReader = new Potree2Reader();
-            _pointCloud = (PointCloudComponent)potreeReader.GetPointCloudComponent(Path.Combine(AssetsPath, PtRenderingParams.Instance.PathToOocFile), RenderMode.Instanced);
-            _pointCloud.PointCloudImp.MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
-            _pointCloud.PointCloudImp.PointThreshold = PtRenderingParams.Instance.PointThreshold;
+
 
             var pointCloudNode = new SceneNode()
             {
