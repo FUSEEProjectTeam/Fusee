@@ -75,7 +75,7 @@ namespace Fusee.Tests.Render.Desktop
                 var app = Example;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(null, false, false, width, height, width, height)
+                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(null, false, width, height, width, height)
                 {
                     EnableBlending = true
                 };
