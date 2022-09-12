@@ -20,7 +20,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             set => _pointRenderingCore.ClosingRequested = value;
         }
 
-        private PointCloudRenderingCore _pointRenderingCore;
+        private PointCloudPotree2Core _pointRenderingCore;
 
         public PointCloudPotree2()
         {
@@ -30,7 +30,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         public override void Init()
         {
             VSync = false;
-            _pointRenderingCore = new PointCloudRenderingCore(RC)
+            _pointRenderingCore = new PointCloudPotree2Core(RC)
             {
                 RenderToTexture = false
             };
