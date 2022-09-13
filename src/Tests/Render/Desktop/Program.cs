@@ -102,7 +102,7 @@ namespace Fusee.Tests.Render.Desktop
                 img.SaveAsPng(Path.Combine(FilePath, arg));
 
                 // Done
-                Console.Error.WriteLine($"SUCCESS: Image {arg} generated.");
+                Console.Error.WriteLine($"SUCCESS: Image {Path.Combine(FilePath, arg)} generated.");
 
                 app.CloseGameWindow();
             }
