@@ -14,14 +14,12 @@ using System.Threading.Tasks;
 namespace Fusee.Tests.Render.Desktop
 {
 
-    public class Program
+    public static class Program
     {
         private const int height = 512;
         private const int width = 512;
 
-        private static RenderCanvas example;
-
-        public static RenderCanvas Example { get => example; set => example = value; }
+        public static RenderCanvas Example { get; set; }
 
         public static string FilePath;
 
