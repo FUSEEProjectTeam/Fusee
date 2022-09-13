@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core.Effects
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    sealed class FxShaderAttribute : Attribute
+    public sealed class FxShaderAttribute : Attribute
     {
         public readonly ShaderCategory ShaderCategory;
 
@@ -20,7 +20,7 @@ namespace Fusee.Engine.Core.Effects
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    sealed class FxShardAttribute : Attribute
+    public sealed class FxShardAttribute : Attribute
     {
         public readonly ShardCategory ShardCategory;
 
