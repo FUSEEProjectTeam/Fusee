@@ -7,6 +7,7 @@ using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {
@@ -22,6 +23,9 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             set { _closingRequested = value; }
         }
         private bool _closingRequested;
+
+        public RenderMode PointRenderMode = RenderMode.StaticMesh;
+        public string AssetsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         public bool RequestedNewFile = false;
 
@@ -47,15 +51,13 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private SceneNode _camNode;
         private readonly Potree2Reader _potreeReader;
 
-        public RenderMode PointRenderMode = RenderMode.StaticMesh;
-
         private readonly RenderContext _rc;
 
         public void OnLoadNewFile(object sender, EventArgs e)
         {
             if (!RequestedNewFile) return;
 
-            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(PointRenderingParams.Instance.PathToOocFile, PointRenderMode);
+            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile), PointRenderMode);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PointRenderingParams.Instance.PointThreshold;
             _pointCloud.Camera = _cam;
