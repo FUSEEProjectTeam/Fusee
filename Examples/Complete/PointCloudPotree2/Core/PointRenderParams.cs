@@ -3,7 +3,7 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.PointCloud.Common;
 using System.IO;
 
-namespace Fusee.Examples.PointCloudPotree2.Gui
+namespace Fusee.Examples.PointCloudPotree2.Core
 {
     public delegate void PointThresholdHandler(int val);
     public delegate void ProjectedSizeModifierHandler(float val);
