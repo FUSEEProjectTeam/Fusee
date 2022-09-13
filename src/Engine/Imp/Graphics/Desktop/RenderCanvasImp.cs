@@ -325,7 +325,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #region Members
 
         /// <summary>
-        /// Makes no GraphcsContext current on the calling thread.
+        /// Makes no GraphicsContext current on the calling thread.
         /// Needed in multi-threaded applications if one thread creates the app but it is run on another: call this after <see cref="RenderCanvas.InitApp"/>.
         /// </summary>
         public void MakeNonCurrent()
@@ -334,7 +334,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Makes the GraphcsContext current on the calling thread.
+        /// Makes the GraphicsContext current on the calling thread.
         /// </summary>
         public void MakeCurrent()
         {
