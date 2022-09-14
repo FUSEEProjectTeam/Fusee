@@ -181,6 +181,17 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
+        public void Invert_Instance_NonInvertable()
+        {
+            var mat = float4x4.Identity;
+            mat[3, 3] = 0;
+
+            var actual = mat.Invert();
+
+            Assert.Equal(float4x4.Identity, actual);
+        }
+
+        [Fact]
         public void Transpose_Instance()
         {
             var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
@@ -951,6 +962,7 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), float4x4.Identity };
             yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), float4x4.Identity };
             yield return new object[] { new float4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new float4x4(0.2672612f, 0.4850713f, 0.904534f, 0, 0.5345225f, 0.7276069f, 0.3015113f, 0, 0.8017837f, 0.4850713f, 0.3015113f, 0, 0, 0, 0, 1) };
+            yield return new object[] { float4x4.Zero, float4x4.Identity };
         }
         public static IEnumerable<object[]> GetTRSDecompositionScaleMtxs()
         {
@@ -958,13 +970,13 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1) };
             yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float4x4(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1) };
             yield return new object[] { new float4x4(3, 6, 2, 5, 2, 3, 6, 6, 6, 2, 3, 7, 0, 0, 0, 1), new float4x4(7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 1) };
+            yield return new object[] { float4x4.Zero, float4x4.Identity };
         }
         public static IEnumerable<object[]> GetTRSDecompositionScaleVecs()
         {
             yield return new object[] { float4x4.Identity, float3.One };
             yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), new float3(2, 4, 5) };
             yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float3(2, 3, 4) };
-            yield return new object[] { new float4x4(3, 6, 2, 5, 2, 3, 6, 6, 6, 2, 3, 7, 0, 0, 0, 1), new float3(7, 7, 7) };
         }
 
         public static IEnumerable<object[]> GetAxisAngle()

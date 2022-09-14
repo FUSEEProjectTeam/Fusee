@@ -181,6 +181,17 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
+        public void Invert_Instance_NonInvertable()
+        {
+            var mat = double4x4.Identity;
+            mat[3, 3] = 0;
+
+            var actual = mat.Invert();
+
+            Assert.Equal(double4x4.Identity, actual);
+        }
+
+        [Fact]
         public void Transpose_Instance()
         {
             var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
@@ -962,6 +973,7 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), double4x4.Identity };
             yield return new object[] { new double4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), double4x4.Identity };
             yield return new object[] { new double4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new double4x4(0.2672612419124244, 0.48507125007266594, 0.90453403373329089, 0, 0.53452248382484879, 0.72760687510899891, 0.30151134457776363, 0, 0.80178372573727319, 0.48507125007266594, 0.30151134457776363, 0, 0, 0, 0, 1) };
+            yield return new object[] { double4x4.Zero, double4x4.Identity };
         }
         public static IEnumerable<object[]> GetTRSDecompositionScaleMtxs()
         {
@@ -969,6 +981,7 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1) };
             yield return new object[] { new double4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new double4x4(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1) };
             yield return new object[] { new double4x4(3, 6, 2, 5, 2, 3, 6, 6, 6, 2, 3, 7, 0, 0, 0, 1), new double4x4(7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 1) };
+            yield return new object[] { double4x4.Zero, double4x4.Identity };
         }
         public static IEnumerable<object[]> GetTRSDecompositionScaleVecs()
         {
