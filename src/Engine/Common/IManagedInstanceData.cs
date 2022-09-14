@@ -6,7 +6,7 @@ namespace Fusee.Engine.Common
     /// Interface for instance data implementations, that are observed by the MeshManager. 
     /// The MeshManger is handling the memory allocation and deallocation of meshes and their instance datas on the GPU.
     /// </summary>
-    public interface IManagedInstanceData
+    public interface IManagedInstanceData : IDisposable
     {
         /// <summary>
         /// This event notifies observing MeshManager about property changes and the InstanceData's disposal.

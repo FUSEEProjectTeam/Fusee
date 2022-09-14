@@ -6,7 +6,6 @@ using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Runtime.InteropServices;
 
 namespace Fusee.ImGuiImp.Desktop
 {
@@ -94,41 +93,7 @@ namespace Fusee.ImGuiImp.Desktop
 
 #pragma warning restore 0067
 
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
 
-        /// <summary>
-        /// Part of the Dispose pattern.
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                disposedValue = true;
-            }
-        }
-
-        // This code added to correctly implement the disposable pattern.
-        /// <summary>
-        /// Part of the dispose pattern.
-        /// </summary>
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
 
         private static readonly Dictionary<KeyCodes, ImGuiKey> _translateKeyCodeToImGuiKey = new Dictionary<KeyCodes, ImGuiKey>
         {

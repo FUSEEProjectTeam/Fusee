@@ -1,7 +1,6 @@
 ﻿using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.PointCloud.Common;
-using System;
 using System.IO;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
@@ -9,7 +8,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
     public delegate void PointThresholdHandler(int val);
     public delegate void ProjectedSizeModifierHandler(float val);
 
-    public sealed class PtRenderingParams : IDisposable
+    public sealed class PtRenderingParams
     {
         public static PtRenderingParams Instance { get; private set; } = new();
 
@@ -112,39 +111,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 _ptThreshold = value;
                 PointThresholdHandler(_ptThreshold);
             }
-        }
-
-        // Explicit static constructor to tell C# compiler
-        // not to mark type as beforefieldinit
-        static PtRenderingParams()
-        {
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private bool _disposed;
-
-        void Dispose(bool disposing)
-        {
-            // Check to see if Dispose has already been called.
-            if (!_disposed)
-            {
-                if (Instance != null)
-                {
-                    Instance = null;
-                }
-
-                // Note disposing has been done.
-                _disposed = true;
-            }
-        }
-        ~PtRenderingParams()
-        {
-            Dispose(false);
         }
     }
 }

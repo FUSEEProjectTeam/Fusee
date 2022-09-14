@@ -18,7 +18,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         public string Value;
     }
 
-    internal class CoreControl : FuseeControlToTexture, IDisposable
+    internal class SceneToTexture : FuseeSceneToTexture
     {
         private SceneContainer _rocketScene;
         private SceneRendererForward _renderer;
@@ -40,10 +40,8 @@ namespace Fusee.Examples.FuseeImGui.Desktop
         private readonly float _fovy = M.PiOver4;
 
         private Camera _cam;
-        private bool disposedValue;
 
-
-        public CoreControl(RenderContext ctx) : base(ctx)
+        public SceneToTexture(RenderContext ctx) : base(ctx)
         {
             _rc = ctx;
         }
@@ -192,25 +190,6 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             _renderTexture?.Dispose();
             _renderTexture = WritableMultisampleTexture.CreateAlbedoTex(Width, Height, 8);
             _cam.RenderTexture = _renderTexture;
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    _renderTexture?.Dispose();
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Fusee.Examples.FuseeImGui.Desktop
             AssetStorage.RegisterProvider(fap);
 
             // no injection or shared base project, as we are currently limited to desktop only with ImGui.NET
-            var app = new Core();
+            var app = new ImGuiApp();
 
             var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
             app.CanvasImplementor = new Fusee.ImGuiImp.Desktop.ImGuiRenderCanvasImp(icon);

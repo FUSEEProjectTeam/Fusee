@@ -1,5 +1,5 @@
 ﻿using Fusee.Base.Core;
-using Fusee.Math.Core;
+using Fusee.Engine.Imp.Graphics.Desktop;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 
 namespace Fusee.ImGuiImp.Desktop
 {
-    public class ImGuiController : IDisposable
+    internal class ImGuiController : IDisposable
     {
         private static int _vertexArray;
         private static int _vertexBuffer;
@@ -59,8 +59,8 @@ namespace Fusee.ImGuiImp.Desktop
 
         public void WindowResized(int width, int height)
         {
-            GL.Viewport(0, 0, GameWindowWidth, GameWindowHeight);
             (GameWindowWidth, GameWindowHeight) = (width, height);
+            GL.Viewport(0, 0, GameWindowWidth, GameWindowHeight);
         }
 
         /// <summary>
@@ -345,8 +345,10 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 if (disposing)
                 {
-                    ImGui.DestroyContext(_context);
+
                 }
+
+                ImGui.DestroyContext(_context);
 
                 disposedValue = true;
             }

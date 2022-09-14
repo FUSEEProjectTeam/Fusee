@@ -159,7 +159,8 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
       with:
-        vs-version: '[17.0,]'
+        vs-version: '[17.3,]'
+        msbuild-architecture: x64
 #    - name: Setup dotnet macos workload
 #      run: dotnet workload install macos
 #    - name: Build Release-Blazor
@@ -199,7 +200,7 @@ jobs:
         path: |
           bin/Release/nuget/
           dis/VSTemplate/VSTemplate/bin/Release/ProjectTemplates/CSharp/1033/Fusee.Template.VS.zip
-          dis/VSTemplate/VSIX/bin/Release/Fusee.Template.VS.vsix
+          dis/VSTemplate/VSIX/bin/Release/Fusee.Template.VS.Installer.vsix
 
   buildblazor:
     needs: [tests, rendertests]

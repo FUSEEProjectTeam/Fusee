@@ -219,10 +219,7 @@ namespace Fusee.Engine.Core
         {
             if (!_disposed)
             {
-                if (disposing)
-                {
-                    TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
-                }
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
 
                 _disposed = true;
             }
@@ -235,6 +232,8 @@ namespace Fusee.Engine.Core
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -242,7 +241,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         ~Texture()
         {
-            Dispose(true);
+            Dispose(false);
         }
 
         /// <summary>

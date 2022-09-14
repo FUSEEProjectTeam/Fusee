@@ -1,4 +1,5 @@
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
@@ -8,6 +9,7 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -20,6 +22,71 @@ namespace Fusee.Engine.Core
         /// The default <see cref="Effect"/>, that is used if a <see cref="SceneNode"/> has a mesh but no effect.
         /// </summary>
         public static SurfaceEffect Default() => FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), 0f, 22, 1.0f);
+
+        #region Line
+
+        /// <summary>
+        /// Generates a line shader which can be used with a <see cref="Mesh"/> with <see cref="Mesh.MeshType"/> set to <see cref="PrimitiveType.Lines"/>.        /// Loads shader files via <see cref="AssetStorage.Get{T}(string)"/>
+        /// For an asynchronous version use <see cref="LineEffectAsync(float, float4, bool)"/>
+        /// </summary>
+        /// <param name="lineThickness"></param>
+        /// <param name="albedoColor"></param>
+        /// <param name="enableVertexColors"></param>
+        /// <returns></returns>
+        public static Effect LineEffect(float lineThickness, float4 albedoColor, bool enableVertexColors = false)
+        {
+            var vs = AssetStorage.Get<string>("line.vert");
+            var gs = AssetStorage.Get<string>("line.geom");
+            var ps = AssetStorage.Get<string>("line.frag");
+            var uniformParameters = new List<IFxParamDeclaration>
+            {
+                new FxParamDeclaration<float4x4>
+                    { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4>
+                    { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4>
+                    { Name = UniformNameDeclarations.Projection, Value = float4x4.Identity },
+                new FxParamDeclaration<float> { Name = "Thickness", Value = lineThickness },
+                new FxParamDeclaration<int2> { Name = UniformNameDeclarations.ViewportPx, Value = int2.Zero },
+                new FxParamDeclaration<float4> { Name = "Albedo", Value = albedoColor },
+                new FxParamDeclaration<bool> { Name = "EnableVertexColors", Value = enableVertexColors }
+            };
+
+            return new ShaderEffect(uniformParameters, RenderStateSet.Default, vs, ps, gs);
+        }
+
+        /// <summary>
+        /// Generates a line shader which can be used with a <see cref="Mesh"/> with <see cref="Mesh.MeshType"/> set to <see cref="PrimitiveType.Lines"/>.
+        /// Loads shader files via <see cref="AssetStorage.GetAsync{T}(string)"/>
+        /// For an non asynchronous version use <see cref="LineEffect(float, float4, bool)"/>
+        /// </summary>
+        /// <param name="lineThickness"></param>
+        /// <param name="albedoColor"></param>
+        /// <param name="enableVertexColors"></param>
+        /// <returns></returns>
+        public static async Task<Effect> LineEffectAsync(float lineThickness, float4 albedoColor, bool enableVertexColors = false)
+        {
+            var vs = await AssetStorage.GetAsync<string>("line.vert");
+            var gs = await AssetStorage.GetAsync<string>("line.geom");
+            var ps = await AssetStorage.GetAsync<string>("line.frag");
+            var uniformParameters = new List<IFxParamDeclaration>
+            {
+                new FxParamDeclaration<float4x4>
+                    { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4>
+                    { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4>
+                    { Name = UniformNameDeclarations.Projection, Value = float4x4.Identity },
+                new FxParamDeclaration<float> { Name = "Thickness", Value = lineThickness },
+                new FxParamDeclaration<int2> { Name = UniformNameDeclarations.ViewportPx, Value = int2.Zero },
+                new FxParamDeclaration<float4> { Name = "Albedo", Value = albedoColor },
+                new FxParamDeclaration<bool> { Name = "EnableVertexColors", Value = enableVertexColors }
+            };
+
+            return new ShaderEffect(uniformParameters, RenderStateSet.Default, vs, ps, gs);
+        }
+
+        #endregion
 
         #region Deferred
 

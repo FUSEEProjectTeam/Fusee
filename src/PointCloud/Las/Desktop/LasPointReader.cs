@@ -224,7 +224,7 @@ namespace Fusee.PointCloud.Las.Desktop
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    // dispose managed state (managed objects).
                 }
 
                 Delete(ref _ptrToLASClass);

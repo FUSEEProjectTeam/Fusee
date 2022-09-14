@@ -7,7 +7,7 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Provides the ability to create or interact directly with the point data.
     /// </summary>
-    public class Mesh : SceneComponent, IManagedMesh, IDisposable
+    public class Mesh : SceneComponent, IManagedMesh
     {
         #region RenderContext Asset Management
 
@@ -347,8 +347,9 @@ namespace Fusee.Engine.Core.Scene
             {
                 if (disposing)
                 {
-                    DisposeData?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Disposed));
+                    //dispose managed resources
                 }
+                DisposeData?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Disposed));
 
                 disposed = true;
             }

@@ -176,8 +176,6 @@ namespace Fusee.Base.Imp.Desktop
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-
-
             // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly
             if (Path.IsPathRooted(id))
                 return new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
@@ -194,8 +192,6 @@ namespace Fusee.Base.Imp.Desktop
                     return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
             }
             return null;
-
-
 
         }
 #pragma warning restore CS1998

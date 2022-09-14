@@ -3,11 +3,10 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core
 {
-    internal class MeshManager : IDisposable
+    internal class MeshManager
     {
         private readonly IRenderContextImp _renderContextImp;
         private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new();
@@ -60,17 +59,11 @@ namespace Fusee.Engine.Core
 
             if (meshImp.BiTangentsSet)
                 _renderContextImp.RemoveBiTangents(meshImp);
-
-            // Force collection
-            GC.Collect();
         }
 
         private void Remove(IInstanceDataImp instanceData)
         {
             _renderContextImp.RemoveInstanceData(instanceData);
-
-            // Force collection
-            GC.Collect();
         }
 
         private void DisposeMesh(object sender, MeshChangedEventArgs meshDataEventArgs)
@@ -322,44 +315,6 @@ namespace Fusee.Engine.Core
                 var tobeDeletedInstanceImp = _toBeDeletedInstanceDataImps.Pop();
                 Remove(tobeDeletedInstanceImp);
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        private bool disposed;
-        protected virtual void Dispose(bool disposing)
-        {
-            // Check to see if Dispose has already been called.
-            if (!disposed)
-            {
-                Cleanup();
-
-                for (int i = 0; i < _identifierToMeshImpDictionary.Count; i++)
-                {
-                    var meshItem = _identifierToMeshImpDictionary.ElementAt(i);
-                    Remove(meshItem.Value);
-                    _identifierToMeshImpDictionary.Remove(meshItem.Key);
-                }
-
-                for (int i = 0; i < _identifierToInstanceDataImpDictionary.Count; i++)
-                {
-                    var instanceImp = _identifierToInstanceDataImpDictionary.ElementAt(i);
-                    Remove(instanceImp.Value);
-                    _identifierToInstanceDataImpDictionary.Remove(instanceImp.Key);
-                }
-
-                // Note disposing has been done.
-                disposed = true;
-            }
-        }
-
-        ~MeshManager()
-        {
-            Dispose(disposing: false);
         }
     }
 }
