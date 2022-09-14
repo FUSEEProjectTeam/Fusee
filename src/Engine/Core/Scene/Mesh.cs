@@ -478,7 +478,7 @@ namespace Fusee.Engine.Core.Scene
         public bool TrianglesSet => Triangles?.Length > 0;
 
         /// <summary>
-        /// Gets a value indicating whether triangles are set.
+        /// Gets a value indicating whether flags are set.
         /// </summary>
         /// <value>
         ///   <c>true</c> if triangles are set; otherwise, <c>false</c>.

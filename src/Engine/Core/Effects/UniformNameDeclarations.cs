@@ -131,7 +131,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public const string Flags = "fuFlags";
         /// <summary>
-        /// Hash code for the <see cref="BoneIndex"/> parameter.
+        /// Hash code for the <see cref="Flags"/> parameter.
         /// </summary>
         public static readonly int FlagsHash = Flags.GetHashCode();
 

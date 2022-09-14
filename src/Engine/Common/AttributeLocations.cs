@@ -146,12 +146,12 @@
         public static readonly int InstancedColorBindingIndex = InstancedColor;
 
         /// <summary>
-        /// Attribute location for the instanced color.
+        /// Attribute location for the flags buffer.
         /// </summary>
         public static readonly int FlagsAttribLocation = 15;
 
         /// <summary>
-        /// The binding index for the instanced color buffer.
+        /// The binding index for the flags buffer.
         /// </summary>
         public static readonly int FlagsBindingIndex = FlagsAttribLocation;
     }

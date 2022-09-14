@@ -179,7 +179,7 @@ namespace Fusee.Engine.Imp.Blazor
         }
 
         /// <summary>
-        /// Removes the third color array object from GPU
+        /// Removes the third color buffer from GPU
         /// </summary>
         public void InvalidateColors2()
         {
@@ -187,7 +187,7 @@ namespace Fusee.Engine.Imp.Blazor
         }
 
         /// <summary>
-        /// Removes the third color array object from GPU
+        /// Removes the flags buffer from the GPU.
         /// </summary>
         public void InvalidateFlags()
         {

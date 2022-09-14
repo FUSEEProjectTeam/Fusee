@@ -159,8 +159,7 @@ namespace Fusee.Engine.Core.ShaderShards
             else if (type == typeof(Texture) ||
                 type == typeof(WritableTexture))
                 return "sampler2D";
-            else if (type == typeof(Texture) ||
-                type == typeof(Texture1D))
+            else if (type == typeof(Texture1D))
                 return "sampler1D";
             else if (type == typeof(WritableCubeMap))
                 return "samplerCube";

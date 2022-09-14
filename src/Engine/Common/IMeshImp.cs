@@ -175,7 +175,7 @@ namespace Fusee.Engine.Common
         bool FlagsSet { get; }
 
         /// <summary>
-        /// Implementation Tasks: Invalidates the bitangents of the mesh, e.g. reset the buffer object by setting it to 0.
+        /// Implementation Tasks: Invalidates the flags of the mesh, e.g. reset the buffer object by setting it to 0.
         /// </summary>
         void InvalidateFlags();
 
