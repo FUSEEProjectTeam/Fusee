@@ -330,7 +330,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public ITextureHandle CreateTexture(IWritableTexture img)
         {
             if (img is WritableTexture wt)
-                return CreateTexture(wt);            
+                return CreateTexture(wt);
             if (img is WritableMultisampleTexture)
                 throw new NotSupportedException("Android has no MultisampleWritableTexture support!");
 

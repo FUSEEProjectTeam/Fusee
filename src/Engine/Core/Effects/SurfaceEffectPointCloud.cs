@@ -329,7 +329,7 @@ namespace Fusee.Engine.Core.Effects
             {
                 RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Solid);
             }
-        }        
+        }
 
         /// <summary>
         /// Creates a new instance of type PointCloudSurfaceEffect.

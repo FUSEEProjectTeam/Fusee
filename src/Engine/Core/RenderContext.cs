@@ -1620,7 +1620,7 @@ namespace Fusee.Engine.Core
                         SetShaderParamImage(param.Handle, wt);
                     else
                         SetShaderParamTexture(param.Handle, wt);
-                    
+
                 }
                 else if (val is WritableMultisampleTexture wmst)
                 {
@@ -1628,7 +1628,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (val is ITexture tex)
                 {
-                    if(tex.GetType() == typeof(Texture1D))
+                    if (tex.GetType() == typeof(Texture1D))
                         SetShaderParamTexture(param.Handle, (Texture1D)tex);
                     else
                         SetShaderParamTexture(param.Handle, (Texture)tex);
@@ -1678,7 +1678,7 @@ namespace Fusee.Engine.Core
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableTexture)writableTex);
                         _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
-                        
+
                     }
                     else if (val is WritableMultisampleTexture writableMultTex)
                     {
