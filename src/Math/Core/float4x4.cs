@@ -1532,7 +1532,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Checks if this matrix is invertible.
         /// </summary>
-        /// <param name="mat">The matrix.</param>       
+        /// <param name="mat">The matrix.</param>
         public static bool IsInvertable(float4x4 mat)
         {
             return mat.Determinant != 0f;
@@ -1542,7 +1542,7 @@ namespace Fusee.Math.Core
         /// Checks if this matrix is invertible.
         /// </summary>
         /// <param name="mat">The matrix.</param>
-        /// <param name="det">The determinant of the matrix.</param>       
+        /// <param name="det">The determinant of the matrix.</param>
         public static bool IsInvertable(float4x4 mat, out float det)
         {
             det = mat.Determinant;
@@ -1695,7 +1695,8 @@ namespace Fusee.Math.Core
 
             if (MathF.Abs(detM.GetElement(0)) < float.Epsilon)
             {
-                throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
+                result = Identity;
+                return;
             }
 
             var adjSignMask = Vector128.Create(1.0f, -1.0f, -1.0f, 1.0f);
@@ -1752,7 +1753,8 @@ namespace Fusee.Math.Core
 
             if (MathF.Abs(det) < float.Epsilon)
             {
-                throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
+                result = Identity;
+                return;
             }
 
             float invDet = 1.0f / det;
@@ -1901,7 +1903,7 @@ namespace Fusee.Math.Core
 
         #endregion Transpose
 
-        #region Transform        
+        #region Transform
 
         /// <summary>
         /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
@@ -2140,6 +2142,9 @@ namespace Fusee.Math.Core
             var scalevector = GetScale(mat);
             var rotationMtx = float4x4.Identity;
 
+            if (scalevector.x <= 0 || scalevector.y <= 0 || scalevector.z <= 0)
+                return Identity;
+
             rotationMtx.M11 = mat.M11 / scalevector.x;
             rotationMtx.M21 = mat.M21 / scalevector.x;
             rotationMtx.M31 = mat.M31 / scalevector.x;
@@ -2180,6 +2185,9 @@ namespace Fusee.Math.Core
         {
             var scalevector = GetScale(mat);
             var scaleMtx = float4x4.Identity;
+
+            if (scalevector.x <= 0 || scalevector.y <= 0 || scalevector.z <= 0)
+                return Identity;
 
             scaleMtx.M11 = scalevector.x;
             scaleMtx.M22 = scalevector.y;
@@ -2405,7 +2413,7 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
-        /// </summary>       
+        /// </summary>
         public bool IsAffine =>
                 // Column order notation
                 (Row4 == float4.UnitW);

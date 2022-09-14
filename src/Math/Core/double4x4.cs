@@ -1532,7 +1532,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Checks if this matrix is invertible.
         /// </summary>
-        /// <param name="mat">The matrix.</param>       
+        /// <param name="mat">The matrix.</param>
         public static bool IsInvertable(double4x4 mat)
         {
             return mat.Determinant != 0;
@@ -1542,7 +1542,7 @@ namespace Fusee.Math.Core
         /// Checks if this matrix is invertible.
         /// </summary>
         /// <param name="mat">The matrix.</param>
-        /// <param name="det">The determinant of the matrix.</param>       
+        /// <param name="det">The determinant of the matrix.</param>
         public static bool IsInvertable(double4x4 mat, out double det)
         {
             det = mat.Determinant;
@@ -1752,7 +1752,8 @@ namespace Fusee.Math.Core
 
             if (System.Math.Abs(det) < double.Epsilon)
             {
-                throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
+                result = Identity;
+                return;
             }
 
             double invDet = 1.0f / det;
@@ -1901,7 +1902,7 @@ namespace Fusee.Math.Core
 
         #endregion Transpose
 
-        #region Transform        
+        #region Transform
 
         /// <summary>
         /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
@@ -2140,6 +2141,9 @@ namespace Fusee.Math.Core
             var scalevector = GetScale(mat);
             var rotationMtx = Identity;
 
+            if (scalevector.x <= 0 || scalevector.y <= 0 || scalevector.z <= 0)
+                return Identity;
+
             rotationMtx.M11 = mat.M11 / scalevector.x;
             rotationMtx.M21 = mat.M21 / scalevector.x;
             rotationMtx.M31 = mat.M31 / scalevector.x;
@@ -2180,6 +2184,9 @@ namespace Fusee.Math.Core
         {
             var scalevector = GetScale(mat);
             var scaleMtx = double4x4.Identity;
+
+            if (scalevector.x <= 0 || scalevector.y <= 0 || scalevector.z <= 0)
+                return Identity;
 
             scaleMtx.M11 = scalevector.x;
             scaleMtx.M22 = scalevector.y;
@@ -2405,7 +2412,7 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
-        /// </summary>       
+        /// </summary>
         public bool IsAffine =>
                 // Column order notation
                 (Row4 == double4.UnitW);
@@ -2525,7 +2532,7 @@ namespace Fusee.Math.Core
                 }
                 catch
                 {
-                    throw new FormatException();
+                    throw;
                 }
             }
 
