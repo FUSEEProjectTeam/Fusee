@@ -11,6 +11,8 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class Texture : ITexture
     {
+        protected Texture() { }
+
         #region RenderContext Asset Management
 
         /// <summary>
@@ -21,13 +23,13 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
         /// </summary>
-        public Suid SessionUniqueIdentifier { get; private set; }
+        public Suid SessionUniqueIdentifier { get; protected set; }
         #endregion
 
         /// <summary>
         /// The <see cref="IImageData"/> of this texture.
         /// </summary>
-        public IImageData ImageData { get; private set; }
+        public IImageData ImageData { get; protected set; }
 
         #region Properties
 
@@ -82,7 +84,7 @@ namespace Fusee.Engine.Core
         public bool DoGenerateMipMaps
         {
             get;
-            private set;
+            protected set;
         }
 
         /// <summary>
@@ -122,7 +124,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
         /// </summary>
-        public RenderTargetTextureTypes TextureType { get; private set; }
+        public RenderTargetTextureTypes TextureType { get; protected set; }
 
         #endregion
 

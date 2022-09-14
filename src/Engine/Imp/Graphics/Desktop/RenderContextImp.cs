@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -392,6 +393,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
+            if (img is Texture1D wt1D)
+                return CreateTexture(wt1D);
+            else
+                return CreateTexture((Texture)img);
+
+            throw new ArgumentException($"{img} has an unknown texture type.");
+
+        }
+
+        private ITextureHandle CreateTexture(Texture img)
+        {
             GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
@@ -425,7 +437,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(WritableTexture tex)
+        private ITextureHandle CreateTexture(WritableTexture tex)
         {
             GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
 
@@ -458,7 +470,42 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(WritableMultisampleTexture tex)
+        public ITextureHandle CreateTexture(Texture1D tex)
+        {
+            GL.CreateTextures(TextureTarget.Texture1D, 1, out int id);
+
+            var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
+            var minFilter = (int)glMinMagFilter.Item1;
+            var magFilter = (int)glMinMagFilter.Item2;
+
+            var glWrapMode = (int)GetWrapMode(tex.WrapMode);
+
+            var pxInfo = GetTexturePixelInfo(tex.ImageData.PixelFormat);
+
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
+            GL.TextureStorage1D(id, 1, GetSizedInteralFormat(tex.ImageData.PixelFormat), tex.ImageData.Width);
+            GL.TextureSubImage1D(id, 0, 0, tex.ImageData.Width, pxInfo.Format, pxInfo.PxType, tex.ImageData.PixelData);
+
+            if (tex.DoGenerateMipMaps)
+                GL.GenerateTextureMipmap(id);
+
+            GL.TextureParameterI(id, TextureParameterName.TextureMinFilter, ref minFilter);
+            GL.TextureParameterI(id, TextureParameterName.TextureMagFilter, ref magFilter);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapS, ref glWrapMode);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapT, ref glWrapMode);
+            GL.TextureParameterI(id, TextureParameterName.TextureWrapR, ref glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { TexId = id };
+
+            return texID;
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="tex">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        private ITextureHandle CreateTexture(WritableMultisampleTexture tex)
         {
             if (!_isMultisampleEnabled)
             {
@@ -693,6 +740,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
             GL.BindAttribLocation(program, AttributeLocations.InstancedColor, UniformNameDeclarations.InstanceColor);
             GL.BindAttribLocation(program, AttributeLocations.InstancedModelMat1, UniformNameDeclarations.InstanceModelMat);
+            GL.BindAttribLocation(program, AttributeLocations.FlagsAttribLocation, UniformNameDeclarations.Flags);
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
 
@@ -1912,6 +1960,64 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Binds the flags onto the GL Render context and assigns a buffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="flags">The flags.</param>
+        /// <exception cref="ArgumentException">Flags must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetFlags(IMeshImp mr, ReadOnlySpan<uint> flags)
+        {
+            if (flags == null || flags.Length == 0)
+            {
+                throw new ArgumentException("Falgs must not be null or empty");
+            }
+
+            int sizeOfFlag = sizeof(uint);
+            int flagsBytes = flags.Length * sizeOfFlag;
+            int fBo;
+            if (((MeshImp)mr).FlagsBufferObject == 0)
+            {
+                GL.CreateBuffers(1, out fBo);
+                ((MeshImp)mr).FlagsBufferObject = fBo;
+
+                var vao = ((MeshImp)mr).VertexArrayObject;
+                if (vao == 0)
+                {
+                    throw new ApplicationException("Create the VAO first!");
+                }
+                GL.NamedBufferStorage(fBo, flagsBytes, ref MemoryMarshal.GetReference(flags), BufferStorageFlags.DynamicStorageBit);
+                GL.VertexArrayVertexBuffer(vao, AttributeLocations.FlagsBindingIndex, fBo, IntPtr.Zero, sizeOfFlag);
+
+                GL.VertexArrayAttribFormat(vao, AttributeLocations.FlagsAttribLocation, 1, VertexAttribType.UnsignedInt, true, 0);
+                GL.VertexArrayAttribBinding(vao, AttributeLocations.FlagsAttribLocation, AttributeLocations.FlagsBindingIndex);
+            }
+            else
+            {
+                fBo = ((MeshImp)mr).FlagsBufferObject;
+                GL.GetNamedBufferParameter(fBo, BufferParameterName.BufferSize, out int size);
+                if (size < flagsBytes)
+                {
+                    GL.DeleteBuffer(fBo);
+                    GL.CreateBuffers(1, out fBo);
+
+                    var vao = ((MeshImp)mr).VertexArrayObject;
+                    GL.NamedBufferStorage(fBo, flagsBytes, ref MemoryMarshal.GetReference(flags), BufferStorageFlags.DynamicStorageBit);
+                    GL.VertexArrayVertexBuffer(((MeshImp)mr).VertexArrayObject, AttributeLocations.FlagsBindingIndex, fBo, IntPtr.Zero, sizeOfFlag);
+
+                }
+                else
+                    GL.NamedBufferSubData(fBo, IntPtr.Zero, flagsBytes, ref MemoryMarshal.GetReference(flags));
+            }
+
+#if DEBUG
+            GL.GetNamedBufferParameter(fBo, BufferParameterName.BufferSize, out int vboBytes);
+            if (vboBytes < flagsBytes)
+                throw new ApplicationException(string.Format("Problem uploading flags buffer to VBO (flags). Tried to upload {0} bytes, uploaded {1}.", flagsBytes, vboBytes));
+#endif
+        }
+
+        /// <summary>
         /// Binds the triangles onto the GL Render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -2091,6 +2197,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             GL.DeleteBuffer(((MeshImp)mr).BitangentBufferObject);
             ((MeshImp)mr).InvalidateBiTangents();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveFlags(IMeshImp mr)
+        {
+            int bufferObj = ((MeshImp)mr).FlagsBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
+            ((MeshImp)mr).InvalidateFlags();
         }
 
         /// <summary>

@@ -130,6 +130,19 @@ namespace Fusee.Engine.Core
             return textureHandle;
         }
 
+        private ITextureHandle RegisterNewTexture(Texture1D texture)
+        {
+            // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
+
+            // Setup handler to observe changes of the texture data and dispose event (deallocation)
+            texture.TextureChanged += TextureChanged;
+
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
+
+            return textureHandle;
+        }
+
         private ITextureHandle RegisterNewTexture(Texture texture)
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
@@ -198,6 +211,15 @@ namespace Fusee.Engine.Core
         }
 
         public ITextureHandle GetTextureHandle(WritableTexture texture)
+        {
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureItem))
+            {
+                return RegisterNewTexture(texture);
+            }
+            return foundTextureItem.Item1;
+        }
+
+        public ITextureHandle GetTextureHandle(Texture1D texture)
         {
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureItem))
             {

@@ -554,6 +554,14 @@ namespace Fusee.Engine.Common
         void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights);
 
         /// <summary>
+        /// Binds the flags onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="flags">The flags.</param>
+        /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
+        void SetFlags(IMeshImp mr, ReadOnlySpan<uint> flags);
+
+        /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="shaderProgramImp">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
@@ -632,6 +640,12 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
         void RemoveBiTangents(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveFlags(IMeshImp mesh);
 
         /// <summary>
         /// Sets the rectangular output region within the output buffer(s).
