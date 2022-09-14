@@ -9,11 +9,10 @@ namespace Fusee.Engine.Core
     {
 
         /// <summary>
-        /// Constructor initializes a Texture from a pixelData byte buffer, width and height in pixels and <see cref="ImagePixelFormat"/>.
+        /// Constructor initializes a Texture from a pixelData byte buffer, width in pixels and <see cref="ImagePixelFormat"/>.
         /// </summary>
         /// <param name="pixelData">The raw pixelData byte buffer that makes up the texture.</param>
         /// <param name="width">Width in pixels.</param>
-        /// <param name="height">Height in pixels.</param>
         /// <param name="colorFormat">Provides additional information about pixel encoding.</param>
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
