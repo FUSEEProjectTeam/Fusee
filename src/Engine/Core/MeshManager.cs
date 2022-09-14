@@ -61,6 +61,9 @@ namespace Fusee.Engine.Core
 
             if (meshImp.BiTangentsSet)
                 _renderContextImp.RemoveBiTangents(meshImp);
+
+            if (meshImp.FlagsSet)
+                _renderContextImp.RemoveFlags(meshImp);
         }
 
         private void Remove(IInstanceDataImp instanceData)
@@ -148,6 +151,11 @@ namespace Fusee.Engine.Core
                     _renderContextImp.SetColors2(meshImp, mesh.Colors2.AsReadOnlySpan);
                 }
 
+                if (mesh.FlagsSet && mesh.Flags.DirtyIndex)
+                {
+                    _renderContextImp.SetFlags(meshImp, mesh.Flags.AsReadOnlySpan);
+                }
+
                 // TODO: Prepared for next change with index list
                 //if (!mesh.Vertices.DirtyIndices.Empty)
                 //{
@@ -232,9 +240,9 @@ namespace Fusee.Engine.Core
             }
         }
 
-        public void RegisterNewMesh(GpuMesh mesh, float3[] vertices, uint[] triangles = null, float2[] uvs = null,
-            float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null,
-            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)
+        public void RegisterNewMesh(GpuMesh mesh, float3[] vertices, uint[] triangles, float2[]? uvs = null,
+            float3[]? normals = null, uint[]? colors = null, uint[]? colors1 = null, uint[]? colors2 = null,
+            float4[]? tangents = null, float3[]? bitangents = null, float4[]? boneIndices = null, float4[]? boneWeights = null, uint[]? flags = null)
         {
             var meshImp = _renderContextImp.CreateMeshImp();
             _renderContextImp.SetVertexArrayObject(meshImp);
@@ -271,6 +279,9 @@ namespace Fusee.Engine.Core
 
             if (bitangents != null)
                 _renderContextImp.SetBiTangents(meshImp, bitangents);
+
+            if (flags != null)
+                _renderContextImp.SetFlags(meshImp, flags);
 
             mesh.DisposeData += DisposeMesh;
             meshImp.MeshType = mesh.MeshType;
@@ -317,6 +328,9 @@ namespace Fusee.Engine.Core
 
             if (mesh.BiTangentsSet)
                 _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents.AsReadOnlySpan);
+
+            if (mesh.FlagsSet)
+                _renderContextImp.SetFlags(meshImp, mesh.Flags.AsReadOnlySpan);
 
             //mesh.MeshChanged += MeshChanged; // <- Replace with UpdateGPU method!
 

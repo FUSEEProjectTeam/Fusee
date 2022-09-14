@@ -170,6 +170,16 @@ namespace Fusee.Engine.Common
         void InvalidateBiTangents();
 
         /// <summary>
+        /// Implementation Tasks: Gets a value indicating whether [Flags Set].
+        /// </summary>
+        bool FlagsSet { get; }
+
+        /// <summary>
+        /// Implementation Tasks: Invalidates the flags of the mesh, e.g. reset the buffer object by setting it to 0.
+        /// </summary>
+        void InvalidateFlags();
+
+        /// <summary>
         ///     Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
         /// </summary>
         PrimitiveType MeshType { get; set; }

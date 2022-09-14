@@ -173,8 +173,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="surfaceInput"><see cref="SurfaceInput"/>. Provides the values used to modify the <see cref="SurfaceOut"/>.</param>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
-        public SurfaceEffectBase
-            (SurfaceEffectInput surfaceInput, RenderStateSet renderStateSet = null)
+        public SurfaceEffectBase(SurfaceEffectInput surfaceInput, RenderStateSet? renderStateSet = null)
         {
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
             UniformParameters = new Dictionary<int, IFxParamDeclaration>();

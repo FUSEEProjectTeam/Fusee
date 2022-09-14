@@ -275,6 +275,10 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public MeshAttributes<uint>? Colors2 { get; protected set; }
 
+        /// <summary>
+        /// The vertex flags field
+        /// </summary>
+        public MeshAttributes<uint>? Flags { get; protected set; }
         #endregion
 
         /// <summary>
@@ -297,9 +301,10 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="boneIndices"></param>
         /// <param name="tangents"></param>
         /// <param name="biTangents"></param>
-        /// <pa ram name="colors"></param>
+        /// <param name="colors"></param>
         /// <param name="colors1"></param>
         /// <param name="colors2"></param>
+        /// <param name="flags"></param>
         public Mesh
         (
             ICollection<uint> triangles,
@@ -312,7 +317,8 @@ namespace Fusee.Engine.Core.Scene
             ICollection<float3>? biTangents = null,
             ICollection<uint>? colors = null,
             ICollection<uint>? colors1 = null,
-            ICollection<uint>? colors2 = null)
+            ICollection<uint>? colors2 = null,
+            ICollection<uint>? flags = null)
         {
             Guard.IsGreaterThan(triangles.Count, 0);
             Guard.IsGreaterThan(vertices.Count, 0);
@@ -372,6 +378,12 @@ namespace Fusee.Engine.Core.Scene
             {
                 Guard.IsEqualTo(colors2.Count, vertices.Count);
                 Colors0 = new MeshAttributes<uint>(colors2);
+            }
+
+            if (flags != null)
+            {
+                Guard.IsEqualTo(flags.Count, vertices.Count);
+                Flags = new MeshAttributes<uint>(flags);
             }
 
             BoundingBox = new AABBf(Vertices.AsReadOnlySpan);
@@ -464,6 +476,14 @@ namespace Fusee.Engine.Core.Scene
         ///   <c>true</c> if triangles are set; otherwise, <c>false</c>.
         /// </value>
         public bool TrianglesSet => Triangles?.Length > 0;
+
+        /// <summary>
+        /// Gets a value indicating whether flags are set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if triangles are set; otherwise, <c>false</c>.
+        /// </value>
+        public bool FlagsSet => Flags?.Length > 0;
 
         /// <summary>
         /// The bounding box of this geometry chunk.

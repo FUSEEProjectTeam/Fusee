@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="surfOutFragBody">The method body for the <see cref="SurfaceEffectBase.SurfOutFragMethod"/></param>
         /// <param name="surfOutVertBody">The method body for the <see cref="SurfaceEffectBase.SurfOutVertMethod"/></param>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
-        public SurfaceEffect(SurfaceEffectInput input, RenderFlags renderMod = RenderFlags.None, List<string> surfOutVertBody = null, List<string> surfOutFragBody = null, RenderStateSet rendererStates = null)
+        public SurfaceEffect(SurfaceEffectInput input, RenderFlags renderMod = RenderFlags.None, List<string>? surfOutVertBody = null, List<string>? surfOutFragBody = null, RenderStateSet? rendererStates = null)
             : base(input, rendererStates)
         {
             var inputType = input.GetType();
