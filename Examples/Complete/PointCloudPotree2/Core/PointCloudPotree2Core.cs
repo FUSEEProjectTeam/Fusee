@@ -26,7 +26,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public RenderMode PointRenderMode = RenderMode.StaticMesh;
         public string AssetsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-        public bool RequestedNewFile = false;
 
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
         private const float RotationSpeed = 7;
@@ -54,16 +53,12 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public void OnLoadNewFile(object sender, EventArgs e)
         {
-            if (!RequestedNewFile) return;
-
             _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile), PointRenderMode);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PointRenderingParams.Instance.PointThreshold;
             _pointCloud.Camera = _cam;
 
             _pointCloudNode.Components[3] = _pointCloud;
-
-            RequestedNewFile = false;
         }
 
         public PointCloudPotree2Core(RenderContext rc)
