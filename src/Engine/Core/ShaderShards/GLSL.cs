@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.ShaderShards
 {
     // ReSharper disable once InconsistentNaming
-    internal static class GLSL
+    public static class GLSL
     {
-        internal enum Type
+        public enum Type
         {
             Mat3,
             Mat4,
@@ -27,17 +27,17 @@ namespace Fusee.Engine.Core.ShaderShards
             Void
         }
 
-        internal static string CreateUniform(Type type, string varName)
+        public static string CreateUniform(Type type, string varName)
         {
             return $"uniform {DecodeType(type)} {varName};";
         }
 
-        internal static string CreateOut(Type type, string varName)
+        public static string CreateOut(Type type, string varName)
         {
             return $"out {DecodeType(type)} {varName};\n";
         }
 
-        internal static string CreateIn(Type type, string varName)
+        public static string CreateIn(Type type, string varName)
         {
             return $"in {DecodeType(type)} {varName};\n";
         }
@@ -159,6 +159,8 @@ namespace Fusee.Engine.Core.ShaderShards
             else if (type == typeof(Texture) ||
                 type == typeof(WritableTexture))
                 return "sampler2D";
+            else if (type == typeof(Texture1D))
+                return "sampler1D";
             else if (type == typeof(WritableCubeMap))
                 return "samplerCube";
             else if (type == typeof(WritableArrayTexture))

@@ -31,6 +31,13 @@ namespace Fusee.PointCloud.Core
     public delegate IEnumerable<GpuMesh> GetMeshes(OctantId guid);
 
     /// <summary>
+    /// Delegate for a method that tries to get the mesh(es) of an octant. If they are not cached yet, they should be created an added to the _gpuDataCache.
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns></returns>
+    public delegate IEnumerable<Mesh> GetDynamicMeshes(OctantId guid);
+
+    /// <summary>
     /// Delegate for a method that tries to get the <see cref="InstanceData"/> of an octant. If they are not cached yet, they should be created an added to the _gpuDataCache.
     /// </summary>
     /// <param name="guid"></param>
@@ -100,7 +107,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// First looks in the mesh cache, if there are meshes return, 
+        /// First looks in the mesh cache, if there are meshes return,
         /// else look in the DisposeQueue, if there are meshes return,
         /// else look in the point cache, if there are points create a mesh and add to the _meshCache.
         /// </summary>

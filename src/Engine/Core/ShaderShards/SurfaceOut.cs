@@ -57,7 +57,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// </summary>
         BaseColor = 0,
         /// <summary>
-        /// Use <see cref="VaryingNameDeclarations.Color"/>
+        /// Use <see cref="VaryingNameDeclarations.Color0"/>
         /// </summary>
         VertexColor0,
         /// <summary>

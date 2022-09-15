@@ -59,6 +59,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiImp.Desktop.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Potree\Fusee.PointCloud.Potree.csproj" />
+		<ProjectReference Include="..\Core\Fusee.Examples.PointCloudPotree2.Core.csproj" />
 	</ItemGroup>
 
 </Project>

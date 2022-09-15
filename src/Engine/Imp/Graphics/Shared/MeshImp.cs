@@ -27,6 +27,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public int ElementBufferObject { get; set; }
         public int TangentBufferObject { get; set; }
         public int BitangentBufferObject { get; set; }
+        public int FlagsBufferObject { get; set; }
         public int NElements { get; set; }
 
         #endregion Internal Fields
@@ -104,6 +105,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Invalidates the flags, e.g. reset the FlagsBufferObject of this instance by setting it to 0.
+        /// </summary>
+        public void InvalidateFlags()
+        {
+            FlagsBufferObject = 0;
+        }
+
+        /// <summary>
         /// Gets a value indicating whether [colors set].
         /// </summary>
         /// <value>
@@ -151,13 +160,20 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </value>
         public bool BoneIndicesSet { get { return BoneIndexBufferObject != 0; } }
         /// <summary>
-        /// Returns wether the tangents have been set.
+        /// Returns whether the tangents have been set.
         /// </summary>
-        public bool TangentsSet { get; }
+        public bool TangentsSet { get { return TangentBufferObject != 0; } }
+
         /// <summary>
-        /// Returns wether be bitangents have been set.
+        /// Returns whether the bitangents have been set.
         /// </summary>
-        public bool BiTangentsSet { get; }
+        public bool BiTangentsSet { get { return BitangentBufferObject != 0; } }
+
+        /// <summary>
+        /// Returns whether the flags have been set.
+        /// </summary>
+        public bool FlagsSet { get { return FlagsBufferObject != 0; } }
+
 
         /// <summary>
         /// Invalidates the BoneIndices.

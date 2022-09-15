@@ -6,13 +6,19 @@
     public enum RenderMode
     {
         /// <summary>
-        /// Points are rendered by using gl_PointSize.
+        /// Points are rendered by using gl_PointSize using a static mesh.
         /// </summary>
-        PointSize = 0,
+        StaticMesh = 0,
+
         /// <summary>
-        /// Points are rendered by instanced rendering.
+        /// Points are rendered by instanced rendering. Hardware needs to support geometry shaders.
         /// </summary>
-        Instanced = 1
+        Instanced = 1,
+
+        /// <summary>
+        /// Points are rendered using gl_PointSize using a dynamic (editable) mesh.
+        /// </summary>
+        DynamicMesh = 2
     }
 
     /// <summary>

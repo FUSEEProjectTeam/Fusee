@@ -380,21 +380,31 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
+            if (img is Texture1D)
+                throw new ArgumentException($"Texture1D isn't supported on this platform.");
+            else
+                return CreateTexture((Texture)img);
+
+            throw new ArgumentException($"{img} has an unknown texture type.");
+        }
+
+        private ITextureHandle CreateTexture(Texture tex)
+        {
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
 
-            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var glMinMagFilter = GetMinMagFilter(tex.FilterMode);
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
 
-            var glWrapMode = GetWrapMode(img.WrapMode);
+            var glWrapMode = GetWrapMode(tex.WrapMode);
 
-            var pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
+            var pxInfo = GetTexturePixelInfo(tex.ImageData.PixelFormat);
 
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, pxInfo.RowAlignment);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, tex.ImageData.Width, tex.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, tex.ImageData.PixelData);
 
-            if (img.DoGenerateMipMaps)
+            if (tex.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2D);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
@@ -417,13 +427,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableTexture img)
         {
-
-            if (img is not WritableTexture wt)
-            {
+            if (img is WritableTexture wt)
+                return CreateTexture(wt);
+            if (img is WritableMultisampleTexture)
                 throw new NotSupportedException("Android has no MultisampleWritableTexture support!");
-            }
 
-            return CreateTexture(wt);
+            throw new NotImplementedException($"CreateTexture typeof({img}) not found!");
         }
 
         /// <summary>
@@ -431,7 +440,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(WritableTexture img)
+        private ITextureHandle CreateTexture(WritableTexture img)
         {
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
@@ -655,6 +664,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
             GL.BindAttribLocation(program, AttributeLocations.InstancedColor, UniformNameDeclarations.InstanceColor);
             GL.BindAttribLocation(program, AttributeLocations.InstancedModelMat1, UniformNameDeclarations.InstanceModelMat);
+            GL.BindAttribLocation(program, AttributeLocations.FlagsAttribLocation, UniformNameDeclarations.Flags);
 
             GL.LinkProgram(program);
             return new ShaderHandle { Handle = program };
@@ -1359,7 +1369,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="vertices">The vertices.</param>
         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetVertices(IMeshImp mr, float3[] vertices)
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices)
         {
             if (vertices == null || vertices.Length == 0)
             {
@@ -1374,7 +1384,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
             GL.VertexAttribPointer(AttributeLocations.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), ref MemoryMarshal.GetReference(vertices), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(string.Format(
@@ -1390,7 +1400,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="System.ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetTangents(IMeshImp mr, float4[] tangents)
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents)
         {
             if (tangents == null || tangents.Length == 0)
             {
@@ -1405,7 +1415,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), tangents, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), ref MemoryMarshal.GetReference(tangents), BufferUsage.StaticDraw);
             GL.VertexAttribPointer(AttributeLocations.TangentAttribLocation, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
@@ -1421,7 +1431,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name = "bitangents">The bitangents.</param>
         /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents)
         {
             if (bitangents == null || bitangents.Length == 0)
             {
@@ -1437,13 +1447,43 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
             GL.VertexAttribPointer(AttributeLocations.BitangentAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), bitangents, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), ref MemoryMarshal.GetReference(bitangents), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes));
+        }
 
+        /// <summary>
+        /// Binds the flags onto the GL render context and assigns an buffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name = "flags">The bitangents.</param>
+        /// <exception cref="ArgumentException">Flags must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetFlags(IMeshImp mr, ReadOnlySpan<uint> flags)
+        {
+            if (flags == null || flags.Length == 0)
+            {
+                throw new ArgumentException("Flags must not be null or empty");
+            }
+
+            int flagsBytes = flags.Length;
+            if (((MeshImp)mr).FlagsBufferObject == 0)
+            {
+                GL.GenBuffers(1, out int bufferIdx);
+                ((MeshImp)mr).FlagsBufferObject = bufferIdx;
+            }
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).FlagsBufferObject);
+            GL.VertexAttribPointer(AttributeLocations.FlagsAttribLocation, 1, VertexAttribPointerType.UnsignedInt, false, 0, IntPtr.Zero);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(flagsBytes), ref MemoryMarshal.GetReference(flags), BufferUsage.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
+            if (vboBytes != flagsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading flags buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.",
+                    flagsBytes, vboBytes));
         }
 
         /// <summary>
@@ -1453,7 +1493,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="normals">The normals.</param>
         /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetNormals(IMeshImp mr, float3[] normals)
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals)
         {
             if (normals == null || normals.Length == 0)
             {
@@ -1469,7 +1509,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
             GL.VertexAttribPointer(AttributeLocations.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), ref MemoryMarshal.GetReference(normals), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != normsBytes)
                 throw new ApplicationException(String.Format(
@@ -1484,7 +1524,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="System.ArgumentException">BoneIndices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices)
         {
             if (boneIndices == null || boneIndices.Length == 0)
             {
@@ -1500,7 +1540,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
             GL.VertexAttribPointer(AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), ref MemoryMarshal.GetReference(boneIndices), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != indicesBytes)
                 throw new ApplicationException(String.Format(
@@ -1515,7 +1555,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="System.ArgumentException">BoneWeights must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights)
         {
             if (boneWeights == null || boneWeights.Length == 0)
             {
@@ -1531,7 +1571,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
             GL.VertexAttribPointer(AttributeLocations.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), ref MemoryMarshal.GetReference(boneWeights), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != weightsBytes)
                 throw new ApplicationException(String.Format(
@@ -1546,7 +1586,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetUVs(IMeshImp mr, float2[] uvs)
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs)
         {
             if (uvs == null || uvs.Length == 0)
             {
@@ -1561,7 +1601,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), ref MemoryMarshal.GetReference(uvs), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != uvsBytes)
                 throw new ApplicationException(String.Format(
@@ -1576,7 +1616,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1592,7 +1632,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
             GL.VertexAttribPointer(AttributeLocations.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), ref MemoryMarshal.GetReference(colors), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format(
@@ -1607,7 +1647,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetColors1(IMeshImp mr, uint[] colors)
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1623,7 +1663,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
             GL.VertexAttribPointer(AttributeLocations.Color1AttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), ref MemoryMarshal.GetReference(colors), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format(
@@ -1638,7 +1678,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetColors2(IMeshImp mr, uint[] colors)
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1653,7 +1693,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), ref MemoryMarshal.GetReference(colors), BufferUsage.StaticDraw);
             GL.VertexAttribPointer(AttributeLocations.Color2AttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
@@ -1669,14 +1709,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<uint> triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
             {
                 throw new ArgumentException("triangleIndices must not be null or empty");
             }
             ((MeshImp)mr).NElements = triangleIndices.Length;
-            int trisBytes = triangleIndices.Length * sizeof(short);
+            int trisBytes = triangleIndices.Length * sizeof(uint);
 
             if (((MeshImp)mr).ElementBufferObject == 0)
             {
@@ -1685,7 +1725,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices,
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), ref MemoryMarshal.GetReference(triangleIndices),
                 BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ElementArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != trisBytes)
@@ -1831,6 +1871,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveFlags(IMeshImp mr)
+        {
+            int bufferObj = ((MeshImp)mr).FlagsBufferObject;
+            GL.DeleteBuffers(1, ref bufferObj);
+            ((MeshImp)mr).InvalidateFlags();
+        }
+
+        /// <summary>
         /// Defines a barrier ordering memory transactions. At the moment it will insert all supported barriers.
         /// </summary>
         public void MemoryBarrier()
@@ -1934,7 +1985,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     GL.DisableVertexAttribArray(AttributeLocations.InstancedColor);
                 }
                 else
-                    GL.DrawElements((BeginMode)oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    GL.DrawElements((BeginMode)oglPrimitiveType, ((MeshImp)mr).NElements, DrawElementsType.UnsignedInt, IntPtr.Zero);
             }
 
             if (((MeshImp)mr).VertexBufferObject != 0)

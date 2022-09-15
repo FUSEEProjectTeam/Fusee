@@ -866,9 +866,8 @@ namespace Fusee.Examples.Labyrinth.Core
 
             var wallX = mazeScene.Children.FindNodes(node => node.Name == "WallX")?.FirstOrDefault()?.GetMesh();
             _wallXbox = wallX.BoundingBox.Size.xyz;
-
             var ball = mazeScene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault()?.GetMesh();
-            _ballradius = ball.BoundingBox.Size.x / 2;
+            _ballradius = ball.BoundingBox.Size.x / 2f;
 
             _groundbox = new float2(_wallXbox.x, _wallZbox.z);
         }

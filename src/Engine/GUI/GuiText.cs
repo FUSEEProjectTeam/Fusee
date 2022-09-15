@@ -39,7 +39,7 @@ namespace Fusee.Engine.Gui
         /// <summary>
         /// The Triangles per line of text.
         /// </summary>
-        public List<List<ushort>> LineTriangles { get; private set; }
+        public List<List<uint>> LineTriangles { get; private set; }
 
         /// <summary>
         /// The Normals per line of text.
@@ -52,7 +52,7 @@ namespace Fusee.Engine.Gui
         public List<List<float2>> LineUVs { get; private set; }
 
         /// <summary>
-        /// Defines the <see cref="HorizontalAlignment"/> of the text. 
+        /// Defines the <see cref="HorizontalAlignment"/> of the text.
         /// This is needed here because it changes the shape of the mesh.
         /// The mesh's vertices will be recalculated the value is set.
         /// </summary>
@@ -77,7 +77,7 @@ namespace Fusee.Engine.Gui
         /// </summary>
         public float Height { get; private set; }
 
-        //The min and max coordinates of the bounding box, as received from the font imp.      
+        //The min and max coordinates of the bounding box, as received from the font imp.
         private float2 _min;
         private float2 _max;
 
@@ -86,7 +86,7 @@ namespace Fusee.Engine.Gui
         /// </summary>
         /// <param name="fontMap"></param>
         /// <param name="text"></param>
-        /// <param name="horizontalAlignment">Defines the <see cref="HorizontalAlignment"/> of the text. 
+        /// <param name="horizontalAlignment">Defines the <see cref="HorizontalAlignment"/> of the text.
         /// This is needed here because it changes the shape of the mesh.</param>
         public GuiText(FontMap fontMap, string text, HorizontalTextAlignment horizontalAlignment)
         {
@@ -100,7 +100,7 @@ namespace Fusee.Engine.Gui
         private void Merge()
         {
             var allVerts = new List<float3>();
-            var allTriangles = new List<ushort>();
+            var allTriangles = new List<uint>();
             var allNormals = new List<float3>();
             var allUvs = new List<float2>();
 
@@ -159,10 +159,10 @@ namespace Fusee.Engine.Gui
                 allUvs.AddRange(LineUVs[i]);
             }
 
-            Triangles = allTriangles.ToArray();
-            Vertices = allVerts.ToArray();
-            Normals = allNormals.ToArray();
-            UVs = allUvs.ToArray();
+            Triangles = new MeshAttributes<uint>(allTriangles);
+            Vertices = new MeshAttributes<float3>(allVerts);
+            Normals = new MeshAttributes<float3>(allNormals);
+            UVs = new MeshAttributes<float2>(allUvs);
 
         }
 
@@ -172,13 +172,13 @@ namespace Fusee.Engine.Gui
                 throw new ArgumentException("Can not create Text Mesh - FontMap not found!");
 
             LineVertices = new List<List<float3>>();
-            LineTriangles = new List<List<ushort>>();
+            LineTriangles = new List<List<uint>>();
             LineNormals = new List<List<float3>>();
             LineUVs = new List<List<float2>>();
 
             var verts = new List<float3>();
             var uvs = new List<float2>();
-            var tris = new List<ushort>();
+            var tris = new List<uint>();
             var normals = new List<float3>();
 
             // build complete structure
@@ -189,7 +189,7 @@ namespace Fusee.Engine.Gui
             var advanceX = 0f;
             var advanceY = 0f;
 
-            var lineBreakOffset = _fontMap.PixelHeight * 1.5f; //TODO: add user-field. At the moment we have a fixed line height of 150% of pixel height, 
+            var lineBreakOffset = _fontMap.PixelHeight * 1.5f; //TODO: add user-field. At the moment we have a fixed line height of 150% of pixel height,
             var lineCnt = 0;
 
             _min = float2.One * float.MaxValue;
@@ -282,7 +282,7 @@ namespace Fusee.Engine.Gui
 
                     verts = new List<float3>();
                     uvs = new List<float2>();
-                    tris = new List<ushort>();
+                    tris = new List<uint>();
                     normals = new List<float3>();
 
                 }

@@ -1,6 +1,7 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Examples.PointCloudPotree2.Core;
 using Fusee.ImGuiImp.Desktop;
 using Fusee.ImGuiImp.Desktop.Templates;
 using Fusee.PointCloud.Common;
@@ -41,7 +42,7 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
         private bool _wantsToShutdown;
 
 
-        private PointCloudRendering _fuControl;
+        private PointCloudRenderingControl _fuControl;
         private ImGuiFilePicker _picker;
 
         #endregion
@@ -50,7 +51,7 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
         {
             SetImGuiDesign();
 
-            _fuControl = new PointCloudRendering(RC);
+            _fuControl = new PointCloudRenderingControl(RC);
             ApplicationIsShuttingDown += OnShuttingDown;
             EndOfFrame += _fuControl.OnLoadNewFile;
             _fuControl.Init();
@@ -71,7 +72,6 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
                     _currentColorMode = 0;
                 }
             };
-
         }
 
         public override void Update()

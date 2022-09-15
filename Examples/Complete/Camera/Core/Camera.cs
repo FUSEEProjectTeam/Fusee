@@ -179,7 +179,7 @@ namespace Fusee.Examples.Camera.Core
         public override void RenderAFrame()
         {
             float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out _) * float4x4.Invert(_mainCamTransform.Matrix);
-            _frustum.Vertices = FrustumF.CalculateFrustumCorners(viewProjection).ToArray();
+            _frustum.Vertices.SetAttributeData(FrustumF.CalculateFrustumCorners(viewProjection).ToArray());
 
             FrustumF frustum = new();
             frustum.CalculateFrustumPlanes(viewProjection);

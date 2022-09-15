@@ -30,6 +30,7 @@ namespace Fusee.Engine.Imp.Blazor
         internal WebGLBuffer ElementBufferObject;
         internal WebGLBuffer TangentBufferObject;
         internal WebGLBuffer BitangentBufferObject;
+        internal WebGLBuffer FlagsBufferObject;
         internal int NElements;
         #endregion
 
@@ -178,11 +179,19 @@ namespace Fusee.Engine.Imp.Blazor
         }
 
         /// <summary>
-        /// Removes the third color array object from GPU
+        /// Removes the third color buffer from GPU
         /// </summary>
         public void InvalidateColors2()
         {
             Color2BufferObject = null;
+        }
+
+        /// <summary>
+        /// Removes the flags buffer from the GPU.
+        /// </summary>
+        public void InvalidateFlags()
+        {
+            FlagsBufferObject = null;
         }
 
         /// <summary>
@@ -212,6 +221,11 @@ namespace Fusee.Engine.Imp.Blazor
         /// Returns whether the third color buffer is created on the GPU.
         /// </summary>
         public bool ColorsSet2 => Color2BufferObject != null;
+
+        /// <summary>
+        /// Returns whether the flags buffer is created on the GPU.
+        /// </summary>
+        public bool FlagsSet => FlagsBufferObject != null;
 
         #endregion
     }

@@ -1,5 +1,6 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
@@ -219,14 +220,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <param name="icon">The window icon to use</param>
         /// <param name="startVisible">Define if window is visible from the start, default: true.</param>
         /// <param name="width">Width of the game window.</param>
         /// <param name="height">Height of the game window.</param>
         /// <param name="minWidth"></param>
         /// <param name="minHeight"></param>
-        public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false, bool startVisible = true, int width = 1280, int height = 720, int minWidth = 360, int minHeight = 640)
+        public RenderCanvasImp(ImageData icon = null, bool startVisible = true, int width = 1280, int height = 720, int minWidth = 360, int minHeight = 640)
         {
             //TODO: Select correct monitor
             MonitorInfo mon = Monitors.GetMonitors()[0];
@@ -241,12 +241,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible, minWidth, minHeight);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, startVisible, minWidth, minHeight);
 
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible, minWidth, minHeight);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, startVisible, minWidth, minHeight);
             }
 
             WindowHandle = new WindowHandle()
@@ -255,9 +255,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
 
             _gameWindow.CenterWindow();
-
-            if (_gameWindow.IsMultiThreaded)
-                _gameWindow.Context.MakeNoneCurrent();
 
             // convert icon to OpenTKImage
             if (icon != null)
@@ -279,17 +276,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="width">The width of the render window.</param>
         /// <param name="height">The height of the render window.</param>
-        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <remarks>The window created by this constructor is not visible. Should only be used for internal testing.</remarks>
-        public RenderCanvasImp(int width, int height, bool isMultithreaded = false)
+        public RenderCanvasImp(int width, int height)
         {
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, true, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, true);
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
 
             WindowHandle = new WindowHandle()
@@ -298,9 +294,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
 
             _gameWindow.IsVisible = false;
-
-            if (_gameWindow.IsMultiThreaded)
-                _gameWindow.Context.MakeNoneCurrent();
         }
 
         #endregion
@@ -330,6 +323,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #endregion
 
         #region Members
+
+        /// <summary>
+        /// Makes no GraphicsContext current on the calling thread.
+        /// Needed in multi-threaded applications if one thread creates the app but it is run on another: call this after <see cref="RenderCanvas.InitApp"/>.
+        /// </summary>
+        public void MakeNonCurrent()
+        {
+            _gameWindow.Context.MakeNoneCurrent();
+        }
+
+        /// <summary>
+        /// Makes the GraphicsContext current on the calling thread.
+        /// </summary>
+        public void MakeCurrent()
+        {
+            _gameWindow.Context.MakeCurrent();
+        }
 
         /// <summary>
         /// Does the initialize of this instance.
@@ -502,8 +512,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public SixLabors.ImageSharp.Image ShootCurrentFrame(int width, int height)
         {
             var mem = new byte[width * height * 4];
-
-            //_gameWindow.Context.MakeCurrent();
 
             GL.Flush();
             //GL.PixelStore(PixelStoreParameter.PackRowLength, 1);

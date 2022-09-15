@@ -14,14 +14,12 @@ using System.Threading.Tasks;
 namespace Fusee.Tests.Render.Desktop
 {
 
-    public class Program
+    public static class Program
     {
         private const int height = 512;
         private const int width = 512;
 
-        private static RenderCanvas example;
-
-        public static RenderCanvas Example { get => example; set => example = value; }
+        public static RenderCanvas Example { get; set; }
 
         public static string FilePath;
 
@@ -75,7 +73,7 @@ namespace Fusee.Tests.Render.Desktop
                 var app = Example;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(null, false, false, width, height, width, height)
+                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(null, false, width, height, width, height)
                 {
                     EnableBlending = true
                 };
@@ -104,7 +102,7 @@ namespace Fusee.Tests.Render.Desktop
                 img.SaveAsPng(Path.Combine(FilePath, arg));
 
                 // Done
-                Console.Error.WriteLine($"SUCCESS: Image {arg} generated.");
+                Console.Error.WriteLine($"SUCCESS: Image {Path.Combine(FilePath, arg)} generated.");
 
                 app.CloseGameWindow();
             }

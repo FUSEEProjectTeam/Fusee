@@ -31,6 +31,8 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 GLSL.CreateIn(GLSL.Type.Mat4, UniformNameDeclarations.InstanceModelMat),
                 GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.InstanceColor),
 
+                GLSL.CreateIn(GLSL.Type.Int, UniformNameDeclarations.Flags),
+
             };
 
             if (texSetup.HasFlag(TextureSetup.NormalMap))

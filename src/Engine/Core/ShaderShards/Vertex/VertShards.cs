@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// </summary>
         /// <param name="surfInput">The surface input class. Needed to receive the shading model.</param>
         /// <returns></returns>
-        internal static List<string> SurfOutBody(SurfaceEffectInput surfInput)
+        public static List<string> SurfOutBody(SurfaceEffectInput surfInput)
         {
             var res = new List<string>();
             switch (surfInput.ShadingModel)
@@ -40,7 +40,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// <summary>
         /// Returns a default method body for the vertex shaders "ChangeSurf" method.
         /// </summary>
-        internal static List<string> SurfOutBody(ShadingModel shadingModel, bool doRenderBillboards)
+        public static List<string> SurfOutBody(ShadingModel shadingModel, bool doRenderBillboards)
         {
             var res = new List<string>();
             switch (shadingModel)

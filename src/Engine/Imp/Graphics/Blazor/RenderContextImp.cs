@@ -280,21 +280,31 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
+            if (img is Texture1D)
+                throw new ArgumentException($"Texture1D isn't supported on this platform.");
+            else
+                return CreateTexture((Texture)img);
+
+            throw new ArgumentException($"{img} has an unknown texture type.");
+        }
+
+        private ITextureHandle CreateTexture(Texture tex)
+        {
             WebGLTexture id = gl2.CreateTexture();
 
             gl2.BindTexture(TEXTURE_2D, id);
 
-            Tuple<int, int> glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            Tuple<int, int> glMinMagFilter = GetMinMagFilter(tex.FilterMode);
             var minFilter = glMinMagFilter.Item1;
             var maxFilter = glMinMagFilter.Item2;
 
-            int glWrapMode = GetWrapMode(img.WrapMode);
-            TexturePixelInfo pxInfo = GetTexturePixelInfo(img.ImageData.PixelFormat);
+            int glWrapMode = GetWrapMode(tex.WrapMode);
+            TexturePixelInfo pxInfo = GetTexturePixelInfo(tex.ImageData.PixelFormat);
 
             gl2.PixelStorei(UNPACK_ALIGNMENT, pxInfo.RowAlignment);
-            gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.ImageData.Width, img.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, img.ImageData.PixelData);
+            gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, tex.ImageData.Width, tex.ImageData.Height, 0, pxInfo.Format, pxInfo.PxType, tex.ImageData.PixelData);
 
-            if (img.DoGenerateMipMaps && img.ImageData.PixelFormat.ColorFormat != ColorFormat.Intensity)
+            if (tex.DoGenerateMipMaps && tex.ImageData.PixelFormat.ColorFormat != ColorFormat.Intensity)
                 gl2.GenerateMipmap(TEXTURE_2D);
 
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, minFilter);
@@ -305,7 +315,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             uint err = gl2.GetError();
             if (err != 0)
-                throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {img.ImageData.PixelFormat.ColorFormat}, BPP {img.ImageData.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
+                throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {tex.ImageData.PixelFormat.ColorFormat}, BPP {tex.ImageData.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
 
 
             ITextureHandle texID = new TextureHandle { TexId = id };
@@ -319,12 +329,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableTexture img)
         {
-            if (img is not WritableTexture wt)
-            {
-                throw new NotSupportedException("Blazor has no MultisampleWritableTexture support!");
-            }
+            if (img is WritableTexture wt)
+                return CreateTexture(wt);
+            if (img is WritableMultisampleTexture)
+                throw new NotSupportedException("Android has no MultisampleWritableTexture support!");
 
-            return CreateTexture(wt);
+            throw new NotImplementedException($"CreateTexture typeof({img}) not found!");
         }
 
         /// <summary>
@@ -332,7 +342,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(WritableTexture img)
+        private ITextureHandle CreateTexture(WritableTexture img)
         {
             WebGLTexture id = gl2.CreateTexture();
             gl2.BindTexture(TEXTURE_2D, id);
@@ -516,6 +526,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.BindAttribLocation(program, (uint)AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.InstancedColor, UniformNameDeclarations.InstanceColor);
             gl2.BindAttribLocation(program, (uint)AttributeLocations.InstancedModelMat1, UniformNameDeclarations.InstanceModelMat);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.FlagsAttribLocation, UniformNameDeclarations.Flags);
 
             gl2.LinkProgram(program);
 
@@ -1085,7 +1096,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="vertices">The vertices.</param>
         /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetVertices(IMeshImp mr, float3[] vertices)
+        public void SetVertices(IMeshImp mr, ReadOnlySpan<float3> vertices)
         {
             if (vertices == null || vertices.Length == 0)
             {
@@ -1264,7 +1275,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTangents(IMeshImp mr, float4[] tangents)
+        public void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents)
         {
             if (tangents == null || tangents.Length == 0)
             {
@@ -1306,7 +1317,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="bitangents">The BiTangents.</param>
         /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        public void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents)
         {
             if (bitangents == null || bitangents.Length == 0)
             {
@@ -1352,7 +1363,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="normals">The normals.</param>
         /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetNormals(IMeshImp mr, float3[] normals)
+        public void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals)
         {
             if (normals == null || normals.Length == 0)
             {
@@ -1399,7 +1410,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="ArgumentException">BoneIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        public void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices)
         {
             if (boneIndices == null || boneIndices.Length == 0)
             {
@@ -1446,7 +1457,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="ArgumentException">BoneWeights must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        public void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights)
         {
             if (boneWeights == null || boneWeights.Length == 0)
             {
@@ -1494,7 +1505,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="ArgumentException">UVs must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetUVs(IMeshImp mr, float2[] uvs)
+        public void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs)
         {
             if (uvs == null || uvs.Length == 0)
             {
@@ -1540,7 +1551,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1554,7 +1565,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
             gl2.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
-            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, colors.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1567,7 +1578,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors1(IMeshImp mr, uint[] colors)
+        public void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1581,7 +1592,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color1BufferObject);
             gl2.VertexAttribPointer((uint)AttributeLocations.Color1AttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
-            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, colors.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
@@ -1594,7 +1605,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="colors">The colors.</param>
         /// <exception cref="ArgumentException">colors must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetColors2(IMeshImp mr, uint[] colors)
+        public void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors)
         {
             if (colors == null || colors.Length == 0)
             {
@@ -1608,10 +1619,37 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).Color2BufferObject);
             gl2.VertexAttribPointer((uint)AttributeLocations.Color2AttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
-            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, colors.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
+        }
+
+        /// <summary>
+        /// Binds the lags onto the GL render context and assigns an buffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="flags">The flags.</param>
+        /// <exception cref="ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetFlags(IMeshImp mr, ReadOnlySpan<uint> flags)
+        {
+            if (flags == null || flags.Length == 0)
+            {
+                throw new ArgumentException("Flags must not be null or empty");
+            }
+
+            int vboBytes;
+            int flagsBytes = flags.Length * sizeof(uint);
+            if (((MeshImp)mr).FlagsBufferObject == null)
+                ((MeshImp)mr).FlagsBufferObject = gl2.CreateBuffer();
+
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).FlagsBufferObject);
+            gl2.VertexAttribPointer((uint)AttributeLocations.FlagsAttribLocation, 1, UNSIGNED_INT, true, 0, 0);
+            gl2.BufferData(ARRAY_BUFFER, flags.ToArray(), STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            if (vboBytes != flagsBytes)
+                throw new ApplicationException(string.Format("Problem uploading flags buffer to VBO (flags). Tried to upload {0} bytes, uploaded {1}.", flagsBytes, vboBytes));
         }
 
         /// <summary>
@@ -1621,7 +1659,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ReadOnlySpan<uint> triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
             {
@@ -1629,13 +1667,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
             ((MeshImp)mr).NElements = triangleIndices.Length;
             int vboBytes;
-            int trisBytes = triangleIndices.Length * sizeof(short);
+            int trisBytes = triangleIndices.Length * sizeof(uint);
 
             if (((MeshImp)mr).ElementBufferObject == null)
                 ((MeshImp)mr).ElementBufferObject = gl2.CreateBuffer();
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
-            gl2.BufferData(ELEMENT_ARRAY_BUFFER, triangleIndices, STATIC_DRAW);
+            gl2.BufferData(ELEMENT_ARRAY_BUFFER, triangleIndices.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ELEMENT_ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
@@ -1762,6 +1800,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.DeleteBuffer(((MeshImp)mr).BitangentBufferObject);
             ((MeshImp)mr).InvalidateBiTangents();
         }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveFlags(IMeshImp mr)
+        {
+            gl2.DeleteBuffer(((MeshImp)mr).FlagsBufferObject);
+            ((MeshImp)mr).InvalidateFlags();
+        }
+
         /// <summary>
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
@@ -1845,7 +1894,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat3, 4, FLOAT, false, sizeOfMat, (uint)(2 * sizeOfFloat4));
                     gl2.VertexAttribPointer((uint)AttributeLocations.InstancedModelMat4, 4, FLOAT, false, sizeOfMat, (uint)(3 * sizeOfFloat4));
 
-                    gl2.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0U, instanceData.Amount);
+                    gl2.DrawElementsInstanced(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_BYTE, 0U, instanceData.Amount);
 
                     gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat1);
                     gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedModelMat2);
@@ -1854,7 +1903,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     gl2.DisableVertexAttribArray((uint)AttributeLocations.InstancedColor);
                 }
                 else
-                    gl2.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                    gl2.DrawElements(oglPrimitiveType, ((MeshImp)mr).NElements, UNSIGNED_INT, 0);
             }
 
             gl2.BindBuffer(ARRAY_BUFFER, null);
