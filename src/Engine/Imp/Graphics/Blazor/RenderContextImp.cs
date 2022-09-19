@@ -1850,6 +1850,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             if (((MeshImp)mr).BoneWeightBufferObject != null)
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.BoneWeightAttribLocation);
 
+            if (((MeshImp)mr).FlagsBufferObject != null)
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.FlagsAttribLocation);
+
             if (((MeshImp)mr).ElementBufferObject != null)
             {
                 gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
@@ -1929,7 +1932,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 gl2.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
 
             if (((MeshImp)mr).BitangentBufferObject != null)
-                gl2.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.BitangentAttribLocation);
+
+            if (((MeshImp)mr).FlagsBufferObject != null)
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.FlagsAttribLocation);
 
             gl2.BindVertexArray(null);
 

@@ -1930,6 +1930,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.EnableVertexAttribArray(AttributeLocations.BoneIndexAttribLocation);
             if (((MeshImp)mr).BoneWeightBufferObject != 0)
                 GL.EnableVertexAttribArray(AttributeLocations.BoneWeightAttribLocation);
+            if (((MeshImp)mr).FlagsBufferObject != 0)
+                GL.EnableVertexAttribArray(AttributeLocations.FlagsAttribLocation);
 
 
             if (((MeshImp)mr).ElementBufferObject != 0)
@@ -2008,6 +2010,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.DisableVertexAttribArray(AttributeLocations.BoneIndexAttribLocation);
             if (((MeshImp)mr).BoneWeightBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.BoneWeightAttribLocation);
+            if (((MeshImp)mr).FlagsBufferObject != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.FlagsAttribLocation);
 
             GL.BindVertexArray(0);
 
