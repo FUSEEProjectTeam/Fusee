@@ -1969,7 +1969,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             if (flags == null || flags.Length == 0)
             {
-                throw new ArgumentException("Falgs must not be null or empty");
+                throw new ArgumentException("Flags must not be null or empty");
             }
 
             int sizeOfFlag = sizeof(uint);
@@ -2259,6 +2259,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.EnableVertexArrayAttrib(vao, AttributeLocations.BoneIndexAttribLocation);
             if (((MeshImp)mr).BoneWeightBufferObject != 0)
                 GL.EnableVertexArrayAttrib(vao, AttributeLocations.BoneWeightAttribLocation);
+            if (((MeshImp)mr).FlagsBufferObject != 0)
+                GL.EnableVertexArrayAttrib(vao, AttributeLocations.FlagsAttribLocation);
 
             if (((MeshImp)mr).ElementBufferObject == 0) throw new ApplicationException("Element/Index buffer not initialized!");
             var oglPrimitiveType = ((MeshImp)mr).MeshType switch
@@ -2323,6 +2325,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.BoneIndexAttribLocation);
             if (((MeshImp)mr).BoneWeightBufferObject != 0)
                 GL.DisableVertexArrayAttrib(vao, AttributeLocations.BoneWeightAttribLocation);
+            if (((MeshImp)mr).FlagsBufferObject != 0)
+                GL.DisableVertexArrayAttrib(vao, AttributeLocations.FlagsAttribLocation);
 
             GL.BindVertexArray(0);
         }
