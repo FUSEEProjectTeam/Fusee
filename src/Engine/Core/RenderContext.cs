@@ -2087,7 +2087,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, uint[] triangles = null,
             float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null, float2[] uvs = null,
-            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)
+            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null, uint[] flags = null)
         {
             var mesh = new GpuMesh
             {
@@ -2096,7 +2096,7 @@ namespace Fusee.Engine.Core
             };
             _meshManager.RegisterNewMesh(mesh, vertices, triangles, uvs,
             normals, colors, colors1, colors2,
-            tangents, bitangents, boneIndices, boneWeights);
+            tangents, bitangents, boneIndices, boneWeights, flags);
             return mesh;
         }
 
