@@ -1988,7 +1988,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.NamedBufferStorage(fBo, flagsBytes, ref MemoryMarshal.GetReference(flags), BufferStorageFlags.DynamicStorageBit);
                 GL.VertexArrayVertexBuffer(vao, AttributeLocations.FlagsBindingIndex, fBo, IntPtr.Zero, sizeOfFlag);
 
-                GL.VertexArrayAttribFormat(vao, AttributeLocations.FlagsAttribLocation, 1, VertexAttribType.UnsignedInt, true, 0);
+                GL.VertexArrayAttribIFormat(vao, AttributeLocations.FlagsAttribLocation, 1, VertexAttribIntegerType.UnsignedInt, 0);
                 GL.VertexArrayAttribBinding(vao, AttributeLocations.FlagsAttribLocation, AttributeLocations.FlagsBindingIndex);
             }
             else

@@ -1645,7 +1645,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ((MeshImp)mr).FlagsBufferObject = gl2.CreateBuffer();
 
             gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).FlagsBufferObject);
-            gl2.VertexAttribPointer((uint)AttributeLocations.FlagsAttribLocation, 1, UNSIGNED_INT, true, 0, 0);
+            gl2.VertexAttribIPointer((uint)AttributeLocations.FlagsAttribLocation, 1, UNSIGNED_INT, 0, 0);
             gl2.BufferData(ARRAY_BUFFER, flags.ToArray(), STATIC_DRAW);
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != flagsBytes)

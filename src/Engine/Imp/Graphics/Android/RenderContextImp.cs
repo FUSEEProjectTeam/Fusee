@@ -1477,7 +1477,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).FlagsBufferObject);
-            GL.VertexAttribPointer(AttributeLocations.FlagsAttribLocation, 1, VertexAttribPointerType.UnsignedInt, false, 0, IntPtr.Zero);
+            GL.VertexAttribIPointer(AttributeLocations.FlagsAttribLocation, 1, VertexAttribIntegerType.UnsignedInt, 0, IntPtr.Zero);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(flagsBytes), ref MemoryMarshal.GetReference(flags), BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != flagsBytes)
