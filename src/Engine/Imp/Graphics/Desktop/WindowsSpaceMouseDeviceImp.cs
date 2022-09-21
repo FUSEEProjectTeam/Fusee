@@ -86,44 +86,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// You can register handlers but they will never get called.
         /// </summary>
         public event EventHandler<NewDeviceImpConnectedArgs> NewDeviceConnected;
-#pragma warning restore 0067
-
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        /// <summary>
-        /// Part of the Dispose pattern.
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-
-                }
-
-                disposedValue = true;
-            }
-        }
-
-
-        ~WindowsSpaceMouseDriverImp()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Part of the dispose pattern.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 
     /// <summary>

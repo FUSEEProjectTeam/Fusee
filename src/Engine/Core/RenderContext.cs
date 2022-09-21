@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
     /// many similarities in this class' methods and properties.
     /// </summary>
-    public class RenderContext : IDisposable
+    public class RenderContext
     {
         /// <summary>
         /// The color to use when clearing the color buffer.
@@ -82,7 +82,6 @@ namespace Fusee.Engine.Core
 
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
-        private bool _disposed;
 
         /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
@@ -1207,7 +1206,6 @@ namespace Fusee.Engine.Core
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamImage(param, textureHandle, TextureType.Image2D, texture.PixelFormat);
-
         }
 
         /// <summary>
@@ -1230,6 +1228,17 @@ namespace Fusee.Engine.Core
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
+        }
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texture">An ITexture.</param>
+        private void SetShaderParamTexture(IUniformHandle param, Texture1D texture)
+        {
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture1D);
         }
 
         /// <summary>
@@ -1611,6 +1620,7 @@ namespace Fusee.Engine.Core
                         SetShaderParamImage(param.Handle, wt);
                     else
                         SetShaderParamTexture(param.Handle, wt);
+
                 }
                 else if (val is WritableMultisampleTexture wmst)
                 {
@@ -1618,7 +1628,10 @@ namespace Fusee.Engine.Core
                 }
                 else if (val is ITexture tex)
                 {
-                    SetShaderParamTexture(param.Handle, (Texture)tex);
+                    if (tex.GetType() == typeof(Texture1D))
+                        SetShaderParamTexture(param.Handle, (Texture1D)tex);
+                    else
+                        SetShaderParamTexture(param.Handle, (Texture)tex);
                 }
                 else if (val is IStorageBuffer buffer)
                 {
@@ -1665,6 +1678,7 @@ namespace Fusee.Engine.Core
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableTexture)writableTex);
                         _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
+
                     }
                     else if (val is WritableMultisampleTexture writableMultTex)
                     {
@@ -1673,8 +1687,16 @@ namespace Fusee.Engine.Core
                     }
                     else if (val is ITexture tex)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture)tex);
-                        _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
+                        if (tex.GetType() == typeof(Texture1D))
+                        {
+                            ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture1D)tex);
+                            _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture1D);
+                        }
+                        else
+                        {
+                            ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture)tex);
+                            _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
+                        }
                     }
                     else if (val is IWritableTexture[] writableTexArray)
                     {
@@ -1961,11 +1983,6 @@ namespace Fusee.Engine.Core
             UpdateAllActiveFxParams(cFx);
 
             _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
-
-            // After rendering always cleanup pending meshes, textures and shader effects
-            _meshManager.Cleanup();
-            _textureManager.Cleanup();
-            _effectManager.Cleanup();
         }
 
         /// <summary>
@@ -1993,11 +2010,6 @@ namespace Fusee.Engine.Core
             }
             else
                 _rci.Render(meshImp, null);
-
-            // After rendering always cleanup pending meshes, textures and shader effects
-            _meshManager.Cleanup();
-            _textureManager.Cleanup();
-            _effectManager.Cleanup();
         }
 
         /// <summary>
@@ -2018,11 +2030,24 @@ namespace Fusee.Engine.Core
 
             var meshImp = _meshManager.GetImpFromMesh(mesh);
             _rci.Render(meshImp);
+        }
 
-            // After rendering always cleanup pending meshes, textures and shader effects
+        /// <summary>
+        /// After rendering always cleanup pending meshes, textures and shader effects
+        /// </summary>
+        internal void CleanupResourceManagers()
+        {
             _meshManager.Cleanup();
             _textureManager.Cleanup();
             _effectManager.Cleanup();
+        }
+
+        /// <summary>
+        /// Calls the mesh manager which traverses all known meshes and updates GPU data if necessary
+        /// </summary>
+        internal void UpdateAllMeshes()
+        {
+            _meshManager.UpdateAllMeshes();
         }
 
         private void CalculateClippingPlanesFromProjection(out float2 clippingPlanes)
@@ -2060,9 +2085,9 @@ namespace Fusee.Engine.Core
         /// <param name="boneIndices">The bone indices of the mesh.</param>
         /// <param name="boneWeights">The bone weights of the mesh.</param>
         /// <returns></returns>
-        public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, ushort[] triangles = null,
+        public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, uint[] triangles = null,
             float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null, float2[] uvs = null,
-            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)
+            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null, uint[] flags = null)
         {
             var mesh = new GpuMesh
             {
@@ -2071,50 +2096,10 @@ namespace Fusee.Engine.Core
             };
             _meshManager.RegisterNewMesh(mesh, vertices, triangles, uvs,
             normals, colors, colors1, colors2,
-            tangents, bitangents, boneIndices, boneWeights);
+            tangents, bitangents, boneIndices, boneWeights, flags);
             return mesh;
         }
 
         #endregion
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <param name="disposing">If disposing equals true, the method has been called directly
-        /// or indirectly by a user's code. Managed and unmanaged resources
-        /// can be disposed.
-        /// If disposing equals false, the method has been called by the
-        /// runtime from inside the finalizer and you should not reference
-        /// other objects. Only unmanaged resources can be disposed.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            // Check to see if Dispose has already been called.
-            if (!_disposed)
-            {
-                _effectManager.Dispose();
-                _textureManager.Dispose();
-                _meshManager.Dispose();
-
-                // Note disposing has been done.
-                _disposed = true;
-            }
-        }
-
-        /// <summary>
-        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
-        /// </summary>
-        ~RenderContext()
-        {
-            Dispose(disposing: false);
-        }
     }
 }

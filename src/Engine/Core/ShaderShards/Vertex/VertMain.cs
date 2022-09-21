@@ -55,19 +55,35 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// <returns></returns>
         public static string VertexMain(ShadingModel shadingModel, TextureSetup texSetup, RenderFlags renderMod)
         {
-            var vertMainBody = new List<string>
+            var vertMainBody = new List<string>();
+            if (renderMod.HasFlag(RenderFlags.Instanced) && !renderMod.HasFlag(RenderFlags.PointCloud))
+            {
+                vertMainBody.Add($"{VaryingNameDeclarations.Color0} = {UniformNameDeclarations.InstanceColor};");
+            }
+            else if (renderMod.HasFlag(RenderFlags.Instanced) && renderMod.HasFlag(RenderFlags.PointCloud))
+            {
+                vertMainBody.Add($"{VaryingNameDeclarations.Color0} = {UniformNameDeclarations.InstanceColor};");
+            }
+            else
+            {
+                vertMainBody.Add($"{VaryingNameDeclarations.Color0} = {UniformNameDeclarations.VertexColor};");
+            }
+
+            vertMainBody.Add($"{VaryingNameDeclarations.Color1} = {UniformNameDeclarations.VertexColor1};");
+            vertMainBody.Add($"{VaryingNameDeclarations.Color2} = {UniformNameDeclarations.VertexColor2};");
+            vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
+
+            vertMainBody.AddRange(new List<string>
             {
                 $"{VaryingNameDeclarations.SurfOutVaryingName} = {SurfaceEffectNameDeclarations.ChangeSurfVert}();",
                 $"vec4 changedVert = {VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
 
-            };
+            });
 
             if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
             {
                 vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({UniformNameDeclarations.ITModelView}* vec4({VaryingNameDeclarations.SurfOutVaryingName}.normal, 0.0)));");
             }
-
-            vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
 
             if (texSetup.HasFlag(TextureSetup.NormalMap))
             {
@@ -81,25 +97,17 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             {
                 vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * changedVert;");
                 vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Projection} * {UniformNameDeclarations.View} * ({UniformNameDeclarations.InstanceModelMat} * {UniformNameDeclarations.Model}) * changedVert;");
-                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.InstanceColor};");
             }
             else if (renderMod.HasFlag(RenderFlags.Instanced) && renderMod.HasFlag(RenderFlags.PointCloud))
             {
                 vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * changedVert;");
                 vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Projection} * changedVert;");
-                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.InstanceColor};");
             }
             else
             {
                 vertMainBody.Add($"{VaryingNameDeclarations.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * changedVert;");
                 vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * changedVert;");
-                vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
             }
-
-
-            vertMainBody.Add($"{VaryingNameDeclarations.Color1} = {UniformNameDeclarations.VertexColor1};");
-            vertMainBody.Add($"{VaryingNameDeclarations.Color2} = {UniformNameDeclarations.VertexColor2};");
-
             //TODO: needed when bone animation is working (again)
             //vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
             //? $"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(vec3(newVertex), 1.0);"

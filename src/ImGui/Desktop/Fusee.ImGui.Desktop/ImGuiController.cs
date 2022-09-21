@@ -1,7 +1,8 @@
 ﻿using Fusee.Base.Core;
-using Fusee.Math.Core;
+using Fusee.Engine.Imp.Graphics.Desktop;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,16 +52,16 @@ namespace Fusee.ImGuiImp.Desktop
         private static readonly Dictionary<string, UniformFieldInfo> _uniformVarToLocation = new();
         private readonly RenderCanvasGameWindow _gw;
 
-        public ImGuiController(RenderCanvasGameWindow gw)
+        public ImGuiController(GameWindow gw)
         {
             WindowResized(gw.Size.X, gw.Size.Y);
-            _gw = gw;
+            _gw = (RenderCanvasGameWindow)gw;
         }
 
         public void WindowResized(int width, int height)
         {
-            GL.Viewport(0, 0, GameWindowWidth, GameWindowHeight);
             (GameWindowWidth, GameWindowHeight) = (width, height);
+            GL.Viewport(0, 0, GameWindowWidth, GameWindowHeight);
         }
 
         /// <summary>
@@ -281,12 +282,22 @@ namespace Fusee.ImGuiImp.Desktop
 
             draw_data.ScaleClipRects(io.DisplayFramebufferScale);
 
-            GL.Enable(EnableCap.Blend);
-            GL.Enable(EnableCap.ScissorTest);
+            var isBlendEnabled = GL.IsEnabled(EnableCap.Blend);
+            var isScissorEnabled = GL.IsEnabled(EnableCap.ScissorTest);
+            var isCullEnabled = GL.IsEnabled(EnableCap.CullFace);
+            var isDepthEnabled = GL.IsEnabled(EnableCap.DepthTest);
+
+            if (!isBlendEnabled)
+                GL.Enable(EnableCap.Blend);
+            if (!isScissorEnabled)
+                GL.Enable(EnableCap.ScissorTest);
+            if (isCullEnabled)
+                GL.Disable(EnableCap.CullFace);
+            if (isDepthEnabled)
+                GL.Disable(EnableCap.DepthTest);
+
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.DepthTest);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             // Render command lists
@@ -326,10 +337,14 @@ namespace Fusee.ImGuiImp.Desktop
                 }
             }
 
-            GL.Disable(EnableCap.Blend);
-            GL.Disable(EnableCap.ScissorTest);
-            GL.Enable(EnableCap.CullFace);
-            GL.Enable(EnableCap.DepthTest);
+            if (!isBlendEnabled)
+                GL.Disable(EnableCap.Blend);
+            if (!isScissorEnabled)
+                GL.Disable(EnableCap.ScissorTest);
+            if (isCullEnabled)
+                GL.Enable(EnableCap.CullFace);
+            if (isDepthEnabled)
+                GL.Enable(EnableCap.DepthTest);
 
             draw_data.Clear();
 
@@ -345,8 +360,10 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 if (disposing)
                 {
-                    ImGui.DestroyContext(_context);
+
                 }
+
+                ImGui.DestroyContext(_context);
 
                 disposedValue = true;
             }

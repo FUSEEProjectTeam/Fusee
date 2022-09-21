@@ -20,13 +20,13 @@ namespace Fusee.Engine.Core
         {
             ConvertToMesh(geometry, out var vertices, out var triangles, out var normals);
 
-            Vertices = vertices;
-            Triangles = triangles;
-            Normals = normals.ToArray();
+            Vertices = new MeshAttributes<float3>(vertices);
+            Triangles = new MeshAttributes<uint>(triangles);
+            Normals = new MeshAttributes<float3>(normals);
         }
 
         //Geometry has to be triangulated! Translates a Jometri.Geometry into a Fusee.Mesh.
-        private static void ConvertToMesh(Jometri.Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
+        private static void ConvertToMesh(Jometri.Geometry geometry, out float3[] vertices, out uint[] triangles, out List<float3> normals)
         {
             var faces = geometry.GetAllFaces().ToList();
             if (faces[0].Handle == 1)
@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core
             var verts = new List<float3>();
 
             vertices = new float3[vertCount];
-            triangles = new ushort[vertCount];
+            triangles = new uint[vertCount];
             normals = new List<float3>();
 
             foreach (var face in faces)

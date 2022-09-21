@@ -1,11 +1,10 @@
 ﻿using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core
 {
-    internal class TextureManager : IDisposable
+    internal class TextureManager
     {
         private readonly IRenderContextImp _renderContextImp;
 
@@ -131,6 +130,19 @@ namespace Fusee.Engine.Core
             return textureHandle;
         }
 
+        private ITextureHandle RegisterNewTexture(Texture1D texture)
+        {
+            // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
+
+            // Setup handler to observe changes of the texture data and dispose event (deallocation)
+            texture.TextureChanged += TextureChanged;
+
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
+
+            return textureHandle;
+        }
+
         private ITextureHandle RegisterNewTexture(Texture texture)
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
@@ -207,6 +219,15 @@ namespace Fusee.Engine.Core
             return foundTextureItem.Item1;
         }
 
+        public ITextureHandle GetTextureHandle(Texture1D texture)
+        {
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureItem))
+            {
+                return RegisterNewTexture(texture);
+            }
+            return foundTextureItem.Item1;
+        }
+
         /// <summary>
         /// Call this method on the main thread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
         /// </summary>
@@ -222,38 +243,5 @@ namespace Fusee.Engine.Core
                 Remove(tobeDeletedTextureHandle);
             }
         }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        private bool disposed;
-        protected virtual void Dispose(bool disposing)
-        {
-            // Check to see if Dispose has already been called.
-            if (!disposed)
-            {
-                for (int i = 0; i < _identifierToTextureHandleDictionary.Count; i++)
-                {
-                    var texItem = _identifierToTextureHandleDictionary.ElementAt(i);
-                    Remove(texItem.Value.Item1);
-                    texItem.Value.Item2.Dispose();
-                    _identifierToTextureHandleDictionary.Remove(texItem.Key);
-                }
-
-                Cleanup();
-
-                // Note disposing has been done.
-                disposed = true;
-            }
-        }
-
-        ~TextureManager()
-        {
-            Dispose(disposing: false);
-        }
-
     }
 }

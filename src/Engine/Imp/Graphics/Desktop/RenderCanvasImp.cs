@@ -1,9 +1,9 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -22,7 +22,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// <summary>
     /// This is a default render canvas implementation creating its own rendering window.
     /// </summary>
-    public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp, IDisposable
+    public class RenderCanvasImp : IRenderCanvasImp
     {
         #region Fields
 
@@ -35,7 +35,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Window handle for the window the engine renders to.
         /// </summary>
-        public IWindowHandle WindowHandle { get; }
+        public IWindowHandle WindowHandle { get; protected set; }
 
         /// <summary>
         /// Implementation Tasks: Gets and sets the width(pixel units) of the Canvas.
@@ -45,14 +45,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public int Width
         {
-            get => BaseWidth;
+            get => _width;
             set
             {
-                _gameWindow.Size = new OpenTK.Mathematics.Vector2i(value, _gameWindow.Size.Y);
-                BaseWidth = value;
-                ResizeWindow();
+                _width = value;
             }
         }
+        private int _width;
 
         /// <summary>
         /// Gets and sets the height in pixel units.
@@ -62,14 +61,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public int Height
         {
-            get => BaseHeight;
+            get => _height;
             set
             {
-                _gameWindow.Size = new OpenTK.Mathematics.Vector2i(_gameWindow.Size.X, value);
-                BaseHeight = value;
-                ResizeWindow();
+                _height = value;
             }
         }
+        private int _height;
+
+        /// <summary>
+        /// The Y-position (px) of the top left corner of the game window.
+        /// </summary>
+        protected internal int Top { get => _gameWindow.Bounds.Min.Y; }
+
+        /// <summary>
+        /// The X-position (px) of the top left corner of the game window.
+        /// </summary>
+        protected internal int Left { get => _gameWindow.Bounds.Min.X; }
 
         /// <summary>
         /// Gets and sets the caption(title of the window).
@@ -212,30 +220,33 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <param name="icon">The window icon to use</param>
         /// <param name="startVisible">Define if window is visible from the start, default: true.</param>
-        public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false, bool startVisible = true)
+        /// <param name="width">Width of the game window.</param>
+        /// <param name="height">Height of the game window.</param>
+        /// <param name="minWidth"></param>
+        /// <param name="minHeight"></param>
+        public RenderCanvasImp(ImageData icon = null, bool startVisible = true, int width = 1280, int height = 720, int minWidth = 360, int minHeight = 640)
         {
             //TODO: Select correct monitor
             MonitorInfo mon = Monitors.GetMonitors()[0];
 
-            int width = 1280;
-            int height = 720;
-
             if (mon != null)
             {
+                minWidth = System.Math.Min(mon.HorizontalResolution - 100, minWidth);
+                minHeight = System.Math.Min(mon.VerticalResolution - 100, minHeight);
                 width = System.Math.Min(mon.HorizontalResolution - 100, width);
                 height = System.Math.Min(mon.VerticalResolution - 100, height);
             }
 
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, startVisible, minWidth, minHeight);
+
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded, startVisible);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, startVisible, minWidth, minHeight);
             }
 
             WindowHandle = new WindowHandle()
@@ -244,9 +255,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
 
             _gameWindow.CenterWindow();
-
-            if (_gameWindow.IsMultiThreaded)
-                _gameWindow.Context.MakeNoneCurrent();
 
             // convert icon to OpenTKImage
             if (icon != null)
@@ -263,24 +271,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
-
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
         /// <param name="width">The width of the render window.</param>
         /// <param name="height">The height of the render window.</param>
-        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <remarks>The window created by this constructor is not visible. Should only be used for internal testing.</remarks>
-        public RenderCanvasImp(int width, int height, bool isMultithreaded = false)
+        public RenderCanvasImp(int width, int height)
         {
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, true, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, true);
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
 
             WindowHandle = new WindowHandle()
@@ -289,46 +294,97 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
 
             _gameWindow.IsVisible = false;
-
-            if (_gameWindow.IsMultiThreaded)
-                _gameWindow.Context.MakeNoneCurrent();
         }
 
+        #endregion
+
+        #region Events
         /// <summary>
-        /// Implementation of the Dispose pattern. Disposes of the OpenTK game window.
+        /// Occurs when [initialize].
         /// </summary>
-        public void Dispose()
-        {
-            _gameWindow.Dispose();
-        }
+        public event EventHandler<InitEventArgs> Init;
+        /// <summary>
+        /// Occurs when [unload].
+        /// </summary>
+        public event EventHandler<InitEventArgs> UnLoad;
+        /// <summary>
+        /// Occurs when [update].
+        /// </summary>
+        public event EventHandler<RenderEventArgs> Update;
+        /// <summary>
+        /// Occurs when [render].
+        /// </summary>
+        public event EventHandler<RenderEventArgs> Render;
+        /// <summary>
+        /// Occurs when [resize].
+        /// </summary>
+        public event EventHandler<ResizeEventArgs> Resize;
 
         #endregion
 
         #region Members
 
-        private void ResizeWindow()
+        /// <summary>
+        /// Makes no GraphicsContext current on the calling thread.
+        /// Needed in multi-threaded applications if one thread creates the app but it is run on another: call this after <see cref="RenderCanvas.InitApp"/>.
+        /// </summary>
+        public void MakeNonCurrent()
         {
-            if (!_videoWallMode)
-            {
-                _gameWindow.WindowBorder = _windowBorderHidden ? OpenTK.Windowing.Common.WindowBorder.Hidden : OpenTK.Windowing.Common.WindowBorder.Resizable;
-                _gameWindow.Bounds = new OpenTK.Mathematics.Box2i(BaseLeft, BaseTop, BaseWidth, BaseHeight);
-            }
-            else
-            {
-                //TODO: Select correct monitor
-                MonitorInfo mon = Monitors.GetMonitors()[0];
+            _gameWindow.Context.MakeNoneCurrent();
+        }
 
-                var oneScreenWidth = mon.HorizontalResolution;
-                var oneScreenHeight = mon.VerticalResolution;
+        /// <summary>
+        /// Makes the GraphicsContext current on the calling thread.
+        /// </summary>
+        public void MakeCurrent()
+        {
+            _gameWindow.Context.MakeCurrent();
+        }
 
-                var width = oneScreenWidth * _videoWallMonitorsHor;
-                var height = oneScreenHeight * _videoWallMonitorsVert;
+        /// <summary>
+        /// Does the initialize of this instance.
+        /// </summary>
+        public virtual void DoInit()
+        {
+            Init?.Invoke(this, new InitEventArgs());
+        }
 
-                _gameWindow.Bounds = new OpenTK.Mathematics.Box2i(0, 0, width, height);
+        /// <summary>
+        /// Does the unload of this instance.
+        /// </summary>
+        public virtual void DoUnLoad()
+        {
+            UnLoad?.Invoke(this, new InitEventArgs());
+        }
 
-                if (_windowBorderHidden)
-                    _gameWindow.WindowBorder = OpenTK.Windowing.Common.WindowBorder.Hidden;
-            }
+        /// <summary>
+        /// Does the update of this instance.
+        /// </summary>
+        public virtual void DoUpdate()
+        {
+            Update?.Invoke(this, new RenderEventArgs());
+        }
+
+        /// <summary>
+        /// Does the render of this instance.
+        /// </summary>
+        public virtual void DoRender()
+        {
+            Render?.Invoke(this, new RenderEventArgs());
+        }
+
+        /// <summary>
+        /// Does the resize on this instance.
+        /// </summary>
+        public virtual void DoResize(int width, int height)
+        {
+            Resize?.Invoke(this, new ResizeEventArgs(width, height));
+        }
+
+        private void ResizeWindow(int width, int height, int left, int top)
+        {
+            _gameWindow.WindowBorder = _windowBorderHidden ? OpenTK.Windowing.Common.WindowBorder.Hidden : OpenTK.Windowing.Common.WindowBorder.Resizable;
+            _gameWindow.Bounds = new OpenTK.Mathematics.Box2i(left, top, width, height);
         }
 
         /// <summary>
@@ -345,7 +401,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _videoWallMonitorsVert = monitorsVert > 0 ? monitorsVert : 1;
             _windowBorderHidden = borderHidden;
 
-            ResizeWindow();
+            //TODO: Select correct monitor
+            MonitorInfo mon = Monitors.GetMonitors()[0];
+
+            var oneScreenWidth = mon.HorizontalResolution;
+            var oneScreenHeight = mon.VerticalResolution;
+
+            var width = oneScreenWidth * _videoWallMonitorsHor;
+            var height = oneScreenHeight * _videoWallMonitorsVert;
+
+            ResizeWindow(width, height, 0, 0);
         }
 
         /// <summary>
@@ -360,24 +425,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             MonitorInfo mon = Monitors.GetMonitors()[0];
 
-            BaseWidth = width;
-            BaseHeight = height;
+            Width = width;
+            Height = height;
 
-            BaseLeft = (posx == -1) ? mon.HorizontalResolution / 2 - width / 2 : posx;
-            BaseTop = (posy == -1) ? mon.VerticalResolution / 2 - height / 2 : posy;
+            var left = (posx == -1) ? mon.HorizontalResolution / 2 - width / 2 : posx;
+            var top = (posy == -1) ? mon.VerticalResolution / 2 - height / 2 : posy;
 
             _windowBorderHidden = borderHidden;
 
             // Disable video wall mode for this because it would not make sense.
             _videoWallMode = false;
 
-            ResizeWindow();
+            ResizeWindow(width, height, left, top);
         }
 
         /// <summary>
         /// Closes the GameWindow with a call to OpenTk.
         /// </summary>
-        public void CloseGameWindow()
+        public virtual void CloseGameWindow()
         {
             if (_gameWindow != null)
             {
@@ -391,7 +456,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Presents this application instance. Call this function after rendering to show the final image.
         /// After Present is called the render buffers get flushed.
         /// </summary>
-        public void Present()
+        public virtual void Present()
         {
             if (!_gameWindow.IsExiting)
                 _gameWindow.SwapBuffers();
@@ -427,7 +492,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Implementation Tasks: Runs this application instance. This function should not be called more than once as its only for initialization purposes.
         /// </summary>
-        public void Run()
+        public virtual void Run()
         {
             if (_gameWindow != null)
             {
@@ -448,8 +513,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             var mem = new byte[width * height * 4];
 
-            //_gameWindow.Context.MakeCurrent();
-
             GL.Flush();
             //GL.PixelStore(PixelStoreParameter.PackRowLength, 1);
             GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
@@ -460,251 +523,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             img.Mutate(x => x.AutoOrient());
             img.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
             return img;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// OpenTK implementation of RenderCanvas for the window output.
-    /// </summary>
-    public class RenderCanvasImpBase
-    {
-        #region Fields
-
-        /// <summary>
-        /// The Width
-        /// </summary>
-        protected internal int BaseWidth;
-
-        /// <summary>
-        /// The Height
-        /// </summary>
-        protected internal int BaseHeight;
-
-        /// <summary>
-        /// The Top Position
-        /// </summary>
-        protected internal int BaseTop;
-
-        /// <summary>
-        /// The Left Position
-        /// </summary>
-        protected internal int BaseLeft;
-
-        #endregion
-
-        #region Events
-        /// <summary>
-        /// Occurs when [initialize].
-        /// </summary>
-        public event EventHandler<InitEventArgs> Init;
-        /// <summary>
-        /// Occurs when [unload].
-        /// </summary>
-        public event EventHandler<InitEventArgs> UnLoad;
-        /// <summary>
-        /// Occurs when [update].
-        /// </summary>
-        public event EventHandler<RenderEventArgs> Update;
-        /// <summary>
-        /// Occurs when [render].
-        /// </summary>
-        public event EventHandler<RenderEventArgs> Render;
-        /// <summary>
-        /// Occurs when [resize].
-        /// </summary>
-        public event EventHandler<ResizeEventArgs> Resize;
-
-        #endregion
-
-        #region Internal Members
-
-        /// <summary>
-        /// Does the initialize of this instance.
-        /// </summary>
-        protected internal void DoInit()
-        {
-            Init?.Invoke(this, new InitEventArgs());
-        }
-
-        /// <summary>
-        /// Does the unload of this instance.
-        /// </summary>
-        protected internal void DoUnLoad()
-        {
-            UnLoad?.Invoke(this, new InitEventArgs());
-        }
-
-        /// <summary>
-        /// Does the update of this instance.
-        /// </summary>
-        protected internal void DoUpdate()
-        {
-            Update?.Invoke(this, new RenderEventArgs());
-        }
-
-        /// <summary>
-        /// Does the render of this instance.
-        /// </summary>
-        protected internal void DoRender()
-        {
-            Render?.Invoke(this, new RenderEventArgs());
-        }
-
-        /// <summary>
-        /// Does the resize on this instance.
-        /// </summary>
-        protected internal void DoResize(int width, int height)
-        {
-            Resize?.Invoke(this, new ResizeEventArgs(width, height));
-        }
-
-        #endregion
-    }
-
-    internal class RenderCanvasGameWindow : GameWindow
-    {
-        #region Fields
-
-        private readonly RenderCanvasImp _renderCanvasImp;
-
-        /// <summary>
-        /// True if the GameWindow/ the application uses multiple threads.
-        /// With OpenTK 4.7 we need to use the "new" modifier to hide the GameWindow.IsMultithreaded property, which became obsolete in this version.
-        /// </summary>
-        public new bool IsMultiThreaded { get; private set; } = false;
-
-        /// <summary>
-        /// Gets the delta time.
-        /// The delta time is the time that was required to render the last frame in milliseconds.
-        /// This value can be used to determine the frames per second of the application.
-        /// </summary>
-        /// <value>
-        /// The delta time in milliseconds.
-        /// </value>
-        public float DeltaTime { get; private set; }
-
-        /// <summary>
-        /// Gets the delta time.
-        /// The delta time is the time that was required to update the last frame in milliseconds.
-        /// </summary>
-        /// <value>
-        /// The delta time in milliseconds.
-        /// </value>
-        public float DeltaTimeUpdate { get; private set; }
-
-        /// <summary>
-        /// Gets and sets a value indicating whether [blending].
-        /// Blending is used to render transparent objects.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [blending]; otherwise, <c>false</c>.
-        /// </value>
-        public bool Blending
-        {
-            get => GL.IsEnabled(EnableCap.Blend);
-            set
-            {
-                if (value)
-                {
-                    GL.Enable(EnableCap.Blend);
-                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-                }
-                else
-                {
-                    GL.Disable(EnableCap.Blend);
-                }
-            }
-        }
-
-        #endregion
-
-        #region Constructors
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenderCanvasGameWindow"/> class.
-        /// </summary>
-        /// <param name="renderCanvasImp">The render canvas implementation.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
-        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
-        /// <param name="startVisible">Should the window be visible from the start, default: true.</param>
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false, bool startVisible = true)
-            : base(new GameWindowSettings(), new NativeWindowSettings
-            {
-                Size = new OpenTK.Mathematics.Vector2i(width, height),
-                Profile = OpenTK.Windowing.Common.ContextProfile.Core,
-                Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible,
-                StartVisible = startVisible
-            })
-        {
-            IsMultiThreaded = isMultithreaded;
-            _renderCanvasImp = renderCanvasImp;
-            _renderCanvasImp.BaseWidth = width;
-            _renderCanvasImp.BaseHeight = height;
-        }
-
-        #endregion
-
-        #region Overrides
-
-        protected override void OnLoad()
-        {
-            // Check for necessary capabilities
-            string version = GL.GetString(StringName.Version);
-
-            int major = version[0];
-            // int minor = (int)version[2];
-
-            if (major < 2)
-            {
-                throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
-            }
-
-            // Use VSync!
-            VSync = OpenTK.Windowing.Common.VSyncMode.On;
-
-            _renderCanvasImp.DoInit();
-        }
-
-        protected override void OnUnload()
-        {
-            _renderCanvasImp.DoUnLoad();
-            _renderCanvasImp.Dispose();
-        }
-
-        protected override void OnResize(OpenTK.Windowing.Common.ResizeEventArgs e)
-        {
-            base.OnResize(e);
-
-            if (_renderCanvasImp != null)
-            {
-                _renderCanvasImp.BaseWidth = e.Width;
-                _renderCanvasImp.BaseHeight = e.Height;
-                _renderCanvasImp.DoResize(e.Width, e.Height);
-            }
-        }
-
-        protected override void OnUpdateFrame(OpenTK.Windowing.Common.FrameEventArgs args)
-        {
-            base.OnUpdateFrame(args);
-
-            DeltaTimeUpdate = (float)args.Time;
-
-            if (KeyboardState.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F11))
-                WindowState = (WindowState != OpenTK.Windowing.Common.WindowState.Fullscreen) ? OpenTK.Windowing.Common.WindowState.Fullscreen : OpenTK.Windowing.Common.WindowState.Normal;
-
-            _renderCanvasImp?.DoUpdate();
-        }
-
-        protected override void OnRenderFrame(OpenTK.Windowing.Common.FrameEventArgs args)
-        {
-            base.OnRenderFrame(args);
-
-            DeltaTime = (float)args.Time;
-
-            _renderCanvasImp?.DoRender();
         }
 
         #endregion

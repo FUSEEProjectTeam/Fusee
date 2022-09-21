@@ -7,9 +7,9 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// Abstract class that provides input for <see cref="ShaderEffect"/> and <see cref="SurfaceEffectBase"/>.
+    /// Abstract base class for <see cref="ShaderEffect"/>, <see cref="SurfaceEffectBase"/> and <see cref="ComputeEffect"/>.
     /// </summary>
-    public abstract class Effect : SceneComponent
+    public abstract class Effect : SceneComponent, IDisposable
     {
         /// <summary>
         /// Collection of all uniform parameters of this effect. See <see cref="IFxParamDeclaration"/>.
@@ -35,6 +35,8 @@ namespace Fusee.Engine.Core.Effects
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
         /// </summary>
         public Suid SessionUniqueIdentifier { get; } = Suid.GenerateSuid();
+
+        private bool _disposed;
 
         /// <summary>
         /// Set effect parameter
@@ -132,6 +134,47 @@ namespace Fusee.Engine.Core.Effects
         public override int GetHashCode()
         {
             return SessionUniqueIdentifier.GetHashCode();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    //dispose managed resources
+                }
+                EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
+
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Destructor calls <see cref="Dispose()"/> in order to fire MeshChanged event.
+        /// </summary>
+        ~Effect()
+        {
+            Dispose(false);
         }
     }
 }

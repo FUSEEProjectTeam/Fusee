@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
+namespace Fusee.Examples.PointCloudPotree2.Gui
 {
     public class PointCloudPotree2ImGui
     {
@@ -17,9 +17,9 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
-            IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+            IO.IOImp = new IOImp();
 
-            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            var fap = new FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
@@ -56,12 +56,12 @@ namespace Fusee.Examples.PointCloudPotree2.PotreeImGui
             AssetStorage.RegisterProvider(fap);
 
             // no injection or shared base project, as we are currently limited to desktop only with ImGui.NET
-            var app = new Core();
+            var app = new ImGuiApp();
 
             var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
-            app.CanvasImplementor = new Fusee.ImGuiImp.Desktop.ImGuiRenderCanvasImp(icon);
-            app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
-            Input.AddDriverImp(new Fusee.ImGuiImp.Desktop.ImGuiInputImp(app.CanvasImplementor));
+            app.CanvasImplementor = new ImGuiImp.Desktop.ImGuiRenderCanvasImp(icon);
+            app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
+            Input.AddDriverImp(new ImGuiImp.Desktop.ImGuiInputImp(app.CanvasImplementor));
 
             app.InitApp();
 

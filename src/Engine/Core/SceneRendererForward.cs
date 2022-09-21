@@ -282,6 +282,9 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Updates the state in each registered <see cref="IRendererModule"/>.
+        /// </summary>
         protected void NotifyStateChanges()
         {
             foreach (var module in VisitorModules)
@@ -290,6 +293,9 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Updates the camera in each registered <see cref="IRendererModule"/>.
+        /// </summary>
         protected void NotifyCameraChanges(Camera cam)
         {
             foreach (var module in VisitorModules)
@@ -802,8 +808,8 @@ namespace Fusee.Engine.Core
                 boneWeights[iVert].Normalize1();
             }
 
-            mesh.BoneIndices = boneIndices;
-            mesh.BoneWeights = boneWeights;
+            mesh.BoneIndices = new MeshAttributes<float4>(boneIndices);
+            mesh.BoneWeights = new MeshAttributes<float4>(boneWeights);
         }
         #endregion
 

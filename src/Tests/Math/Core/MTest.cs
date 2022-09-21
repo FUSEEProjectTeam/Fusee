@@ -1,4 +1,4 @@
-﻿using Fusee.Math.Core;
+using Fusee.Math.Core;
 using System.Collections.Generic;
 using Xunit;
 
@@ -653,5 +653,32 @@ namespace Fusee.Tests.Math.Core
 
         #endregion
 
+        #region ScreenToWorldPos
+
+        [Theory]
+        [MemberData(nameof(ScreenToWorldPosData))]
+        public void ScreenToWorldPos(float2 data, float3 expected)
+        {
+            var height = 1000;
+            var width = 1000;
+
+            var p = float4x4.CreatePerspectiveFieldOfView(M.PiOver2, (float)width / height, 1, 1000);
+
+            var actual = M.ScreenPointToWorld(data, 1, p, float4x4.Identity, p.Invert(), float4x4.Identity.Invert(), width, height);
+
+            Assert.Equal(expected.x, actual.x);
+            Assert.Equal(expected.y, actual.y);
+            Assert.Equal(expected.z, actual.z);
+        }
+
+
+        public static IEnumerable<object[]> ScreenToWorldPosData()
+        {
+            yield return new object[] { new float2(0, 0), new float3(-1, 1, 1) };
+            yield return new object[] { new float2(500, 500), new float3(0, 0, 1) };
+            yield return new object[] { new float2(1000, 1000), new float3(1, -1, 1) };
+        }
+
+        #endregion
     }
 }

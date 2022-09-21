@@ -187,7 +187,7 @@ namespace Fusee.Base.Core
                     new System.Numerics.Vector2(0, 0), Color.Black);
                 img.CopyPixelDataTo(res);
             }
-            // invalid (unknown) chars 
+            // invalid (unknown) chars
             catch (Exception)
             {
                 Diagnostics.Warn($"Generating glyph for char {c}:{Convert.ToChar(c)} failed, skipping");

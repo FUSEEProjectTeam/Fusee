@@ -155,7 +155,7 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Property)]
         public readonly string WorldSpacePointRadOut = GLSL.CreateOut(GLSL.Type.Float, "vWorldSpacePointRad");
 
-        private static List<string> CalculateVaryings(bool doRenderInstanced)
+        protected static List<string> CalculateVaryings(bool doRenderInstanced)
         {
             if (!doRenderInstanced)
             {
@@ -190,7 +190,7 @@ namespace Fusee.Engine.Core.Effects
             else
             {
                 return new List<string>() {
-                    $"mat4 mv = FUSEE_V * {UniformNameDeclarations.InstanceModelMat};",
+                    $"mat4 mv = FUSEE_V * FUSEE_M * {UniformNameDeclarations.InstanceModelMat};",
 
                     //assumption: position x and y are in range [-0.5, 0.5].
                     $"{VaryingNameDeclarations.PointCoord} = vec2(0.5) / {UniformNameDeclarations.Vertex}.xy;",
@@ -208,14 +208,14 @@ namespace Fusee.Engine.Core.Effects
                     "   // Fixed pixel size",
                     "   case 0:",
                     "   {",
-                    $"      sizeInPx = (billboardHeight / (2.0 * slope * z)) * float({UniformNameDeclarations.ViewportPx});",
+                    $"      sizeInPx = (billboardHeight / (2.0 * slope * z)) * float({UniformNameDeclarations.ViewportPx}.y);",
                     "       break;",
                     "   }",
                     "   //Fixed world size",
                     "   case 1:",
                     "   {",
                     "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",                    "",
-                    $"      sizeInPx = (billboardHeight / (2.0 * slope)) * float({UniformNameDeclarations.ViewportPx});",
+                    $"      sizeInPx = (billboardHeight / (2.0 * slope)) * float({UniformNameDeclarations.ViewportPx}.y);",
                     "       break;",
                     "   }",
                     "}",
@@ -233,7 +233,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Fragment Shader Shard for linearizing a depth value using the clipping planes of the current camera.
         /// </summary>
-        private static List<string> CalculatePointShape(bool doRenderInstanced)
+        protected static List<string> CalculatePointShape(bool doRenderInstanced)
         {
             if (!doRenderInstanced)
             {
@@ -314,11 +314,35 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
         /// <param name="doRenderInstanced">Use instanced rendering for visualizing the point cloud?</param>
-        public SurfaceEffectPointCloud(RenderStateSet rendererStates = null, bool doRenderInstanced = false)
+        public SurfaceEffectPointCloud(RenderStateSet? rendererStates = null, bool doRenderInstanced = false)
             : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) },
                   RenderFlags.PointCloud | (doRenderInstanced ? RenderFlags.Instanced : RenderFlags.None),
                   CalculateVaryings(doRenderInstanced).Concat(VertShards.SurfOutBody(ShadingModel.Edl, doRenderInstanced)).ToList(),
                   FragShards.SurfOutBody(ShadingModel.Edl, TextureSetup.NoTextures).Concat(CalculatePointShape(doRenderInstanced)).ToList(),
+                  rendererStates)
+        {
+            if (!doRenderInstanced)
+            {
+                RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);
+            }
+            else
+            {
+                RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Solid);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new instance of type PointCloudSurfaceEffect.
+        /// </summary>
+        /// <param name="surfOutVertBody">List of shader code lines that make up the vertex shader "Change Surf" method body.</param>
+        /// <param name="surfOutFragBody">List of shader code lines that make up the fragment shader "Change Surf" method body.</param>
+        /// <param name="rendererStates">The renderer state set for this effect.</param>
+        /// <param name="doRenderInstanced">Use instanced rendering for visualizing the point cloud?</param>
+        public SurfaceEffectPointCloud(List<string>? surfOutVertBody, List<string>? surfOutFragBody = null, RenderStateSet? rendererStates = null, bool doRenderInstanced = false)
+            : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) },
+                  RenderFlags.PointCloud | (doRenderInstanced ? RenderFlags.Instanced : RenderFlags.None),
+                  surfOutVertBody,
+                  surfOutFragBody,
                   rendererStates)
         {
             if (!doRenderInstanced)

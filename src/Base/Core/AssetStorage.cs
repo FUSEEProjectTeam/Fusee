@@ -60,7 +60,7 @@ namespace Fusee.Base.Core
     /// If FUSEE had been designed without JavaScript X-compilation in mind, this class would probably not
     /// exist.
     /// </remarks>
-    public sealed class AssetStorage
+    public sealed class AssetStorage : IDisposable
     {
         private readonly List<IAssetProvider> _providers;
         private readonly Dictionary<string, Task> _assetBuffer;
@@ -78,7 +78,6 @@ namespace Fusee.Base.Core
             _providers = new List<IAssetProvider>();
             _assetBuffer = new Dictionary<string, Task>();
         }
-
 
         /// <summary>
         /// Implements the Singleton pattern.
@@ -263,5 +262,51 @@ namespace Fusee.Base.Core
             //return ProtoBuf.Serializer.Deserialize<T>(stream) as T;
             return source;
         }
+
+        #region IDisposable Support
+
+        private bool disposed;
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        private void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    UnRegisterAllAssetProviders();
+                    _instance = null;
+                }
+
+                disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
+        ~AssetStorage()
+        {
+            Dispose(false);
+        }
+
+        #endregion
     }
 }

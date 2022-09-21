@@ -12,9 +12,8 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// A surface effect contains information to build a shader program. This is an abstract base class.
     /// </summary>
-    public abstract class SurfaceEffectBase : Effect, IDisposable
+    public abstract class SurfaceEffectBase : Effect
     {
-        private bool _disposed;
         internal readonly List<KeyValuePair<ShardCategory, string>> VertexShaderSrc = new();
         internal readonly List<KeyValuePair<ShardCategory, string>> GeometryShaderSrc = new();
         internal readonly List<KeyValuePair<ShardCategory, string>> FragmentShaderSrc = new();
@@ -108,14 +107,14 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public string VertColorIn = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
+        public string VertColorIn = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color0);
 
         /// <summary>
         /// Vertex shader "out" declaration for the vertex colors.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
+        public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color0);
 
         /// <summary>
         /// Fragment shader "in" declaration for the vertex colors.
@@ -174,8 +173,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="surfaceInput"><see cref="SurfaceInput"/>. Provides the values used to modify the <see cref="SurfaceOut"/>.</param>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
-        public SurfaceEffectBase
-            (SurfaceEffectInput surfaceInput, RenderStateSet renderStateSet = null)
+        public SurfaceEffectBase(SurfaceEffectInput surfaceInput, RenderStateSet? renderStateSet = null)
         {
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
             UniformParameters = new Dictionary<int, IFxParamDeclaration>();
@@ -718,47 +716,5 @@ namespace Fusee.Engine.Core.Effects
 
             return fieldInfos.ToArray();
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <param name="disposing">If disposing equals true, the method has been called directly
-        /// or indirectly by a user's code. Managed and unmanaged resources
-        /// can be disposed.
-        /// If disposing equals false, the method has been called by the
-        /// runtime from inside the finalizer and you should not reference
-        /// other objects. Only unmanaged resources can be disposed.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
-
-            if (disposing)
-            {
-
-            }
-
-            _disposed = true;
-        }
-
-        /// <summary>
-        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
-        /// </summary>
-        ~SurfaceEffectBase()
-        {
-            Dispose(false);
-        }
-
     }
 }

@@ -41,10 +41,7 @@ namespace Fusee.PointCloud.Core.Scene
             if (rc == null)
                 throw new ArgumentNullException(nameof(rc));
 
-            if (rc != _rc)
-            {
-                _rc = rc;
-            }
+            _rc = rc;
         }
 
         /// <summary>
@@ -56,10 +53,7 @@ namespace Fusee.PointCloud.Core.Scene
             if (state == null)
                 throw new ArgumentNullException(nameof(state));
 
-            if (state != _state)
-            {
-                _state = state;
-            }
+            _state = state;
         }
 
         /// <summary>
@@ -110,12 +104,12 @@ namespace Fusee.PointCloud.Core.Scene
             else if (pointCloud.Camera == _camera)
             {
                 var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
-                pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
+                pointCloud.PointCloudImp.Update(fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz, _rc.Model);
             }
 
             switch (pointCloud.RenderMode)
             {
-                case RenderMode.PointSize:
+                case RenderMode.StaticMesh:
                     foreach (var mesh in ((IPointCloudImp<GpuMesh>)pointCloud.PointCloudImp).GpuDataToRender)
                     {
                         _rc.Render(mesh, _isForwardModule);
@@ -125,6 +119,12 @@ namespace Fusee.PointCloud.Core.Scene
                     foreach (var instanceData in ((IPointCloudImp<InstanceData>)pointCloud.PointCloudImp).GpuDataToRender)
                     {
                         _rc.Render(quad, instanceData, _isForwardModule);
+                    }
+                    break;
+                case RenderMode.DynamicMesh:
+                    foreach (var mesh in ((IPointCloudImp<Mesh>)pointCloud.PointCloudImp).GpuDataToRender)
+                    {
+                        _rc.Render(mesh, null, _isForwardModule);
                     }
                     break;
             }

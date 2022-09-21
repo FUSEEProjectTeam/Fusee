@@ -4,6 +4,7 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Imp.Graphics.Desktop;
 using Fusee.Examples.PointCloudPotree2.Core;
 using Fusee.PointCloud.Common;
 using Fusee.Serialization;
@@ -55,7 +56,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
         private void EDLStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             if (app == null || !app.IsInitialized) return;
-            PtRenderingParams.Instance.EdlStrength = (float)((Slider)sender).Value;
+            PointRenderingParams.Instance.EdlStrength = (float)((Slider)sender).Value;
             _edlStrengthDragStarted = false;
         }
 
@@ -65,7 +66,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
             EDLStrengthVal.Content = e.NewValue.ToString("0.00");
 
             if (_edlStrengthDragStarted) return;
-            PtRenderingParams.Instance.EdlStrength = (float)e.NewValue;
+            PointRenderingParams.Instance.EdlStrength = (float)e.NewValue;
         }
         #endregion
 
@@ -83,7 +84,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
             if (EDLNeighbourPxVal == null) return;
 
             EDLNeighbourPxVal.Content = ((Slider)sender).Value.ToString("0");
-            PtRenderingParams.Instance.EdlNoOfNeighbourPx = (int)((Slider)sender).Value;
+            PointRenderingParams.Instance.EdlNoOfNeighbourPx = (int)((Slider)sender).Value;
 
             _edlNeighbourPxDragStarted = false;
         }
@@ -96,7 +97,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
             EDLNeighbourPxVal.Content = e.NewValue.ToString("0");
 
             if (_edlNeighbourPxDragStarted) return;
-            PtRenderingParams.Instance.EdlNoOfNeighbourPx = (int)e.NewValue;
+            PointRenderingParams.Instance.EdlNoOfNeighbourPx = (int)e.NewValue;
         }
 
         #endregion
@@ -112,7 +113,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
             if (PtSizeVal == null) return;
 
             PtSizeVal.Content = ((Slider)sender).Value.ToString("0");
-            PtRenderingParams.Instance.Size = (int)((Slider)sender).Value;
+            PointRenderingParams.Instance.Size = (int)((Slider)sender).Value;
         }
 
         private void PtSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -122,7 +123,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
             PtSizeVal.Content = e.NewValue.ToString("0");
 
             // if (_ptSizeDragStarted) return;
-            PtRenderingParams.Instance.Size = (int)e.NewValue;
+            PointRenderingParams.Instance.Size = (int)e.NewValue;
         }
 
         #endregion
@@ -138,7 +139,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
         {
             if (app == null || !app.IsInitialized) return;
             MinProjSizeVal.Content = MinProjSize.Value.ToString("0.0000");
-            PtRenderingParams.Instance.ProjectedSizeModifier = (float)MinProjSize.Value;
+            PointRenderingParams.Instance.ProjectedSizeModifier = (float)MinProjSize.Value;
             _projSizeModDragStarted = false;
         }
 
@@ -148,29 +149,29 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
             MinProjSizeVal.Content = MinProjSize.Value.ToString("0.0000");
 
             if (_projSizeModDragStarted) return;
-            PtRenderingParams.Instance.ProjectedSizeModifier = (float)MinProjSize.Value;
+            PointRenderingParams.Instance.ProjectedSizeModifier = (float)MinProjSize.Value;
         }
         #endregion
 
         private void PtShape_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (app == null || !app.IsInitialized) return;
-            PtRenderingParams.Instance.Shape = (PointShape)e.AddedItems[0];
+            PointRenderingParams.Instance.Shape = (PointShape)e.AddedItems[0];
         }
 
         private void PtSizeMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (app == null || !app.IsInitialized) return;
-            PtRenderingParams.Instance.PtMode = (PointSizeMode)e.AddedItems[0];
+            PointRenderingParams.Instance.PtMode = (PointSizeMode)e.AddedItems[0];
         }
 
         private void ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (app == null || !app.IsInitialized) return;
-            PtRenderingParams.Instance.PointCloudColorMode = (ColorMode)e.AddedItems[0];
+            PointRenderingParams.Instance.ColorMode = (ColorMode)e.AddedItems[0];
 
             //ColorPicker is unavailable right now
-            //if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
+            //if (PointRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
             //    SingleColor.IsEnabled = false;
             //else
             //    SingleColor.IsEnabled = true;
@@ -197,7 +198,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
                 }
 
                 fullPath = ofd.FileName;
-                PtRenderingParams.Instance.PathToOocFile = fullPath.Replace(ofd.SafeFileName, "");
+                PointRenderingParams.Instance.PathToOocFile = fullPath.Replace(ofd.SafeFileName, "");
 
                 if (app != null)
                 {
@@ -212,7 +213,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
                 CreateApp();
                 RunApp();
 
-                MinProjSize.Value = PtRenderingParams.Instance.ProjectedSizeModifier;
+                MinProjSize.Value = PointRenderingParams.Instance.ProjectedSizeModifier;
                 MinProjSizeVal.Content = MinProjSize.Value.ToString("0.0000");
 
                 SpinWait.SpinUntil(() => app.ReadyToLoadNewFile && app.IsInitialized);
@@ -241,20 +242,20 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
                 if (!int.TryParse(PtThreshold.Text, out var ptThreshold)) return;
                 if (ptThreshold < 0)
                 {
-                    PtThreshold.Text = PtRenderingParams.Instance.PointThreshold.ToString();
+                    PtThreshold.Text = PointRenderingParams.Instance.PointThreshold.ToString();
                     return;
                 }
-                PtRenderingParams.Instance.PointThreshold = ptThreshold;
+                PointRenderingParams.Instance.PointThreshold = ptThreshold;
             }
             else
             {
-                PtThreshold.Text = PtRenderingParams.Instance.PointThreshold.ToString();
+                PtThreshold.Text = PointRenderingParams.Instance.PointThreshold.ToString();
             }
         }
 
         private void VisPoints_LostFocus(object sender, RoutedEventArgs e)
         {
-            PtThreshold.Text = PtRenderingParams.Instance.PointThreshold.ToString();
+            PtThreshold.Text = PointRenderingParams.Instance.PointThreshold.ToString();
         }
 
         private void ShowOctants_Button_Click(object sender, RoutedEventArgs e)
@@ -319,7 +320,7 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
                     },
                     Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
                     Checker = id => Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)
@@ -345,32 +346,34 @@ namespace Fusee.Examples.PointCloudPotree2.Wpf
 
             app = new Core.PointCloudPotree2();
 
-            PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
-            PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;
-            ColorMode.SelectedValue = PtRenderingParams.Instance.PointCloudColorMode;
+            PtShape.SelectedValue = PointRenderingParams.Instance.Shape;
+            PtSizeMode.SelectedValue = PointRenderingParams.Instance.PtMode;
+            ColorMode.SelectedValue = PointRenderingParams.Instance.ColorMode;
 
-            PtSize.Value = PtRenderingParams.Instance.Size;
-            PtSizeVal.Content = PtRenderingParams.Instance.Size;
-            PtThreshold.Text = PtRenderingParams.Instance.PointThreshold.ToString();
+            PtSize.Value = PointRenderingParams.Instance.Size;
+            PtSizeVal.Content = PointRenderingParams.Instance.Size;
+            PtThreshold.Text = PointRenderingParams.Instance.PointThreshold.ToString();
 
-            EDLStrength.Value = PtRenderingParams.Instance.EdlStrength;
-            EDLStrengthVal.Content = PtRenderingParams.Instance.EdlStrength.ToString("0.00");
-            EDLNeighbourPx.Value = PtRenderingParams.Instance.EdlNoOfNeighbourPx;
-            EDLNeighbourPxVal.Content = PtRenderingParams.Instance.EdlNoOfNeighbourPx;
-            MinProjSize.Value = PtRenderingParams.Instance.ProjectedSizeModifier;
-            MinProjSizeVal.Content = PtRenderingParams.Instance.ProjectedSizeModifier;
+            EDLStrength.Value = PointRenderingParams.Instance.EdlStrength;
+            EDLStrengthVal.Content = PointRenderingParams.Instance.EdlStrength.ToString("0.00");
+            EDLNeighbourPx.Value = PointRenderingParams.Instance.EdlNoOfNeighbourPx;
+            EDLNeighbourPxVal.Content = PointRenderingParams.Instance.EdlNoOfNeighbourPx;
+            MinProjSize.Value = PointRenderingParams.Instance.ProjectedSizeModifier;
+            MinProjSizeVal.Content = PointRenderingParams.Instance.ProjectedSizeModifier;
 
             app.UseWPF = true;
 
             //Inject Fusee.Engine InjectMe dependencies(hard coded)
             var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
-            app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(icon, true);
-            app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
-            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
-            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
-            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
+            app.CanvasImplementor = new RenderCanvasImp(icon);
+            app.ContextImplementor = new RenderContextImp(app.CanvasImplementor);
+            Input.AddDriverImp(new RenderCanvasInputDriverImp(app.CanvasImplementor));
+            Input.AddDriverImp(new WindowsTouchInputDriverImp(app.CanvasImplementor));
+            Input.AddDriverImp(new WindowsSpaceMouseDriverImp(app.CanvasImplementor));
 
             app.InitApp();
+
+            ((RenderCanvasImp)app.CanvasImplementor).MakeNonCurrent();
         }
     }
 }

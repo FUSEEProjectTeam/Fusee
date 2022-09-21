@@ -14,14 +14,12 @@ using System.Threading.Tasks;
 namespace Fusee.Tests.Render.Desktop
 {
 
-    public class Program
+    public static class Program
     {
         private const int height = 512;
         private const int width = 512;
 
-        private static RenderCanvas example;
-
-        public static RenderCanvas Example { get => example; set => example = value; }
+        public static RenderCanvas Example { get; set; }
 
         public static string FilePath;
 
@@ -31,7 +29,7 @@ namespace Fusee.Tests.Render.Desktop
             {
                 // Inject Fusee.Engine.Base InjectMe dependencies
                 IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
-                AssetStorage.UnRegisterAllAssetProviders();
+                AssetStorage.Instance.Dispose();
 
                 var baseDirOfExample = new Uri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
                 FilePath = baseDirOfExample.LocalPath;
@@ -75,7 +73,7 @@ namespace Fusee.Tests.Render.Desktop
                 var app = Example;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(null, false, false)
+                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(null, false, width, height, width, height)
                 {
                     EnableBlending = true
                 };
@@ -86,8 +84,6 @@ namespace Fusee.Tests.Render.Desktop
 
                 // Initialize canvas/app and canvas implementor
                 app.InitApp();
-                cimp.Height = height;
-                cimp.Width = width;
 
                 ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoInit();
                 ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoResize(width, height);
@@ -96,7 +92,7 @@ namespace Fusee.Tests.Render.Desktop
                 SpinWait.SpinUntil(() => app.IsLoaded);
 
                 // skip the first frame, empty, skip the second as deferred needs three, second pass has an empty frame, too
-                for (var i = 0; i < 60; i++)
+                for (var i = 0; i < 3; i++)
                 {
                     ((Engine.Imp.Graphics.Desktop.RenderCanvasImp)app.CanvasImplementor).DoRender();
                 }
@@ -106,7 +102,7 @@ namespace Fusee.Tests.Render.Desktop
                 img.SaveAsPng(Path.Combine(FilePath, arg));
 
                 // Done
-                Console.Error.WriteLine($"SUCCESS: Image {arg} generated.");
+                Console.Error.WriteLine($"SUCCESS: Image {Path.Combine(FilePath, arg)} generated.");
 
                 app.CloseGameWindow();
             }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Fusee.Xene
@@ -73,6 +74,7 @@ namespace Fusee.Xene
         where TComponent : class, IComponent
     {
         private IEnumerable<TNode> _rootList;
+        private bool _disposed;
         private readonly Queue<TItem> _itemQueue = new(1);
 
         // unfortunate Two-step instantiation forced by C#'s poor generic constraint system which doesn't allow to constraint a parameter-taking constructor
@@ -93,14 +95,6 @@ namespace Fusee.Xene
         {
             _rootList = rootList;
             EnumInit(_rootList.GetEnumerator());
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            // _rootList = null;
         }
 
         /// <summary>
@@ -163,7 +157,33 @@ namespace Fusee.Xene
         {
             return new ViseratorInstanceEnumerable { _this = this };
         }
-        /***/
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                _disposed = true;
+            }
+        }
     }
 
     /// <summary>

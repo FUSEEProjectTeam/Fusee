@@ -294,7 +294,7 @@ function customBufferDataUInt(target, data, usage) {
 
     const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 4);
     const length = Blazor.platform.getArrayLength(data);
-    const ints = new Uint16Array(Module.HEAPU8.buffer, dataPtr, length);
+    const ints = new Uint32Array(Module.HEAPU32.buffer, dataPtr, length);
     gl2.bufferData(target, ints, usage);
 }
 

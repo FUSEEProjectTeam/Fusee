@@ -225,31 +225,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// You can register handlers but they will never get called.
         /// </summary>
         public event EventHandler<NewDeviceImpConnectedArgs> NewDeviceConnected;
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        /// <summary>
-        /// Part of the Dispose pattern.
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                disposedValue = true;
-            }
-        }
-
-        // This code added to correctly implement the disposable pattern.
-        /// <summary>
-        /// Part of the dispose pattern.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
     }
 
     /// <summary>

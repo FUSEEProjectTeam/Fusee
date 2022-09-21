@@ -31,6 +31,13 @@ namespace Fusee.PointCloud.Core
     public delegate IEnumerable<GpuMesh> GetMeshes(OctantId guid);
 
     /// <summary>
+    /// Delegate for a method that tries to get the mesh(es) of an octant. If they are not cached yet, they should be created an added to the _gpuDataCache.
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns></returns>
+    public delegate IEnumerable<Mesh> GetDynamicMeshes(OctantId guid);
+
+    /// <summary>
     /// Delegate for a method that tries to get the <see cref="InstanceData"/> of an octant. If they are not cached yet, they should be created an added to the _gpuDataCache.
     /// </summary>
     /// <param name="guid"></param>
@@ -69,7 +76,6 @@ namespace Fusee.PointCloud.Core
         private readonly LoadPointsHandler<TPoint> _loadPointsHandler;
         private const int _maxNumberOfDisposals = 1;
         private float _deltaTimeSinceLastDisposal;
-        private bool _disposed;
         private readonly bool _doRenderInstanced;
 
         /// <summary>
@@ -101,7 +107,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// First looks in the mesh cache, if there are meshes return, 
+        /// First looks in the mesh cache, if there are meshes return,
         /// else look in the DisposeQueue, if there are meshes return,
         /// else look in the point cache, if there are points create a mesh and add to the _meshCache.
         /// </summary>
@@ -197,55 +203,6 @@ namespace Fusee.PointCloud.Core
             {
                 DisposeQueue.Add((OctantId)guid, (IEnumerable<TGpuData>)meshes);
             }
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <param name="disposing">If disposing equals true, the method has been called directly
-        /// or indirectly by a user's code. Managed and unmanaged resources
-        /// can be disposed.
-        /// If disposing equals false, the method has been called by the
-        /// runtime from inside the finalizer and you should not reference
-        /// other objects. Only unmanaged resources can be disposed.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    _pointCache.Dispose();
-                    _gpuDataCache.Dispose();
-
-                    LockDisposeQueue = null;
-                    LockLoadingQueue = null;
-                    foreach (var meshes in DisposeQueue)
-                    {
-                        foreach (var mesh in meshes.Value)
-                        {
-                            mesh.Dispose();
-                        }
-                    }
-                }
-                _disposed = true;
-            }
-        }
-
-        /// <summary>
-        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
-        /// </summary>
-        ~PointCloudDataHandler()
-        {
-            Dispose(disposing: false);
         }
     }
 }

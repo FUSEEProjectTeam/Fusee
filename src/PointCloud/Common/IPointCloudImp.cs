@@ -59,7 +59,8 @@ namespace Fusee.PointCloud.Common
         /// <param name="viewportHeight">The current viewport height.</param>
         /// <param name="renderFrustum">The current viewport width.</param>
         /// <param name="camPos">The current camera position in world coordinates.</param>
-        public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos);
+        /// <param name="modelMat">The model matrix of the SceneNode the PointCloud(Component) is part of.</param>
+        public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos, float4x4 modelMat);
     }
 
     /// <summary>

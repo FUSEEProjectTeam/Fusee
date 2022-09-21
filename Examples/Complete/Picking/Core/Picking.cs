@@ -123,7 +123,8 @@ namespace Fusee.Examples.Picking.Core
             {
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z)
+                    .FirstOrDefault();
                 Diagnostics.Debug(newPick);
 
                 if (newPick?.Node != _currentPick?.Node)
@@ -140,6 +141,7 @@ namespace Fusee.Examples.Picking.Core
                         _oldColor = ef.SurfaceInput.Albedo;
                         ef.SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
                     }
+
                     _currentPick = newPick;
                 }
 
@@ -166,20 +168,18 @@ namespace Fusee.Examples.Picking.Core
             _camPivotTransform = new Transform();
             return new SceneContainer
             {
-                Header = new SceneHeader
-                {
-                    CreationDate = "April 2017",
-                    CreatedBy = "mch@hs-furtwangen.de",
-                    Generator = "Handcoded with pride",
-                },
+                Header =
+                    new SceneHeader
+                    {
+                        CreationDate = "April 2017",
+                        CreatedBy = "mch@hs-furtwangen.de",
+                        Generator = "Handcoded with pride",
+                    },
                 Children = new List<SceneNode>
                 {
                     new SceneNode()
                     {
-                        Components =
-                        {
-                            _camPivotTransform,
-                        },
+                        Components = { _camPivotTransform, },
                         Children =
                         {
                             new SceneNode()
@@ -187,10 +187,7 @@ namespace Fusee.Examples.Picking.Core
                                 Name = "MainCam",
                                 Components = new List<SceneComponent>
                                 {
-                                    new Transform()
-                                    {
-                                        Translation = new float3(0, 150, -600)
-                                    },
+                                    new Transform() { Translation = new float3(0, 150, -600) },
                                     new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
                                     {
                                         BackgroundColor = float4.One
@@ -202,65 +199,137 @@ namespace Fusee.Examples.Picking.Core
                     new SceneNode
                     {
                         Name = "Base",
-                        Components = new List<SceneComponent>
-                        {
-                           new Transform { Scale = float3.One },
-                           MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red),
-                           CreateCuboid(new float3(100, 20, 100))
-                        },
+                        Components =
+                            new List<SceneComponent>
+                            {
+                                new Transform { Scale = float3.One },
+                                MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red),
+                                CreateCuboid(new float3(100, 20, 100))
+                            },
                         Children = new ChildList
                         {
                             new SceneNode
                             {
                                 Name = "Arm01",
-                                Components = new List<SceneComponent>
-                                {
-                                   new Transform {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                   MakeEffect.FromDiffuseSpecular((float4)ColorUint.Green),
-                                   CreateCuboid(new float3(20, 100, 20))
-                                },
+                                Components =
+                                    new List<SceneComponent>
+                                    {
+                                        new Transform { Translation = new float3(0, 60, 0), Scale = float3.One },
+                                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Green),
+                                        CreateCuboid(new float3(20, 100, 20))
+                                    },
                                 Children = new ChildList
                                 {
                                     new SceneNode
                                     {
                                         Name = "Arm02Rot",
-                                        Components = new List<SceneComponent>
-                                        {
-                                            new Transform {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
-                                        },
+                                        Components =
+                                            new List<SceneComponent>
+                                            {
+                                                new Transform
+                                                {
+                                                    Translation =
+                                                        new float3(-20, 40, 0),
+                                                    Rotation = new float3(0.35f, 0,
+                                                        0),
+                                                    Scale = float3.One
+                                                },
+                                            },
                                         Children = new ChildList
                                         {
                                             new SceneNode
                                             {
                                                 Name = "Arm02",
-                                                Components = new List<SceneComponent>
-                                                {
-                                                    new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow),
-                                                    CreateCuboid(new float3(20, 100, 20))
-                                                },
+                                                Components =
+                                                    new List<SceneComponent>
+                                                    {
+                                                        new Transform
+                                                        {
+                                                            Translation =
+                                                                new float3(
+                                                                    0, 40,
+                                                                    0),
+                                                            Scale = float3
+                                                                .One
+                                                        },
+                                                        MakeEffect
+                                                            .FromDiffuseSpecular(
+                                                                (float4)
+                                                                ColorUint
+                                                                    .Yellow),
+                                                        CreateCuboid(
+                                                            new float3(20, 100,
+                                                                20))
+                                                    },
                                                 Children = new ChildList
                                                 {
                                                     new SceneNode
                                                     {
                                                         Name = "Arm03Rot",
-                                                        Components = new List<SceneComponent>
-                                                        {
-                                                            new Transform {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
-                                                        },
-                                                        Children = new ChildList
-                                                        {
-                                                            new SceneNode
+                                                        Components =
+                                                            new List<
+                                                                SceneComponent>
                                                             {
-                                                                Name = "Arm03",
-                                                                Components = new List<SceneComponent>
-                                                                {
-                                                                    new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue),
-                                                                    CreateCuboid(new float3(20, 100, 20))
-                                                                }
+                                                                new
+                                                                    Transform
+                                                                    {
+                                                                        Translation =
+                                                                            new
+                                                                                float3(
+                                                                                    20,
+                                                                                    40,
+                                                                                    0),
+                                                                        Rotation =
+                                                                            new
+                                                                                float3(
+                                                                                    0.25f,
+                                                                                    0,
+                                                                                    0),
+                                                                        Scale =
+                                                                            float3
+                                                                                .One
+                                                                    },
                                                             },
-                                                        }
+                                                        Children =
+                                                            new ChildList
+                                                            {
+                                                                new
+                                                                    SceneNode
+                                                                    {
+                                                                        Name =
+                                                                            "Arm03",
+                                                                        Components =
+                                                                            new
+                                                                                List
+                                                                                <SceneComponent>
+                                                                                {
+                                                                                    new
+                                                                                        Transform
+                                                                                        {
+                                                                                            Translation =
+                                                                                                new
+                                                                                                    float3(
+                                                                                                        0,
+                                                                                                        40,
+                                                                                                        0),
+                                                                                            Scale =
+                                                                                                float3
+                                                                                                    .One
+                                                                                        },
+                                                                                    MakeEffect
+                                                                                        .FromDiffuseSpecular(
+                                                                                            (float4)
+                                                                                            ColorUint
+                                                                                                .Blue),
+                                                                                    CreateCuboid(
+                                                                                        new
+                                                                                            float3(
+                                                                                                20,
+                                                                                                100,
+                                                                                                20))
+                                                                                }
+                                                                    },
+                                                            }
                                                     }
                                                 }
                                             },
@@ -277,36 +346,7 @@ namespace Fusee.Examples.Picking.Core
         public static Mesh CreateCuboid(float3 size)
         {
             return new Mesh
-            {
-                Vertices = new[]
-                {
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z}
-                },
-
-                Triangles = new ushort[]
+            (new uint[]
                 {
                     // front face
                     0, 2, 1, 0, 3, 2,
@@ -326,64 +366,50 @@ namespace Fusee.Examples.Picking.Core
                     // bottom face
                     20, 22, 21, 20, 23, 22
                 },
-
-                Normals = new[]
+                new float3[]
                 {
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0)
+                    new float3 { x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z },
+                    new float3 { x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z },
+                    new float3 { x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z }
                 },
-
-                UVs = new[]
+                new float3[]
                 {
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0)
+                    new float3(0, 0, 1), new float3(0, 0, 1), new float3(0, 0, 1), new float3(0, 0, 1),
+                    new float3(1, 0, 0), new float3(1, 0, 0), new float3(1, 0, 0), new float3(1, 0, 0),
+                    new float3(0, 0, -1), new float3(0, 0, -1), new float3(0, 0, -1), new float3(0, 0, -1),
+                    new float3(-1, 0, 0), new float3(-1, 0, 0), new float3(-1, 0, 0), new float3(-1, 0, 0),
+                    new float3(0, 1, 0), new float3(0, 1, 0), new float3(0, 1, 0), new float3(0, 1, 0),
+                    new float3(0, -1, 0), new float3(0, -1, 0), new float3(0, -1, 0), new float3(0, -1, 0)
                 },
-                BoundingBox = new AABBf(-0.5f * size, 0.5f * size)
-            };
+                new float2[]
+                {
+                    new float2(1, 0), new float2(1, 1), new float2(0, 1), new float2(0, 0), new float2(1, 0),
+                    new float2(1, 1), new float2(0, 1), new float2(0, 0), new float2(1, 0), new float2(1, 1),
+                    new float2(0, 1), new float2(0, 0), new float2(1, 0), new float2(1, 1), new float2(0, 1),
+                    new float2(0, 0), new float2(1, 0), new float2(1, 1), new float2(0, 1), new float2(0, 0),
+                    new float2(1, 0), new float2(1, 1), new float2(0, 1), new float2(0, 0)
+                });
         }
     }
 }
