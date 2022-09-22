@@ -5,13 +5,15 @@ using System.IO;
 
 namespace Fusee.PointCloud.Potree.V2
 {
+    //Todo: implement checks
+
     public static class LoadChecker
     {
         public static bool CanHandleFile(string pathToNodeFileFolder, bool ignoreVersion = false)
         {
-            var hierarchyFilePath = Path.Combine(pathToNodeFileFolder, Constants.HierarchyFileName);
-            var metadataFilePath = Path.Combine(pathToNodeFileFolder, Constants.MetadataFileName);
-            var octreeFilePath = Path.Combine(pathToNodeFileFolder, Constants.OctreeFileName);
+            var hierarchyFilePath = Path.Combine(pathToNodeFileFolder, Potree2Consts.HierarchyFileName);
+            var metadataFilePath = Path.Combine(pathToNodeFileFolder, Potree2Consts.MetadataFileName);
+            var octreeFilePath = Path.Combine(pathToNodeFileFolder, Potree2Consts.OctreeFileName);
 
             var canHandle = true;
 
