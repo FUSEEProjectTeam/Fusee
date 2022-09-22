@@ -14,7 +14,7 @@ namespace Fusee.PointCloud.Potree.V2
     /// </summary>
     public class OctantPicker
     {
-        private readonly Potree2Reader _reader;
+        private readonly PotreeData _potreeData;
         private readonly RenderContext _rc;
         private readonly Camera _cam;
         private readonly Transform _camTransform;
@@ -22,13 +22,13 @@ namespace Fusee.PointCloud.Potree.V2
         /// <summary>
         /// Constructor for the octant picker.
         /// </summary>
-        /// <param name="reader">The potree reader.</param>
+        /// <param name="potreeData">The potree data.</param>
         /// <param name="rc">The render context.</param>
         /// <param name="cam">The camera the calculation is based on.</param>
         /// <param name="camTransform">The transform of previously given camera.</param>
-        public OctantPicker(Potree2Reader reader, RenderContext rc, Camera cam, Transform camTransform)
+        public OctantPicker(PotreeData potreeData, RenderContext rc, Camera cam, Transform camTransform)
         {
-            _reader = reader;
+            _potreeData = potreeData;
             _rc = rc;
             _cam = cam;
             _camTransform = camTransform;
@@ -45,7 +45,7 @@ namespace Fusee.PointCloud.Potree.V2
             var ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)_cam.GetProjectionMat(viewportSize.x, viewportSize.y, out _));
 
             // Get octree hierarchy.
-            var nodeList = _reader.FileDataInstance.Hierarchy.Nodes;
+            var nodeList = _potreeData.Hierarchy.Nodes;
 
             // Index based on octant density.
             var highestNumberOfPoints = 0L;
@@ -85,7 +85,7 @@ namespace Fusee.PointCloud.Potree.V2
             var ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)_cam.GetProjectionMat(viewportSize.x, viewportSize.y, out _));
 
             // Get octree hierarchy.
-            var nodeList = _reader.FileDataInstance.Hierarchy.Nodes;
+            var nodeList = _potreeData.Hierarchy.Nodes;
 
             // Index based on nearest octant.
             var lowestDistance = double.MaxValue;
