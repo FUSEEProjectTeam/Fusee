@@ -138,6 +138,12 @@ namespace Fusee.PointCloud.Core
         private void DetermineVisibility()
         {
             NumberOfVisiblePoints = 0;
+
+            // Clear IsVisible flag of every node.
+            foreach (var node in _visibleNodesOrderedByProjectionSize)
+            {
+                node.Value.IsVisible = false;
+            }
             _visibleNodesOrderedByProjectionSize.Clear();
             VisibleNodes.Clear();
             DetermineVisibilityForNode((PointCloudOctant)Octree.Root);
@@ -185,7 +191,10 @@ namespace Fusee.PointCloud.Core
 
             // Else if the node is visible and big enough, load if necessary and add to visible nodes.
             // If by chance two same nodes have the same screen-projected-size can't add it to the dictionary....
-            _visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node);
+            if (_visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node))
+            {
+                node.IsVisible = true;
+            }
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
