@@ -10,7 +10,7 @@ namespace Fusee.PointCloud.Core
     public class PointCloudOctant : IPointCloudOctant
     {
         /// <summary>
-        /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
+        /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float, float3, float3)"/>.
         /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
@@ -27,12 +27,32 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Center of this Bucket in world space coordinates.
         /// </summary>
-        public double3 Center { get; set; }
+        public double3 Center
+        {
+            get { return _center; }
+            set
+            {
+                _center = value;
+                Min = _center - 0.5f * _size;
+                Max = _center + 0.5f * _size;
+            }
+        }
+        private double3 _center;
 
         /// <summary>
         /// Length, width and height of this Octant.
         /// </summary>
-        public double Size { get; set; }
+        public double Size
+        {
+            get { return _size; }
+            set
+            {
+                _size = value;
+                Min = _center - 0.5f * _size;
+                Max = _center + 0.5f * _size;
+            }
+        }
+        private double _size;
 
         /// <summary>
         /// List of child octants.
@@ -55,6 +75,21 @@ namespace Fusee.PointCloud.Core
         public int Level { get; private set; }
 
         /// <summary>
+        /// True if octant is currently visible.
+        /// </summary>
+        public bool IsVisible { get; set; }
+
+        /// <summary>
+        /// The minimum of octants bounding box.
+        /// </summary>
+        public double3 Min { get; private set; }
+
+        /// <summary>
+        /// The maximum of octants bounding box.
+        /// </summary>
+        public double3 Max { get; private set; }
+
+        /// <summary>
         /// Creates a new instance of type <see cref="PointCloudOctant"/>.
         /// </summary>
         /// <param name="center">The center of this octant.</param>
@@ -66,9 +101,13 @@ namespace Fusee.PointCloud.Core
             Center = center;
             Size = size;
 
+            Min = center - 0.5f * size;
+            Max = center + 0.5f * size;
+
             OctId = octId;
 
             Level = OctId.Level;
+            IsVisible = false;
 
             int.TryParse(OctId[Level - 1].ToString(), out int posInParent);
             PosInParent = posInParent;
@@ -140,6 +179,49 @@ namespace Fusee.PointCloud.Core
                 frustum.Right.InsideOrIntersecting(new float3(Center), (float)Size) &
                 frustum.Top.InsideOrIntersecting(new float3(Center), (float)Size) &
                 frustum.Bottom.InsideOrIntersecting(new float3(Center), (float)Size);
+        }
+
+        /// <summary>
+        /// Check if point lies in this octant.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public bool Intersects(double3 point)
+        {
+            return (point.x >= Min.x && point.x <= Max.x) &&
+            (point.y >= Min.y && point.y <= Max.y) &&
+            (point.z >= Min.z && point.z <= Max.z);
+        }
+
+        /// <summary>
+        /// Checks if a given ray originates in, or intersects octant.
+        /// </summary>
+        /// <param name="ray">The ray to test against.</param>
+        /// <returns></returns>
+        public bool IntersectRay(RayD ray)
+        {
+            if (this.Intersects(ray.Origin))
+                return true;
+
+            double t1 = (Min[0] - ray.Origin[0]) * ray.Inverse[0];
+            double t2 = (Max[0] - ray.Origin[0]) * ray.Inverse[0];
+
+            double tmin = M.Min(t1, t2);
+            double tmax = M.Max(t1, t2);
+
+            for (int i = 1; i < 3; i++)
+            {
+                t1 = (Min[i] - ray.Origin[i]) * ray.Inverse[i];
+                t2 = (Max[i] - ray.Origin[i]) * ray.Inverse[i];
+
+                t1 = double.IsNaN(t1) ? 0.0f : t1;
+                t2 = double.IsNaN(t2) ? 0.0f : t2;
+
+                tmin = M.Max(tmin, M.Min(t1, t2));
+                tmax = M.Min(tmax, M.Max(t1, t2));
+            }
+
+            return tmax >= M.Max(tmin, 0.0);
         }
     }
 }

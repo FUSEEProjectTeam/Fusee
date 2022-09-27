@@ -52,7 +52,7 @@ namespace Fusee.PointCloud.Core
     /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/> that can be used to access the point data without casting the points.</param>
     /// <param name="points">The point cloud points as generic array.</param>
     /// <returns></returns>
-    public delegate TGpuData CreateGpuData<TGpuData, TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points);
+    public delegate TGpuData CreateGpuData<TGpuData, TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, OctantId octantId);
 
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
@@ -111,28 +111,28 @@ namespace Fusee.PointCloud.Core
         /// else look in the DisposeQueue, if there are meshes return,
         /// else look in the point cache, if there are points create a mesh and add to the _meshCache.
         /// </summary>
-        /// <param name="guid">The unique id of an octant.</param>
+        /// <param name="octantId">The unique id of an octant.</param>
         /// <returns></returns>
-        public override IEnumerable<TGpuData> GetGpuData(OctantId guid)
+        public override IEnumerable<TGpuData> GetGpuData(OctantId octantId)
         {
-            if (_gpuDataCache.TryGetValue(guid, out var gpuData))
+            if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
                 return gpuData;
-            else if (DisposeQueue.TryGetValue(guid, out gpuData))
+            else if (DisposeQueue.TryGetValue(octantId, out gpuData))
             {
                 lock (LockDisposeQueue)
                 {
-                    DisposeQueue.Remove(guid);
-                    _gpuDataCache.Add(guid, gpuData);
+                    DisposeQueue.Remove(octantId);
+                    _gpuDataCache.Add(octantId, gpuData);
                     return gpuData;
                 }
             }
-            else if (_pointCache.TryGetValue(guid, out var points))
+            else if (_pointCache.TryGetValue(octantId, out var points))
             {
                 if (!_doRenderInstanced)
-                    gpuData = MeshMaker.CreateMeshes(_pointAccessor, points, _createGpuDataHandler);
+                    gpuData = MeshMaker.CreateMeshes(_pointAccessor, points, _createGpuDataHandler, octantId);
                 else
-                    gpuData = MeshMaker.CreateInstanceData(_pointAccessor, points, _createGpuDataHandler);
-                _gpuDataCache.Add(guid, gpuData);
+                    gpuData = MeshMaker.CreateInstanceData(_pointAccessor, points, _createGpuDataHandler, octantId);
+                _gpuDataCache.Add(octantId, gpuData);
             }
             //no points yet, probably in loading queue
             return null;
