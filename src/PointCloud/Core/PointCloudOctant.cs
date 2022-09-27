@@ -10,7 +10,7 @@ namespace Fusee.PointCloud.Core
     public class PointCloudOctant : IPointCloudOctant
     {
         /// <summary>
-        /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
+        /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float, float3, float3)"/>.
         /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
@@ -27,7 +27,17 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Center of this Bucket in world space coordinates.
         /// </summary>
-        public double3 Center { get; set; }
+        public double3 Center 
+        { 
+            get { return _center; } 
+            set 
+            { 
+                _center = value;
+                Min = _center - 0.5f * Size;
+                Max = _center + 0.5f * Size;
+            }
+        }
+        private double3 _center;
 
         /// <summary>
         /// Length, width and height of this Octant.
@@ -62,12 +72,12 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// The minimum of octants bounding box.
         /// </summary>
-        public double3 Min;
+        public double3 Min { get; private set; }
 
         /// <summary>
         /// The maximum of octants bounding box.
         /// </summary>
-        public double3 Max;
+        public double3 Max { get; private set; }
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloudOctant"/>.
