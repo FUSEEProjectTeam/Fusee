@@ -33,8 +33,8 @@ namespace Fusee.PointCloud.Core
             set 
             { 
                 _center = value;
-                Min = _center - 0.5f * Size;
-                Max = _center + 0.5f * Size;
+                Min = _center - 0.5f * _size;
+                Max = _center + 0.5f * _size;
             }
         }
         private double3 _center;
@@ -42,7 +42,17 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Length, width and height of this Octant.
         /// </summary>
-        public double Size { get; set; }
+        public double Size
+        {
+            get { return _size; }
+            set
+            {
+                _size = value;
+                Min = _center - 0.5f * _size;
+                Max = _center + 0.5f * _size;
+            }
+        }
+        private double _size;
 
         /// <summary>
         /// List of child octants.
