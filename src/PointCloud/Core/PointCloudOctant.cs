@@ -27,11 +27,11 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Center of this Bucket in world space coordinates.
         /// </summary>
-        public double3 Center 
-        { 
-            get { return _center; } 
-            set 
-            { 
+        public double3 Center
+        {
+            get { return _center; }
+            set
+            {
                 _center = value;
                 Min = _center - 0.5f * _size;
                 Max = _center + 0.5f * _size;
