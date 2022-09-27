@@ -48,12 +48,13 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private SceneNode _pointCloudNode;
         private SceneNode _camNode;
         private readonly Potree2Reader _potreeReader;
+        private readonly PotreeData _potreeData;
 
         private readonly RenderContext _rc;
 
         public void OnLoadNewFile(object sender, EventArgs e)
         {
-            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile), PointRenderMode);
+            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(PointRenderMode);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PointRenderingParams.Instance.PointThreshold;
             _pointCloud.Camera = _cam;
@@ -63,7 +64,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public PointCloudPotree2Core(RenderContext rc)
         {
-            _potreeReader = new Potree2Reader();
+            _potreeData = new PotreeData(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
+            _potreeReader = new Potree2Reader(ref _potreeData);
             _rc = rc;
         }
 
@@ -86,7 +88,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             PointRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
             PointRenderingParams.Instance.ProjectedSizeModifierHandler = OnProjectedSizeModifierChanged;
 
-            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile), PointRenderMode);
+            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(PointRenderMode);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PointRenderingParams.Instance.PointThreshold;
 

@@ -115,6 +115,7 @@ namespace Fusee.PointCloud.Core
             var vertices = new float3[numberOfPointsInMesh];
             var triangles = new uint[numberOfPointsInMesh];
             var colors = new uint[numberOfPointsInMesh];
+            var flags = new uint[numberOfPointsInMesh];
             var boundingBox = new AABBf(firstPos, firstPos);
 
             for (int i = 0; i < points.Length; i++)
@@ -127,11 +128,12 @@ namespace Fusee.PointCloud.Core
                 triangles[i] = (uint)i;
                 var col = pointAccessor.GetColorFloat3_32(ref points[i]);//points[i].Color;
                 colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
+                flags[i] = 1 << 30;
 
                 //TODO: add labels correctly
                 var label = pointAccessor.GetLabelUInt_8(ref points[i]);//points[i].Label;
             }
-            var mesh = ModuleExtensionPoint.CreateGpuMesh(PrimitiveType.Points, vertices, triangles, null, colors);
+            var mesh = ModuleExtensionPoint.CreateGpuMesh(PrimitiveType.Points, vertices, triangles, null, colors, null, null, null, null, null, null, null, flags);
             mesh.BoundingBox = boundingBox;
             return mesh;
         }
@@ -150,6 +152,7 @@ namespace Fusee.PointCloud.Core
             var vertices = new float3[numberOfPointsInMesh];
             var triangles = new uint[numberOfPointsInMesh];
             var colors = new uint[numberOfPointsInMesh];
+            var flags = new uint[numberOfPointsInMesh];
             var boundingBox = new AABBf(firstPos, firstPos);
 
             for (int i = 0; i < points.Length; i++)
@@ -162,12 +165,13 @@ namespace Fusee.PointCloud.Core
                 triangles[i] = (uint)i;
                 var col = pointAccessor.GetColorFloat3_32(ref points[i]);//points[i].Color;
                 colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
+                flags[i] = 1 << 30;
 
                 //TODO: add labels correctly
                 var label = pointAccessor.GetLabelUInt_8(ref points[i]);//points[i].Label;
             }
 
-            return new Mesh(triangles, vertices, null, null, null, null, null, null, colors)
+            return new Mesh(triangles, vertices, null, null, null, null, null, null, colors, null, null, flags)
             {
                 MeshType = PrimitiveType.Points
             };

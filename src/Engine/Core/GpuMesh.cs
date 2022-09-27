@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core
     /// <returns></returns>
     public delegate GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, uint[] triangles = null,
             float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null, float2[] uvs = null,
-            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null);
+            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null, uint[] flags = null);
 
     /// <summary>
     /// This type of mesh doesn't create a copy of the mesh data in the RAM.
