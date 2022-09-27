@@ -326,14 +326,16 @@ namespace Fusee.PointCloud.Potree.V2
             {
                 if (potreeNode.Children[i] != null)
                 {
-                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, new OctantId(potreeNode.Name));
+                    var potreeChild = potreeNode.Children[i];
 
-                    if (potreeNode.Children[i].NodeType == NodeType.LEAF)
+                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, new OctantId(potreeChild.Name));
+
+                    if (potreeChild.NodeType == NodeType.LEAF)
                     {
                         octant.IsLeaf = true;
                     }
 
-                    MapChildNodesRecursive(octant, potreeNode.Children[i]);
+                    MapChildNodesRecursive(octant, potreeChild);
 
                     octreeNode.Children[i] = octant;
                 }
