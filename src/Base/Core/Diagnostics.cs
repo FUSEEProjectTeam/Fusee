@@ -61,7 +61,7 @@ namespace Fusee.Base.Core
 
                         }
 
-                        return f + "\n";
+                        return f;
                     };
 
         /// <summary>
