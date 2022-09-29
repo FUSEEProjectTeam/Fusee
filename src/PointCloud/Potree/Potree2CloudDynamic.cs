@@ -144,7 +144,7 @@ namespace Fusee.PointCloud.Potree
 
                 meshes.AddRange(guidMeshes);
             }
-            
+
             if (NewMeshAction != null)
             {
                 var newMeshes = meshes.Except(GpuDataToRender);
