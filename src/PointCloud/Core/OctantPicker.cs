@@ -14,8 +14,8 @@ namespace Fusee.PointCloud.Core
     {
         private readonly PointCloudOctree _octree;
         private readonly RenderContext _rc;
-        private readonly Camera _cam;
-        private readonly Transform _camTransform;
+        public Camera Cam;
+        public Transform CamTransform;
 
         /// <summary>
         /// Constructor for the octant picker.
@@ -28,8 +28,8 @@ namespace Fusee.PointCloud.Core
         {
             _octree = octree;
             _rc = rc;
-            _cam = cam;
-            _camTransform = camTransform;
+            Cam = cam;
+            CamTransform = camTransform;
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Fusee.PointCloud.Core
         private System.Collections.Generic.List<PointCloudOctant>? PickOctantWrapper(float2 pickPosClip, int2 viewportSize)
         {
             // Create ray to intersect aabb's with.
-            var ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)_cam.GetProjectionMat(viewportSize.x, viewportSize.y, out _));
+            var ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)Cam.GetProjectionMat(viewportSize.x, viewportSize.y, out _));
             var rootnode = (PointCloudOctant)_octree.Root;
             System.Collections.Generic.List<PointCloudOctant> picked = new();
 
@@ -164,9 +164,9 @@ namespace Fusee.PointCloud.Core
         private double Distance(double3 vector)
         {
             return System.Math.Sqrt(
-                   System.Math.Pow(vector.x - _camTransform.Translation.x, 2) +
-                   System.Math.Pow(vector.y - _camTransform.Translation.y, 2) +
-                   System.Math.Pow(vector.z - _camTransform.Translation.z, 2));
+                   System.Math.Pow(vector.x - CamTransform.Translation.x, 2) +
+                   System.Math.Pow(vector.y - CamTransform.Translation.y, 2) +
+                   System.Math.Pow(vector.z - CamTransform.Translation.z, 2));
         }
 
         /// <summary>
