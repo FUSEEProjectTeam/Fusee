@@ -1,8 +1,12 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using Fusee.Base.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Fusee.PointCloud.Potree
 {
@@ -97,6 +101,11 @@ namespace Fusee.PointCloud.Potree
         }
 
         /// <summary>
+        /// Action that is run on every mesh that is loaded to be visible.
+        /// </summary>
+        public Action<Mesh> NewMeshAction;
+
+        /// <summary>
         /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData, TPoint}"/> to update the visible meshes.
         /// Called every frame.
         /// </summary>
@@ -115,8 +124,6 @@ namespace Fusee.PointCloud.Potree
                 fov == VisibilityTester.Fov &&
                 camPos == VisibilityTester.CamPos) return;
 
-            GpuDataToRender.Clear();
-
             VisibilityTester.RenderFrustum = renderFrustum;
             VisibilityTester.ViewportHeight = viewportHeight;
             VisibilityTester.Fov = fov;
@@ -125,16 +132,36 @@ namespace Fusee.PointCloud.Potree
 
             VisibilityTester.Update();
 
+            var meshes = new List<Mesh>();
+
             foreach (var guid in VisibilityTester.VisibleNodes)
             {
                 if (!guid.Valid) continue;
 
-                var meshes = _getMeshes(guid);
+                var guidMeshes = _getMeshes(guid);
 
-                if (meshes == null) continue; //points for this octant aren't loaded yet.
+                if (guidMeshes == null) continue; //points for this octant aren't loaded yet.
 
-                GpuDataToRender.AddRange(meshes);
+                meshes.AddRange(guidMeshes);
             }
+            
+            if (NewMeshAction != null)
+            {
+                var newMeshes = meshes.Except(GpuDataToRender);
+
+                if (newMeshes.Any())
+                {
+                    //Diagnostics.Debug($"New meshes {newMeshes.Count()}");
+
+                    foreach (var mesh in newMeshes)
+                    {
+                        NewMeshAction(mesh);
+                    }
+                }
+            }
+
+            GpuDataToRender.Clear();
+            GpuDataToRender.AddRange(meshes);
         }
     }
 }
