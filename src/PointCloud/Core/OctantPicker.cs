@@ -176,7 +176,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="point">Point to calculate distance to.</param>
         private float Distance(float3 point)
         {
-            return (point - _camTransform.Translation).Length;
+            return (point - CamTransform.Translation).Length;
         }
 
         /// <summary>
