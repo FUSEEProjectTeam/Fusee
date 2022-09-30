@@ -3,8 +3,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +16,7 @@ namespace Fusee.PointCloud.Core
         private readonly PointCloudOctree _octree;
         private readonly RenderContext _rc;
         public Camera Cam;
-        public Transform CamTransform;
+        public float3 CamPosWorld;
 
         /// <summary>
         /// Constructor for the octant picker.
@@ -27,12 +25,12 @@ namespace Fusee.PointCloud.Core
         /// <param name="rc">The render context.</param>
         /// <param name="cam">The camera the calculation is based on.</param>
         /// <param name="camTransform">The transform of previously given camera.</param>
-        public OctantPicker(PointCloudOctree octree, RenderContext rc, Camera cam, Transform camTransform)
+        public OctantPicker(PointCloudOctree octree, RenderContext rc, Camera cam, float3 camPosWorld)
         {
             _octree = octree;
             _rc = rc;
             Cam = cam;
-            CamTransform = camTransform;
+            CamPosWorld = camPosWorld;
         }
 
         /// <summary>
@@ -61,7 +59,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="pickPosClip">The mouse position in clip space.</param>
         /// <param name="viewportSize">Width and height of the viewport.</param>
-        private System.Collections.Generic.List<PointCloudOctant>? PickOctantWrapper(float2 pickPosClip, int2 viewportSize)
+        private List<PointCloudOctant>? PickOctantWrapper(float2 pickPosClip, int2 viewportSize)
         {
             // Create ray to intersect aabb's with.
             var ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)Cam.GetProjectionMat(viewportSize.x, viewportSize.y, out _));
@@ -111,7 +109,8 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Pick the <see cref="PointCloudOctant"/> that is closest to the camera under given mouse position.
+        /// Pick the <see cref="PointCloudOctant"/> that is densest to the camera under given mouse position.
+        /// Octants are ignored if the camera is inside or the distance from the camera to the octant is smaller than the octant size.
         /// </summary>
         /// <param name="pickPosClip">The mouse position in clip space.</param>
         /// <param name="viewportSize">Width and height of the window.</param>
@@ -126,28 +125,30 @@ namespace Fusee.PointCloud.Core
             }
             else
             {
-                // Sort by ratio of number of points and size of octant.
-                pickResult = pickResult.OrderBy(pickResult => pickResult.NumberOfPointsInNode / pickResult.Size).ToList();
-                for (int i = 0; i < pickResult.Count; i++)
+                pickResult = pickResult.OrderBy(pickResult => DistanceToCamera((float3)pickResult.Center)).ToList();
+                for (int i = 0; i < pickResult.Count(); i++)
                 {
                     // Only pick octant that has a certain distance to the camera.
-                    if (Distance((float3)pickResult[i].Center) >= pickResult[i].Size)
+                    var dist = DistanceToCamera((float3)pickResult[i].Center);
+                    if (pickResult[i].Intersects((double3)CamPosWorld) || dist < pickResult[i].Size)
                     {
-                        return pickResult[i];
+                        pickResult.Remove(pickResult[i]);
                     }
                 }
+                // Sort by ratio of number of points and size of octant.
+                pickResult = pickResult.OrderByDescending(pickResult => pickResult.NumberOfPointsInNode / pickResult.Size).ToList();
+                return pickResult[0];
             }
-            return null;
         }
 
         /// <summary>
         /// Pick the <see cref="PointCloudOctant"/> that is closest to the camera under given mouse position.
+        /// Octants are ignored if the camera is inside or the distance from the camera to the octant is smaller than the octant size.
         /// </summary>
         /// <param name="pickPosClip">The mouse position in clip space.</param>
         /// <param name="viewportSize">Width and height of the window.</param>
         public PointCloudOctant? PickClosestOctant(float2 pickPosClip, int2 viewportSize)
         {
-
             var pickResult = PickOctantWrapper(pickPosClip, viewportSize);
 
             // No octants picked.
@@ -157,26 +158,27 @@ namespace Fusee.PointCloud.Core
             }
             else
             {
-                // Order octants by distance between its center point and the camera position.
-                pickResult = pickResult.OrderBy(pickResult => Distance((float3)pickResult.Center)).ToList();
-                for (int i = 0; i < pickResult.Count; i++)
+                pickResult = pickResult.OrderBy(pickResult => DistanceToCamera((float3)pickResult.Center)).ToList();
+                for (int i = 0; i < pickResult.Count(); i++)
                 {
-                    if (Distance((float3)pickResult[i].Center) >= pickResult[i].Size)
+                    // Only pick octant that has a certain distance to the camera.
+                    var dist = DistanceToCamera((float3)pickResult[i].Center);
+                    if (pickResult[i].Intersects((double3)CamPosWorld) || dist < pickResult[i].Size)
                     {
-                        return pickResult[i];
+                        pickResult.Remove(pickResult[i]);
                     }
                 }
+                return pickResult[0];
             }
-            return null;
         }
 
         /// <summary>
         /// Helper method to calculate distance between given vector (usually center of an octant) and the cameras position.
         /// </summary>
         /// <param name="point">Point to calculate distance to.</param>
-        private float Distance(float3 point)
+        private float DistanceToCamera(float3 point)
         {
-            return (point - CamTransform.Translation).Length;
+            return (point - CamPosWorld).Length;
         }
 
         /// <summary>
