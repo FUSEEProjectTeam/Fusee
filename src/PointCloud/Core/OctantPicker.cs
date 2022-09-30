@@ -3,6 +3,9 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Fusee.PointCloud.Core
@@ -36,14 +39,14 @@ namespace Fusee.PointCloud.Core
         /// Helper method to traverse octree and return octant. Assumes that the node is visible and intersected by given ray.
         /// </summary>
         /// <returns></returns>
-        private System.Collections.Generic.List<PointCloudOctant> PickOctantRecursively(PointCloudOctant node, RayD ray, System.Collections.Generic.List<PointCloudOctant> list)
+        private List<PointCloudOctant> PickOctantRecursively(PointCloudOctant node, RayD ray, List<PointCloudOctant> list)
         {
             list.Add(node);
             if (node.Children[0] != null)
             {
-                foreach (PointCloudOctant child in node.Children)
+                foreach (var child in node.Children.Cast<PointCloudOctant>())
                 {
-                    if (child != null && child.IsVisible && child.IntersectRay(ray))
+                    if (child?.IsVisible == true && child.IntersectRay(ray))
                     {
                         PickOctantRecursively(child, ray, list);
                     }
@@ -63,7 +66,7 @@ namespace Fusee.PointCloud.Core
             // Create ray to intersect aabb's with.
             var ray = new RayD(new double2(pickPosClip.x, pickPosClip.y), (double4x4)_rc.View, (double4x4)Cam.GetProjectionMat(viewportSize.x, viewportSize.y, out _));
             var rootnode = (PointCloudOctant)_octree.Root;
-            System.Collections.Generic.List<PointCloudOctant> picked = new();
+            List<PointCloudOctant> picked = new();
 
             // Check if ray is hitting the octree at all.
             if (!rootnode.IsVisible || !rootnode.IntersectRay(ray))
@@ -77,7 +80,7 @@ namespace Fusee.PointCloud.Core
                 for (int i = 0; i < 8; i++)
                 {
                     var child = (PointCloudOctant)rootnode.Children[i];
-                    if (child != null && child.IsVisible && child.IntersectRay(ray))
+                    if (child?.IsVisible == true && child.IntersectRay(ray))
                     {
                         PickOctantRecursively(child, ray, picked);
                     }
@@ -97,7 +100,18 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Pick the octant that is closest to the camera under given mouse position.
+        /// Returns all <see cref="PointCloudOctant"/> under given mouse position, without filtering or sorting
+        /// </summary>
+        /// <param name="pickPosClip"></param>
+        /// <param name="viewportSize"></param>
+        /// <returns></returns>
+        public List<PointCloudOctant?> PickAllOctants(float2 pickPosClip, int2 viewportSize)
+        {
+            return PickOctantWrapper(pickPosClip, viewportSize);
+        }
+
+        /// <summary>
+        /// Pick the <see cref="PointCloudOctant"/> that is closest to the camera under given mouse position.
         /// </summary>
         /// <param name="pickPosClip">The mouse position in clip space.</param>
         /// <param name="viewportSize">Width and height of the window.</param>
@@ -117,7 +131,7 @@ namespace Fusee.PointCloud.Core
                 for (int i = 0; i < pickResult.Count; i++)
                 {
                     // Only pick octant that has a certain distance to the camera.
-                    if (Distance(pickResult[i].Center) >= pickResult[i].Size)
+                    if (Distance((float3)pickResult[i].Center) >= pickResult[i].Size)
                     {
                         return pickResult[i];
                     }
@@ -127,7 +141,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Pick the octant that is closest to the camera under given mouse position.
+        /// Pick the <see cref="PointCloudOctant"/> that is closest to the camera under given mouse position.
         /// </summary>
         /// <param name="pickPosClip">The mouse position in clip space.</param>
         /// <param name="viewportSize">Width and height of the window.</param>
@@ -144,10 +158,10 @@ namespace Fusee.PointCloud.Core
             else
             {
                 // Order octants by distance between its center point and the camera position.
-                pickResult = pickResult.OrderBy(pickResult => Distance(pickResult.Center)).ToList();
+                pickResult = pickResult.OrderBy(pickResult => Distance((float3)pickResult.Center)).ToList();
                 for (int i = 0; i < pickResult.Count; i++)
                 {
-                    if (Distance(pickResult[i].Center) >= pickResult[i].Size)
+                    if (Distance((float3)pickResult[i].Center) >= pickResult[i].Size)
                     {
                         return pickResult[i];
                     }
@@ -159,14 +173,10 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Helper method to calculate distance between given vector (usually center of an octant) and the cameras position.
         /// </summary>
-        /// <param name="vector">Vector to calculate distance to.</param>
-        /// <returns></returns>
-        private double Distance(double3 vector)
+        /// <param name="point">Point to calculate distance to.</param>
+        private float Distance(float3 point)
         {
-            return System.Math.Sqrt(
-                   System.Math.Pow(vector.x - CamTransform.Translation.x, 2) +
-                   System.Math.Pow(vector.y - CamTransform.Translation.y, 2) +
-                   System.Math.Pow(vector.z - CamTransform.Translation.z, 2));
+            return (point - _camTransform.Translation).Length;
         }
 
         /// <summary>
