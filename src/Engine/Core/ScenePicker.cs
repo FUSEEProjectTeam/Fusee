@@ -568,7 +568,7 @@ namespace Fusee.Engine.Core
                 var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
                 if (matOfNode == null)
                 {
-                    Diagnostics.Warn("No shader effect for line renderer found!");
+                    Diagnostics.Debug("No shader effect for line renderer found!");
                     return;
                 }
                 var thicknessFromShader = matOfNode.GetFxParam<float>("Thickness");
