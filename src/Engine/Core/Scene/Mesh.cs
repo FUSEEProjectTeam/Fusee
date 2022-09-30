@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using System;
@@ -67,7 +67,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Are there any dirty indices which need to be updated on the GPU?
         /// </summary>
-        public bool DirtyIndex { get; internal set; }
+        public bool DirtyIndex { get; internal set; } = true;
 
         /// <summary>
         /// Get length of data
