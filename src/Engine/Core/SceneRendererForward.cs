@@ -712,7 +712,7 @@ namespace Fusee.Engine.Core
             if (DoFrumstumCulling)
             {
                 //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
-                if (mesh.BoundingBox.Size != float3.Zero && mesh.MeshType != PrimitiveType.Lines)
+                if (mesh.BoundingBox.Size.x > 0 && mesh.BoundingBox.Size.y > 0 && mesh.BoundingBox.Size.z > 0)
                 {
                     var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
                     if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.RenderFrustum))
