@@ -106,6 +106,11 @@ namespace Fusee.PointCloud.Potree
         public Action<Mesh> NewMeshAction;
 
         /// <summary>
+        /// Determins if new Meshes should be loaded.
+        /// </summary>
+        public bool LoadNewMeshes { get; set; } = true;
+
+        /// <summary>
         /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData, TPoint}"/> to update the visible meshes.
         /// Called every frame.
         /// </summary>
@@ -117,6 +122,9 @@ namespace Fusee.PointCloud.Potree
         public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos, float4x4 modelMat)
         {
             DataHandler.ProcessDisposeQueue();
+
+            if (!LoadNewMeshes)
+                return;
 
             if (!_doUpdate &&
                 renderFrustum == VisibilityTester.RenderFrustum &&
@@ -151,8 +159,6 @@ namespace Fusee.PointCloud.Potree
 
                 if (newMeshes.Any())
                 {
-                    //Diagnostics.Debug($"New meshes {newMeshes.Count()}");
-
                     foreach (var mesh in newMeshes)
                     {
                         NewMeshAction(mesh);
