@@ -345,7 +345,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.SameLine();
             if (ImGui.Button(CancelFileOpenTxt))
             {
-                OnPicked?.Invoke(this, null);
                 _filePickerOpen = false;
             }
 
