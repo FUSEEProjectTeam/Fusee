@@ -1,6 +1,7 @@
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Numerics;
 
@@ -63,6 +64,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// </summary>
         public string FileLabelTxt = "File";
 
+        public string ParentFolderTxt = "Back";
+
         public readonly bool OnlyAllowFolders;
         public readonly List<string>? AllowedExtensions;
 
@@ -70,6 +73,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public string RootFolder { get; private set; }
 
         private string _currentFolder;
+        private string _selectedFolder;
 
         // needed for width calculation
         private Vector2 _sizeOfInputText;
@@ -158,6 +162,16 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.Begin(Id, ref _filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDocking);
 
             // Drive Selection
+            var di = new DirectoryInfo(_currentFolder);
+            if (ImGui.Button($"{ParentFolderTxt}##FilePickerParentDir"))
+            {
+                if (di.Exists && di.Parent != null && _currentFolder != RootFolder)
+                {
+                    _currentFolder = di.Parent.FullName;
+                    SelectedFile = "";
+                }
+            }
+
             foreach (var drive in DriveInfo.GetDrives())
             {
                 if (drive.IsReady)
@@ -217,22 +231,9 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             if (ImGui.BeginChild("#FolderBrowser", new Vector2(-1, 200), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize))
             {
-                var di = new DirectoryInfo(_currentFolder);
+                di = new DirectoryInfo(_currentFolder);
                 if (di.Exists)
                 {
-                    if (di.Parent != null && _currentFolder != RootFolder)
-                    {
-                        ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
-
-                        if (ImGui.Selectable("../", false, ImGuiSelectableFlags.DontClosePopups))
-                        {
-                            _currentFolder = di.Parent.FullName;
-                            SelectedFile = "";
-                        }
-
-                        ImGui.PopStyleColor();
-                    }
-
                     var fileSystemEntries = GetFileSystemEntries(di.FullName);
                     foreach (var fse in fileSystemEntries)
                     {
@@ -242,10 +243,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                             ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
 
-                            if (ImGui.Selectable(name + "/", false, ImGuiSelectableFlags.DontClosePopups))
+                            if (ImGui.Selectable(name + "/", _selectedFolder == fse, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
                             {
-                                _currentFolder = fse;
                                 SelectedFile = "";
+                                _selectedFolder = fse;
+                                if (ImGui.IsMouseDoubleClicked(0) && (SelectedFile == null || SelectedFile == "") && ImGui.GetIO().WantCaptureMouse)                                
+                                    _currentFolder = fse;
                             }
 
                             ImGui.PopStyleColor();
@@ -256,20 +259,23 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                             ImGui.PushStyleColor(ImGuiCol.Header, SelectedColor.ToUintColor());
 
-                            if (ImGui.Selectable(name, SelectedFile == name, ImGuiSelectableFlags.DontClosePopups))
+                            if (ImGui.Selectable(name, SelectedFile == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
+                            {
                                 SelectedFile = name;
+                                if (ImGui.IsMouseDoubleClicked(0) && (SelectedFile != null && SelectedFile != "") && ImGui.GetIO().WantCaptureMouse)
+                                {
+                                    _filePickerOpen = false;
+                                    OnPicked?.Invoke(this, Path.Combine(_currentFolder, SelectedFile));
+
+                                    ImGui.PopStyleVar(4);
+                                    ImGui.PopStyleColor(3);
+                                    return; // prevent double invoke due to double click
+                                }
+                            }
 
                             ImGui.PopStyleColor();
 
-                            if (ImGui.IsMouseDoubleClicked(0) && SelectedFile != null && ImGui.GetIO().WantCaptureMouse)
-                            {
-                                _filePickerOpen = false;
-                                OnPicked?.Invoke(this, Path.Combine(_currentFolder, SelectedFile));
-
-                                ImGui.PopStyleVar(4);
-                                ImGui.PopStyleColor(2);
-                                return; // prevent double invoke due to double click
-                            }
+                            
                         }
                     }
                 }
