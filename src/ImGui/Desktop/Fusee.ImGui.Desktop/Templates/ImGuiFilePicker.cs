@@ -165,7 +165,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
             ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0);
-
             ImGui.PushStyleColor(ImGuiCol.WindowBg, WindowBackground.ToUintColor());
 
             ImGui.SetNextWindowFocus();
@@ -301,16 +300,10 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                                 {
                                     filePickerOpen = false;
                                     OnPicked?.Invoke(this, Path.Combine(_currentOpenFolder, SelectedFile));
-
-                                    ImGui.PopStyleVar(4);
-                                    ImGui.PopStyleColor(3);
-                                    return; // prevent double invoke due to double click
                                 }
                             }
 
                             ImGui.PopStyleColor();
-
-
                         }
                     }
                 }
