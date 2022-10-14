@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,9 +9,14 @@ namespace Fusee.ImGuiImp.Desktop.Templates
     public class ImGuiFilePicker
     {
         /// <summary>
-        /// On picked with path or no value on cancel
+        /// Invoked on clicked "open".
         /// </summary>
         public EventHandler<string?>? OnPicked;
+
+        /// <summary>
+        /// Invoked on cancel.
+        /// </summary>
+        public EventHandler? OnCancel;
 
         /// <summary>
         /// Title of window (visible in top bar).
@@ -345,6 +350,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.SameLine();
             if (ImGui.Button(CancelFileOpenTxt))
             {
+                OnCancel?.Invoke(this, EventArgs.Empty);
                 _filePickerOpen = false;
             }
 
