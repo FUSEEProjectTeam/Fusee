@@ -1,4 +1,5 @@
 using ImGuiNET;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -63,7 +64,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// </summary>
         public string FileLabelTxt = "File";
 
-        public string ParentFolderTxt = "Back";
+        public string ParentFolderTxt = "Parent";
+        public string BackTxt = "Back";
 
         public readonly bool OnlyAllowFolders;
         public readonly List<string>? AllowedExtensions;
@@ -71,8 +73,28 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public string? SelectedFile { get; private set; }
         public string RootFolder { get; private set; }
 
-        private string _currentFolder;
-        private string _selectedFolder;
+        private string _currentOpenFolder;
+        private Stack<string> _lastOpenendFolders = new();
+        private string _currentlySelectedFolder;
+        private string _startingFolder;
+
+        public bool IsOpen 
+        { 
+            get
+            {
+                return _isOpen;
+            }
+            private set
+            {
+                if(value != _isOpen)
+                {
+                    _isOpen = value;
+                    if (!_isOpen)
+                        _currentOpenFolder = _startingFolder;
+                }
+            }
+        }
+        private bool _isOpen;
 
         // needed for width calculation
         private Vector2 _sizeOfInputText;
@@ -122,7 +144,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             }
 
             RootFolder = startingPath;
-            _currentFolder = startingPath;
+            _currentOpenFolder = startingPath;
+            _startingFolder = startingPath;
             OnlyAllowFolders = onlyAllowFolders;
 
             if (!string.IsNullOrEmpty(allowedExtensions))
@@ -136,10 +159,10 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             }
         }
 
-        public unsafe void Draw(ref bool _filePickerOpen)
+        public unsafe void Draw(ref bool filePickerOpen)
         {
-            if (!_filePickerOpen) return;
-
+            IsOpen = filePickerOpen;
+            if (!filePickerOpen) return;
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
             ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0);
@@ -151,42 +174,60 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             var neededWindowWidth = ImGui.CalcTextSize(OpenFileTxt).X + (ImGui.GetStyle().FramePadding * 2).X +
                 ImGui.CalcTextSize(CancelFileOpenTxt).X + (ImGui.GetStyle().FramePadding * 2).X +
                 ImGui.CalcTextSize(FileLabelTxt).X + (ImGui.GetStyle().FramePadding * 2).X +
-                ImGui.GetStyle().WindowPadding.X + _sizeOfInputText.X;
+                ImGui.GetStyle().WindowPadding.X + _sizeOfInputText.X + 50;
 
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new Vector2(neededWindowWidth, 350));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new Vector2(neededWindowWidth, 370));
 
             ImGui.PushStyleColor(ImGuiCol.WindowBg, WindowBackground.ToUintColor());
 
             ImGui.SetNextWindowFocus();
-            ImGui.Begin(Id, ref _filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDocking);
-
+            ImGui.Begin(Id, ref filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDocking);
+            
             // Drive Selection
-            var di = new DirectoryInfo(_currentFolder);
-            if (ImGui.Button($"{ParentFolderTxt}##FilePickerParentDir"))
-            {
-                if (di.Exists && di.Parent != null && _currentFolder != RootFolder)
-                {
-                    _currentFolder = di.Parent.FullName;
-                    SelectedFile = "";
-                }
-            }
-
+            var driveCount = 0;
             foreach (var drive in DriveInfo.GetDrives())
             {
                 if (drive.IsReady)
                 {
-                    ImGui.SameLine();
+                    if(driveCount > 0)
+                        ImGui.SameLine();
                     if (ImGui.Button(drive.Name))
                     {
                         RootFolder = drive.Name;
-                        _currentFolder = drive.Name;
+                        _lastOpenendFolders.Push(_currentOpenFolder);
+                        _currentOpenFolder = drive.Name;
+                        SelectedFile = "";
+                    }
+                    driveCount++;
+                }
+            }
+
+            var di = new DirectoryInfo(_currentOpenFolder);
+            if (ImGui.Button($"{ParentFolderTxt}##FilePickerParentDir"))
+            {
+                if (di.Exists && di.Parent != null && _currentOpenFolder != RootFolder)
+                {
+                    _currentOpenFolder = di.Parent.FullName;
+                    SelectedFile = "";
+                }
+            }
+            ImGui.SameLine();
+            if (ImGui.Button($"{BackTxt}##FilePickerBackDir"))
+            {
+                if (_lastOpenendFolders.Count != 0)
+                {
+                    var lastFolder = _lastOpenendFolders.Pop();
+                    var lastDi = new DirectoryInfo(lastFolder);
+                    if (lastDi.Exists)
+                    {
+                        _currentOpenFolder = lastFolder;
                         SelectedFile = "";
                     }
                 }
             }
 
             // Folder Selection
-            var currentFolder = _currentFolder;
+            var currentFolder = _currentOpenFolder;
             ImGui.SameLine();
             ImGui.InputTextWithHint(FolderLabelTxt, PathToFolderTxt, ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
@@ -203,14 +244,14 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             });
             if (Directory.Exists(currentFolder))
             {
-                _currentFolder = currentFolder;
+                _currentOpenFolder = currentFolder;
             }
             else if (File.Exists(currentFolder))
             {
                 var fi = new FileInfo(currentFolder);
                 if (fi.DirectoryName != null)
                 {
-                    _currentFolder = fi.DirectoryName;
+                    _currentOpenFolder = fi.DirectoryName;
                     SelectedFile = fi.Name;
                 }
             }
@@ -230,7 +271,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             if (ImGui.BeginChild("#FolderBrowser", new Vector2(-1, 200), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize))
             {
-                di = new DirectoryInfo(_currentFolder);
+                di = new DirectoryInfo(_currentOpenFolder);
                 if (di.Exists)
                 {
                     var fileSystemEntries = GetFileSystemEntries(di.FullName);
@@ -242,12 +283,15 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                             ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
 
-                            if (ImGui.Selectable(name + "/", _selectedFolder == fse, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
+                            if (ImGui.Selectable(name + "/", _currentlySelectedFolder == fse, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
                             {
                                 SelectedFile = "";
-                                _selectedFolder = fse;
+                                _currentlySelectedFolder = fse;
                                 if (ImGui.IsMouseDoubleClicked(0) && (SelectedFile == null || SelectedFile == "") && ImGui.GetIO().WantCaptureMouse)
-                                    _currentFolder = fse;
+                                {
+                                    _lastOpenendFolders.Push(_currentOpenFolder);
+                                    _currentOpenFolder = fse;
+                                }
                             }
 
                             ImGui.PopStyleColor();
@@ -263,8 +307,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                                 SelectedFile = name;
                                 if (ImGui.IsMouseDoubleClicked(0) && (SelectedFile != null && SelectedFile != "") && ImGui.GetIO().WantCaptureMouse)
                                 {
-                                    _filePickerOpen = false;
-                                    OnPicked?.Invoke(this, Path.Combine(_currentFolder, SelectedFile));
+                                    filePickerOpen = false;
+                                    OnPicked?.Invoke(this, Path.Combine(_currentOpenFolder, SelectedFile));
 
                                     ImGui.PopStyleVar(4);
                                     ImGui.PopStyleColor(3);
@@ -309,18 +353,18 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 var fi = new FileInfo(selectedFile);
                 if (fi.DirectoryName != null)
                 {
-                    _currentFolder = fi.DirectoryName;
+                    _currentOpenFolder = fi.DirectoryName;
                     SelectedFile = fi.Name;
                 }
             }
-            else if (File.Exists(Path.Combine(_currentFolder, selectedFile)))
+            else if (File.Exists(Path.Combine(_currentOpenFolder, selectedFile)))
             {
                 SelectedFile = selectedFile;
             }
             else if (Directory.Exists(selectedFile))
             {
                 SelectedFile = "";
-                _currentFolder = selectedFile;
+                _currentOpenFolder = selectedFile;
             }
             else if (!string.IsNullOrWhiteSpace(selectedFile))
             {
@@ -333,14 +377,14 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             if (!string.IsNullOrWhiteSpace(SelectedFile))
             {
-                var fi = new FileInfo(Path.Combine(_currentFolder, SelectedFile));
+                var fi = new FileInfo(Path.Combine(_currentOpenFolder, SelectedFile));
                 if (fi.Exists && AllowedExtensions != null && AllowedExtensions.Contains(fi.Extension))
                 {
                     ImGui.SameLine();
                     if (ImGui.Button(OpenFileTxt))
                     {
-                        OnPicked?.Invoke(this, Path.Combine(_currentFolder, selectedFile));
-                        _filePickerOpen = false;
+                        OnPicked?.Invoke(this, Path.Combine(_currentOpenFolder, selectedFile));
+                        filePickerOpen = false;
                     }
                 }
             }
@@ -356,7 +400,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             if (ImGui.Button(CancelFileOpenTxt))
             {
                 OnCancel?.Invoke(this, EventArgs.Empty);
-                _filePickerOpen = false;
+                filePickerOpen = false;
             }
 
             ImGui.EndChild();
