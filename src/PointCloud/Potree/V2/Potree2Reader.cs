@@ -1,4 +1,3 @@
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;

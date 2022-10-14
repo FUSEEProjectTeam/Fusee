@@ -1,7 +1,6 @@
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Numerics;
 
@@ -247,7 +246,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                             {
                                 SelectedFile = "";
                                 _selectedFolder = fse;
-                                if (ImGui.IsMouseDoubleClicked(0) && (SelectedFile == null || SelectedFile == "") && ImGui.GetIO().WantCaptureMouse)                                
+                                if (ImGui.IsMouseDoubleClicked(0) && (SelectedFile == null || SelectedFile == "") && ImGui.GetIO().WantCaptureMouse)
                                     _currentFolder = fse;
                             }
 
@@ -275,7 +274,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                             ImGui.PopStyleColor();
 
-                            
+
                         }
                     }
                 }
