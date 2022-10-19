@@ -61,7 +61,7 @@ namespace Fusee.Engine.Core
         {
             a = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 0]];
             b = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Triangles.Length > 2 ? Mesh.Vertices[(int)Mesh.Triangles[Triangle + 2]] : float3.Zero;
+            c = Mesh.MeshType == PrimitiveType.Triangles ? Mesh.Vertices[(int)Mesh.Triangles[Triangle + 2]] : float3.Zero;
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Fusee.Engine.Core
         {
             a = Mesh.Normals[(int)Mesh.Triangles[Triangle + 0]];
             b = Mesh.Normals[(int)Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Triangles.Length > 2 ? Mesh.Normals[(int)Mesh.Triangles[Triangle + 2]] : float3.Zero; ;
+            c = Mesh.MeshType == PrimitiveType.Triangles ? Mesh.Normals[(int)Mesh.Triangles[Triangle + 2]] : float3.Zero; ;
         }
         /// <summary>
         /// Returns the normal at the center of the picked triangle.
@@ -159,7 +159,7 @@ namespace Fusee.Engine.Core
             {
                 float2 uva = Mesh.UVs[(int)Mesh.Triangles[Triangle]];
                 float2 uvb = Mesh.UVs[(int)Mesh.Triangles[Triangle + 1]];
-                float2 uvc = Mesh.Triangles.Length > 2 ? Mesh.UVs[(int)Mesh.Triangles[Triangle + 2]] : float2.Zero;
+                float2 uvc = Mesh.MeshType == PrimitiveType.Triangles ? Mesh.UVs[(int)Mesh.Triangles[Triangle + 2]] : float2.Zero;
 
                 return float2.Barycentric(uva, uvb, uvc, U, V);
             }
