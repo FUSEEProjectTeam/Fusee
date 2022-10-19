@@ -195,8 +195,9 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             var di = new DirectoryInfo(CurrentOpenFolder);
             if (ImGui.Button($"{ParentFolderTxt}##{_filePickerCount}", TopButtonSize))
             {
-                if (di.Exists && di.Parent != null && CurrentOpenFolder != RootFolder)
+                if (di.Exists && di.Parent != null)
                 {
+                    LastOpenendFolders.Push(CurrentOpenFolder);
                     CurrentOpenFolder = di.Parent.FullName;
                     SelectedFile = "";
                 }
