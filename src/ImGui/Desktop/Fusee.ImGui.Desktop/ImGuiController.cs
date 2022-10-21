@@ -13,6 +13,12 @@ namespace Fusee.ImGuiImp.Desktop
 {
     public class ImGuiController : IDisposable
     {
+        /// <summary>
+        /// Triggers the recreation of the FontAtlas in the next Update and before ImGui.NextFrame is called.
+        /// CAUTION: do not try to load and use a new font in the same frame - this will cause a Access Violation.
+        /// </summary>
+        public static bool RecreateFontAtlas = true;
+
         private static int _vertexArray;
         private static int _vertexBuffer;
         private static int _indexBuffer;
@@ -197,7 +203,7 @@ namespace Fusee.ImGuiImp.Desktop
         /// Call this method after calling <see cref="ImFontAtlasPtr.AddFontFromFileTTF(string, float)"/>
         /// to re-create and bind the font texture
         /// </summary>
-        public static unsafe void RecreateFontDeviceTexture()
+        private static unsafe void RecreateFontDeviceTexture()
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
@@ -218,7 +224,6 @@ namespace Fusee.ImGuiImp.Desktop
             GL.TextureParameterI(id, TextureParameterName.TextureWrapR, ref clampR);
 
             io.Fonts.SetTexID(new IntPtr(id));
-
             io.Fonts.ClearTexData();
         }
 
@@ -240,7 +245,11 @@ namespace Fusee.ImGuiImp.Desktop
         {
             SetPerFrameImGuiData(DeltaTimeUpdate);
             ImGuiInputImp.UpdateImGuiInput(_scaleFactor);
-
+            if (RecreateFontAtlas)
+            {
+                RecreateFontAtlas = false;
+                RecreateFontDeviceTexture();
+            }
             ImGui.NewFrame();
         }
 
