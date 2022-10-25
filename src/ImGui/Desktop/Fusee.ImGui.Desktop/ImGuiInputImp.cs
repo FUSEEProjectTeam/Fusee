@@ -1,17 +1,13 @@
-﻿using Fusee.Base.Common;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Desktop;
-using Fusee.Math.Core;
 using ImGuiNET;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Fusee.ImGuiImp.Desktop
 {
@@ -218,7 +214,7 @@ namespace Fusee.ImGuiImp.Desktop
             gw.TextInput += (TextInputEventArgs c) => io.AddInputCharacter((uint)c.Unicode);
 
             // pin new a instance of SetClipboardTextFn, do not garbage collect
-            _hndl = GCHandle.Alloc(new SetClipboardTextFn((user_data, text) =>
+            _hndl = GCHandle.Alloc(new SetClipboardTextFn((_, text) =>
             {
                 var copiedStr = Marshal.PtrToStringUTF8((IntPtr)text);
                 gw.ClipboardString = copiedStr;
@@ -256,7 +252,7 @@ namespace Fusee.ImGuiImp.Desktop
 
             io.AddKeyEvent(ImGuiKey.ModShift, Input.Keyboard.GetKey(KeyCodes.LShift) || Input.Keyboard.GetKey(KeyCodes.RShift));
             io.AddKeyEvent(ImGuiKey.ModCtrl, Input.Keyboard.GetKey(KeyCodes.LControl) || Input.Keyboard.GetKey(KeyCodes.RControl));
-            //io.AddKeyEvent(ImGuiKey.ModAlt, Input.Keyboard.GetKey(KeyCodes.AltModifier));// TOOD(mr): fix crash
+            //io.AddKeyEvent(ImGuiKey.ModAlt, Input.Keyboard.GetKey(KeyCodes.AltModifier));// TOOD(mr): fix crash, see #651
             io.AddKeyEvent(ImGuiKey.ModSuper, Input.Keyboard.GetKey(KeyCodes.LWin) || Input.Keyboard.GetKey(KeyCodes.RWin));
         }
 
