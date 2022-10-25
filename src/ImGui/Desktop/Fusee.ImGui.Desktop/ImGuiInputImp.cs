@@ -1,15 +1,21 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Base.Common;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Desktop;
+using Fusee.Math.Core;
 using ImGuiNET;
+using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.InteropServices;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Fusee.ImGuiImp.Desktop
 {
-    public unsafe class ImGuiInputImp : IInputDriverImp
+    public unsafe class ImGuiInputImp : IInputDriverImp, IDisposable
     {
         private readonly GameWindow _gameWindow;
         private readonly KeyboardDeviceImp _keyboard;
@@ -48,11 +54,12 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 yield return _keyboard;
                 yield return _mouse;
+                // TODO(mr): Implement gamepad support
+                // reference impl: https://github.com/ocornut/imgui/blob/master/backends/imgui_impl_win32.cpp#L278
                 //yield return _gamePad0;
                 //yield return _gamePad1;
                 //yield return _gamePad2;
                 //yield return _gamePad3;
-
             }
         }
 
@@ -93,9 +100,7 @@ namespace Fusee.ImGuiImp.Desktop
 
 #pragma warning restore 0067
 
-
-
-        private static readonly Dictionary<KeyCodes, ImGuiKey> _translateKeyCodeToImGuiKey = new Dictionary<KeyCodes, ImGuiKey>
+        private static readonly Dictionary<KeyCodes, ImGuiKey> _translateKeyCodeToImGuiKey = new()
         {
             { KeyCodes.None, ImGuiKey.None },
             { KeyCodes.Tab,ImGuiKey.Tab },
@@ -198,86 +203,41 @@ namespace Fusee.ImGuiImp.Desktop
             { KeyCodes.Add, ImGuiKey.KeypadAdd }
         };
 
-        private static bool _uppercase;
-        private static bool _ctrlPressed;
+        internal static string CurrentlySelectedText = "";
 
-        public static string CurrentlySelectedText = "";
+        private delegate void SetClipboardTextFn(void* user_data, char* text);
+        private static GCHandle _hndl; // <- do not delete, needed to prevent GC of this method!
 
-        public unsafe static void InitImGuiInput(GameWindow gw)
+        private bool disposedValue;
+
+        public static void InitImGuiInput(GameWindow gw)
         {
-
             var io = ImGui.GetIO();
+
+            gw.FocusedChanged += (FocusedChangedEventArgs e) => io.AddFocusEvent(e.IsFocused);
+            gw.TextInput += (TextInputEventArgs c) => io.AddInputCharacter((uint)c.Unicode);
+
+            // pin new a instance of SetClipboardTextFn, do not garbage collect
+            _hndl = GCHandle.Alloc(new SetClipboardTextFn((user_data, text) =>
+            {
+                var copiedStr = Marshal.PtrToStringUTF8((IntPtr)text);
+                gw.ClipboardString = copiedStr;
+            }));
+
+            if (_hndl.Target != null)
+            {
+                /// overwrite clipboard copy (Strg+C). Use OpenTK <see cref="GameWindow"/> implementation
+                io.SetClipboardTextFn =
+                    Marshal.GetFunctionPointerForDelegate<SetClipboardTextFn>((SetClipboardTextFn)_hndl.Target);
+            }
 
             Input.Keyboard.ButtonValueChanged += (s, e) =>
             {
-
                 if (_translateKeyCodeToImGuiKey.TryGetValue((KeyCodes)e.Button.Id, out var imGuiKey))
                 {
                     var io = ImGui.GetIO();
                     var isDown = e.Pressed;
-
                     io.AddKeyEvent(imGuiKey, isDown);
-
-                    if (e.Button.Id == (int)KeyCodes.LShift || e.Button.Id == (int)KeyCodes.RShift)
-                    {
-                        _uppercase = e.Pressed;
-                        return;
-                    }
-
-                    if (e.Button.Id == (int)KeyCodes.LControl || e.Button.Id == (int)KeyCodes.RControl)
-                    {
-                        _ctrlPressed = e.Pressed;
-                        return;
-                    }
-
-
-                    // filter, use only ids which aren't bound to control keys
-                    if (isDown && (
-                            (e.Button.Id >= 48 && e.Button.Id <= 90)
-                        || (e.Button.Id >= 96 && e.Button.Id <= 111)
-                        || (e.Button.Id >= 186 && e.Button.Id <= 226)
-                        || e.Button.Id == 9
-                        || e.Button.Id == 13
-                        || e.Button.Id == 32
-                        || e.Button.Id == 109
-                        || e.Button.Id == 110))
-                    {
-                        var value = "";
-
-                        value = e.Button.Id switch
-                        {
-                            190 => _uppercase ? ":" : ".",
-                            188 => ",",
-                            109 => "-",
-                            107 => "+",
-                            186 => "ö",
-                            219 => "ü",
-                            189 => "\\", // this is not right, however grabbing the `ALT GR` is currently impossible
-                            _ => ((char)e.Button.Id).ToString().ToLower(),
-                        };
-
-                        if (_uppercase)
-                        {
-                            // not working with numbers, however this can be added later
-                            // attention: keyboard layout!
-                            value = value.ToUpper();
-                        }
-
-                        // copy
-                        if (_ctrlPressed && e.Button.Id == 67)
-                        {
-                            gw.ClipboardString = CurrentlySelectedText;
-                            return;
-                        }
-
-                        // paste
-                        if (_ctrlPressed && e.Button.Id == 86)
-                        {
-                            value = gw.ClipboardString;
-                        }
-
-                        io.AddInputCharactersUTF8(value);
-                    }
                 }
             };
         }
@@ -287,7 +247,6 @@ namespace Fusee.ImGuiImp.Desktop
             var io = ImGui.GetIO();
             io.ClearInputCharacters();
 
-
             io.AddMousePosEvent(Input.Mouse.X / scaleFactor.X, Input.Mouse.Y / scaleFactor.Y);
             io.AddMouseButtonEvent((int)ImGuiMouseButton.Left, Input.Mouse.LeftButton);
             io.AddMouseButtonEvent((int)ImGuiMouseButton.Middle, Input.Mouse.MiddleButton);
@@ -295,9 +254,37 @@ namespace Fusee.ImGuiImp.Desktop
 
             io.AddMouseWheelEvent(0, Input.Mouse.WheelVel * 0.01f);
 
-            io.KeyShift = Input.Keyboard.IsKeyDown(KeyCodes.LShift) || Input.Keyboard.IsKeyDown(KeyCodes.RShift);
-            io.KeyCtrl = Input.Keyboard.IsKeyDown(KeyCodes.LControl) || Input.Keyboard.IsKeyDown(KeyCodes.RControl);
-            io.KeySuper = Input.Keyboard.IsKeyDown(KeyCodes.LWin) || Input.Keyboard.IsKeyDown(KeyCodes.RWin);
+            io.AddKeyEvent(ImGuiKey.ModShift, Input.Keyboard.GetKey(KeyCodes.LShift) || Input.Keyboard.GetKey(KeyCodes.RShift));
+            io.AddKeyEvent(ImGuiKey.ModCtrl, Input.Keyboard.GetKey(KeyCodes.LControl) || Input.Keyboard.GetKey(KeyCodes.RControl));
+            //io.AddKeyEvent(ImGuiKey.ModAlt, Input.Keyboard.GetKey(KeyCodes.AltModifier));// TOOD(mr): fix crash
+            io.AddKeyEvent(ImGuiKey.ModSuper, Input.Keyboard.GetKey(KeyCodes.LWin) || Input.Keyboard.GetKey(KeyCodes.RWin));
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // dispose managed state (managed objects)
+                }
+
+                _hndl.Free();
+                disposedValue = true;
+            }
+        }
+
+        ~ImGuiInputImp()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
