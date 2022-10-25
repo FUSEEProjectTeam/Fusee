@@ -252,7 +252,7 @@ namespace Fusee.ImGuiImp.Desktop
 
             io.AddKeyEvent(ImGuiKey.ModShift, Input.Keyboard.GetKey(KeyCodes.LShift) || Input.Keyboard.GetKey(KeyCodes.RShift));
             io.AddKeyEvent(ImGuiKey.ModCtrl, Input.Keyboard.GetKey(KeyCodes.LControl) || Input.Keyboard.GetKey(KeyCodes.RControl));
-            //io.AddKeyEvent(ImGuiKey.ModAlt, Input.Keyboard.GetKey(KeyCodes.AltModifier));// TOOD(mr): fix crash, see #651
+            io.AddKeyEvent(ImGuiKey.ModAlt, Input.Keyboard.GetKey(KeyCodes.LMenu) || Input.Keyboard.GetKey(KeyCodes.RMenu));
             io.AddKeyEvent(ImGuiKey.ModSuper, Input.Keyboard.GetKey(KeyCodes.LWin) || Input.Keyboard.GetKey(KeyCodes.RWin));
         }
 
