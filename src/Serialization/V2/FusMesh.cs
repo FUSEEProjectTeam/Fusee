@@ -1,7 +1,8 @@
 ﻿using Fusee.Math.Core;
+using Fusee.Serialization.V1;
 using ProtoBuf;
 
-namespace Fusee.Serialization.V1
+namespace Fusee.Serialization.V2
 {
     /// <summary>
     /// Contains 3D geometry information (Vertices, Triangles, Normals, UVs, ...).
@@ -71,7 +72,7 @@ namespace Fusee.Serialization.V1
         /// The triangles.
         /// </value>
         [ProtoMember(7)]
-        public int[] Triangles;
+        public uint[] Triangles;
 
         /// <summary>
         /// The bounding box of this geometry chunk.

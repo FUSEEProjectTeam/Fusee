@@ -49,7 +49,7 @@ namespace Fusee.Serialization
     /// <summary>
     /// Polymorphic contents of a fus file. The actual contents is contained in a sub-class. Possible sub-classes are listed
     /// in <see cref="ProtoIncludeAttribute"/> decorators preceding this class declaration. This mechanism allows fus files
-    /// to contain different types of contents as well as different versions of contents. 
+    /// to contain different types of contents as well as different versions of contents.
     /// </summary>
     [ProtoInclude(201, typeof(V1.FusScene))]
     [ProtoContract]
@@ -71,7 +71,7 @@ namespace Fusee.Serialization
         public FusHeader Header;
 
         /// <summary>
-        /// The file contents. Check and cast to the concrete type to access it, e. g. using a C# 7.0 
+        /// The file contents. Check and cast to the concrete type to access it, e. g. using a C# 7.0
         /// <a href="https://docs.microsoft.com/en-us/dotnet/csharp/pattern-matching">pattern matching in switch expression</a>.
         /// </summary>
         [ProtoMember(2)]
