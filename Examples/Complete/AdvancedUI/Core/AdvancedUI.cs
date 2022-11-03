@@ -160,7 +160,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             _sih = new SceneInteractionHandler(_gui);
 
             //Create a scene picker for performing visibility tests
-            _scenePicker = new ScenePicker(_scene, RC.ViewportWidth, RC.ViewportHeight);
+            _scenePicker = new ScenePicker(_scene);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
@@ -247,22 +247,23 @@ namespace Fusee.Examples.AdvancedUI.Core
                     circle.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(AnchorPos.Middle, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-                    PickResult newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                    PickResult newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y), Width, Height).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
-                    if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
-                    {
-                        uiInput.IsVisible = true;
-
-                        var effect = circle.GetComponent<SurfaceEffect>();
-                        effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaVis);
-                    }
-                    else
-                    {
-                        uiInput.IsVisible = false;
-                        var effect = circle.GetComponent<SurfaceEffect>();
-                        effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaInv);
-
-                    }
+                    // TODO(mr): Fix and introduce new PickResult for TriangleMeshes, use it here
+                    //if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
+                    //{
+                    //    uiInput.IsVisible = true;
+                    //
+                    //    var effect = circle.GetComponent<SurfaceEffect>();
+                    //    effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaVis);
+                    //}
+                    //else
+                    //{
+                    //    uiInput.IsVisible = false;
+                    //    var effect = circle.GetComponent<SurfaceEffect>();
+                    //    effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaInv);
+                    //
+                    //}
 
                     //1.2   Calculate annotation positions without intersections.
                     if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
@@ -336,11 +337,11 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             // Constantly check for interactive objects.
             if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
             Present();

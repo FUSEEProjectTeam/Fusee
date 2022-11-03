@@ -32,9 +32,9 @@ namespace Fusee.Examples.Picking.Core
         private const float ZFar = 1000;
         private readonly float _fovy = M.PiOver4;
 
-        //private SceneRendererForward _guiRenderer;
-        //private SceneContainer _gui;
-        //private SceneInteractionHandler _sih;
+        private SceneRendererForward _guiRenderer;
+        private SceneContainer _gui;
+        private SceneInteractionHandler _sih;
 
         private PickResult _currentPick;
         private float4 _oldColor;
@@ -48,12 +48,12 @@ namespace Fusee.Examples.Picking.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene, RC.ViewportWidth, RC.ViewportHeight);
+            _scenePicker = new ScenePicker(_scene);
 
-            //_gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
             // Create the interaction handler
-            //_sih = new SceneInteractionHandler(_gui);
-           // _guiRenderer = new SceneRendererForward(_gui);
+            _sih = new SceneInteractionHandler(_gui);
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
         public override async Task InitAsync()
@@ -123,7 +123,7 @@ namespace Fusee.Examples.Picking.Core
             {
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z)
+                PickResult newPick = _scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z)
                     .FirstOrDefault();
                 Diagnostics.Debug(newPick);
 
@@ -148,16 +148,16 @@ namespace Fusee.Examples.Picking.Core
                 _pick = false;
             }
 
-            //_guiRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             // Constantly check for interactive objects.
-           // if (!Input.Mouse.Desc.Contains("Android"))
-           //     _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
-           //
-           // if (Input.Touch != null && Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
-           // {
-           //     _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-           // }
+            if (!Input.Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+
+            if (Input.Touch != null && Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
 
             // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
             Present();

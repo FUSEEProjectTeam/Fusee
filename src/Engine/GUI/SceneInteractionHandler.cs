@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -19,14 +20,15 @@ namespace Fusee.Engine.Gui
         private SceneNode _pickRes;
         private SceneNode _pickResCache;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.
         /// </summary>
         /// <param name="scene">The scene the interaction handler belongs to.</param>
-        public SceneInteractionHandler(SceneContainer scene, int canvasWidth = 0, int canvasHeight = 0)
+        public SceneInteractionHandler(SceneContainer scene)
         {
             IgnoreInactiveComponents = true;
-            _scenePicker = new ScenePicker(scene, canvasWidth, canvasHeight);
+            _scenePicker = new ScenePicker(scene);
         }
 
         private static SceneNode FindLeafNodeInPickRes(SceneNode firstPickRes, IList<SceneNode> pickResults)
@@ -60,11 +62,11 @@ namespace Fusee.Engine.Gui
         /// <param name="mousePos">The current mouse position.</param>
         /// <param name="canvasWidth">Canvas width - needed to determine the mouse position in clip space.</param>
         /// <param name="canvasHeight">Canvas height - needed to determine the mouse position in clip space.</param>
-        public void CheckForInteractiveObjects(RenderContext rc, float2 mousePos, int canvasWidth, int canvasHeight)
+        public void CheckForInteractiveObjects(float2 mousePos, int canvasWidth, int canvasHeight)
         {
             var pickPosClip = mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight) + new float2(-1, 1);
 
-            var pickResults = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
+            var pickResults = _scenePicker.Pick(pickPosClip, canvasWidth, canvasHeight).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
             var pickResNodes = pickResults.Select(x => x.Node).ToList();
             var firstPickRes = pickResults.FirstOrDefault();
 

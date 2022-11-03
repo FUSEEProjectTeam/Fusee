@@ -5,7 +5,9 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -56,6 +58,9 @@ namespace Fusee.Engine.Core
 
         private bool isCtcInitialized = false;
         private MinMaxRect _parentRect;
+
+        private int _canvasWidth;
+        private int _canvasHeight;
 
         #region State
         /// <summary>
@@ -134,21 +139,16 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        private int _canvasWidth;
-        private int _canvasHeight;
-
         /// <summary>
         /// The constructor to initialize a new ScenePicker.
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
-        public ScenePicker(SceneContainer scene, int canvasWidth, int canvasHeight)
+        public ScenePicker(SceneContainer scene)
             : base(scene.Children)
         {
             IgnoreInactiveComponents = true;
             View = float4x4.Identity;
             Projection = float4x4.Identity;
-            _canvasWidth = canvasWidth;
-            _canvasHeight = canvasHeight;
         }
 
         /// <summary>
@@ -166,10 +166,14 @@ namespace Fusee.Engine.Core
         /// Returns a collection of objects that fall in the area of the pick position and that can be iterated over.
         /// </summary>
         /// <param name="pickPos">The pick position.</param>
+        /// <param name="canvasWidth">The width of the current canvas, gets overwritte if a <see cref="Camera.RenderTexture"/> is bound</param>
+        /// <param name="canvasHeight">The height of the current canvas, gets overwritte if a <see cref="Camera.RenderTexture"/> is bound</param>
         /// <returns></returns>
-        public IEnumerable<PickResult> Pick(float2 pickPos)
+        public IEnumerable<PickResult> Pick(float2 pickPos, int canvasWidth, int canvasHeight)
         {
             PickPosClip = pickPos;
+            _canvasWidth = canvasWidth;
+            _canvasHeight = canvasHeight;
             return Viserate();
         }
 
@@ -211,7 +215,9 @@ namespace Fusee.Engine.Core
             }
 
             View = view.Invert();
-            Projection = cam.GetProjectionMat((int)_canvasWidth, (int)_canvasHeight, out var _);
+            Projection = CurrentCamera.RenderTexture != null
+            ? CurrentCamera.GetProjectionMat(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height, out var _)
+            : CurrentCamera.GetProjectionMat(_canvasWidth, _canvasHeight, out var _);
         }
 
         /// <summary>
@@ -477,7 +483,7 @@ namespace Fusee.Engine.Core
                                     Node = CurrentNode,
                                     Model = State.Model,
                                     View = View,
-                                    ClipPos = float4x4.TransformPerspective(Projection * View, CurrentNode.GetTransform().Translation),
+                                    ClipPos = float4x4.TransformPerspective(Projection * View, State.Model.Translation()),
                                     Projection = Projection
                                 });
                             }
