@@ -160,7 +160,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             _sih = new SceneInteractionHandler(_gui);
 
             //Create a scene picker for performing visibility tests
-            _scenePicker = new ScenePicker(_scene);
+            _scenePicker = new ScenePicker(_scene, RC.ViewportWidth, RC.ViewportHeight);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);

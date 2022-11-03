@@ -23,10 +23,10 @@ namespace Fusee.Engine.Gui
         /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.
         /// </summary>
         /// <param name="scene">The scene the interaction handler belongs to.</param>
-        public SceneInteractionHandler(SceneContainer scene)
+        public SceneInteractionHandler(SceneContainer scene, int canvasWidth = 0, int canvasHeight = 0)
         {
             IgnoreInactiveComponents = true;
-            _scenePicker = new ScenePicker(scene);
+            _scenePicker = new ScenePicker(scene, canvasWidth, canvasHeight);
         }
 
         private static SceneNode FindLeafNodeInPickRes(SceneNode firstPickRes, IList<SceneNode> pickResults)
