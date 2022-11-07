@@ -5,9 +5,11 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 
 namespace Fusee.Engine.Core
 {
@@ -62,6 +64,14 @@ namespace Fusee.Engine.Core
         private int _canvasWidth;
         private int _canvasHeight;
 
+        public class MousePos
+        {
+            /// <summary>
+            /// Current mouse position (in clip space)
+            /// </summary>
+            public int PickPosClip { get; set; }
+        }
+
         #region State
         /// <summary>
         /// The picker state upon scene traversal.
@@ -72,6 +82,8 @@ namespace Fusee.Engine.Core
             private readonly CollapsingStateStack<float4x4> _model = new();
             private readonly CollapsingStateStack<MinMaxRect> _uiRect = new();
             private readonly CollapsingStateStack<Cull> _cullMode = new();
+
+            public float2 PickPosClip { get; set; }
 
             /// <summary>
             /// The registered model.
@@ -112,6 +124,7 @@ namespace Fusee.Engine.Core
             /// <summary>
             /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for model, UI rectangle, and canvas transform, as well as cull mode.
             /// </summary>
+            // TODO: Ask @CMl why this is being called after every Iteration/Viseration
             public PickerState()
             {
                 RegisterState(_model);
@@ -143,8 +156,8 @@ namespace Fusee.Engine.Core
         /// The constructor to initialize a new ScenePicker.
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
-        public ScenePicker(SceneContainer scene)
-            : base(scene.Children)
+        public ScenePicker(SceneContainer scene, IEnumerable<IPickerModule> customPickModule = null)
+            : base(scene.Children, customPickModule)
         {
             IgnoreInactiveComponents = true;
             View = float4x4.Identity;
@@ -174,7 +187,21 @@ namespace Fusee.Engine.Core
             PickPosClip = pickPos;
             _canvasWidth = canvasWidth;
             _canvasHeight = canvasHeight;
+
+            State.PickPosClip = pickPos;
+            SetState();
             return Viserate();
+        }
+
+        /// <summary>
+        /// Wire state (call by ref) to visitor module
+        /// </summary>
+        private void SetState()
+        {
+            foreach (var module in VisitorModules)
+            {
+                ((IPickerModule)module).GetPickerState = () => State;
+            }
         }
 
         #region Visitors
@@ -215,6 +242,7 @@ namespace Fusee.Engine.Core
             }
 
             View = view.Invert();
+            // TODO(mr): TEST Renderlayer
             Projection = CurrentCamera.RenderTexture != null
             ? CurrentCamera.GetProjectionMat(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height, out var _)
             : CurrentCamera.GetProjectionMat(_canvasWidth, _canvasHeight, out var _);
@@ -438,6 +466,17 @@ namespace Fusee.Engine.Core
             State.Model *= transform.Matrix;
         }
 
+
+        ///// <summary>
+        ///// Creates pick results from a given point cloud if it is within the pick position.
+        ///// </summary>
+        ///// <param name="pc">The given point cloud.</param>
+        //[VisitMethod]
+        //public void PickMesh(PointCloudComponent pc)
+        //{
+        //    // TODO: Impl
+        //}
+
         /// <summary>
         /// Creates pick results from a given mesh if it is within the pick position.
         /// </summary>
@@ -447,49 +486,14 @@ namespace Fusee.Engine.Core
         {
             if (!mesh.Active) return;
 
+
             var mvp = Projection * View * State.Model;
 
             if (mesh != null && (mesh.MeshType == PrimitiveType.Triangles ||
                 mesh.MeshType == PrimitiveType.TriangleFan ||
                 mesh.MeshType == PrimitiveType.TriangleStrip))
             {
-                if (mesh.Triangles == null) return;
-                if (mesh.Vertices == null) return;
-
-                for (var i = 0; i < mesh.Triangles.Length; i += 3)
-                {
-                    // a, b c: current triangle's vertices in clip coordinates
-                    var a = new float4(mesh.Vertices[(int)mesh.Triangles[i + 0]], 1);
-                    a = float4x4.TransformPerspective(mvp, a);
-
-                    var b = new float4(mesh.Vertices[(int)mesh.Triangles[i + 1]], 1);
-                    b = float4x4.TransformPerspective(mvp, b);
-
-                    var c = new float4(mesh.Vertices[(int)mesh.Triangles[i + 2]], 1);
-                    c = float4x4.TransformPerspective(mvp, c);
-
-                    // Point-in-Triangle-Test
-                    if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out var u, out var v))
-                    {
-                        var pickPos = float3.Barycentric(a.xyz, b.xyz, c.xyz, u, v);
-
-                        if (pickPos.z >= -1 && pickPos.z <= 1)
-                        {
-                            if (State.CullMode == Cull.None || float2.IsTriangleCW(a.xy, b.xy, c.xy) == (State.CullMode == Cull.Clockwise))
-                            {
-                                YieldItem(new PickResult
-                                {
-                                    Mesh = mesh,
-                                    Node = CurrentNode,
-                                    Model = State.Model,
-                                    View = View,
-                                    ClipPos = float4x4.TransformPerspective(Projection * View, State.Model.Translation()),
-                                    Projection = Projection
-                                });
-                            }
-                        }
-                    }
-                }
+                PickTriangleGeometry(mesh, mvp);
             }
             else if (mesh?.MeshType == PrimitiveType.Lines)
             {
@@ -541,6 +545,47 @@ namespace Fusee.Engine.Core
                             View = View,
                             Projection = Projection
                         });
+                    }
+                }
+            }
+        }
+
+        private void PickTriangleGeometry(Mesh mesh, float4x4 mvp)
+        {
+            if (mesh.Triangles == null) return;
+            if (mesh.Vertices == null) return;
+
+            for (var i = 0; i < mesh.Triangles.Length; i += 3)
+            {
+                // a, b c: current triangle's vertices in clip coordinates
+                var a = new float4(mesh.Vertices[(int)mesh.Triangles[i + 0]], 1);
+                a = float4x4.TransformPerspective(mvp, a);
+
+                var b = new float4(mesh.Vertices[(int)mesh.Triangles[i + 1]], 1);
+                b = float4x4.TransformPerspective(mvp, b);
+
+                var c = new float4(mesh.Vertices[(int)mesh.Triangles[i + 2]], 1);
+                c = float4x4.TransformPerspective(mvp, c);
+
+                // Point-in-Triangle-Test
+                if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out var u, out var v))
+                {
+                    var pickPos = float3.Barycentric(a.xyz, b.xyz, c.xyz, u, v);
+
+                    if (pickPos.z >= -1 && pickPos.z <= 1)
+                    {
+                        if (State.CullMode == Cull.None || float2.IsTriangleCW(a.xy, b.xy, c.xy) == (State.CullMode == Cull.Clockwise))
+                        {
+                            YieldItem(new PickResult
+                            {
+                                Mesh = mesh,
+                                Node = CurrentNode,
+                                Model = State.Model,
+                                View = View,
+                                ClipPos = float4x4.TransformPerspective(Projection * View, State.Model.Translation()),
+                                Projection = Projection
+                            });
+                        }
                     }
                 }
             }

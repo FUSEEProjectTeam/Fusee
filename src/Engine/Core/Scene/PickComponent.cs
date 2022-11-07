@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fusee.Engine.Core.Scene
 {
@@ -16,6 +14,7 @@ namespace Fusee.Engine.Core.Scene
 
         /// <summary>
         /// Posibility to deposit a custom method on how to pick the following mesh(es)
+        /// Check visitor module for new mesh types
         /// </summary>
         public Func<PickResult>? CustomPickMethod;
     }
