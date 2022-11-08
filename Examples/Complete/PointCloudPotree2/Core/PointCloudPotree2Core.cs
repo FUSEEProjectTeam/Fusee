@@ -47,16 +47,25 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private PointCloudComponent _pointCloud;
         private SceneNode _pointCloudNode;
         private SceneNode _camNode;
-        private readonly Potree2Reader _potreeReader;
-        private readonly PotreeData _potreeData;
+        private Potree2Reader _potreeReader;
+        private PotreeData _potreeData;
 
         private readonly RenderContext _rc;
 
         public void OnLoadNewFile(object sender, EventArgs e)
         {
-            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(PointRenderMode);
+            var path = PointRenderingParams.Instance.PathToOocFile;
+
+            if (path == null || path == string.Empty)
+                return;
+
+            _potreeData = new PotreeData(path);
+            _potreeReader = new Potree2Reader(ref _potreeData);
+
+            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(RenderMode.DynamicMesh);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PointRenderingParams.Instance.PointThreshold;
+
             _pointCloud.Camera = _cam;
 
             _pointCloudNode.Components[3] = _pointCloud;
