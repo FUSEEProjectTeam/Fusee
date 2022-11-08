@@ -24,7 +24,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         }
         private bool _closingRequested;
 
-        public RenderMode PointRenderMode = RenderMode.StaticMesh;
+        public RenderMode PointRenderMode = RenderMode.DynamicMesh;
         public string AssetsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;

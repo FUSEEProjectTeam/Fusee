@@ -52,7 +52,7 @@ namespace Fusee.PointCloud.Potree.V2
                     {
                         var dataHandlerDynamic = new PointCloudDataHandler<Mesh, PosD3ColF3LblB>(
                             (PointAccessor<PosD3ColF3LblB>)PointAccessor, MeshMaker.CreateDynamicMeshPosD3ColF3LblB,
-                            LoadNodeData<PosD3ColF3LblB>, true);
+                            LoadNodeData<PosD3ColF3LblB>);
                         var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
