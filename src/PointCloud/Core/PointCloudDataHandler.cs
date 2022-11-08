@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Core;
+using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.PointCloud.Common;
@@ -59,17 +59,17 @@ namespace Fusee.PointCloud.Core
     /// </summary>
     /// <typeparam name="TGpuData"></typeparam>
     /// <typeparam name="TPoint"></typeparam>
-    public class PointCloudDataHandler<TGpuData, TPoint> : PointCloudDataHandlerBase<TGpuData> where TPoint : new() where TGpuData : IDisposable
+    public class PointCloudDataHandler<TGpuData, TPoint> : PointCloudDataHandlerBase<TGpuData>, IDisposable where TPoint : new() where TGpuData : IDisposable
     {
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private readonly MemoryCache<OctantId, TPoint[]> _pointCache;
+        private MemoryCache<OctantId, TPoint[]> _pointCache;
 
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private readonly MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
+        private MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
         private readonly PointAccessor<TPoint> _pointAccessor;
         private readonly CreateGpuData<TGpuData, TPoint> _createGpuDataHandler;
@@ -77,6 +77,8 @@ namespace Fusee.PointCloud.Core
         private const int _maxNumberOfDisposals = 1;
         private float _deltaTimeSinceLastDisposal;
         private readonly bool _doRenderInstanced;
+
+        private bool _disposed;
 
         /// <summary>
         /// Creates a new instance.
@@ -202,6 +204,53 @@ namespace Fusee.PointCloud.Core
             lock (LockDisposeQueue)
             {
                 DisposeQueue.Add((OctantId)guid, (IEnumerable<TGpuData>)meshes);
+            }
+        }
+
+        /// <summary>
+        /// Dispose(bool disposing) executes in two distinct scenarios.
+        /// If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.
+        ///</summary>
+        /// <param name="disposing"></param>
+        protected override void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!_disposed)
+            {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources.
+                if (disposing)
+                {
+                    // Dispose managed resources.
+                }
+
+                // Call the appropriate methods to clean up
+                // unmanaged resources here.
+                _gpuDataCache.Dispose();
+                _gpuDataCache = null;
+
+                lock (LockDisposeQueue)
+                {
+                    foreach (var item in DisposeQueue)
+                    {
+                        foreach (var d in item.Value)
+                        {
+                            d.Dispose();
+                        }
+                    }
+                }
+
+                _pointCache.Dispose();
+                _pointCache = null;
+                LoadingQueue.Clear();
+
+                // Note disposing has been done.
+                _disposed = true;
             }
         }
     }
