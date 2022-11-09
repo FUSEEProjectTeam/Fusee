@@ -20,10 +20,10 @@ jobs:
       DOTNET_NOLOGO: true
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: dotnet tool restore
       run: dotnet tool restore
     - name: dotnet format folder
@@ -53,10 +53,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: AssetStorage
       run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Tests.AssetStorage.Desktop.csproj
     - name: Math
@@ -86,10 +86,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Render image compare
       run: dotnet run -c Release --project src/Tests/Render/Desktop/Fusee.Tests.Render.Desktop.csproj
     - name: Upload artifact
@@ -115,10 +115,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Build Release-Desktop
       run: dotnet build -c Release-Desktop Fusee.sln
     - name: Upload Player-Artifact
@@ -152,14 +152,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
       with:
-        vs-version: '[17.3,]'
+        vs-version: '[17.4,]'
         msbuild-architecture: x64
 #    - name: Setup dotnet macos workload
 #      run: dotnet workload install macos
@@ -216,16 +216,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 6.0
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Setup dotnet macos workload
       run: dotnet workload install macos
     - name: Build Release-Blazor
       run: dotnet build -c Release-Blazor Fusee.sln
-    - name: Setup wasm-tools workload
-      run: dotnet workload install wasm-tools
+    - name: Setup workloads
+      run: |
+        dotnet workload install wasm-tools
+        dotnet workload install wasm-tools-net6
     - name: Publish F.E.Player.Blazor
       run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
     - name: Build F.T.B.Blazorpatch
@@ -251,11 +253,11 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
       with:
-        vs-version: '[17.0,]'
-    - name: Setup .NET 6.0
+        vs-version: '[17.4,]'
+    - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Build with MSBuild
       run: msbuild Fusee.sln -r -p:Configuration=Release-Android
 
@@ -273,10 +275,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup .NET 6.0
+      - name: Setup .NET 7.0
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 7.0.x
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
