@@ -234,8 +234,10 @@ jobs:
       run: dotnet workload install macos
     - name: Build Release-Blazor
       run: dotnet build -c Release-Blazor Fusee.sln
-    - name: Setup wasm-tools workload
-      run: dotnet workload install wasm-tools
+    - name: Setup workloads
+      run: |
+        dotnet workload install wasm-tools
+        dotnet workload install wasm-tools-net6
     - name: Publish F.E.Player.Blazor
       run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
     - name: Build F.T.B.Blazorpatch
