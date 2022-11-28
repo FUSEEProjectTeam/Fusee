@@ -98,8 +98,8 @@ jobs:
       with:
         name: Rendertests
         path: |
-            bin/Release/Tests/Render/Desktop/net6.0/*.png
-            bin/Release/Tests/Render/Desktop/net6.0/References/*.png
+            bin/Release/Tests/Render/Desktop/net7.0/*.png
+            bin/Release/Tests/Render/Desktop/net7.0/References/*.png
 
   builddesktop:
     needs: [tests, rendertests]
@@ -172,7 +172,7 @@ jobs:
 #    - name: Build F.T.B.Blazorpatch
 #      run: dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
 #    - name: Patch Blazor
-#      run: dotnet bin/Release/Tools/Build/Blazorpatch/net6.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net6.0/publish/wwwroot -t All
+#      run: dotnet bin/Release/Tools/Build/Blazorpatch/net7.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net7.0/publish/wwwroot -t All
     - name: Build F.E.Player.Desktop
       run: dotnet publish -c Release -p:PublishProfile=win-x64-release src\Engine\Player\Desktop\Fusee.Engine.Player.Desktop.csproj
     - name: Pack Fusee.sln NuGet
@@ -192,7 +192,7 @@ jobs:
     - name: Pack VSTemplate
       run: msbuild dis\VSTemplate\VSTemplate.sln -t:restore,build -p:Configuration=Release
     - name: Pack Blender Addon
-      run: tar -c -a -f bin\Release\nuget\io_export_fus.zip -C bin\Release\Tools\CmdLine\net6.0\BlenderScripts\addons *
+      run: tar -c -a -f bin\Release\nuget\io_export_fus.zip -C bin\Release\Tools\CmdLine\net7.0\BlenderScripts\addons *
     - name: Upload NuGet-Atrifacts
       uses: actions/upload-artifact@v3
       with:
@@ -233,12 +233,12 @@ jobs:
     - name: Build F.T.B.Blazorpatch
       run: dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
     - name: Patch Blazor
-      run: dotnet bin/Release/Tools/Build/Blazorpatch/net6.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net6.0/publish/wwwroot -t All
+      run: dotnet bin/Release/Tools/Build/Blazorpatch/net7.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net7.0/publish/wwwroot -t All
     - name: Upload Player-Artifact
       uses: actions/upload-artifact@v3
       with:
         name: fusee-blazor-${{ matrix.os }}-player
-        path: bin/Release/Player/Blazor/net6.0/publish/
+        path: bin/Release/Player/Blazor/net7.0/publish/
 
   buildandroid:
     name: Build Android
