@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The vertex colors variable name.
         /// </summary>
-        public static readonly string Color = "vColor";
+        public static readonly string Color0 = "vColor0";
 
         /// <summary>
         /// The vertex colors variable name.

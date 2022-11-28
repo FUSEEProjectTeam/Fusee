@@ -2,7 +2,7 @@
 
 namespace Fusee.PointCloud.Potree.V2
 {
-    internal static class Constants
+    internal class Potree2Consts
     {
         internal const string HierarchyFileName = "hierarchy.bin";
         internal const string MetadataFileName = "metadata.json";

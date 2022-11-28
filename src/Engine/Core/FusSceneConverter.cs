@@ -551,22 +551,12 @@ namespace Fusee.Engine.Core
             }
 
             // convert mesh
-            mesh = new Mesh
-            {
-                MeshType = (PrimitiveType)m.MeshType,
-                Active = true,
-                BiTangents = m.BiTangents,
-                BoneIndices = m.BoneIndices,
-                BoundingBox = m.BoundingBox,
-                BoneWeights = m.BoneWeights,
-                Colors = m.Colors,
-                Name = m.Name,
-                Normals = m.Normals,
-                Tangents = m.Tangents,
-                Triangles = m.Triangles,
-                UVs = m.UVs,
-                Vertices = m.Vertices
-            };
+            mesh = new Mesh(m.Triangles, m.Vertices, m.Normals, m.UVs, m.BoneWeights, m.BoneIndices, m.Tangents, m.BiTangents,
+                m.Colors);
+
+            mesh.MeshType = (PrimitiveType)m.MeshType;
+            mesh.Active = true;
+            mesh.Name = m.Name;
 
             if (_currentNode.Components == null)
             {
@@ -1257,17 +1247,17 @@ namespace Fusee.Engine.Core
             var mesh = new FusMesh
             {
                 MeshType = (int)m.MeshType,
-                BiTangents = m.BiTangents,
-                BoneIndices = m.BoneIndices,
+                BiTangents = m.BiTangents?.ToArray(),
+                BoneIndices = m.BoneIndices?.ToArray(),
                 BoundingBox = m.BoundingBox,
-                BoneWeights = m.BoneWeights,
-                Colors = m.Colors,
+                BoneWeights = m.BoneWeights?.ToArray(),
+                Colors = m.Colors0?.ToArray(),
                 Name = m.Name,
-                Normals = m.Normals,
-                Tangents = m.Tangents,
-                Triangles = m.Triangles,
-                UVs = m.UVs,
-                Vertices = m.Vertices
+                Normals = m.Normals?.ToArray(),
+                Tangents = m.Tangents?.ToArray(),
+                Triangles = m.Triangles.ToArray(),
+                UVs = m.UVs?.ToArray(),
+                Vertices = m.Vertices?.ToArray()
             };
 
             _currentNode.AddComponent(mesh);

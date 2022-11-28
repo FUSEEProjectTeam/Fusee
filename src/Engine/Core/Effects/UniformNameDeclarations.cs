@@ -126,6 +126,15 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public static readonly int BoneIndexHash = BoneIndex.GetHashCode();
 
+        /// <summary>
+        /// The bone index attribute name.
+        /// </summary>
+        public const string Flags = "fuFlags";
+        /// <summary>
+        /// Hash code for the <see cref="Flags"/> parameter.
+        /// </summary>
+        public static readonly int FlagsHash = Flags.GetHashCode();
+
         #endregion
 
         #region Global uniform matrices

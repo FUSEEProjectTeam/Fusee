@@ -107,14 +107,14 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public string VertColorIn = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
+        public string VertColorIn = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color0);
 
         /// <summary>
         /// Vertex shader "out" declaration for the vertex colors.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
+        public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color0);
 
         /// <summary>
         /// Fragment shader "in" declaration for the vertex colors.
@@ -173,8 +173,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="surfaceInput"><see cref="SurfaceInput"/>. Provides the values used to modify the <see cref="SurfaceOut"/>.</param>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
-        public SurfaceEffectBase
-            (SurfaceEffectInput surfaceInput, RenderStateSet renderStateSet = null)
+        public SurfaceEffectBase(SurfaceEffectInput surfaceInput, RenderStateSet? renderStateSet = null)
         {
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
             UniformParameters = new Dictionary<int, IFxParamDeclaration>();

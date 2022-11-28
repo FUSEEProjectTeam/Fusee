@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
@@ -712,7 +712,7 @@ namespace Fusee.Engine.Core
             if (DoFrumstumCulling)
             {
                 //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
-                if (mesh.BoundingBox.Size != float3.Zero)
+                if (mesh.BoundingBox.Size.x > 0 && mesh.BoundingBox.Size.y > 0 && mesh.BoundingBox.Size.z > 0)
                 {
                     var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
                     if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.RenderFrustum))
@@ -808,8 +808,8 @@ namespace Fusee.Engine.Core
                 boneWeights[iVert].Normalize1();
             }
 
-            mesh.BoneIndices = boneIndices;
-            mesh.BoneWeights = boneWeights;
+            mesh.BoneIndices = new MeshAttributes<float4>(boneIndices);
+            mesh.BoneWeights = new MeshAttributes<float4>(boneWeights);
         }
         #endregion
 

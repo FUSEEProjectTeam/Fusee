@@ -180,12 +180,16 @@ namespace Fusee.PointCloud.Core
             //Return -> will not be added to _visibleNodesOrderedByProjectionSize -> traversal of this branch stops.
             if (!node.InsideOrIntersectingFrustum(RenderFrustum, translation, scale) || node.ProjectedScreenSize < _minScreenProjectedSize)
             {
+                node.IsVisible = false;
                 return;
             }
 
             // Else if the node is visible and big enough, load if necessary and add to visible nodes.
             // If by chance two same nodes have the same screen-projected-size can't add it to the dictionary....
-            _visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node);
+            if (_visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node))
+                node.IsVisible = true;
+            else
+                node.IsVisible = false;
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)

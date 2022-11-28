@@ -1206,7 +1206,6 @@ namespace Fusee.Engine.Core
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamImage(param, textureHandle, TextureType.Image2D, texture.PixelFormat);
-
         }
 
         /// <summary>
@@ -1229,6 +1228,17 @@ namespace Fusee.Engine.Core
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
+        }
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texture">An ITexture.</param>
+        private void SetShaderParamTexture(IUniformHandle param, Texture1D texture)
+        {
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture1D);
         }
 
         /// <summary>
@@ -1610,6 +1620,7 @@ namespace Fusee.Engine.Core
                         SetShaderParamImage(param.Handle, wt);
                     else
                         SetShaderParamTexture(param.Handle, wt);
+
                 }
                 else if (val is WritableMultisampleTexture wmst)
                 {
@@ -1617,7 +1628,10 @@ namespace Fusee.Engine.Core
                 }
                 else if (val is ITexture tex)
                 {
-                    SetShaderParamTexture(param.Handle, (Texture)tex);
+                    if (tex.GetType() == typeof(Texture1D))
+                        SetShaderParamTexture(param.Handle, (Texture1D)tex);
+                    else
+                        SetShaderParamTexture(param.Handle, (Texture)tex);
                 }
                 else if (val is IStorageBuffer buffer)
                 {
@@ -1664,6 +1678,7 @@ namespace Fusee.Engine.Core
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableTexture)writableTex);
                         _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
+
                     }
                     else if (val is WritableMultisampleTexture writableMultTex)
                     {
@@ -1672,8 +1687,16 @@ namespace Fusee.Engine.Core
                     }
                     else if (val is ITexture tex)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture)tex);
-                        _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
+                        if (tex.GetType() == typeof(Texture1D))
+                        {
+                            ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture1D)tex);
+                            _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture1D);
+                        }
+                        else
+                        {
+                            ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture)tex);
+                            _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.Texture2D);
+                        }
                     }
                     else if (val is IWritableTexture[] writableTexArray)
                     {
@@ -2019,6 +2042,14 @@ namespace Fusee.Engine.Core
             _effectManager.Cleanup();
         }
 
+        /// <summary>
+        /// Calls the mesh manager which traverses all known meshes and updates GPU data if necessary
+        /// </summary>
+        internal void UpdateAllMeshes()
+        {
+            _meshManager.UpdateAllMeshes();
+        }
+
         private void CalculateClippingPlanesFromProjection(out float2 clippingPlanes)
         {
             var C = Projection.M33;
@@ -2054,9 +2085,9 @@ namespace Fusee.Engine.Core
         /// <param name="boneIndices">The bone indices of the mesh.</param>
         /// <param name="boneWeights">The bone weights of the mesh.</param>
         /// <returns></returns>
-        public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, ushort[] triangles = null,
+        public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, uint[] triangles = null,
             float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null, float2[] uvs = null,
-            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)
+            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null, uint[] flags = null)
         {
             var mesh = new GpuMesh
             {
@@ -2065,7 +2096,7 @@ namespace Fusee.Engine.Core
             };
             _meshManager.RegisterNewMesh(mesh, vertices, triangles, uvs,
             normals, colors, colors1, colors2,
-            tangents, bitangents, boneIndices, boneWeights);
+            tangents, bitangents, boneIndices, boneWeights, flags);
             return mesh;
         }
 

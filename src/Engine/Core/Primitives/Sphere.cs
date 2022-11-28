@@ -46,7 +46,7 @@ namespace Fusee.Engine.Core.Primitives
             vertices[^1] = float3.UnitY * -radius;
             #endregion
 
-            #region Normals		
+            #region Normals
             var normals = new float3[vertices.Length];
             for (var n = 0; n < vertices.Length; n++)
             {
@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core.Primitives
             var nbFaces = vertices.Length;
             var nbTriangles = nbFaces * 2;
             var nbIndexes = nbTriangles * 3;
-            var triangles = new ushort[nbIndexes];
+            var triangles = new uint[nbIndexes];
 
             //Top Cap
             var i = 0;
@@ -113,10 +113,10 @@ namespace Fusee.Engine.Core.Primitives
             }
             #endregion
 
-            Vertices = vertices;
-            Triangles = triangles;
-            Normals = normals;
-            UVs = uvs;
+            Vertices = new MeshAttributes<float3>(vertices);
+            Triangles = new MeshAttributes<uint>(triangles);
+            Normals = new MeshAttributes<float3>(normals);
+            UVs = new MeshAttributes<float2>(uvs);
 
         }
 

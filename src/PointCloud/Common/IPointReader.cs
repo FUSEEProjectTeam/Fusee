@@ -17,12 +17,12 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="fileFolderPath">Path to the file.</param>
         /// <param name="renderMode">Determines which <see cref="RenderMode"/> is used to display the returned point cloud."/></param>
-        public IPointCloud GetPointCloudComponent(string fileFolderPath, RenderMode renderMode);
+        public IPointCloud GetPointCloudComponent(RenderMode renderMode);
 
         /// <summary>
         /// Returns the point type.
         /// </summary>
-        public PointType GetPointType();
+        public PointType PointType { get; }
 
         /// <summary>
         /// Reads the Potree file and returns an octree.

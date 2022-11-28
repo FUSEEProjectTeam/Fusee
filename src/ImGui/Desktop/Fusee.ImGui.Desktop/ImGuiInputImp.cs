@@ -2,14 +2,16 @@
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Desktop;
 using ImGuiNET;
+using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Fusee.ImGuiImp.Desktop
 {
-    public unsafe class ImGuiInputImp : IInputDriverImp
+    public unsafe class ImGuiInputImp : IInputDriverImp, IDisposable
     {
         private readonly GameWindow _gameWindow;
         private readonly KeyboardDeviceImp _keyboard;
@@ -48,11 +50,12 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 yield return _keyboard;
                 yield return _mouse;
+                // TODO(mr): Implement gamepad support
+                // reference impl: https://github.com/ocornut/imgui/blob/master/backends/imgui_impl_win32.cpp#L278
                 //yield return _gamePad0;
                 //yield return _gamePad1;
                 //yield return _gamePad2;
                 //yield return _gamePad3;
-
             }
         }
 
@@ -93,60 +96,58 @@ namespace Fusee.ImGuiImp.Desktop
 
 #pragma warning restore 0067
 
-
-
-        private static readonly Dictionary<KeyCodes, ImGuiKey> _translateKeyCodeToImGuiKey = new Dictionary<KeyCodes, ImGuiKey>
+        private static readonly Dictionary<KeyCodes, ImGuiKey> _translateKeyCodeToImGuiKey = new()
         {
             { KeyCodes.None, ImGuiKey.None },
-            { KeyCodes.Tab,ImGuiKey.Tab },
-            { KeyCodes.Left,ImGuiKey.LeftArrow },
-            { KeyCodes.Right,ImGuiKey.RightArrow },
-            { KeyCodes.Up,ImGuiKey.UpArrow },
-            { KeyCodes.Down,ImGuiKey.DownArrow },
-            { KeyCodes.PageUp,ImGuiKey.PageUp },
-            { KeyCodes.PageDown,ImGuiKey.PageDown },
-            { KeyCodes.Home,ImGuiKey.Home },
-            { KeyCodes.End,ImGuiKey.End },
-            { KeyCodes.Insert,ImGuiKey.Insert },
-            { KeyCodes.Delete,ImGuiKey.Delete },
-            { KeyCodes.Back,ImGuiKey.Backspace },
-            { KeyCodes.Space,ImGuiKey.Space },
-            { KeyCodes.Enter,ImGuiKey.Enter },
-            { KeyCodes.Escape,ImGuiKey.Escape },
-            { KeyCodes.LControl,ImGuiKey.LeftCtrl },
-            { KeyCodes.LShift,ImGuiKey.LeftShift },
-            { KeyCodes.AltModifier,ImGuiKey.LeftAlt },
-            { KeyCodes.LWin,ImGuiKey.LeftSuper },
-            { KeyCodes.RControl,ImGuiKey.RightCtrl },
-            { KeyCodes.RShift,ImGuiKey.RightShift },
-            { KeyCodes.RWin,ImGuiKey.RightSuper },
+            { KeyCodes.Tab, ImGuiKey.Tab },
+            { KeyCodes.Left, ImGuiKey.LeftArrow },
+            { KeyCodes.Right, ImGuiKey.RightArrow },
+            { KeyCodes.Up, ImGuiKey.UpArrow },
+            { KeyCodes.Down, ImGuiKey.DownArrow },
+            { KeyCodes.PageUp, ImGuiKey.PageUp },
+            { KeyCodes.PageDown, ImGuiKey.PageDown },
+            { KeyCodes.Home, ImGuiKey.Home },
+            { KeyCodes.End, ImGuiKey.End },
+            { KeyCodes.Insert, ImGuiKey.Insert },
+            { KeyCodes.Delete, ImGuiKey.Delete },
+            { KeyCodes.Back, ImGuiKey.Backspace },
+            { KeyCodes.Space, ImGuiKey.Space },
+            { KeyCodes.Enter, ImGuiKey.Enter },
+            { KeyCodes.Escape, ImGuiKey.Escape },
+            { KeyCodes.LControl, ImGuiKey.LeftCtrl },
+            { KeyCodes.LShift, ImGuiKey.LeftShift },
+            { KeyCodes.AltModifier, ImGuiKey.LeftAlt },
+            { KeyCodes.LWin, ImGuiKey.LeftSuper },
+            { KeyCodes.RControl, ImGuiKey.RightCtrl },
+            { KeyCodes.RShift, ImGuiKey.RightShift },
+            { KeyCodes.RWin, ImGuiKey.RightSuper },
             { KeyCodes.Menu, ImGuiKey.Menu },
-            { KeyCodes.A, ImGuiKey.A},
-            { KeyCodes.B, ImGuiKey.B},
-            { KeyCodes.C, ImGuiKey.C},
-            { KeyCodes.D, ImGuiKey.D},
-            { KeyCodes.E, ImGuiKey.E},
-            { KeyCodes.F, ImGuiKey.F},
-            { KeyCodes.G, ImGuiKey.G},
-            { KeyCodes.H, ImGuiKey.H},
-            { KeyCodes.I, ImGuiKey.I},
-            { KeyCodes.J, ImGuiKey.J},
-            { KeyCodes.K, ImGuiKey.K},
-            { KeyCodes.L, ImGuiKey.L},
-            { KeyCodes.M, ImGuiKey.M},
-            { KeyCodes.N, ImGuiKey.N},
-            { KeyCodes.O, ImGuiKey.O},
-            { KeyCodes.P, ImGuiKey.P},
-            { KeyCodes.Q, ImGuiKey.Q},
-            { KeyCodes.R, ImGuiKey.R},
-            { KeyCodes.S, ImGuiKey.S},
-            { KeyCodes.T, ImGuiKey.T},
-            { KeyCodes.U, ImGuiKey.U},
-            { KeyCodes.V, ImGuiKey.V},
-            { KeyCodes.W, ImGuiKey.W},
-            { KeyCodes.X, ImGuiKey.X},
-            { KeyCodes.Y, ImGuiKey.Y},
-            { KeyCodes.Z, ImGuiKey.Z},
+            { KeyCodes.A, ImGuiKey.A },
+            { KeyCodes.B, ImGuiKey.B },
+            { KeyCodes.C, ImGuiKey.C },
+            { KeyCodes.D, ImGuiKey.D },
+            { KeyCodes.E, ImGuiKey.E },
+            { KeyCodes.F, ImGuiKey.F },
+            { KeyCodes.G, ImGuiKey.G },
+            { KeyCodes.H, ImGuiKey.H },
+            { KeyCodes.I, ImGuiKey.I },
+            { KeyCodes.J, ImGuiKey.J },
+            { KeyCodes.K, ImGuiKey.K },
+            { KeyCodes.L, ImGuiKey.L },
+            { KeyCodes.M, ImGuiKey.M },
+            { KeyCodes.N, ImGuiKey.N },
+            { KeyCodes.O, ImGuiKey.O },
+            { KeyCodes.P, ImGuiKey.P },
+            { KeyCodes.Q, ImGuiKey.Q },
+            { KeyCodes.R, ImGuiKey.R },
+            { KeyCodes.S, ImGuiKey.S },
+            { KeyCodes.T, ImGuiKey.T },
+            { KeyCodes.U, ImGuiKey.U },
+            { KeyCodes.V, ImGuiKey.V },
+            { KeyCodes.W, ImGuiKey.W },
+            { KeyCodes.X, ImGuiKey.X },
+            { KeyCodes.Y, ImGuiKey.Y },
+            { KeyCodes.Z, ImGuiKey.Z },
             { KeyCodes.D0, ImGuiKey._0 },
             { KeyCodes.D1, ImGuiKey._1 },
             { KeyCodes.D2, ImGuiKey._2 },
@@ -176,7 +177,7 @@ namespace Fusee.ImGuiImp.Desktop
             { KeyCodes.OemOpenBrackets, ImGuiKey.LeftBracket },
             { KeyCodes.OemBackslash, ImGuiKey.Backslash },
             { KeyCodes.OemCloseBrackets, ImGuiKey.RightBracket },
-            { KeyCodes.CapsLock, ImGuiKey.CapsLock  },
+            { KeyCodes.CapsLock, ImGuiKey.CapsLock },
             { KeyCodes.Scroll, ImGuiKey.ScrollLock },
             { KeyCodes.NumLock, ImGuiKey.NumLock },
             { KeyCodes.PrintScreen, ImGuiKey.PrintScreen },
@@ -192,92 +193,47 @@ namespace Fusee.ImGuiImp.Desktop
             { KeyCodes.NumPad8, ImGuiKey.Keypad8 },
             { KeyCodes.NumPad9, ImGuiKey.Keypad9 },
             { KeyCodes.Decimal, ImGuiKey.KeypadDecimal },
-            { KeyCodes.Divide, ImGuiKey.KeypadDivide  },
+            { KeyCodes.Divide, ImGuiKey.KeypadDivide },
             { KeyCodes.Multiply, ImGuiKey.KeypadMultiply },
             { KeyCodes.Subtract, ImGuiKey.KeypadSubtract },
             { KeyCodes.Add, ImGuiKey.KeypadAdd }
         };
 
-        private static bool _uppercase;
-        private static bool _ctrlPressed;
+        internal static string CurrentlySelectedText = "";
 
-        public static string CurrentlySelectedText = "";
+        private delegate void SetClipboardTextFn(void* user_data, char* text);
+        private static GCHandle _hndl; // <- do not delete, needed to prevent GC of this method!
 
-        public unsafe static void InitImGuiInput(GameWindow gw)
+        private bool disposedValue;
+
+        public static void InitImGuiInput(GameWindow gw)
         {
-
             var io = ImGui.GetIO();
+
+            gw.FocusedChanged += (FocusedChangedEventArgs e) => io.AddFocusEvent(e.IsFocused);
+            gw.TextInput += (TextInputEventArgs c) => io.AddInputCharacter((uint)c.Unicode);
+
+            // pin new a instance of SetClipboardTextFn, do not garbage collect
+            _hndl = GCHandle.Alloc(new SetClipboardTextFn((_, text) =>
+            {
+                var copiedStr = Marshal.PtrToStringUTF8((IntPtr)text);
+                gw.ClipboardString = copiedStr;
+            }));
+
+            if (_hndl.Target != null)
+            {
+                /// overwrite clipboard copy (Strg+C). Use OpenTK <see cref="GameWindow"/> implementation
+                io.SetClipboardTextFn =
+                    Marshal.GetFunctionPointerForDelegate<SetClipboardTextFn>((SetClipboardTextFn)_hndl.Target);
+            }
 
             Input.Keyboard.ButtonValueChanged += (s, e) =>
             {
-
                 if (_translateKeyCodeToImGuiKey.TryGetValue((KeyCodes)e.Button.Id, out var imGuiKey))
                 {
                     var io = ImGui.GetIO();
                     var isDown = e.Pressed;
-
                     io.AddKeyEvent(imGuiKey, isDown);
-
-                    if (e.Button.Id == (int)KeyCodes.LShift || e.Button.Id == (int)KeyCodes.RShift)
-                    {
-                        _uppercase = e.Pressed;
-                        return;
-                    }
-
-                    if (e.Button.Id == (int)KeyCodes.LControl || e.Button.Id == (int)KeyCodes.RControl)
-                    {
-                        _ctrlPressed = e.Pressed;
-                        return;
-                    }
-
-
-                    // filter, use only ids which aren't bound to control keys
-                    if (isDown && (
-                            (e.Button.Id >= 48 && e.Button.Id <= 90)
-                        || (e.Button.Id >= 96 && e.Button.Id <= 111)
-                        || (e.Button.Id >= 186 && e.Button.Id <= 226)
-                        || e.Button.Id == 9
-                        || e.Button.Id == 13
-                        || e.Button.Id == 32
-                        || e.Button.Id == 109
-                        || e.Button.Id == 110))
-                    {
-                        var value = "";
-
-                        value = e.Button.Id switch
-                        {
-                            190 => _uppercase ? ":" : ".",
-                            188 => ",",
-                            109 => "-",
-                            107 => "+",
-                            186 => "ö",
-                            219 => "ü",
-                            189 => "\\", // this is not right, however grabbing the `ALT GR` is currently impossible
-                            _ => ((char)e.Button.Id).ToString().ToLower(),
-                        };
-
-                        if (_uppercase)
-                        {
-                            // not working with numbers, however this can be added later
-                            // attention: keyboard layout!
-                            value = value.ToUpper();
-                        }
-
-                        // copy
-                        if (_ctrlPressed && e.Button.Id == 67)
-                        {
-                            gw.ClipboardString = CurrentlySelectedText;
-                            return;
-                        }
-
-                        // paste
-                        if (_ctrlPressed && e.Button.Id == 86)
-                        {
-                            value = gw.ClipboardString;
-                        }
-
-                        io.AddInputCharactersUTF8(value);
-                    }
                 }
             };
         }
@@ -287,7 +243,6 @@ namespace Fusee.ImGuiImp.Desktop
             var io = ImGui.GetIO();
             io.ClearInputCharacters();
 
-
             io.AddMousePosEvent(Input.Mouse.X / scaleFactor.X, Input.Mouse.Y / scaleFactor.Y);
             io.AddMouseButtonEvent((int)ImGuiMouseButton.Left, Input.Mouse.LeftButton);
             io.AddMouseButtonEvent((int)ImGuiMouseButton.Middle, Input.Mouse.MiddleButton);
@@ -295,9 +250,37 @@ namespace Fusee.ImGuiImp.Desktop
 
             io.AddMouseWheelEvent(0, Input.Mouse.WheelVel * 0.01f);
 
-            io.KeyShift = Input.Keyboard.IsKeyDown(KeyCodes.LShift) || Input.Keyboard.IsKeyDown(KeyCodes.RShift);
-            io.KeyCtrl = Input.Keyboard.IsKeyDown(KeyCodes.LControl) || Input.Keyboard.IsKeyDown(KeyCodes.RControl);
-            io.KeySuper = Input.Keyboard.IsKeyDown(KeyCodes.LWin) || Input.Keyboard.IsKeyDown(KeyCodes.RWin);
+            io.AddKeyEvent(ImGuiKey.ModShift, Input.Keyboard.GetKey(KeyCodes.LShift) || Input.Keyboard.GetKey(KeyCodes.RShift));
+            io.AddKeyEvent(ImGuiKey.ModCtrl, Input.Keyboard.GetKey(KeyCodes.LControl) || Input.Keyboard.GetKey(KeyCodes.RControl));
+            io.AddKeyEvent(ImGuiKey.ModAlt, Input.Keyboard.GetKey(KeyCodes.LMenu) || Input.Keyboard.GetKey(KeyCodes.RMenu));
+            io.AddKeyEvent(ImGuiKey.ModSuper, Input.Keyboard.GetKey(KeyCodes.LWin) || Input.Keyboard.GetKey(KeyCodes.RWin));
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // dispose managed state (managed objects)
+                }
+
+                _hndl.Free();
+                disposedValue = true;
+            }
+        }
+
+        ~ImGuiInputImp()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

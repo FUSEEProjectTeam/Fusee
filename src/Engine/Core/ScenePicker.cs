@@ -59,9 +59,9 @@ namespace Fusee.Engine.Core
         /// <param name="c"></param>
         public void GetTriangle(out float3 a, out float3 b, out float3 c)
         {
-            a = Mesh.Vertices[Mesh.Triangles[Triangle + 0]];
-            b = Mesh.Vertices[Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Triangles.Length > 2 ? Mesh.Vertices[Mesh.Triangles[Triangle + 2]] : float3.Zero;
+            a = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 0]];
+            b = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 1]];
+            c = Mesh.MeshType == PrimitiveType.Triangles ? Mesh.Vertices[(int)Mesh.Triangles[Triangle + 2]] : float3.Zero;
         }
 
         /// <summary>
@@ -94,9 +94,9 @@ namespace Fusee.Engine.Core
         /// <param name="c"></param>
         public void GetNormals(out float3 a, out float3 b, out float3 c)
         {
-            a = Mesh.Normals[Mesh.Triangles[Triangle + 0]];
-            b = Mesh.Normals[Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Triangles.Length > 2 ? Mesh.Normals[Mesh.Triangles[Triangle + 2]] : float3.Zero; ;
+            a = Mesh.Normals[(int)Mesh.Triangles[Triangle + 0]];
+            b = Mesh.Normals[(int)Mesh.Triangles[Triangle + 1]];
+            c = Mesh.MeshType == PrimitiveType.Triangles ? Mesh.Normals[(int)Mesh.Triangles[Triangle + 2]] : float3.Zero; ;
         }
         /// <summary>
         /// Returns the normal at the center of the picked triangle.
@@ -157,9 +157,9 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                float2 uva = Mesh.UVs[Mesh.Triangles[Triangle]];
-                float2 uvb = Mesh.UVs[Mesh.Triangles[Triangle + 1]];
-                float2 uvc = Mesh.Triangles.Length > 2 ? Mesh.UVs[Mesh.Triangles[Triangle + 2]] : float2.Zero;
+                float2 uva = Mesh.UVs[(int)Mesh.Triangles[Triangle]];
+                float2 uvb = Mesh.UVs[(int)Mesh.Triangles[Triangle + 1]];
+                float2 uvc = Mesh.MeshType == PrimitiveType.Triangles ? Mesh.UVs[(int)Mesh.Triangles[Triangle + 2]] : float2.Zero;
 
                 return float2.Barycentric(uva, uvb, uvc, U, V);
             }
@@ -529,13 +529,13 @@ namespace Fusee.Engine.Core
                 for (var i = 0; i < mesh.Triangles.Length; i += 3)
                 {
                     // a, b c: current triangle's vertices in clip coordinates
-                    var a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1);
+                    var a = new float4(mesh.Vertices[(int)mesh.Triangles[i + 0]], 1);
                     a = float4x4.TransformPerspective(mvp, a);
 
-                    var b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1);
+                    var b = new float4(mesh.Vertices[(int)mesh.Triangles[i + 1]], 1);
                     b = float4x4.TransformPerspective(mvp, b);
 
-                    var c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1);
+                    var c = new float4(mesh.Vertices[(int)mesh.Triangles[i + 2]], 1);
                     c = float4x4.TransformPerspective(mvp, c);
 
                     // Point-in-Triangle-Test
@@ -568,7 +568,7 @@ namespace Fusee.Engine.Core
                 var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
                 if (matOfNode == null)
                 {
-                    Diagnostics.Warn("No shader effect for line renderer found!");
+                    Diagnostics.Debug("No shader effect for line renderer found!");
                     return;
                 }
                 var thicknessFromShader = matOfNode.GetFxParam<float>("Thickness");
@@ -577,8 +577,8 @@ namespace Fusee.Engine.Core
                 {
                     var thickness = (thicknessFromShader / _rc.ViewportHeight);
 
-                    var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[mesh.Triangles[i + 0]]).xy;
-                    var pt2 = float4x4.TransformPerspective(mvp, mesh.Vertices[mesh.Triangles[i + 1]]).xy;
+                    var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]).xy;
+                    var pt2 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]).xy;
                     var pt0 = PickPosClip;
 
                     // Line Eq = ax + by + c = 0

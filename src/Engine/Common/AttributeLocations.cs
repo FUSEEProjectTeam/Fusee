@@ -110,7 +110,7 @@
         /// First attribute location for the instanced model matrix.
         /// Vertex Attributes can be of type vec4 at maximum.
         /// </summary>
-        public static readonly int InstancedModelMat1 = 11;
+        public static readonly int InstancedModelMat1 = 10;
 
         /// <summary>
         /// The binding index for the instance model matrix buffer.
@@ -121,28 +121,38 @@
         /// Second attribute location for the instanced model matrix.
         /// Vertex Attributes can be of type vec4 at maximum.
         /// </summary>
-        public static readonly int InstancedModelMat2 = 12;
+        public static readonly int InstancedModelMat2 = 11;
 
         /// <summary>
         /// Third attribute location for the instanced model matrix.
         /// Vertex Attributes can be of type vec4 at maximum.
         /// </summary>
-        public static readonly int InstancedModelMat3 = 13;
+        public static readonly int InstancedModelMat3 = 12;
 
         /// <summary>
         /// Fourth attribute location for the instanced model matrix.
         /// Vertex Attributes can be of type vec4 at maximum.
         /// </summary>
-        public static readonly int InstancedModelMat4 = 14;
+        public static readonly int InstancedModelMat4 = 13;
 
         /// <summary>
         /// Attribute location for the instanced color.
         /// </summary>
-        public static readonly int InstancedColor = 15;
+        public static readonly int InstancedColor = 14;
 
         /// <summary>
         /// The binding index for the instanced color buffer.
         /// </summary>
         public static readonly int InstancedColorBindingIndex = InstancedColor;
+
+        /// <summary>
+        /// Attribute location for the flags buffer.
+        /// </summary>
+        public static readonly int FlagsAttribLocation = 15;
+
+        /// <summary>
+        /// The binding index for the flags buffer.
+        /// </summary>
+        public static readonly int FlagsBindingIndex = FlagsAttribLocation;
     }
 }

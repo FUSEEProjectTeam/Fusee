@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Examples\PointCloudPotree2\ImGui\</OutputPath>
 
 		<OutputType>Exe</OutputType>
@@ -59,6 +59,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiImp.Desktop.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Potree\Fusee.PointCloud.Potree.csproj" />
+		<ProjectReference Include="..\Core\Fusee.Examples.PointCloudPotree2.Core.csproj" />
 	</ItemGroup>
 
 </Project>

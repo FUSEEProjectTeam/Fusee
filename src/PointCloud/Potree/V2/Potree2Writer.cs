@@ -1,18 +1,206 @@
 using Fusee.Math.Core;
-using Fusee.PointCloud.Common.Accessors;
+using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Potree.V2.Data;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Fusee.PointCloud.Potree.V2
 {
-    public class Potree2Writer
+    public class Potree2Writer : Potree2RwBase
     {
-        public Potree2Writer(string filepath)
+        public Potree2Writer(ref PotreeData potreeData) : base(ref potreeData) { }
+
+        /// <summary>
+        /// Directly writes the action of one given set of selectors to disk.
+        /// </summary>
+        /// <param name="nodeSelector"></param>
+        /// <param name="pointSelector"></param>
+        /// <param name="action"></param>
+        /// <param name="dryrun"></param>
+        /// <returns></returns>
+        public (long octants, long points) Write(Predicate<PotreeNode> nodeSelector, Predicate<PotreePoint> pointSelector, Action<PotreePoint> action, bool dryrun = false)
         {
-            GetOctree(filepath);
+            long octantCount = 0;
+            long pointsCount = 0;
+
+            using (Stream readStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (Stream writeStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            {
+                BinaryReader binaryReader = new BinaryReader(readStream);
+                BinaryWriter binaryWriter = new BinaryWriter(writeStream);
+
+                foreach (var node in _potreeData.Hierarchy.Nodes)
+                {
+                    if (nodeSelector(node))
+                    {
+                        octantCount++;
+
+                        var point = new PotreePoint();
+
+                        for (int i = 0; i < node.NumPoints; i++)
+                        {
+                            if (offsetPosition > -1)
+                            {
+                                binaryReader.BaseStream.Position = node.ByteOffset + offsetPosition + i * _potreeData.Metadata.PointSize;
+
+                                double x = binaryReader.ReadInt32() * _potreeData.Metadata.Scale.x;
+                                double y = binaryReader.ReadInt32() * _potreeData.Metadata.Scale.y;
+                                double z = binaryReader.ReadInt32() * _potreeData.Metadata.Scale.z;
+
+                                double3 position = new(x, y, z);
+                                position = Potree2Consts.YZflip * position;
+
+                                point.Position = position;
+                            }
+
+                            if (offsetIntensity > -1)
+                            {
+                                binaryReader.BaseStream.Position = node.ByteOffset + offsetIntensity + i * _potreeData.Metadata.PointSize;
+                                point.Intensity = binaryReader.ReadInt16();
+                            }
+
+                            if (offsetReturnNumber > -1)
+                            {
+                                binaryReader.BaseStream.Position = node.ByteOffset + offsetReturnNumber + i * _potreeData.Metadata.PointSize;
+                                point.ReturnNumber = binaryReader.ReadByte();
+                            }
+
+                            if (offsetNumberOfReturns > -1)
+                            {
+                                binaryReader.BaseStream.Position = node.ByteOffset + offsetNumberOfReturns + i * _potreeData.Metadata.PointSize;
+                                point.NumberOfReturns = binaryReader.ReadByte();
+                            }
+
+                            if (offsetClassification > -1)
+                            {
+                                binaryReader.BaseStream.Position = node.ByteOffset + offsetClassification + i * _potreeData.Metadata.PointSize;
+                                point.Classification = binaryReader.ReadByte();
+                            }
+
+                            if (offsetScanAngleRank > -1)
+                            {
+                                binaryReader.BaseStream.Position = node.ByteOffset + offsetScanAngleRank + i * _potreeData.Metadata.PointSize;
+                                point.ScanAngleRank = binaryReader.ReadByte();
+                            }
+
+                            if (offsetUserData > -1)
+                            {
+                                binaryReader.BaseStream.Position = node.ByteOffset + offsetUserData + i * _potreeData.Metadata.PointSize;
+                                point.UserData = binaryReader.ReadByte();
+                            }
+
+                            if (offsetPointSourceId > -1)
+                            {
+                                binaryReader.BaseStream.Position = node.ByteOffset + offsetPointSourceId + i * _potreeData.Metadata.PointSize;
+                                point.PointSourceId = binaryReader.ReadByte();
+                            }
+
+                            if (offsetColor > -1)
+                            {
+                                binaryReader.BaseStream.Position = node.ByteOffset + offsetColor + i * _potreeData.Metadata.PointSize;
+
+                                ushort r = binaryReader.ReadUInt16();
+                                ushort g = binaryReader.ReadUInt16();
+                                ushort b = binaryReader.ReadUInt16();
+
+                                float3 color = float3.Zero;
+
+                                color.r = ((byte)(r > 255 ? r / 256 : r));
+                                color.g = ((byte)(g > 255 ? g / 256 : g));
+                                color.b = ((byte)(b > 255 ? b / 256 : b));
+
+                                point.Color = color;
+                            }
+
+                            if (pointSelector(point))
+                            {
+                                action(point);
+
+                                if (!dryrun)
+                                {
+                                    if (offsetPosition > -1)
+                                    {
+                                        // TODO: Fix position conversion
+                                        //binaryWriter.BaseStream.Position = node.ByteOffset + offsetPosition + i * _potreeData.Metadata.PointSize;
+
+                                        //var position = Potree2Consts.YZflip * point.Position;
+
+                                        //binaryWriter.Write(position.x);
+                                        //binaryWriter.Write(position.y);
+                                        //binaryWriter.Write(position.z);
+                                    }
+
+                                    if (offsetIntensity > -1)
+                                    {
+                                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetIntensity + i * _potreeData.Metadata.PointSize;
+                                        binaryWriter.Write(point.Intensity);
+                                    }
+
+                                    if (offsetReturnNumber > -1)
+                                    {
+                                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetReturnNumber + i * _potreeData.Metadata.PointSize;
+                                        binaryWriter.Write(point.ReturnNumber);
+                                    }
+
+                                    if (offsetNumberOfReturns > -1)
+                                    {
+                                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetNumberOfReturns + i * _potreeData.Metadata.PointSize;
+                                        binaryWriter.Write(point.NumberOfReturns);
+                                    }
+
+                                    if (offsetClassification > -1)
+                                    {
+                                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetClassification + i * _potreeData.Metadata.PointSize;
+                                        binaryWriter.Write(point.Classification);
+                                    }
+
+                                    if (offsetScanAngleRank > -1)
+                                    {
+                                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetScanAngleRank + i * _potreeData.Metadata.PointSize;
+                                        binaryWriter.Write(point.ScanAngleRank);
+                                    }
+
+                                    if (offsetUserData > -1)
+                                    {
+                                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetUserData + i * _potreeData.Metadata.PointSize;
+                                        binaryWriter.Write(point.UserData);
+                                    }
+
+                                    if (offsetPointSourceId > -1)
+                                    {
+                                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetPointSourceId + i * _potreeData.Metadata.PointSize;
+                                        binaryWriter.Write(point.PointSourceId);
+                                    }
+
+                                    if (offsetColor > -1)
+                                    {
+                                        // TODO: Fix color conversion
+                                        //binaryWriter.BaseStream.Position = node.ByteOffset + offsetColor + i * _potreeData.Metadata.PointSize;
+
+                                        //ushort r = (ushort)MathF.Floor(point.Color.r >= 1f ? 255 : point.Color.r * 256f);
+                                        //ushort g = (ushort)MathF.Floor(point.Color.g >= 1f ? 255 : point.Color.g * 256f);
+                                        //ushort b = (ushort)MathF.Floor(point.Color.b >= 1f ? 255 : point.Color.b * 256f);
+
+                                        //binaryWriter.Write(r);
+                                        //binaryWriter.Write(g);
+                                        //binaryWriter.Write(b);
+                                    }
+                                }
+
+                                pointsCount++;
+                            }
+                        }
+                    }
+                }
+
+                binaryWriter.Close();
+                binaryReader.Dispose();
+
+                binaryReader.Close();
+                binaryReader.Dispose();
+            }
+
+            return (octantCount, pointsCount);
         }
 
         public (long octants, long points) Label(Predicate<PotreeNode> nodeSelector, Predicate<double3> pointSelector, byte Label, bool dryrun = false)
@@ -20,17 +208,15 @@ namespace Fusee.PointCloud.Potree.V2
             long octantCount = 0;
             long pointsCount = 0;
 
-            var octreeFilePath = Path.Combine(Instance.Metadata.FolderPath, Constants.OctreeFileName);
-
-            using (Stream readStream = File.Open(octreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (Stream writeStream = File.Open(octreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            using (Stream readStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (Stream writeStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
             {
                 BinaryReader binaryReader = new BinaryReader(readStream);
                 BinaryWriter binaryWriter = new BinaryWriter(writeStream);
 
                 double3 point = double3.Zero;
 
-                foreach (var node in Instance.Hierarchy.Nodes)
+                foreach (var node in _potreeData.Hierarchy.Nodes)
                 {
                     if (nodeSelector(node))
                     {
@@ -38,17 +224,17 @@ namespace Fusee.PointCloud.Potree.V2
 
                         for (int i = 0; i < node.NumPoints; i++)
                         {
-                            binaryReader.BaseStream.Position = node.ByteOffset + 0 + i * Instance.Metadata.PointSize;
+                            binaryReader.BaseStream.Position = node.ByteOffset + 0 + i * _potreeData.Metadata.PointSize;
 
-                            point.x = (binaryReader.ReadInt32() * Instance.Metadata.Scale.x);
-                            point.z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.y);
-                            point.y = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z);
+                            point.x = (binaryReader.ReadInt32() * _potreeData.Metadata.Scale.x);
+                            point.z = (binaryReader.ReadInt32() * _potreeData.Metadata.Scale.y);
+                            point.y = (binaryReader.ReadInt32() * _potreeData.Metadata.Scale.z);
 
                             if (pointSelector(point))
                             {
                                 if (!dryrun)
                                 {
-                                    binaryWriter.BaseStream.Position = node.ByteOffset + 16 + i * Instance.Metadata.PointSize;
+                                    binaryWriter.BaseStream.Position = node.ByteOffset + 16 + i * _potreeData.Metadata.PointSize;
                                     binaryWriter.Write(Label);
                                 }
 
@@ -57,205 +243,107 @@ namespace Fusee.PointCloud.Potree.V2
                         }
                     }
                 }
+
+                binaryWriter.Close();
+                binaryReader.Dispose();
+
+                binaryReader.Close();
+                binaryReader.Dispose();
             }
 
             return (octantCount, pointsCount);
         }
 
-        public PotreeData Instance
+        public void WriteRawPoints<TPotreePoint>(OctantId oid, TPotreePoint[] points) where TPotreePoint : PotreePoint
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new PotreeData();
-                    Instance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(_metadataFilePath));
-                    Instance.Hierarchy = LoadHierarchy(_fileFolderPath);
-                    Instance.Metadata.FolderPath = _fileFolderPath;
+            var node = FindNode(ref _potreeData.Hierarchy, oid);
 
-                    // Changing AABBs to have local coordinates
-                    // Fliping all YZ coordinates
-                    for (int i = 0; i < Instance.Hierarchy.Nodes.Count; i++)
+            if (points.Length != node.NumPoints)
+            {
+                //TODO: (throw) correct error
+                throw new Exception();
+            }
+
+            using (Stream writeStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            {
+                BinaryWriter binaryWriter = new BinaryWriter(writeStream);
+
+                for (int i = 0; i < points.Length; i++)
+                {
+                    var point = points[i];
+
+                    if (offsetPosition > -1)
                     {
-                        var node = Instance.Hierarchy.Nodes[i];
-                        node.Aabb = new AABBd(Constants.YZflip * (node.Aabb.min - Instance.Metadata.Offset), Constants.YZflip * (node.Aabb.max - Instance.Metadata.Offset));
+                        // TODO: Fix position conversion
+                        //binaryWriter.BaseStream.Position = node.ByteOffset + offsetPosition + i * _potreeData.Metadata.PointSize;
+
+                        //var position = Potree2Consts.YZflip * point.Position;
+
+                        //binaryWriter.Write(position.x);
+                        //binaryWriter.Write(position.y);
+                        //binaryWriter.Write(position.z);
                     }
-                    Instance.Metadata.OffsetList = new List<double>(3) { Instance.Metadata.Offset.x, Instance.Metadata.Offset.z, Instance.Metadata.Offset.y };
-                    Instance.Metadata.ScaleList = new List<double>(3) { Instance.Metadata.Scale.x, Instance.Metadata.Scale.z, Instance.Metadata.Scale.y };
 
-                    // Setting the metadata BoundingBox to the values of the root node. No fliping required since that was done in the for loop
-                    Instance.Metadata.BoundingBox.MinList = new List<double>(3) { Instance.Hierarchy.Root.Aabb.min.x, Instance.Hierarchy.Root.Aabb.min.y, Instance.Hierarchy.Root.Aabb.min.z };
-                    Instance.Metadata.BoundingBox.MaxList = new List<double>(3) { Instance.Hierarchy.Root.Aabb.max.x, Instance.Hierarchy.Root.Aabb.max.y, Instance.Hierarchy.Root.Aabb.max.z };
-                }
-                return _instance;
-            }
-            set
-            {
-                _instance = value;
-            }
-        }
-        private static PotreeData _instance;
-
-        private string _fileFolderPath;
-        private string _metadataFilePath;
-
-        public PointType GetPointType(string pathToNodeFileFolder = "")
-        {
-            return PointType.PosD3ColF3LblB;
-        }
-
-        /// <summary>
-        /// Reads the meta.json and .hierarchy files and returns an octree.
-        /// </summary>
-        /// <param name="fileFolderPath">Path to the folder the point cloud is saved</param>
-        /// <returns></returns>
-        public void GetOctree(string fileFolderPath)
-        {
-            _fileFolderPath = fileFolderPath;
-            _metadataFilePath = Path.Combine(fileFolderPath, Constants.MetadataFileName);
-
-            int pointSize = 0;
-
-            if (Instance.Metadata != null)
-            {
-                foreach (var metaAttributeItem in Instance.Metadata.Attributes)
-                {
-                    pointSize += metaAttributeItem.Size;
-                }
-
-                Instance.Metadata.PointSize = pointSize;
-            }
-        }
-
-        public PotreeHierarchy LoadHierarchy(string fileFolderPath)
-        {
-            var hierarchyFilePath = Path.Combine(fileFolderPath, Constants.HierarchyFileName);
-
-            var firstChunkSize = Instance.Metadata.Hierarchy.FirstChunkSize;
-            var stepSize = Instance.Metadata.Hierarchy.StepSize;
-            var depth = Instance.Metadata.Hierarchy.Depth;
-
-            var data = File.ReadAllBytes(hierarchyFilePath);
-
-            PotreeNode root = new PotreeNode()
-            {
-                Name = "r",
-                Aabb = new AABBd(Instance.Metadata.BoundingBox.Min, Instance.Metadata.BoundingBox.Max)
-            };
-
-            var hierarchy = new PotreeHierarchy();
-
-            long offset = 0;
-
-            LoadHierarchyRecursive(ref root, ref data, offset, firstChunkSize);
-
-            hierarchy.Nodes = new();
-            root.Traverse(n => hierarchy.Nodes.Add(n));
-
-            hierarchy.Root = root;
-
-            return hierarchy;
-        }
-        private void LoadHierarchyRecursive(ref PotreeNode root, ref byte[] data, long offset, long size)
-        {
-            int bytesPerNode = 22;
-            int numNodes = (int)(size / bytesPerNode);
-
-            var nodes = new List<PotreeNode>(numNodes)
-            {
-                root
-            };
-
-            for (int i = 0; i < numNodes; i++)
-            {
-                var currentNode = nodes[i];
-                if (currentNode == null)
-                    currentNode = new PotreeNode();
-
-                ulong offsetNode = (ulong)offset + (ulong)(i * bytesPerNode);
-
-                var nodeType = data[offsetNode + 0];
-                int childMask = BitConverter.ToInt32(data, (int)offsetNode + 1);
-                var numPoints = BitConverter.ToUInt32(data, (int)offsetNode + 2);
-                var byteOffset = BitConverter.ToInt64(data, (int)offsetNode + 6);
-                var byteSize = BitConverter.ToInt64(data, (int)offsetNode + 14);
-
-                currentNode.NodeType = (NodeType)nodeType;
-                currentNode.NumPoints = numPoints;
-                currentNode.ByteOffset = byteOffset;
-                currentNode.ByteSize = byteSize;
-
-                if (currentNode.NodeType == NodeType.PROXY)
-                {
-                    LoadHierarchyRecursive(ref currentNode, ref data, byteOffset, byteSize);
-                }
-                else
-                {
-                    for (int childIndex = 0; childIndex < 8; childIndex++)
+                    if (offsetIntensity > -1)
                     {
-                        bool childExists = ((1 << childIndex) & childMask) != 0;
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetIntensity + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.Intensity);
+                    }
 
-                        if (!childExists)
-                        {
-                            continue;
-                        }
+                    if (offsetReturnNumber > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetReturnNumber + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.ReturnNumber);
+                    }
 
-                        string childName = currentNode.Name + childIndex.ToString();
+                    if (offsetNumberOfReturns > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetNumberOfReturns + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.NumberOfReturns);
+                    }
 
-                        PotreeNode child = new PotreeNode();
+                    if (offsetClassification > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetClassification + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.Classification);
+                    }
 
-                        child.Aabb = childAABB(currentNode.Aabb, childIndex);
-                        child.Name = childName;
-                        currentNode.Children[childIndex] = child;
-                        child.Parent = currentNode;
+                    if (offsetScanAngleRank > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetScanAngleRank + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.ScanAngleRank);
+                    }
 
-                        nodes.Add(child);
+                    if (offsetUserData > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetUserData + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.UserData);
+                    }
+
+                    if (offsetPointSourceId > -1)
+                    {
+                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetPointSourceId + i * _potreeData.Metadata.PointSize;
+                        binaryWriter.Write(point.PointSourceId);
+                    }
+
+                    if (offsetColor > -1)
+                    {
+                        // TODO: Fix color conversion
+                        //binaryWriter.BaseStream.Position = node.ByteOffset + offsetColor + i * _potreeData.Metadata.PointSize;
+
+                        //ushort r = (ushort)MathF.Floor(point.Color.r >= 1f ? 255 : point.Color.r * 256f);
+                        //ushort g = (ushort)MathF.Floor(point.Color.g >= 1f ? 255 : point.Color.g * 256f);
+                        //ushort b = (ushort)MathF.Floor(point.Color.b >= 1f ? 255 : point.Color.b * 256f);
+
+                        //binaryWriter.Write(r);
+                        //binaryWriter.Write(g);
+                        //binaryWriter.Write(b);
                     }
                 }
+
+                binaryWriter.Close();
+                binaryWriter.Dispose();
             }
-
-            AABBd childAABB(AABBd aabb, int index)
-            {
-
-                double3 min = aabb.min;
-                double3 max = aabb.max;
-
-                double3 size = max - min;
-
-                if ((index & 0b0001) > 0)
-                {
-                    min.z += size.z / 2;
-                }
-                else
-                {
-                    max.z -= size.z / 2;
-                }
-
-                if ((index & 0b0010) > 0)
-                {
-                    min.y += size.y / 2;
-                }
-                else
-                {
-                    max.y -= size.y / 2;
-                }
-
-                if ((index & 0b0100) > 0)
-                {
-                    min.x += size.x / 2;
-                }
-                else
-                {
-                    max.x -= size.x / 2;
-                }
-
-                return new AABBd(min, max);
-            }
-        }
-
-        private PotreeNode FindNode(string id)
-        {
-            return Instance.Hierarchy.Nodes.Find(n => n.Name == id);
         }
     }
 }

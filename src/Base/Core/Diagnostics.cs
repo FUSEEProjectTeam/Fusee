@@ -61,7 +61,7 @@ namespace Fusee.Base.Core
 
                         }
 
-                        return f + "\n";
+                        return f;
                     };
 
         /// <summary>
@@ -228,21 +228,6 @@ namespace Fusee.Base.Core
                 System.Diagnostics.Debug.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg, ex, args));
 
 
-        }
-
-        /// <summary>
-        ///     Log a debug output message to the respective output console.
-        /// </summary>
-        /// <param name="o">The object to log. Will be converted to a string.</param>
-        /// <param name="logLevel">The level to log, see <see cref="SeverityLevel"></see> for a list</param>
-        /// <param name="callerName">The calling method</param>
-        /// <param name="sourceLineNumber">The line number, optional.</param>
-        /// <param name="sourceFilePath">The file path, optional.</param>
-        [Obsolete("Please use the new logging methods (Debug, Warn, Error) instead")]
-        [Conditional("DEBUG")]
-        public static void Log(object o, SeverityLevel logLevel = SeverityLevel.Debug, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
-        {
-            Writer(o, logLevel, null, null, callerName, sourceLineNumber, sourceFilePath);
         }
 
         /// <summary>
