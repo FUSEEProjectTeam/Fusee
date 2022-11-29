@@ -125,7 +125,8 @@ namespace Fusee.Examples.Picking.Core
 
                 PickResult newPick = _scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z)
                     .FirstOrDefault();
-                Diagnostics.Debug(newPick);
+                if (newPick != null)
+                    Diagnostics.Debug(newPick.Node.Name);
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
