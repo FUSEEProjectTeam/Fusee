@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net7.0-windows</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Examples\PointCloudPotree2\Wpf</OutputPath>
 
 		<OutputType>WinExe</OutputType>
@@ -32,7 +32,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
 		<ProjectReference Include="..\Core\Fusee.Examples.PointCloudPotree2.Core.csproj" />
 
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
 	</ItemGroup>
 
 </Project>

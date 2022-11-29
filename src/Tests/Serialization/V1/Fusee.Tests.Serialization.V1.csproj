@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Tests\Serialization\V1\</OutputPath>
 	</PropertyGroup>
 
@@ -14,6 +14,6 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="protobuf-net" Version="3.1.22" />
+		<PackageReference Include="protobuf-net" Version="3.1.25" />
 	</ItemGroup>
 </Project>

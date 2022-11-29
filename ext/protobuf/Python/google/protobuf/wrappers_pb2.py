@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1egoogle/protobuf/wrappers.proto\x12\x0fgoogle.protobuf\"\x1c\n\x0b\x44oubleValue\x12\r\n\x05value\x18\x01 \x01(\x01\"\x1b\n\nFloatValue\x12\r\n\x05value\x18\x01 \x01(\x02\"\x1b\n\nInt64Value\x12\r\n\x05value\x18\x01 \x01(\x03\"\x1c\n\x0bUInt64Value\x12\r\n\x05value\x18\x01 \x01(\x04\"\x1b\n\nInt32Value\x12\r\n\x05value\x18\x01 \x01(\x05\"\x1c\n\x0bUInt32Value\x12\r\n\x05value\x18\x01 \x01(\r\"\x1a\n\tBoolValue\x12\r\n\x05value\x18\x01 \x01(\x08\"\x1c\n\x0bStringValue\x12\r\n\x05value\x18\x01 \x01(\t\"\x1b\n\nBytesValue\x12\r\n\x05value\x18\x01 \x01(\x0c\x42\x83\x01\n\x13\x63om.google.protobufB\rWrappersProtoP\x01Z1google.golang.org/protobuf/types/known/wrapperspb\xf8\x01\x01\xa2\x02\x03GPB\xaa\x02\x1eGoogle.Protobuf.WellKnownTypesb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1egoogle/protobuf/wrappers.proto\x12\x0fgoogle.protobuf\"#\n\x0b\x44oubleValue\x12\x14\n\x05value\x18\x01 \x01(\x01R\x05value\"\"\n\nFloatValue\x12\x14\n\x05value\x18\x01 \x01(\x02R\x05value\"\"\n\nInt64Value\x12\x14\n\x05value\x18\x01 \x01(\x03R\x05value\"#\n\x0bUInt64Value\x12\x14\n\x05value\x18\x01 \x01(\x04R\x05value\"\"\n\nInt32Value\x12\x14\n\x05value\x18\x01 \x01(\x05R\x05value\"#\n\x0bUInt32Value\x12\x14\n\x05value\x18\x01 \x01(\rR\x05value\"!\n\tBoolValue\x12\x14\n\x05value\x18\x01 \x01(\x08R\x05value\"#\n\x0bStringValue\x12\x14\n\x05value\x18\x01 \x01(\tR\x05value\"\"\n\nBytesValue\x12\x14\n\x05value\x18\x01 \x01(\x0cR\x05valueB\x83\x01\n\x13\x63om.google.protobufB\rWrappersProtoP\x01Z1google.golang.org/protobuf/types/known/wrapperspb\xf8\x01\x01\xa2\x02\x03GPB\xaa\x02\x1eGoogle.Protobuf.WellKnownTypesb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'google.protobuf.wrappers_pb2', globals())
@@ -22,21 +22,21 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   DESCRIPTOR._serialized_options = b'\n\023com.google.protobufB\rWrappersProtoP\001Z1google.golang.org/protobuf/types/known/wrapperspb\370\001\001\242\002\003GPB\252\002\036Google.Protobuf.WellKnownTypes'
   _DOUBLEVALUE._serialized_start=51
-  _DOUBLEVALUE._serialized_end=79
-  _FLOATVALUE._serialized_start=81
-  _FLOATVALUE._serialized_end=108
-  _INT64VALUE._serialized_start=110
-  _INT64VALUE._serialized_end=137
-  _UINT64VALUE._serialized_start=139
-  _UINT64VALUE._serialized_end=167
-  _INT32VALUE._serialized_start=169
-  _INT32VALUE._serialized_end=196
-  _UINT32VALUE._serialized_start=198
-  _UINT32VALUE._serialized_end=226
-  _BOOLVALUE._serialized_start=228
-  _BOOLVALUE._serialized_end=254
-  _STRINGVALUE._serialized_start=256
-  _STRINGVALUE._serialized_end=284
-  _BYTESVALUE._serialized_start=286
-  _BYTESVALUE._serialized_end=313
+  _DOUBLEVALUE._serialized_end=86
+  _FLOATVALUE._serialized_start=88
+  _FLOATVALUE._serialized_end=122
+  _INT64VALUE._serialized_start=124
+  _INT64VALUE._serialized_end=158
+  _UINT64VALUE._serialized_start=160
+  _UINT64VALUE._serialized_end=195
+  _INT32VALUE._serialized_start=197
+  _INT32VALUE._serialized_end=231
+  _UINT32VALUE._serialized_start=233
+  _UINT32VALUE._serialized_end=268
+  _BOOLVALUE._serialized_start=270
+  _BOOLVALUE._serialized_end=303
+  _STRINGVALUE._serialized_start=305
+  _STRINGVALUE._serialized_end=340
+  _BYTESVALUE._serialized_start=342
+  _BYTESVALUE._serialized_end=376
 # @@protoc_insertion_point(module_scope)
