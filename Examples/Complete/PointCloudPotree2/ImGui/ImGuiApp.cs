@@ -69,7 +69,7 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
                     _fuControl.RequestedNewFile = true;
                     _fuControl.UpdateOriginalGameWindowDimensions(Width, Height);
                     _fuControl.ResetCamera();
-                    _currentColorMode = 0;
+                    _currentColorMode = (int)PointRenderingParams.Instance.ColorMode;
                 }
             };
         }
