@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Tests\Render\Desktop\</OutputPath>
 		<OutputType>Exe</OutputType>
 		<StartupObject>Fusee.Tests.Render.Desktop.Run</StartupObject>
@@ -26,10 +26,10 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\ThreeDFont\Core\Fusee.Examples.ThreeDFont.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\UI\Core\Fusee.Examples.UI.Core.csproj" />
 		
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
 		<PackageReference Include="NUnit" Version="3.13.3" />
 		<PackageReference Include="NUnitLite" Version="3.13.3" />
-		<PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
+		<PackageReference Include="NUnit.Analyzers" Version="3.5.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
 	</ItemGroup>
 

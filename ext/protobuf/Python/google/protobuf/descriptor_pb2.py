@@ -20,10 +20,10 @@ if _descriptor._USE_C_DESCRIPTORS == False:
     syntax='proto2',
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n google/protobuf/descriptor.proto\x12\x0fgoogle.protobuf\"G\n\x11\x46ileDescriptorSet\x12\x32\n\x04\x66ile\x18\x01 \x03(\x0b\x32$.google.protobuf.FileDescriptorProto\"\xdb\x03\n\x13\x46ileDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07package\x18\x02 \x01(\t\x12\x12\n\ndependency\x18\x03 \x03(\t\x12\x19\n\x11public_dependency\x18\n \x03(\x05\x12\x17\n\x0fweak_dependency\x18\x0b \x03(\x05\x12\x36\n\x0cmessage_type\x18\x04 \x03(\x0b\x32 .google.protobuf.DescriptorProto\x12\x37\n\tenum_type\x18\x05 \x03(\x0b\x32$.google.protobuf.EnumDescriptorProto\x12\x38\n\x07service\x18\x06 \x03(\x0b\x32\'.google.protobuf.ServiceDescriptorProto\x12\x38\n\textension\x18\x07 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProto\x12-\n\x07options\x18\x08 \x01(\x0b\x32\x1c.google.protobuf.FileOptions\x12\x39\n\x10source_code_info\x18\t \x01(\x0b\x32\x1f.google.protobuf.SourceCodeInfo\x12\x0e\n\x06syntax\x18\x0c \x01(\t\"\xa9\x05\n\x0f\x44\x65scriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x34\n\x05\x66ield\x18\x02 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProto\x12\x38\n\textension\x18\x06 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProto\x12\x35\n\x0bnested_type\x18\x03 \x03(\x0b\x32 .google.protobuf.DescriptorProto\x12\x37\n\tenum_type\x18\x04 \x03(\x0b\x32$.google.protobuf.EnumDescriptorProto\x12H\n\x0f\x65xtension_range\x18\x05 \x03(\x0b\x32/.google.protobuf.DescriptorProto.ExtensionRange\x12\x39\n\noneof_decl\x18\x08 \x03(\x0b\x32%.google.protobuf.OneofDescriptorProto\x12\x30\n\x07options\x18\x07 \x01(\x0b\x32\x1f.google.protobuf.MessageOptions\x12\x46\n\x0ereserved_range\x18\t \x03(\x0b\x32..google.protobuf.DescriptorProto.ReservedRange\x12\x15\n\rreserved_name\x18\n \x03(\t\x1a\x65\n\x0e\x45xtensionRange\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\x12\x37\n\x07options\x18\x03 \x01(\x0b\x32&.google.protobuf.ExtensionRangeOptions\x1a+\n\rReservedRange\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\"g\n\x15\x45xtensionRangeOptions\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xd5\x05\n\x14\x46ieldDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x03 \x01(\x05\x12:\n\x05label\x18\x04 \x01(\x0e\x32+.google.protobuf.FieldDescriptorProto.Label\x12\x38\n\x04type\x18\x05 \x01(\x0e\x32*.google.protobuf.FieldDescriptorProto.Type\x12\x11\n\ttype_name\x18\x06 \x01(\t\x12\x10\n\x08\x65xtendee\x18\x02 \x01(\t\x12\x15\n\rdefault_value\x18\x07 \x01(\t\x12\x13\n\x0boneof_index\x18\t \x01(\x05\x12\x11\n\tjson_name\x18\n \x01(\t\x12.\n\x07options\x18\x08 \x01(\x0b\x32\x1d.google.protobuf.FieldOptions\x12\x17\n\x0fproto3_optional\x18\x11 \x01(\x08\"\xb6\x02\n\x04Type\x12\x0f\n\x0bTYPE_DOUBLE\x10\x01\x12\x0e\n\nTYPE_FLOAT\x10\x02\x12\x0e\n\nTYPE_INT64\x10\x03\x12\x0f\n\x0bTYPE_UINT64\x10\x04\x12\x0e\n\nTYPE_INT32\x10\x05\x12\x10\n\x0cTYPE_FIXED64\x10\x06\x12\x10\n\x0cTYPE_FIXED32\x10\x07\x12\r\n\tTYPE_BOOL\x10\x08\x12\x0f\n\x0bTYPE_STRING\x10\t\x12\x0e\n\nTYPE_GROUP\x10\n\x12\x10\n\x0cTYPE_MESSAGE\x10\x0b\x12\x0e\n\nTYPE_BYTES\x10\x0c\x12\x0f\n\x0bTYPE_UINT32\x10\r\x12\r\n\tTYPE_ENUM\x10\x0e\x12\x11\n\rTYPE_SFIXED32\x10\x0f\x12\x11\n\rTYPE_SFIXED64\x10\x10\x12\x0f\n\x0bTYPE_SINT32\x10\x11\x12\x0f\n\x0bTYPE_SINT64\x10\x12\"C\n\x05Label\x12\x12\n\x0eLABEL_OPTIONAL\x10\x01\x12\x12\n\x0eLABEL_REQUIRED\x10\x02\x12\x12\n\x0eLABEL_REPEATED\x10\x03\"T\n\x14OneofDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12.\n\x07options\x18\x02 \x01(\x0b\x32\x1d.google.protobuf.OneofOptions\"\xa4\x02\n\x13\x45numDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x38\n\x05value\x18\x02 \x03(\x0b\x32).google.protobuf.EnumValueDescriptorProto\x12-\n\x07options\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.EnumOptions\x12N\n\x0ereserved_range\x18\x04 \x03(\x0b\x32\x36.google.protobuf.EnumDescriptorProto.EnumReservedRange\x12\x15\n\rreserved_name\x18\x05 \x03(\t\x1a/\n\x11\x45numReservedRange\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\"l\n\x18\x45numValueDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x02 \x01(\x05\x12\x32\n\x07options\x18\x03 \x01(\x0b\x32!.google.protobuf.EnumValueOptions\"\x90\x01\n\x16ServiceDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x36\n\x06method\x18\x02 \x03(\x0b\x32&.google.protobuf.MethodDescriptorProto\x12\x30\n\x07options\x18\x03 \x01(\x0b\x32\x1f.google.protobuf.ServiceOptions\"\xc1\x01\n\x15MethodDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\ninput_type\x18\x02 \x01(\t\x12\x13\n\x0boutput_type\x18\x03 \x01(\t\x12/\n\x07options\x18\x04 \x01(\x0b\x32\x1e.google.protobuf.MethodOptions\x12\x1f\n\x10\x63lient_streaming\x18\x05 \x01(\x08:\x05\x66\x61lse\x12\x1f\n\x10server_streaming\x18\x06 \x01(\x08:\x05\x66\x61lse\"\xa5\x06\n\x0b\x46ileOptions\x12\x14\n\x0cjava_package\x18\x01 \x01(\t\x12\x1c\n\x14java_outer_classname\x18\x08 \x01(\t\x12\"\n\x13java_multiple_files\x18\n \x01(\x08:\x05\x66\x61lse\x12)\n\x1djava_generate_equals_and_hash\x18\x14 \x01(\x08\x42\x02\x18\x01\x12%\n\x16java_string_check_utf8\x18\x1b \x01(\x08:\x05\x66\x61lse\x12\x46\n\x0coptimize_for\x18\t \x01(\x0e\x32).google.protobuf.FileOptions.OptimizeMode:\x05SPEED\x12\x12\n\ngo_package\x18\x0b \x01(\t\x12\"\n\x13\x63\x63_generic_services\x18\x10 \x01(\x08:\x05\x66\x61lse\x12$\n\x15java_generic_services\x18\x11 \x01(\x08:\x05\x66\x61lse\x12\"\n\x13py_generic_services\x18\x12 \x01(\x08:\x05\x66\x61lse\x12#\n\x14php_generic_services\x18* \x01(\x08:\x05\x66\x61lse\x12\x19\n\ndeprecated\x18\x17 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x10\x63\x63_enable_arenas\x18\x1f \x01(\x08:\x04true\x12\x19\n\x11objc_class_prefix\x18$ \x01(\t\x12\x18\n\x10\x63sharp_namespace\x18% \x01(\t\x12\x14\n\x0cswift_prefix\x18\' \x01(\t\x12\x18\n\x10php_class_prefix\x18( \x01(\t\x12\x15\n\rphp_namespace\x18) \x01(\t\x12\x1e\n\x16php_metadata_namespace\x18, \x01(\t\x12\x14\n\x0cruby_package\x18- \x01(\t\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption\":\n\x0cOptimizeMode\x12\t\n\x05SPEED\x10\x01\x12\r\n\tCODE_SIZE\x10\x02\x12\x10\n\x0cLITE_RUNTIME\x10\x03*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08&\x10\'\"\x84\x02\n\x0eMessageOptions\x12&\n\x17message_set_wire_format\x18\x01 \x01(\x08:\x05\x66\x61lse\x12.\n\x1fno_standard_descriptor_accessor\x18\x02 \x01(\x08:\x05\x66\x61lse\x12\x19\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x11\n\tmap_entry\x18\x07 \x01(\x08\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x04\x10\x05J\x04\x08\x05\x10\x06J\x04\x08\x06\x10\x07J\x04\x08\x08\x10\tJ\x04\x08\t\x10\n\"\xbe\x03\n\x0c\x46ieldOptions\x12:\n\x05\x63type\x18\x01 \x01(\x0e\x32#.google.protobuf.FieldOptions.CType:\x06STRING\x12\x0e\n\x06packed\x18\x02 \x01(\x08\x12?\n\x06jstype\x18\x06 \x01(\x0e\x32$.google.protobuf.FieldOptions.JSType:\tJS_NORMAL\x12\x13\n\x04lazy\x18\x05 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x0funverified_lazy\x18\x0f \x01(\x08:\x05\x66\x61lse\x12\x19\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x13\n\x04weak\x18\n \x01(\x08:\x05\x66\x61lse\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption\"/\n\x05\x43Type\x12\n\n\x06STRING\x10\x00\x12\x08\n\x04\x43ORD\x10\x01\x12\x10\n\x0cSTRING_PIECE\x10\x02\"5\n\x06JSType\x12\r\n\tJS_NORMAL\x10\x00\x12\r\n\tJS_STRING\x10\x01\x12\r\n\tJS_NUMBER\x10\x02*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x04\x10\x05\"^\n\x0cOneofOptions\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\x93\x01\n\x0b\x45numOptions\x12\x13\n\x0b\x61llow_alias\x18\x02 \x01(\x08\x12\x19\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x05\x10\x06\"}\n\x10\x45numValueOptions\x12\x19\n\ndeprecated\x18\x01 \x01(\x08:\x05\x66\x61lse\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"{\n\x0eServiceOptions\x12\x19\n\ndeprecated\x18! \x01(\x08:\x05\x66\x61lse\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xad\x02\n\rMethodOptions\x12\x19\n\ndeprecated\x18! \x01(\x08:\x05\x66\x61lse\x12_\n\x11idempotency_level\x18\" \x01(\x0e\x32/.google.protobuf.MethodOptions.IdempotencyLevel:\x13IDEMPOTENCY_UNKNOWN\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption\"P\n\x10IdempotencyLevel\x12\x17\n\x13IDEMPOTENCY_UNKNOWN\x10\x00\x12\x13\n\x0fNO_SIDE_EFFECTS\x10\x01\x12\x0e\n\nIDEMPOTENT\x10\x02*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\x9e\x02\n\x13UninterpretedOption\x12;\n\x04name\x18\x02 \x03(\x0b\x32-.google.protobuf.UninterpretedOption.NamePart\x12\x18\n\x10identifier_value\x18\x03 \x01(\t\x12\x1a\n\x12positive_int_value\x18\x04 \x01(\x04\x12\x1a\n\x12negative_int_value\x18\x05 \x01(\x03\x12\x14\n\x0c\x64ouble_value\x18\x06 \x01(\x01\x12\x14\n\x0cstring_value\x18\x07 \x01(\x0c\x12\x17\n\x0f\x61ggregate_value\x18\x08 \x01(\t\x1a\x33\n\x08NamePart\x12\x11\n\tname_part\x18\x01 \x02(\t\x12\x14\n\x0cis_extension\x18\x02 \x02(\x08\"\xd5\x01\n\x0eSourceCodeInfo\x12:\n\x08location\x18\x01 \x03(\x0b\x32(.google.protobuf.SourceCodeInfo.Location\x1a\x86\x01\n\x08Location\x12\x10\n\x04path\x18\x01 \x03(\x05\x42\x02\x10\x01\x12\x10\n\x04span\x18\x02 \x03(\x05\x42\x02\x10\x01\x12\x18\n\x10leading_comments\x18\x03 \x01(\t\x12\x19\n\x11trailing_comments\x18\x04 \x01(\t\x12!\n\x19leading_detached_comments\x18\x06 \x03(\t\"\xa7\x01\n\x11GeneratedCodeInfo\x12\x41\n\nannotation\x18\x01 \x03(\x0b\x32-.google.protobuf.GeneratedCodeInfo.Annotation\x1aO\n\nAnnotation\x12\x10\n\x04path\x18\x01 \x03(\x05\x42\x02\x10\x01\x12\x13\n\x0bsource_file\x18\x02 \x01(\t\x12\r\n\x05\x62\x65gin\x18\x03 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x04 \x01(\x05\x42~\n\x13\x63om.google.protobufB\x10\x44\x65scriptorProtosH\x01Z-google.golang.org/protobuf/types/descriptorpb\xf8\x01\x01\xa2\x02\x03GPB\xaa\x02\x1aGoogle.Protobuf.Reflection'
+    serialized_pb=b'\n google/protobuf/descriptor.proto\x12\x0fgoogle.protobuf\"M\n\x11\x46ileDescriptorSet\x12\x38\n\x04\x66ile\x18\x01 \x03(\x0b\x32$.google.protobuf.FileDescriptorProtoR\x04\x66ile\"\xe4\x04\n\x13\x46ileDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n\x07package\x18\x02 \x01(\tR\x07package\x12\x1e\n\ndependency\x18\x03 \x03(\tR\ndependency\x12+\n\x11public_dependency\x18\n \x03(\x05R\x10publicDependency\x12\'\n\x0fweak_dependency\x18\x0b \x03(\x05R\x0eweakDependency\x12\x43\n\x0cmessage_type\x18\x04 \x03(\x0b\x32 .google.protobuf.DescriptorProtoR\x0bmessageType\x12\x41\n\tenum_type\x18\x05 \x03(\x0b\x32$.google.protobuf.EnumDescriptorProtoR\x08\x65numType\x12\x41\n\x07service\x18\x06 \x03(\x0b\x32\'.google.protobuf.ServiceDescriptorProtoR\x07service\x12\x43\n\textension\x18\x07 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProtoR\textension\x12\x36\n\x07options\x18\x08 \x01(\x0b\x32\x1c.google.protobuf.FileOptionsR\x07options\x12I\n\x10source_code_info\x18\t \x01(\x0b\x32\x1f.google.protobuf.SourceCodeInfoR\x0esourceCodeInfo\x12\x16\n\x06syntax\x18\x0c \x01(\tR\x06syntax\"\xb9\x06\n\x0f\x44\x65scriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12;\n\x05\x66ield\x18\x02 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProtoR\x05\x66ield\x12\x43\n\textension\x18\x06 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProtoR\textension\x12\x41\n\x0bnested_type\x18\x03 \x03(\x0b\x32 .google.protobuf.DescriptorProtoR\nnestedType\x12\x41\n\tenum_type\x18\x04 \x03(\x0b\x32$.google.protobuf.EnumDescriptorProtoR\x08\x65numType\x12X\n\x0f\x65xtension_range\x18\x05 \x03(\x0b\x32/.google.protobuf.DescriptorProto.ExtensionRangeR\x0e\x65xtensionRange\x12\x44\n\noneof_decl\x18\x08 \x03(\x0b\x32%.google.protobuf.OneofDescriptorProtoR\toneofDecl\x12\x39\n\x07options\x18\x07 \x01(\x0b\x32\x1f.google.protobuf.MessageOptionsR\x07options\x12U\n\x0ereserved_range\x18\t \x03(\x0b\x32..google.protobuf.DescriptorProto.ReservedRangeR\rreservedRange\x12#\n\rreserved_name\x18\n \x03(\tR\x0creservedName\x1az\n\x0e\x45xtensionRange\x12\x14\n\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n\x03\x65nd\x18\x02 \x01(\x05R\x03\x65nd\x12@\n\x07options\x18\x03 \x01(\x0b\x32&.google.protobuf.ExtensionRangeOptionsR\x07options\x1a\x37\n\rReservedRange\x12\x14\n\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n\x03\x65nd\x18\x02 \x01(\x05R\x03\x65nd\"|\n\x15\x45xtensionRangeOptions\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xc1\x06\n\x14\x46ieldDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n\x06number\x18\x03 \x01(\x05R\x06number\x12\x41\n\x05label\x18\x04 \x01(\x0e\x32+.google.protobuf.FieldDescriptorProto.LabelR\x05label\x12>\n\x04type\x18\x05 \x01(\x0e\x32*.google.protobuf.FieldDescriptorProto.TypeR\x04type\x12\x1b\n\ttype_name\x18\x06 \x01(\tR\x08typeName\x12\x1a\n\x08\x65xtendee\x18\x02 \x01(\tR\x08\x65xtendee\x12#\n\rdefault_value\x18\x07 \x01(\tR\x0c\x64\x65\x66\x61ultValue\x12\x1f\n\x0boneof_index\x18\t \x01(\x05R\noneofIndex\x12\x1b\n\tjson_name\x18\n \x01(\tR\x08jsonName\x12\x37\n\x07options\x18\x08 \x01(\x0b\x32\x1d.google.protobuf.FieldOptionsR\x07options\x12\'\n\x0fproto3_optional\x18\x11 \x01(\x08R\x0eproto3Optional\"\xb6\x02\n\x04Type\x12\x0f\n\x0bTYPE_DOUBLE\x10\x01\x12\x0e\n\nTYPE_FLOAT\x10\x02\x12\x0e\n\nTYPE_INT64\x10\x03\x12\x0f\n\x0bTYPE_UINT64\x10\x04\x12\x0e\n\nTYPE_INT32\x10\x05\x12\x10\n\x0cTYPE_FIXED64\x10\x06\x12\x10\n\x0cTYPE_FIXED32\x10\x07\x12\r\n\tTYPE_BOOL\x10\x08\x12\x0f\n\x0bTYPE_STRING\x10\t\x12\x0e\n\nTYPE_GROUP\x10\n\x12\x10\n\x0cTYPE_MESSAGE\x10\x0b\x12\x0e\n\nTYPE_BYTES\x10\x0c\x12\x0f\n\x0bTYPE_UINT32\x10\r\x12\r\n\tTYPE_ENUM\x10\x0e\x12\x11\n\rTYPE_SFIXED32\x10\x0f\x12\x11\n\rTYPE_SFIXED64\x10\x10\x12\x0f\n\x0bTYPE_SINT32\x10\x11\x12\x0f\n\x0bTYPE_SINT64\x10\x12\"C\n\x05Label\x12\x12\n\x0eLABEL_OPTIONAL\x10\x01\x12\x12\n\x0eLABEL_REQUIRED\x10\x02\x12\x12\n\x0eLABEL_REPEATED\x10\x03\"c\n\x14OneofDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x37\n\x07options\x18\x02 \x01(\x0b\x32\x1d.google.protobuf.OneofOptionsR\x07options\"\xe3\x02\n\x13\x45numDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12?\n\x05value\x18\x02 \x03(\x0b\x32).google.protobuf.EnumValueDescriptorProtoR\x05value\x12\x36\n\x07options\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.EnumOptionsR\x07options\x12]\n\x0ereserved_range\x18\x04 \x03(\x0b\x32\x36.google.protobuf.EnumDescriptorProto.EnumReservedRangeR\rreservedRange\x12#\n\rreserved_name\x18\x05 \x03(\tR\x0creservedName\x1a;\n\x11\x45numReservedRange\x12\x14\n\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n\x03\x65nd\x18\x02 \x01(\x05R\x03\x65nd\"\x83\x01\n\x18\x45numValueDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n\x06number\x18\x02 \x01(\x05R\x06number\x12;\n\x07options\x18\x03 \x01(\x0b\x32!.google.protobuf.EnumValueOptionsR\x07options\"\xa7\x01\n\x16ServiceDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12>\n\x06method\x18\x02 \x03(\x0b\x32&.google.protobuf.MethodDescriptorProtoR\x06method\x12\x39\n\x07options\x18\x03 \x01(\x0b\x32\x1f.google.protobuf.ServiceOptionsR\x07options\"\x89\x02\n\x15MethodDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n\ninput_type\x18\x02 \x01(\tR\tinputType\x12\x1f\n\x0boutput_type\x18\x03 \x01(\tR\noutputType\x12\x38\n\x07options\x18\x04 \x01(\x0b\x32\x1e.google.protobuf.MethodOptionsR\x07options\x12\x30\n\x10\x63lient_streaming\x18\x05 \x01(\x08:\x05\x66\x61lseR\x0f\x63lientStreaming\x12\x30\n\x10server_streaming\x18\x06 \x01(\x08:\x05\x66\x61lseR\x0fserverStreaming\"\x91\t\n\x0b\x46ileOptions\x12!\n\x0cjava_package\x18\x01 \x01(\tR\x0bjavaPackage\x12\x30\n\x14java_outer_classname\x18\x08 \x01(\tR\x12javaOuterClassname\x12\x35\n\x13java_multiple_files\x18\n \x01(\x08:\x05\x66\x61lseR\x11javaMultipleFiles\x12\x44\n\x1djava_generate_equals_and_hash\x18\x14 \x01(\x08\x42\x02\x18\x01R\x19javaGenerateEqualsAndHash\x12:\n\x16java_string_check_utf8\x18\x1b \x01(\x08:\x05\x66\x61lseR\x13javaStringCheckUtf8\x12S\n\x0coptimize_for\x18\t \x01(\x0e\x32).google.protobuf.FileOptions.OptimizeMode:\x05SPEEDR\x0boptimizeFor\x12\x1d\n\ngo_package\x18\x0b \x01(\tR\tgoPackage\x12\x35\n\x13\x63\x63_generic_services\x18\x10 \x01(\x08:\x05\x66\x61lseR\x11\x63\x63GenericServices\x12\x39\n\x15java_generic_services\x18\x11 \x01(\x08:\x05\x66\x61lseR\x13javaGenericServices\x12\x35\n\x13py_generic_services\x18\x12 \x01(\x08:\x05\x66\x61lseR\x11pyGenericServices\x12\x37\n\x14php_generic_services\x18* \x01(\x08:\x05\x66\x61lseR\x12phpGenericServices\x12%\n\ndeprecated\x18\x17 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12.\n\x10\x63\x63_enable_arenas\x18\x1f \x01(\x08:\x04trueR\x0e\x63\x63\x45nableArenas\x12*\n\x11objc_class_prefix\x18$ \x01(\tR\x0fobjcClassPrefix\x12)\n\x10\x63sharp_namespace\x18% \x01(\tR\x0f\x63sharpNamespace\x12!\n\x0cswift_prefix\x18\' \x01(\tR\x0bswiftPrefix\x12(\n\x10php_class_prefix\x18( \x01(\tR\x0ephpClassPrefix\x12#\n\rphp_namespace\x18) \x01(\tR\x0cphpNamespace\x12\x34\n\x16php_metadata_namespace\x18, \x01(\tR\x14phpMetadataNamespace\x12!\n\x0cruby_package\x18- \x01(\tR\x0brubyPackage\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption\":\n\x0cOptimizeMode\x12\t\n\x05SPEED\x10\x01\x12\r\n\tCODE_SIZE\x10\x02\x12\x10\n\x0cLITE_RUNTIME\x10\x03*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08&\x10\'\"\xe3\x02\n\x0eMessageOptions\x12<\n\x17message_set_wire_format\x18\x01 \x01(\x08:\x05\x66\x61lseR\x14messageSetWireFormat\x12L\n\x1fno_standard_descriptor_accessor\x18\x02 \x01(\x08:\x05\x66\x61lseR\x1cnoStandardDescriptorAccessor\x12%\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12\x1b\n\tmap_entry\x18\x07 \x01(\x08R\x08mapEntry\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x04\x10\x05J\x04\x08\x05\x10\x06J\x04\x08\x06\x10\x07J\x04\x08\x08\x10\tJ\x04\x08\t\x10\n\"\x92\x04\n\x0c\x46ieldOptions\x12\x41\n\x05\x63type\x18\x01 \x01(\x0e\x32#.google.protobuf.FieldOptions.CType:\x06STRINGR\x05\x63type\x12\x16\n\x06packed\x18\x02 \x01(\x08R\x06packed\x12G\n\x06jstype\x18\x06 \x01(\x0e\x32$.google.protobuf.FieldOptions.JSType:\tJS_NORMALR\x06jstype\x12\x19\n\x04lazy\x18\x05 \x01(\x08:\x05\x66\x61lseR\x04lazy\x12.\n\x0funverified_lazy\x18\x0f \x01(\x08:\x05\x66\x61lseR\x0eunverifiedLazy\x12%\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12\x19\n\x04weak\x18\n \x01(\x08:\x05\x66\x61lseR\x04weak\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption\"/\n\x05\x43Type\x12\n\n\x06STRING\x10\x00\x12\x08\n\x04\x43ORD\x10\x01\x12\x10\n\x0cSTRING_PIECE\x10\x02\"5\n\x06JSType\x12\r\n\tJS_NORMAL\x10\x00\x12\r\n\tJS_STRING\x10\x01\x12\r\n\tJS_NUMBER\x10\x02*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x04\x10\x05\"s\n\x0cOneofOptions\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xc0\x01\n\x0b\x45numOptions\x12\x1f\n\x0b\x61llow_alias\x18\x02 \x01(\x08R\nallowAlias\x12%\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x05\x10\x06\"\x9e\x01\n\x10\x45numValueOptions\x12%\n\ndeprecated\x18\x01 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\x9c\x01\n\x0eServiceOptions\x12%\n\ndeprecated\x18! \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xe0\x02\n\rMethodOptions\x12%\n\ndeprecated\x18! \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12q\n\x11idempotency_level\x18\" \x01(\x0e\x32/.google.protobuf.MethodOptions.IdempotencyLevel:\x13IDEMPOTENCY_UNKNOWNR\x10idempotencyLevel\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption\"P\n\x10IdempotencyLevel\x12\x17\n\x13IDEMPOTENCY_UNKNOWN\x10\x00\x12\x13\n\x0fNO_SIDE_EFFECTS\x10\x01\x12\x0e\n\nIDEMPOTENT\x10\x02*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\x9a\x03\n\x13UninterpretedOption\x12\x41\n\x04name\x18\x02 \x03(\x0b\x32-.google.protobuf.UninterpretedOption.NamePartR\x04name\x12)\n\x10identifier_value\x18\x03 \x01(\tR\x0fidentifierValue\x12,\n\x12positive_int_value\x18\x04 \x01(\x04R\x10positiveIntValue\x12,\n\x12negative_int_value\x18\x05 \x01(\x03R\x10negativeIntValue\x12!\n\x0c\x64ouble_value\x18\x06 \x01(\x01R\x0b\x64oubleValue\x12!\n\x0cstring_value\x18\x07 \x01(\x0cR\x0bstringValue\x12\'\n\x0f\x61ggregate_value\x18\x08 \x01(\tR\x0e\x61ggregateValue\x1aJ\n\x08NamePart\x12\x1b\n\tname_part\x18\x01 \x02(\tR\x08namePart\x12!\n\x0cis_extension\x18\x02 \x02(\x08R\x0bisExtension\"\xa7\x02\n\x0eSourceCodeInfo\x12\x44\n\x08location\x18\x01 \x03(\x0b\x32(.google.protobuf.SourceCodeInfo.LocationR\x08location\x1a\xce\x01\n\x08Location\x12\x16\n\x04path\x18\x01 \x03(\x05\x42\x02\x10\x01R\x04path\x12\x16\n\x04span\x18\x02 \x03(\x05\x42\x02\x10\x01R\x04span\x12)\n\x10leading_comments\x18\x03 \x01(\tR\x0fleadingComments\x12+\n\x11trailing_comments\x18\x04 \x01(\tR\x10trailingComments\x12:\n\x19leading_detached_comments\x18\x06 \x03(\tR\x17leadingDetachedComments\"\xd1\x01\n\x11GeneratedCodeInfo\x12M\n\nannotation\x18\x01 \x03(\x0b\x32-.google.protobuf.GeneratedCodeInfo.AnnotationR\nannotation\x1am\n\nAnnotation\x12\x16\n\x04path\x18\x01 \x03(\x05\x42\x02\x10\x01R\x04path\x12\x1f\n\x0bsource_file\x18\x02 \x01(\tR\nsourceFile\x12\x14\n\x05\x62\x65gin\x18\x03 \x01(\x05R\x05\x62\x65gin\x12\x10\n\x03\x65nd\x18\x04 \x01(\x05R\x03\x65ndB~\n\x13\x63om.google.protobufB\x10\x44\x65scriptorProtosH\x01Z-google.golang.org/protobuf/types/descriptorpb\xf8\x01\x01\xa2\x02\x03GPB\xaa\x02\x1aGoogle.Protobuf.Reflection'
   )
 else:
-  DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n google/protobuf/descriptor.proto\x12\x0fgoogle.protobuf\"G\n\x11\x46ileDescriptorSet\x12\x32\n\x04\x66ile\x18\x01 \x03(\x0b\x32$.google.protobuf.FileDescriptorProto\"\xdb\x03\n\x13\x46ileDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07package\x18\x02 \x01(\t\x12\x12\n\ndependency\x18\x03 \x03(\t\x12\x19\n\x11public_dependency\x18\n \x03(\x05\x12\x17\n\x0fweak_dependency\x18\x0b \x03(\x05\x12\x36\n\x0cmessage_type\x18\x04 \x03(\x0b\x32 .google.protobuf.DescriptorProto\x12\x37\n\tenum_type\x18\x05 \x03(\x0b\x32$.google.protobuf.EnumDescriptorProto\x12\x38\n\x07service\x18\x06 \x03(\x0b\x32\'.google.protobuf.ServiceDescriptorProto\x12\x38\n\textension\x18\x07 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProto\x12-\n\x07options\x18\x08 \x01(\x0b\x32\x1c.google.protobuf.FileOptions\x12\x39\n\x10source_code_info\x18\t \x01(\x0b\x32\x1f.google.protobuf.SourceCodeInfo\x12\x0e\n\x06syntax\x18\x0c \x01(\t\"\xa9\x05\n\x0f\x44\x65scriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x34\n\x05\x66ield\x18\x02 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProto\x12\x38\n\textension\x18\x06 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProto\x12\x35\n\x0bnested_type\x18\x03 \x03(\x0b\x32 .google.protobuf.DescriptorProto\x12\x37\n\tenum_type\x18\x04 \x03(\x0b\x32$.google.protobuf.EnumDescriptorProto\x12H\n\x0f\x65xtension_range\x18\x05 \x03(\x0b\x32/.google.protobuf.DescriptorProto.ExtensionRange\x12\x39\n\noneof_decl\x18\x08 \x03(\x0b\x32%.google.protobuf.OneofDescriptorProto\x12\x30\n\x07options\x18\x07 \x01(\x0b\x32\x1f.google.protobuf.MessageOptions\x12\x46\n\x0ereserved_range\x18\t \x03(\x0b\x32..google.protobuf.DescriptorProto.ReservedRange\x12\x15\n\rreserved_name\x18\n \x03(\t\x1a\x65\n\x0e\x45xtensionRange\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\x12\x37\n\x07options\x18\x03 \x01(\x0b\x32&.google.protobuf.ExtensionRangeOptions\x1a+\n\rReservedRange\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\"g\n\x15\x45xtensionRangeOptions\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xd5\x05\n\x14\x46ieldDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x03 \x01(\x05\x12:\n\x05label\x18\x04 \x01(\x0e\x32+.google.protobuf.FieldDescriptorProto.Label\x12\x38\n\x04type\x18\x05 \x01(\x0e\x32*.google.protobuf.FieldDescriptorProto.Type\x12\x11\n\ttype_name\x18\x06 \x01(\t\x12\x10\n\x08\x65xtendee\x18\x02 \x01(\t\x12\x15\n\rdefault_value\x18\x07 \x01(\t\x12\x13\n\x0boneof_index\x18\t \x01(\x05\x12\x11\n\tjson_name\x18\n \x01(\t\x12.\n\x07options\x18\x08 \x01(\x0b\x32\x1d.google.protobuf.FieldOptions\x12\x17\n\x0fproto3_optional\x18\x11 \x01(\x08\"\xb6\x02\n\x04Type\x12\x0f\n\x0bTYPE_DOUBLE\x10\x01\x12\x0e\n\nTYPE_FLOAT\x10\x02\x12\x0e\n\nTYPE_INT64\x10\x03\x12\x0f\n\x0bTYPE_UINT64\x10\x04\x12\x0e\n\nTYPE_INT32\x10\x05\x12\x10\n\x0cTYPE_FIXED64\x10\x06\x12\x10\n\x0cTYPE_FIXED32\x10\x07\x12\r\n\tTYPE_BOOL\x10\x08\x12\x0f\n\x0bTYPE_STRING\x10\t\x12\x0e\n\nTYPE_GROUP\x10\n\x12\x10\n\x0cTYPE_MESSAGE\x10\x0b\x12\x0e\n\nTYPE_BYTES\x10\x0c\x12\x0f\n\x0bTYPE_UINT32\x10\r\x12\r\n\tTYPE_ENUM\x10\x0e\x12\x11\n\rTYPE_SFIXED32\x10\x0f\x12\x11\n\rTYPE_SFIXED64\x10\x10\x12\x0f\n\x0bTYPE_SINT32\x10\x11\x12\x0f\n\x0bTYPE_SINT64\x10\x12\"C\n\x05Label\x12\x12\n\x0eLABEL_OPTIONAL\x10\x01\x12\x12\n\x0eLABEL_REQUIRED\x10\x02\x12\x12\n\x0eLABEL_REPEATED\x10\x03\"T\n\x14OneofDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12.\n\x07options\x18\x02 \x01(\x0b\x32\x1d.google.protobuf.OneofOptions\"\xa4\x02\n\x13\x45numDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x38\n\x05value\x18\x02 \x03(\x0b\x32).google.protobuf.EnumValueDescriptorProto\x12-\n\x07options\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.EnumOptions\x12N\n\x0ereserved_range\x18\x04 \x03(\x0b\x32\x36.google.protobuf.EnumDescriptorProto.EnumReservedRange\x12\x15\n\rreserved_name\x18\x05 \x03(\t\x1a/\n\x11\x45numReservedRange\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\"l\n\x18\x45numValueDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x06number\x18\x02 \x01(\x05\x12\x32\n\x07options\x18\x03 \x01(\x0b\x32!.google.protobuf.EnumValueOptions\"\x90\x01\n\x16ServiceDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x36\n\x06method\x18\x02 \x03(\x0b\x32&.google.protobuf.MethodDescriptorProto\x12\x30\n\x07options\x18\x03 \x01(\x0b\x32\x1f.google.protobuf.ServiceOptions\"\xc1\x01\n\x15MethodDescriptorProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\ninput_type\x18\x02 \x01(\t\x12\x13\n\x0boutput_type\x18\x03 \x01(\t\x12/\n\x07options\x18\x04 \x01(\x0b\x32\x1e.google.protobuf.MethodOptions\x12\x1f\n\x10\x63lient_streaming\x18\x05 \x01(\x08:\x05\x66\x61lse\x12\x1f\n\x10server_streaming\x18\x06 \x01(\x08:\x05\x66\x61lse\"\xa5\x06\n\x0b\x46ileOptions\x12\x14\n\x0cjava_package\x18\x01 \x01(\t\x12\x1c\n\x14java_outer_classname\x18\x08 \x01(\t\x12\"\n\x13java_multiple_files\x18\n \x01(\x08:\x05\x66\x61lse\x12)\n\x1djava_generate_equals_and_hash\x18\x14 \x01(\x08\x42\x02\x18\x01\x12%\n\x16java_string_check_utf8\x18\x1b \x01(\x08:\x05\x66\x61lse\x12\x46\n\x0coptimize_for\x18\t \x01(\x0e\x32).google.protobuf.FileOptions.OptimizeMode:\x05SPEED\x12\x12\n\ngo_package\x18\x0b \x01(\t\x12\"\n\x13\x63\x63_generic_services\x18\x10 \x01(\x08:\x05\x66\x61lse\x12$\n\x15java_generic_services\x18\x11 \x01(\x08:\x05\x66\x61lse\x12\"\n\x13py_generic_services\x18\x12 \x01(\x08:\x05\x66\x61lse\x12#\n\x14php_generic_services\x18* \x01(\x08:\x05\x66\x61lse\x12\x19\n\ndeprecated\x18\x17 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x10\x63\x63_enable_arenas\x18\x1f \x01(\x08:\x04true\x12\x19\n\x11objc_class_prefix\x18$ \x01(\t\x12\x18\n\x10\x63sharp_namespace\x18% \x01(\t\x12\x14\n\x0cswift_prefix\x18\' \x01(\t\x12\x18\n\x10php_class_prefix\x18( \x01(\t\x12\x15\n\rphp_namespace\x18) \x01(\t\x12\x1e\n\x16php_metadata_namespace\x18, \x01(\t\x12\x14\n\x0cruby_package\x18- \x01(\t\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption\":\n\x0cOptimizeMode\x12\t\n\x05SPEED\x10\x01\x12\r\n\tCODE_SIZE\x10\x02\x12\x10\n\x0cLITE_RUNTIME\x10\x03*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08&\x10\'\"\x84\x02\n\x0eMessageOptions\x12&\n\x17message_set_wire_format\x18\x01 \x01(\x08:\x05\x66\x61lse\x12.\n\x1fno_standard_descriptor_accessor\x18\x02 \x01(\x08:\x05\x66\x61lse\x12\x19\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x11\n\tmap_entry\x18\x07 \x01(\x08\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x04\x10\x05J\x04\x08\x05\x10\x06J\x04\x08\x06\x10\x07J\x04\x08\x08\x10\tJ\x04\x08\t\x10\n\"\xbe\x03\n\x0c\x46ieldOptions\x12:\n\x05\x63type\x18\x01 \x01(\x0e\x32#.google.protobuf.FieldOptions.CType:\x06STRING\x12\x0e\n\x06packed\x18\x02 \x01(\x08\x12?\n\x06jstype\x18\x06 \x01(\x0e\x32$.google.protobuf.FieldOptions.JSType:\tJS_NORMAL\x12\x13\n\x04lazy\x18\x05 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x0funverified_lazy\x18\x0f \x01(\x08:\x05\x66\x61lse\x12\x19\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x13\n\x04weak\x18\n \x01(\x08:\x05\x66\x61lse\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption\"/\n\x05\x43Type\x12\n\n\x06STRING\x10\x00\x12\x08\n\x04\x43ORD\x10\x01\x12\x10\n\x0cSTRING_PIECE\x10\x02\"5\n\x06JSType\x12\r\n\tJS_NORMAL\x10\x00\x12\r\n\tJS_STRING\x10\x01\x12\r\n\tJS_NUMBER\x10\x02*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x04\x10\x05\"^\n\x0cOneofOptions\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\x93\x01\n\x0b\x45numOptions\x12\x13\n\x0b\x61llow_alias\x18\x02 \x01(\x08\x12\x19\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x05\x10\x06\"}\n\x10\x45numValueOptions\x12\x19\n\ndeprecated\x18\x01 \x01(\x08:\x05\x66\x61lse\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"{\n\x0eServiceOptions\x12\x19\n\ndeprecated\x18! \x01(\x08:\x05\x66\x61lse\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xad\x02\n\rMethodOptions\x12\x19\n\ndeprecated\x18! \x01(\x08:\x05\x66\x61lse\x12_\n\x11idempotency_level\x18\" \x01(\x0e\x32/.google.protobuf.MethodOptions.IdempotencyLevel:\x13IDEMPOTENCY_UNKNOWN\x12\x43\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOption\"P\n\x10IdempotencyLevel\x12\x17\n\x13IDEMPOTENCY_UNKNOWN\x10\x00\x12\x13\n\x0fNO_SIDE_EFFECTS\x10\x01\x12\x0e\n\nIDEMPOTENT\x10\x02*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\x9e\x02\n\x13UninterpretedOption\x12;\n\x04name\x18\x02 \x03(\x0b\x32-.google.protobuf.UninterpretedOption.NamePart\x12\x18\n\x10identifier_value\x18\x03 \x01(\t\x12\x1a\n\x12positive_int_value\x18\x04 \x01(\x04\x12\x1a\n\x12negative_int_value\x18\x05 \x01(\x03\x12\x14\n\x0c\x64ouble_value\x18\x06 \x01(\x01\x12\x14\n\x0cstring_value\x18\x07 \x01(\x0c\x12\x17\n\x0f\x61ggregate_value\x18\x08 \x01(\t\x1a\x33\n\x08NamePart\x12\x11\n\tname_part\x18\x01 \x02(\t\x12\x14\n\x0cis_extension\x18\x02 \x02(\x08\"\xd5\x01\n\x0eSourceCodeInfo\x12:\n\x08location\x18\x01 \x03(\x0b\x32(.google.protobuf.SourceCodeInfo.Location\x1a\x86\x01\n\x08Location\x12\x10\n\x04path\x18\x01 \x03(\x05\x42\x02\x10\x01\x12\x10\n\x04span\x18\x02 \x03(\x05\x42\x02\x10\x01\x12\x18\n\x10leading_comments\x18\x03 \x01(\t\x12\x19\n\x11trailing_comments\x18\x04 \x01(\t\x12!\n\x19leading_detached_comments\x18\x06 \x03(\t\"\xa7\x01\n\x11GeneratedCodeInfo\x12\x41\n\nannotation\x18\x01 \x03(\x0b\x32-.google.protobuf.GeneratedCodeInfo.Annotation\x1aO\n\nAnnotation\x12\x10\n\x04path\x18\x01 \x03(\x05\x42\x02\x10\x01\x12\x13\n\x0bsource_file\x18\x02 \x01(\t\x12\r\n\x05\x62\x65gin\x18\x03 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x04 \x01(\x05\x42~\n\x13\x63om.google.protobufB\x10\x44\x65scriptorProtosH\x01Z-google.golang.org/protobuf/types/descriptorpb\xf8\x01\x01\xa2\x02\x03GPB\xaa\x02\x1aGoogle.Protobuf.Reflection')
+  DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n google/protobuf/descriptor.proto\x12\x0fgoogle.protobuf\"M\n\x11\x46ileDescriptorSet\x12\x38\n\x04\x66ile\x18\x01 \x03(\x0b\x32$.google.protobuf.FileDescriptorProtoR\x04\x66ile\"\xe4\x04\n\x13\x46ileDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n\x07package\x18\x02 \x01(\tR\x07package\x12\x1e\n\ndependency\x18\x03 \x03(\tR\ndependency\x12+\n\x11public_dependency\x18\n \x03(\x05R\x10publicDependency\x12\'\n\x0fweak_dependency\x18\x0b \x03(\x05R\x0eweakDependency\x12\x43\n\x0cmessage_type\x18\x04 \x03(\x0b\x32 .google.protobuf.DescriptorProtoR\x0bmessageType\x12\x41\n\tenum_type\x18\x05 \x03(\x0b\x32$.google.protobuf.EnumDescriptorProtoR\x08\x65numType\x12\x41\n\x07service\x18\x06 \x03(\x0b\x32\'.google.protobuf.ServiceDescriptorProtoR\x07service\x12\x43\n\textension\x18\x07 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProtoR\textension\x12\x36\n\x07options\x18\x08 \x01(\x0b\x32\x1c.google.protobuf.FileOptionsR\x07options\x12I\n\x10source_code_info\x18\t \x01(\x0b\x32\x1f.google.protobuf.SourceCodeInfoR\x0esourceCodeInfo\x12\x16\n\x06syntax\x18\x0c \x01(\tR\x06syntax\"\xb9\x06\n\x0f\x44\x65scriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12;\n\x05\x66ield\x18\x02 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProtoR\x05\x66ield\x12\x43\n\textension\x18\x06 \x03(\x0b\x32%.google.protobuf.FieldDescriptorProtoR\textension\x12\x41\n\x0bnested_type\x18\x03 \x03(\x0b\x32 .google.protobuf.DescriptorProtoR\nnestedType\x12\x41\n\tenum_type\x18\x04 \x03(\x0b\x32$.google.protobuf.EnumDescriptorProtoR\x08\x65numType\x12X\n\x0f\x65xtension_range\x18\x05 \x03(\x0b\x32/.google.protobuf.DescriptorProto.ExtensionRangeR\x0e\x65xtensionRange\x12\x44\n\noneof_decl\x18\x08 \x03(\x0b\x32%.google.protobuf.OneofDescriptorProtoR\toneofDecl\x12\x39\n\x07options\x18\x07 \x01(\x0b\x32\x1f.google.protobuf.MessageOptionsR\x07options\x12U\n\x0ereserved_range\x18\t \x03(\x0b\x32..google.protobuf.DescriptorProto.ReservedRangeR\rreservedRange\x12#\n\rreserved_name\x18\n \x03(\tR\x0creservedName\x1az\n\x0e\x45xtensionRange\x12\x14\n\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n\x03\x65nd\x18\x02 \x01(\x05R\x03\x65nd\x12@\n\x07options\x18\x03 \x01(\x0b\x32&.google.protobuf.ExtensionRangeOptionsR\x07options\x1a\x37\n\rReservedRange\x12\x14\n\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n\x03\x65nd\x18\x02 \x01(\x05R\x03\x65nd\"|\n\x15\x45xtensionRangeOptions\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xc1\x06\n\x14\x46ieldDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n\x06number\x18\x03 \x01(\x05R\x06number\x12\x41\n\x05label\x18\x04 \x01(\x0e\x32+.google.protobuf.FieldDescriptorProto.LabelR\x05label\x12>\n\x04type\x18\x05 \x01(\x0e\x32*.google.protobuf.FieldDescriptorProto.TypeR\x04type\x12\x1b\n\ttype_name\x18\x06 \x01(\tR\x08typeName\x12\x1a\n\x08\x65xtendee\x18\x02 \x01(\tR\x08\x65xtendee\x12#\n\rdefault_value\x18\x07 \x01(\tR\x0c\x64\x65\x66\x61ultValue\x12\x1f\n\x0boneof_index\x18\t \x01(\x05R\noneofIndex\x12\x1b\n\tjson_name\x18\n \x01(\tR\x08jsonName\x12\x37\n\x07options\x18\x08 \x01(\x0b\x32\x1d.google.protobuf.FieldOptionsR\x07options\x12\'\n\x0fproto3_optional\x18\x11 \x01(\x08R\x0eproto3Optional\"\xb6\x02\n\x04Type\x12\x0f\n\x0bTYPE_DOUBLE\x10\x01\x12\x0e\n\nTYPE_FLOAT\x10\x02\x12\x0e\n\nTYPE_INT64\x10\x03\x12\x0f\n\x0bTYPE_UINT64\x10\x04\x12\x0e\n\nTYPE_INT32\x10\x05\x12\x10\n\x0cTYPE_FIXED64\x10\x06\x12\x10\n\x0cTYPE_FIXED32\x10\x07\x12\r\n\tTYPE_BOOL\x10\x08\x12\x0f\n\x0bTYPE_STRING\x10\t\x12\x0e\n\nTYPE_GROUP\x10\n\x12\x10\n\x0cTYPE_MESSAGE\x10\x0b\x12\x0e\n\nTYPE_BYTES\x10\x0c\x12\x0f\n\x0bTYPE_UINT32\x10\r\x12\r\n\tTYPE_ENUM\x10\x0e\x12\x11\n\rTYPE_SFIXED32\x10\x0f\x12\x11\n\rTYPE_SFIXED64\x10\x10\x12\x0f\n\x0bTYPE_SINT32\x10\x11\x12\x0f\n\x0bTYPE_SINT64\x10\x12\"C\n\x05Label\x12\x12\n\x0eLABEL_OPTIONAL\x10\x01\x12\x12\n\x0eLABEL_REQUIRED\x10\x02\x12\x12\n\x0eLABEL_REPEATED\x10\x03\"c\n\x14OneofDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x37\n\x07options\x18\x02 \x01(\x0b\x32\x1d.google.protobuf.OneofOptionsR\x07options\"\xe3\x02\n\x13\x45numDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12?\n\x05value\x18\x02 \x03(\x0b\x32).google.protobuf.EnumValueDescriptorProtoR\x05value\x12\x36\n\x07options\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.EnumOptionsR\x07options\x12]\n\x0ereserved_range\x18\x04 \x03(\x0b\x32\x36.google.protobuf.EnumDescriptorProto.EnumReservedRangeR\rreservedRange\x12#\n\rreserved_name\x18\x05 \x03(\tR\x0creservedName\x1a;\n\x11\x45numReservedRange\x12\x14\n\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n\x03\x65nd\x18\x02 \x01(\x05R\x03\x65nd\"\x83\x01\n\x18\x45numValueDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n\x06number\x18\x02 \x01(\x05R\x06number\x12;\n\x07options\x18\x03 \x01(\x0b\x32!.google.protobuf.EnumValueOptionsR\x07options\"\xa7\x01\n\x16ServiceDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12>\n\x06method\x18\x02 \x03(\x0b\x32&.google.protobuf.MethodDescriptorProtoR\x06method\x12\x39\n\x07options\x18\x03 \x01(\x0b\x32\x1f.google.protobuf.ServiceOptionsR\x07options\"\x89\x02\n\x15MethodDescriptorProto\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n\ninput_type\x18\x02 \x01(\tR\tinputType\x12\x1f\n\x0boutput_type\x18\x03 \x01(\tR\noutputType\x12\x38\n\x07options\x18\x04 \x01(\x0b\x32\x1e.google.protobuf.MethodOptionsR\x07options\x12\x30\n\x10\x63lient_streaming\x18\x05 \x01(\x08:\x05\x66\x61lseR\x0f\x63lientStreaming\x12\x30\n\x10server_streaming\x18\x06 \x01(\x08:\x05\x66\x61lseR\x0fserverStreaming\"\x91\t\n\x0b\x46ileOptions\x12!\n\x0cjava_package\x18\x01 \x01(\tR\x0bjavaPackage\x12\x30\n\x14java_outer_classname\x18\x08 \x01(\tR\x12javaOuterClassname\x12\x35\n\x13java_multiple_files\x18\n \x01(\x08:\x05\x66\x61lseR\x11javaMultipleFiles\x12\x44\n\x1djava_generate_equals_and_hash\x18\x14 \x01(\x08\x42\x02\x18\x01R\x19javaGenerateEqualsAndHash\x12:\n\x16java_string_check_utf8\x18\x1b \x01(\x08:\x05\x66\x61lseR\x13javaStringCheckUtf8\x12S\n\x0coptimize_for\x18\t \x01(\x0e\x32).google.protobuf.FileOptions.OptimizeMode:\x05SPEEDR\x0boptimizeFor\x12\x1d\n\ngo_package\x18\x0b \x01(\tR\tgoPackage\x12\x35\n\x13\x63\x63_generic_services\x18\x10 \x01(\x08:\x05\x66\x61lseR\x11\x63\x63GenericServices\x12\x39\n\x15java_generic_services\x18\x11 \x01(\x08:\x05\x66\x61lseR\x13javaGenericServices\x12\x35\n\x13py_generic_services\x18\x12 \x01(\x08:\x05\x66\x61lseR\x11pyGenericServices\x12\x37\n\x14php_generic_services\x18* \x01(\x08:\x05\x66\x61lseR\x12phpGenericServices\x12%\n\ndeprecated\x18\x17 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12.\n\x10\x63\x63_enable_arenas\x18\x1f \x01(\x08:\x04trueR\x0e\x63\x63\x45nableArenas\x12*\n\x11objc_class_prefix\x18$ \x01(\tR\x0fobjcClassPrefix\x12)\n\x10\x63sharp_namespace\x18% \x01(\tR\x0f\x63sharpNamespace\x12!\n\x0cswift_prefix\x18\' \x01(\tR\x0bswiftPrefix\x12(\n\x10php_class_prefix\x18( \x01(\tR\x0ephpClassPrefix\x12#\n\rphp_namespace\x18) \x01(\tR\x0cphpNamespace\x12\x34\n\x16php_metadata_namespace\x18, \x01(\tR\x14phpMetadataNamespace\x12!\n\x0cruby_package\x18- \x01(\tR\x0brubyPackage\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption\":\n\x0cOptimizeMode\x12\t\n\x05SPEED\x10\x01\x12\r\n\tCODE_SIZE\x10\x02\x12\x10\n\x0cLITE_RUNTIME\x10\x03*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08&\x10\'\"\xe3\x02\n\x0eMessageOptions\x12<\n\x17message_set_wire_format\x18\x01 \x01(\x08:\x05\x66\x61lseR\x14messageSetWireFormat\x12L\n\x1fno_standard_descriptor_accessor\x18\x02 \x01(\x08:\x05\x66\x61lseR\x1cnoStandardDescriptorAccessor\x12%\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12\x1b\n\tmap_entry\x18\x07 \x01(\x08R\x08mapEntry\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x04\x10\x05J\x04\x08\x05\x10\x06J\x04\x08\x06\x10\x07J\x04\x08\x08\x10\tJ\x04\x08\t\x10\n\"\x92\x04\n\x0c\x46ieldOptions\x12\x41\n\x05\x63type\x18\x01 \x01(\x0e\x32#.google.protobuf.FieldOptions.CType:\x06STRINGR\x05\x63type\x12\x16\n\x06packed\x18\x02 \x01(\x08R\x06packed\x12G\n\x06jstype\x18\x06 \x01(\x0e\x32$.google.protobuf.FieldOptions.JSType:\tJS_NORMALR\x06jstype\x12\x19\n\x04lazy\x18\x05 \x01(\x08:\x05\x66\x61lseR\x04lazy\x12.\n\x0funverified_lazy\x18\x0f \x01(\x08:\x05\x66\x61lseR\x0eunverifiedLazy\x12%\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12\x19\n\x04weak\x18\n \x01(\x08:\x05\x66\x61lseR\x04weak\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption\"/\n\x05\x43Type\x12\n\n\x06STRING\x10\x00\x12\x08\n\x04\x43ORD\x10\x01\x12\x10\n\x0cSTRING_PIECE\x10\x02\"5\n\x06JSType\x12\r\n\tJS_NORMAL\x10\x00\x12\r\n\tJS_STRING\x10\x01\x12\r\n\tJS_NUMBER\x10\x02*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x04\x10\x05\"s\n\x0cOneofOptions\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xc0\x01\n\x0b\x45numOptions\x12\x1f\n\x0b\x61llow_alias\x18\x02 \x01(\x08R\nallowAlias\x12%\n\ndeprecated\x18\x03 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02J\x04\x08\x05\x10\x06\"\x9e\x01\n\x10\x45numValueOptions\x12%\n\ndeprecated\x18\x01 \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\x9c\x01\n\x0eServiceOptions\x12%\n\ndeprecated\x18! \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\xe0\x02\n\rMethodOptions\x12%\n\ndeprecated\x18! \x01(\x08:\x05\x66\x61lseR\ndeprecated\x12q\n\x11idempotency_level\x18\" \x01(\x0e\x32/.google.protobuf.MethodOptions.IdempotencyLevel:\x13IDEMPOTENCY_UNKNOWNR\x10idempotencyLevel\x12X\n\x14uninterpreted_option\x18\xe7\x07 \x03(\x0b\x32$.google.protobuf.UninterpretedOptionR\x13uninterpretedOption\"P\n\x10IdempotencyLevel\x12\x17\n\x13IDEMPOTENCY_UNKNOWN\x10\x00\x12\x13\n\x0fNO_SIDE_EFFECTS\x10\x01\x12\x0e\n\nIDEMPOTENT\x10\x02*\t\x08\xe8\x07\x10\x80\x80\x80\x80\x02\"\x9a\x03\n\x13UninterpretedOption\x12\x41\n\x04name\x18\x02 \x03(\x0b\x32-.google.protobuf.UninterpretedOption.NamePartR\x04name\x12)\n\x10identifier_value\x18\x03 \x01(\tR\x0fidentifierValue\x12,\n\x12positive_int_value\x18\x04 \x01(\x04R\x10positiveIntValue\x12,\n\x12negative_int_value\x18\x05 \x01(\x03R\x10negativeIntValue\x12!\n\x0c\x64ouble_value\x18\x06 \x01(\x01R\x0b\x64oubleValue\x12!\n\x0cstring_value\x18\x07 \x01(\x0cR\x0bstringValue\x12\'\n\x0f\x61ggregate_value\x18\x08 \x01(\tR\x0e\x61ggregateValue\x1aJ\n\x08NamePart\x12\x1b\n\tname_part\x18\x01 \x02(\tR\x08namePart\x12!\n\x0cis_extension\x18\x02 \x02(\x08R\x0bisExtension\"\xa7\x02\n\x0eSourceCodeInfo\x12\x44\n\x08location\x18\x01 \x03(\x0b\x32(.google.protobuf.SourceCodeInfo.LocationR\x08location\x1a\xce\x01\n\x08Location\x12\x16\n\x04path\x18\x01 \x03(\x05\x42\x02\x10\x01R\x04path\x12\x16\n\x04span\x18\x02 \x03(\x05\x42\x02\x10\x01R\x04span\x12)\n\x10leading_comments\x18\x03 \x01(\tR\x0fleadingComments\x12+\n\x11trailing_comments\x18\x04 \x01(\tR\x10trailingComments\x12:\n\x19leading_detached_comments\x18\x06 \x03(\tR\x17leadingDetachedComments\"\xd1\x01\n\x11GeneratedCodeInfo\x12M\n\nannotation\x18\x01 \x03(\x0b\x32-.google.protobuf.GeneratedCodeInfo.AnnotationR\nannotation\x1am\n\nAnnotation\x12\x16\n\x04path\x18\x01 \x03(\x05\x42\x02\x10\x01R\x04path\x12\x1f\n\x0bsource_file\x18\x02 \x01(\tR\nsourceFile\x12\x14\n\x05\x62\x65gin\x18\x03 \x01(\x05R\x05\x62\x65gin\x12\x10\n\x03\x65nd\x18\x04 \x01(\x05R\x03\x65ndB~\n\x13\x63om.google.protobufB\x10\x44\x65scriptorProtosH\x01Z-google.golang.org/protobuf/types/descriptorpb\xf8\x01\x01\xa2\x02\x03GPB\xaa\x02\x1aGoogle.Protobuf.Reflection')
 
 if _descriptor._USE_C_DESCRIPTORS == False:
   _FIELDDESCRIPTORPROTO_TYPE = _descriptor.EnumDescriptor(
@@ -284,7 +284,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='file', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -314,84 +314,84 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='name', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='package', full_name='google.protobuf.FileDescriptorProto.package', index=1,
         number=2, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='package', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='dependency', full_name='google.protobuf.FileDescriptorProto.dependency', index=2,
         number=3, type=9, cpp_type=9, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='dependency', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='public_dependency', full_name='google.protobuf.FileDescriptorProto.public_dependency', index=3,
         number=10, type=5, cpp_type=1, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='publicDependency', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='weak_dependency', full_name='google.protobuf.FileDescriptorProto.weak_dependency', index=4,
         number=11, type=5, cpp_type=1, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='weakDependency', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='message_type', full_name='google.protobuf.FileDescriptorProto.message_type', index=5,
         number=4, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='messageType', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='enum_type', full_name='google.protobuf.FileDescriptorProto.enum_type', index=6,
         number=5, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='enumType', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='service', full_name='google.protobuf.FileDescriptorProto.service', index=7,
         number=6, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='service', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='extension', full_name='google.protobuf.FileDescriptorProto.extension', index=8,
         number=7, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='extension', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='options', full_name='google.protobuf.FileDescriptorProto.options', index=9,
         number=8, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='options', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='source_code_info', full_name='google.protobuf.FileDescriptorProto.source_code_info', index=10,
         number=9, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='sourceCodeInfo', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='syntax', full_name='google.protobuf.FileDescriptorProto.syntax', index=11,
         number=12, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='syntax', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -421,21 +421,21 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='start', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='end', full_name='google.protobuf.DescriptorProto.ExtensionRange.end', index=1,
         number=2, type=5, cpp_type=1, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='end', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='options', full_name='google.protobuf.DescriptorProto.ExtensionRange.options', index=2,
         number=3, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='options', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -464,14 +464,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='start', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='end', full_name='google.protobuf.DescriptorProto.ReservedRange.end', index=1,
         number=2, type=5, cpp_type=1, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='end', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -500,70 +500,70 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='name', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='field', full_name='google.protobuf.DescriptorProto.field', index=1,
         number=2, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='field', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='extension', full_name='google.protobuf.DescriptorProto.extension', index=2,
         number=6, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='extension', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='nested_type', full_name='google.protobuf.DescriptorProto.nested_type', index=3,
         number=3, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='nestedType', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='enum_type', full_name='google.protobuf.DescriptorProto.enum_type', index=4,
         number=4, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='enumType', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='extension_range', full_name='google.protobuf.DescriptorProto.extension_range', index=5,
         number=5, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='extensionRange', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='oneof_decl', full_name='google.protobuf.DescriptorProto.oneof_decl', index=6,
         number=8, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='oneofDecl', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='options', full_name='google.protobuf.DescriptorProto.options', index=7,
         number=7, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='options', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='reserved_range', full_name='google.protobuf.DescriptorProto.reserved_range', index=8,
         number=9, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='reservedRange', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='reserved_name', full_name='google.protobuf.DescriptorProto.reserved_name', index=9,
         number=10, type=9, cpp_type=9, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='reservedName', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -593,7 +593,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='uninterpretedOption', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -623,77 +623,77 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='name', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='number', full_name='google.protobuf.FieldDescriptorProto.number', index=1,
         number=3, type=5, cpp_type=1, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='number', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='label', full_name='google.protobuf.FieldDescriptorProto.label', index=2,
         number=4, type=14, cpp_type=8, label=1,
         has_default_value=False, default_value=1,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='label', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='type', full_name='google.protobuf.FieldDescriptorProto.type', index=3,
         number=5, type=14, cpp_type=8, label=1,
         has_default_value=False, default_value=1,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='type', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='type_name', full_name='google.protobuf.FieldDescriptorProto.type_name', index=4,
         number=6, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='typeName', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='extendee', full_name='google.protobuf.FieldDescriptorProto.extendee', index=5,
         number=2, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='extendee', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='default_value', full_name='google.protobuf.FieldDescriptorProto.default_value', index=6,
         number=7, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='defaultValue', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='oneof_index', full_name='google.protobuf.FieldDescriptorProto.oneof_index', index=7,
         number=9, type=5, cpp_type=1, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='oneofIndex', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='json_name', full_name='google.protobuf.FieldDescriptorProto.json_name', index=8,
         number=10, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='jsonName', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='options', full_name='google.protobuf.FieldDescriptorProto.options', index=9,
         number=8, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='options', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='proto3_optional', full_name='google.protobuf.FieldDescriptorProto.proto3_optional', index=10,
         number=17, type=8, cpp_type=7, label=1,
         has_default_value=False, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='proto3Optional', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -725,14 +725,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='name', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='options', full_name='google.protobuf.OneofDescriptorProto.options', index=1,
         number=2, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='options', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -762,14 +762,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='start', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='end', full_name='google.protobuf.EnumDescriptorProto.EnumReservedRange.end', index=1,
         number=2, type=5, cpp_type=1, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='end', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -798,35 +798,35 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='name', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='value', full_name='google.protobuf.EnumDescriptorProto.value', index=1,
         number=2, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='value', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='options', full_name='google.protobuf.EnumDescriptorProto.options', index=2,
         number=3, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='options', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='reserved_range', full_name='google.protobuf.EnumDescriptorProto.reserved_range', index=3,
         number=4, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='reservedRange', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='reserved_name', full_name='google.protobuf.EnumDescriptorProto.reserved_name', index=4,
         number=5, type=9, cpp_type=9, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='reservedName', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -856,21 +856,21 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='name', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='number', full_name='google.protobuf.EnumValueDescriptorProto.number', index=1,
         number=2, type=5, cpp_type=1, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='number', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='options', full_name='google.protobuf.EnumValueDescriptorProto.options', index=2,
         number=3, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='options', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -900,21 +900,21 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='name', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='method', full_name='google.protobuf.ServiceDescriptorProto.method', index=1,
         number=2, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='method', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='options', full_name='google.protobuf.ServiceDescriptorProto.options', index=2,
         number=3, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='options', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -944,42 +944,42 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='name', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='input_type', full_name='google.protobuf.MethodDescriptorProto.input_type', index=1,
         number=2, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='inputType', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='output_type', full_name='google.protobuf.MethodDescriptorProto.output_type', index=2,
         number=3, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='outputType', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='options', full_name='google.protobuf.MethodDescriptorProto.options', index=3,
         number=4, type=11, cpp_type=10, label=1,
         has_default_value=False, default_value=None,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='options', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='client_streaming', full_name='google.protobuf.MethodDescriptorProto.client_streaming', index=4,
         number=5, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='clientStreaming', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='server_streaming', full_name='google.protobuf.MethodDescriptorProto.server_streaming', index=5,
         number=6, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='serverStreaming', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1009,147 +1009,147 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='javaPackage', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='java_outer_classname', full_name='google.protobuf.FileOptions.java_outer_classname', index=1,
         number=8, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='javaOuterClassname', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='java_multiple_files', full_name='google.protobuf.FileOptions.java_multiple_files', index=2,
         number=10, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='javaMultipleFiles', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='java_generate_equals_and_hash', full_name='google.protobuf.FileOptions.java_generate_equals_and_hash', index=3,
         number=20, type=8, cpp_type=7, label=1,
         has_default_value=False, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='javaGenerateEqualsAndHash', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='java_string_check_utf8', full_name='google.protobuf.FileOptions.java_string_check_utf8', index=4,
         number=27, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='javaStringCheckUtf8', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='optimize_for', full_name='google.protobuf.FileOptions.optimize_for', index=5,
         number=9, type=14, cpp_type=8, label=1,
         has_default_value=True, default_value=1,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='optimizeFor', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='go_package', full_name='google.protobuf.FileOptions.go_package', index=6,
         number=11, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='goPackage', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='cc_generic_services', full_name='google.protobuf.FileOptions.cc_generic_services', index=7,
         number=16, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='ccGenericServices', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='java_generic_services', full_name='google.protobuf.FileOptions.java_generic_services', index=8,
         number=17, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='javaGenericServices', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='py_generic_services', full_name='google.protobuf.FileOptions.py_generic_services', index=9,
         number=18, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='pyGenericServices', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='php_generic_services', full_name='google.protobuf.FileOptions.php_generic_services', index=10,
         number=42, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='phpGenericServices', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='deprecated', full_name='google.protobuf.FileOptions.deprecated', index=11,
         number=23, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='deprecated', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='cc_enable_arenas', full_name='google.protobuf.FileOptions.cc_enable_arenas', index=12,
         number=31, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=True,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='ccEnableArenas', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='objc_class_prefix', full_name='google.protobuf.FileOptions.objc_class_prefix', index=13,
         number=36, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='objcClassPrefix', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='csharp_namespace', full_name='google.protobuf.FileOptions.csharp_namespace', index=14,
         number=37, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='csharpNamespace', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='swift_prefix', full_name='google.protobuf.FileOptions.swift_prefix', index=15,
         number=39, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='swiftPrefix', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='php_class_prefix', full_name='google.protobuf.FileOptions.php_class_prefix', index=16,
         number=40, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='phpClassPrefix', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='php_namespace', full_name='google.protobuf.FileOptions.php_namespace', index=17,
         number=41, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='phpNamespace', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='php_metadata_namespace', full_name='google.protobuf.FileOptions.php_metadata_namespace', index=18,
         number=44, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='phpMetadataNamespace', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='ruby_package', full_name='google.protobuf.FileOptions.ruby_package', index=19,
         number=45, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='rubyPackage', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='uninterpreted_option', full_name='google.protobuf.FileOptions.uninterpreted_option', index=20,
         number=999, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='uninterpretedOption', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1180,35 +1180,35 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='messageSetWireFormat', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='no_standard_descriptor_accessor', full_name='google.protobuf.MessageOptions.no_standard_descriptor_accessor', index=1,
         number=2, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='noStandardDescriptorAccessor', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='deprecated', full_name='google.protobuf.MessageOptions.deprecated', index=2,
         number=3, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='deprecated', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='map_entry', full_name='google.protobuf.MessageOptions.map_entry', index=3,
         number=7, type=8, cpp_type=7, label=1,
         has_default_value=False, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='mapEntry', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='uninterpreted_option', full_name='google.protobuf.MessageOptions.uninterpreted_option', index=4,
         number=999, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='uninterpretedOption', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1238,56 +1238,56 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=True, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='ctype', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='packed', full_name='google.protobuf.FieldOptions.packed', index=1,
         number=2, type=8, cpp_type=7, label=1,
         has_default_value=False, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='packed', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='jstype', full_name='google.protobuf.FieldOptions.jstype', index=2,
         number=6, type=14, cpp_type=8, label=1,
         has_default_value=True, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='jstype', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='lazy', full_name='google.protobuf.FieldOptions.lazy', index=3,
         number=5, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='lazy', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='unverified_lazy', full_name='google.protobuf.FieldOptions.unverified_lazy', index=4,
         number=15, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='unverifiedLazy', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='deprecated', full_name='google.protobuf.FieldOptions.deprecated', index=5,
         number=3, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='deprecated', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='weak', full_name='google.protobuf.FieldOptions.weak', index=6,
         number=10, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='weak', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='uninterpreted_option', full_name='google.protobuf.FieldOptions.uninterpreted_option', index=7,
         number=999, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='uninterpretedOption', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1319,7 +1319,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='uninterpretedOption', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1349,21 +1349,21 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='allowAlias', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='deprecated', full_name='google.protobuf.EnumOptions.deprecated', index=1,
         number=3, type=8, cpp_type=7, label=1,
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='deprecated', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='uninterpreted_option', full_name='google.protobuf.EnumOptions.uninterpreted_option', index=2,
         number=999, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='uninterpretedOption', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1393,14 +1393,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='deprecated', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='uninterpreted_option', full_name='google.protobuf.EnumValueOptions.uninterpreted_option', index=1,
         number=999, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='uninterpretedOption', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1430,14 +1430,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='deprecated', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='uninterpreted_option', full_name='google.protobuf.ServiceOptions.uninterpreted_option', index=1,
         number=999, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='uninterpretedOption', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1467,21 +1467,21 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=True, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='deprecated', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='idempotency_level', full_name='google.protobuf.MethodOptions.idempotency_level', index=1,
         number=34, type=14, cpp_type=8, label=1,
         has_default_value=True, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='idempotencyLevel', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='uninterpreted_option', full_name='google.protobuf.MethodOptions.uninterpreted_option', index=2,
         number=999, type=11, cpp_type=10, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='uninterpretedOption', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1512,14 +1512,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='namePart', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='is_extension', full_name='google.protobuf.UninterpretedOption.NamePart.is_extension', index=1,
         number=2, type=8, cpp_type=7, label=2,
         has_default_value=False, default_value=False,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='isExtension', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1548,49 +1548,49 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='name', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='identifier_value', full_name='google.protobuf.UninterpretedOption.identifier_value', index=1,
         number=3, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='identifierValue', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='positive_int_value', full_name='google.protobuf.UninterpretedOption.positive_int_value', index=2,
         number=4, type=4, cpp_type=4, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='positiveIntValue', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='negative_int_value', full_name='google.protobuf.UninterpretedOption.negative_int_value', index=3,
         number=5, type=3, cpp_type=2, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='negativeIntValue', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='double_value', full_name='google.protobuf.UninterpretedOption.double_value', index=4,
         number=6, type=1, cpp_type=5, label=1,
         has_default_value=False, default_value=float(0),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='doubleValue', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='string_value', full_name='google.protobuf.UninterpretedOption.string_value', index=5,
         number=7, type=12, cpp_type=9, label=1,
         has_default_value=False, default_value=b"",
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='stringValue', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='aggregate_value', full_name='google.protobuf.UninterpretedOption.aggregate_value', index=6,
         number=8, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='aggregateValue', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1620,35 +1620,35 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='path', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='span', full_name='google.protobuf.SourceCodeInfo.Location.span', index=1,
         number=2, type=5, cpp_type=1, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='span', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='leading_comments', full_name='google.protobuf.SourceCodeInfo.Location.leading_comments', index=2,
         number=3, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='leadingComments', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='trailing_comments', full_name='google.protobuf.SourceCodeInfo.Location.trailing_comments', index=3,
         number=4, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='trailingComments', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='leading_detached_comments', full_name='google.protobuf.SourceCodeInfo.Location.leading_detached_comments', index=4,
         number=6, type=9, cpp_type=9, label=3,
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='leadingDetachedComments', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1677,7 +1677,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='location', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1707,28 +1707,28 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='path', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='source_file', full_name='google.protobuf.GeneratedCodeInfo.Annotation.source_file', index=1,
         number=2, type=9, cpp_type=9, label=1,
         has_default_value=False, default_value=b"".decode('utf-8'),
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='sourceFile', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='begin', full_name='google.protobuf.GeneratedCodeInfo.Annotation.begin', index=2,
         number=3, type=5, cpp_type=1, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='begin', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
       _descriptor.FieldDescriptor(
         name='end', full_name='google.protobuf.GeneratedCodeInfo.Annotation.end', index=3,
         number=4, type=5, cpp_type=1, label=1,
         has_default_value=False, default_value=0,
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='end', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1757,7 +1757,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
         has_default_value=False, default_value=[],
         message_type=None, enum_type=None, containing_type=None,
         is_extension=False, extension_scope=None,
-        serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+        serialized_options=None, json_name='annotation', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     ],
     extensions=[
     ],
@@ -1857,69 +1857,69 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   _FILEDESCRIPTORSET._serialized_start=53
-  _FILEDESCRIPTORSET._serialized_end=124
-  _FILEDESCRIPTORPROTO._serialized_start=127
-  _FILEDESCRIPTORPROTO._serialized_end=602
-  _DESCRIPTORPROTO._serialized_start=605
-  _DESCRIPTORPROTO._serialized_end=1286
-  _DESCRIPTORPROTO_EXTENSIONRANGE._serialized_start=1140
-  _DESCRIPTORPROTO_EXTENSIONRANGE._serialized_end=1241
-  _DESCRIPTORPROTO_RESERVEDRANGE._serialized_start=1243
-  _DESCRIPTORPROTO_RESERVEDRANGE._serialized_end=1286
-  _EXTENSIONRANGEOPTIONS._serialized_start=1288
-  _EXTENSIONRANGEOPTIONS._serialized_end=1391
-  _FIELDDESCRIPTORPROTO._serialized_start=1394
-  _FIELDDESCRIPTORPROTO._serialized_end=2119
-  _FIELDDESCRIPTORPROTO_TYPE._serialized_start=1740
-  _FIELDDESCRIPTORPROTO_TYPE._serialized_end=2050
-  _FIELDDESCRIPTORPROTO_LABEL._serialized_start=2052
-  _FIELDDESCRIPTORPROTO_LABEL._serialized_end=2119
-  _ONEOFDESCRIPTORPROTO._serialized_start=2121
-  _ONEOFDESCRIPTORPROTO._serialized_end=2205
-  _ENUMDESCRIPTORPROTO._serialized_start=2208
-  _ENUMDESCRIPTORPROTO._serialized_end=2500
-  _ENUMDESCRIPTORPROTO_ENUMRESERVEDRANGE._serialized_start=2453
-  _ENUMDESCRIPTORPROTO_ENUMRESERVEDRANGE._serialized_end=2500
-  _ENUMVALUEDESCRIPTORPROTO._serialized_start=2502
-  _ENUMVALUEDESCRIPTORPROTO._serialized_end=2610
-  _SERVICEDESCRIPTORPROTO._serialized_start=2613
-  _SERVICEDESCRIPTORPROTO._serialized_end=2757
-  _METHODDESCRIPTORPROTO._serialized_start=2760
-  _METHODDESCRIPTORPROTO._serialized_end=2953
-  _FILEOPTIONS._serialized_start=2956
-  _FILEOPTIONS._serialized_end=3761
-  _FILEOPTIONS_OPTIMIZEMODE._serialized_start=3686
-  _FILEOPTIONS_OPTIMIZEMODE._serialized_end=3744
-  _MESSAGEOPTIONS._serialized_start=3764
-  _MESSAGEOPTIONS._serialized_end=4024
-  _FIELDOPTIONS._serialized_start=4027
-  _FIELDOPTIONS._serialized_end=4473
-  _FIELDOPTIONS_CTYPE._serialized_start=4354
-  _FIELDOPTIONS_CTYPE._serialized_end=4401
-  _FIELDOPTIONS_JSTYPE._serialized_start=4403
-  _FIELDOPTIONS_JSTYPE._serialized_end=4456
-  _ONEOFOPTIONS._serialized_start=4475
-  _ONEOFOPTIONS._serialized_end=4569
-  _ENUMOPTIONS._serialized_start=4572
-  _ENUMOPTIONS._serialized_end=4719
-  _ENUMVALUEOPTIONS._serialized_start=4721
-  _ENUMVALUEOPTIONS._serialized_end=4846
-  _SERVICEOPTIONS._serialized_start=4848
-  _SERVICEOPTIONS._serialized_end=4971
-  _METHODOPTIONS._serialized_start=4974
-  _METHODOPTIONS._serialized_end=5275
-  _METHODOPTIONS_IDEMPOTENCYLEVEL._serialized_start=5184
-  _METHODOPTIONS_IDEMPOTENCYLEVEL._serialized_end=5264
-  _UNINTERPRETEDOPTION._serialized_start=5278
-  _UNINTERPRETEDOPTION._serialized_end=5564
-  _UNINTERPRETEDOPTION_NAMEPART._serialized_start=5513
-  _UNINTERPRETEDOPTION_NAMEPART._serialized_end=5564
-  _SOURCECODEINFO._serialized_start=5567
-  _SOURCECODEINFO._serialized_end=5780
-  _SOURCECODEINFO_LOCATION._serialized_start=5646
-  _SOURCECODEINFO_LOCATION._serialized_end=5780
-  _GENERATEDCODEINFO._serialized_start=5783
-  _GENERATEDCODEINFO._serialized_end=5950
-  _GENERATEDCODEINFO_ANNOTATION._serialized_start=5871
-  _GENERATEDCODEINFO_ANNOTATION._serialized_end=5950
+  _FILEDESCRIPTORSET._serialized_end=130
+  _FILEDESCRIPTORPROTO._serialized_start=133
+  _FILEDESCRIPTORPROTO._serialized_end=745
+  _DESCRIPTORPROTO._serialized_start=748
+  _DESCRIPTORPROTO._serialized_end=1573
+  _DESCRIPTORPROTO_EXTENSIONRANGE._serialized_start=1394
+  _DESCRIPTORPROTO_EXTENSIONRANGE._serialized_end=1516
+  _DESCRIPTORPROTO_RESERVEDRANGE._serialized_start=1518
+  _DESCRIPTORPROTO_RESERVEDRANGE._serialized_end=1573
+  _EXTENSIONRANGEOPTIONS._serialized_start=1575
+  _EXTENSIONRANGEOPTIONS._serialized_end=1699
+  _FIELDDESCRIPTORPROTO._serialized_start=1702
+  _FIELDDESCRIPTORPROTO._serialized_end=2535
+  _FIELDDESCRIPTORPROTO_TYPE._serialized_start=2156
+  _FIELDDESCRIPTORPROTO_TYPE._serialized_end=2466
+  _FIELDDESCRIPTORPROTO_LABEL._serialized_start=2468
+  _FIELDDESCRIPTORPROTO_LABEL._serialized_end=2535
+  _ONEOFDESCRIPTORPROTO._serialized_start=2537
+  _ONEOFDESCRIPTORPROTO._serialized_end=2636
+  _ENUMDESCRIPTORPROTO._serialized_start=2639
+  _ENUMDESCRIPTORPROTO._serialized_end=2994
+  _ENUMDESCRIPTORPROTO_ENUMRESERVEDRANGE._serialized_start=2935
+  _ENUMDESCRIPTORPROTO_ENUMRESERVEDRANGE._serialized_end=2994
+  _ENUMVALUEDESCRIPTORPROTO._serialized_start=2997
+  _ENUMVALUEDESCRIPTORPROTO._serialized_end=3128
+  _SERVICEDESCRIPTORPROTO._serialized_start=3131
+  _SERVICEDESCRIPTORPROTO._serialized_end=3298
+  _METHODDESCRIPTORPROTO._serialized_start=3301
+  _METHODDESCRIPTORPROTO._serialized_end=3566
+  _FILEOPTIONS._serialized_start=3569
+  _FILEOPTIONS._serialized_end=4738
+  _FILEOPTIONS_OPTIMIZEMODE._serialized_start=4663
+  _FILEOPTIONS_OPTIMIZEMODE._serialized_end=4721
+  _MESSAGEOPTIONS._serialized_start=4741
+  _MESSAGEOPTIONS._serialized_end=5096
+  _FIELDOPTIONS._serialized_start=5099
+  _FIELDOPTIONS._serialized_end=5629
+  _FIELDOPTIONS_CTYPE._serialized_start=5510
+  _FIELDOPTIONS_CTYPE._serialized_end=5557
+  _FIELDOPTIONS_JSTYPE._serialized_start=5559
+  _FIELDOPTIONS_JSTYPE._serialized_end=5612
+  _ONEOFOPTIONS._serialized_start=5631
+  _ONEOFOPTIONS._serialized_end=5746
+  _ENUMOPTIONS._serialized_start=5749
+  _ENUMOPTIONS._serialized_end=5941
+  _ENUMVALUEOPTIONS._serialized_start=5944
+  _ENUMVALUEOPTIONS._serialized_end=6102
+  _SERVICEOPTIONS._serialized_start=6105
+  _SERVICEOPTIONS._serialized_end=6261
+  _METHODOPTIONS._serialized_start=6264
+  _METHODOPTIONS._serialized_end=6616
+  _METHODOPTIONS_IDEMPOTENCYLEVEL._serialized_start=6525
+  _METHODOPTIONS_IDEMPOTENCYLEVEL._serialized_end=6605
+  _UNINTERPRETEDOPTION._serialized_start=6619
+  _UNINTERPRETEDOPTION._serialized_end=7029
+  _UNINTERPRETEDOPTION_NAMEPART._serialized_start=6955
+  _UNINTERPRETEDOPTION_NAMEPART._serialized_end=7029
+  _SOURCECODEINFO._serialized_start=7032
+  _SOURCECODEINFO._serialized_end=7327
+  _SOURCECODEINFO_LOCATION._serialized_start=7121
+  _SOURCECODEINFO_LOCATION._serialized_end=7327
+  _GENERATEDCODEINFO._serialized_start=7330
+  _GENERATEDCODEINFO._serialized_end=7539
+  _GENERATEDCODEINFO_ANNOTATION._serialized_start=7430
+  _GENERATEDCODEINFO_ANNOTATION._serialized_end=7539
 # @@protoc_insertion_point(module_scope)

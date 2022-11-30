@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.1;net7.0</TargetFrameworks>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 
 		<IsPackable>true</IsPackable>
@@ -16,8 +16,8 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 
-		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
-		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta18" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="7.0.0" />
+		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta19" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
 
