@@ -68,7 +68,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Error: Could not set registry keys for custom uri scheme handler: " + e.Message);
+                        Console.WriteLine("Error: Could not set registry keys for custom uri scheme handler: " + e);
                         exitCode = ErrorCode.CouldNotWriteRegistry;
                     }
 
@@ -85,7 +85,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Could not set registry keys for file association: " + e.Message);
+                        Console.WriteLine("Could not set registry keys for file association: " + e);
                         exitCode = ErrorCode.CouldNotWriteRegistry;
                     }
                 }
