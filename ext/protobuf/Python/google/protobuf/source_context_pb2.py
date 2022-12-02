@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n$google/protobuf/source_context.proto\x12\x0fgoogle.protobuf\"\"\n\rSourceContext\x12\x11\n\tfile_name\x18\x01 \x01(\tB\x8a\x01\n\x13\x63om.google.protobufB\x12SourceContextProtoP\x01Z6google.golang.org/protobuf/types/known/sourcecontextpb\xa2\x02\x03GPB\xaa\x02\x1eGoogle.Protobuf.WellKnownTypesb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n$google/protobuf/source_context.proto\x12\x0fgoogle.protobuf\",\n\rSourceContext\x12\x1b\n\tfile_name\x18\x01 \x01(\tR\x08\x66ileNameB\x8a\x01\n\x13\x63om.google.protobufB\x12SourceContextProtoP\x01Z6google.golang.org/protobuf/types/known/sourcecontextpb\xa2\x02\x03GPB\xaa\x02\x1eGoogle.Protobuf.WellKnownTypesb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'google.protobuf.source_context_pb2', globals())
@@ -22,5 +22,5 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   DESCRIPTOR._serialized_options = b'\n\023com.google.protobufB\022SourceContextProtoP\001Z6google.golang.org/protobuf/types/known/sourcecontextpb\242\002\003GPB\252\002\036Google.Protobuf.WellKnownTypes'
   _SOURCECONTEXT._serialized_start=57
-  _SOURCECONTEXT._serialized_end=91
+  _SOURCECONTEXT._serialized_end=101
 # @@protoc_insertion_point(module_scope)

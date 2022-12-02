@@ -2,7 +2,7 @@
 	
 	<PropertyGroup>
 		<PackageId>Fusee.Core</PackageId>
-		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<IncludeSymbols>false</IncludeSymbols>
 		<IsPackable>true</IsPackable>
