@@ -3,7 +3,7 @@ setlocal
 
 if '%1'=='' goto :ERRORVERSION
 
-set VERSIONUPDATE="bin\Release\Tools\Build\Versionupdate\net6.0\Fusee.Tools.Build.Versionupdate.dll"
+set VERSIONUPDATE="bin\Release\Tools\Build\Versionupdate\net7.0\Fusee.Tools.Build.Versionupdate.dll"
 
 dotnet build -c Release src\Tools\Build\Versionupdate\Fusee.Tools.Build.Versionupdate.csproj
 IF %ERRORLEVEL% NEQ 0 goto :ERRORBUILD
