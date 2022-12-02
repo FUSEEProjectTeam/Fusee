@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 using SixLabors.Fonts;
+using SixLabors.Fonts.Tables.TrueType;
 using SixLabors.Fonts.Unicode;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -71,7 +72,7 @@ namespace Fusee.Base.Core
             }
 
             var glyph = _font.GetGlyphs(new CodePoint(c), ColorFontSupport.None).First();
-            var outline = glyph.GlyphMetrics.GetOutline();
+            var outline = ((TrueTypeGlyphMetrics)glyph.GlyphMetrics).GetOutline();
 
             var orgPointCoords = outline.ControlPoints.ToArray();
             var pointTags = outline.OnCurves.ToArray().Select(x => x ? (byte)1 : (byte)0).ToArray();
@@ -114,15 +115,16 @@ namespace Fusee.Base.Core
             var glyph = _font.GetGlyphs(new CodePoint(c), ColorFontSupport.None).First();
 
             var scaledPointSize = _font.Size * Dpi;
-            var scaleFactor = scaledPointSize / glyph.GlyphMetrics.ScaleFactor;
+            var scaleFactorX = scaledPointSize / glyph.GlyphMetrics.ScaleFactor.X;
+            var scaleFactorY = scaledPointSize / glyph.GlyphMetrics.ScaleFactor.Y;
 
             GlyphInfo ret;
             ret.CharCode = c;
-            ret.AdvanceX = glyph.GlyphMetrics.AdvanceWidth * scaleFactor;
-            ret.AdvanceY = glyph.GlyphMetrics.AdvanceHeight * scaleFactor;
+            ret.AdvanceX = glyph.GlyphMetrics.AdvanceWidth * scaleFactorX;
+            ret.AdvanceY = glyph.GlyphMetrics.AdvanceHeight * scaleFactorY;
 
-            ret.Width = glyph.GlyphMetrics.Width * scaleFactor;
-            ret.Height = glyph.GlyphMetrics.Height * scaleFactor;
+            ret.Width = glyph.GlyphMetrics.Width * scaleFactorX;
+            ret.Height = glyph.GlyphMetrics.Height * scaleFactorY;
 
             return ret;
         }
@@ -169,6 +171,7 @@ namespace Fusee.Base.Core
         /// Renders a glyph to an IImageData for further use
         /// </summary>
         /// <param name="c"></param>
+        /// <param name="info">The info about the character.</param>
         /// <returns></returns>
         public IImageData GetImageDataForGlyph(uint c, in GlyphInfo info)
         {
@@ -184,8 +187,8 @@ namespace Fusee.Base.Core
                     new System.Numerics.Vector2(0, 0), Color.Black);
                 img.CopyPixelDataTo(res);
             }
-            // invalid (unknown) chars 
-            catch (Exception e)
+            // invalid (unknown) chars
+            catch (Exception)
             {
                 Diagnostics.Warn($"Generating glyph for char {c}:{Convert.ToChar(c)} failed, skipping");
                 return new ImageData(0, 0);

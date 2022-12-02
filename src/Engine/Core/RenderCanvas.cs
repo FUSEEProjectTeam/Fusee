@@ -1,4 +1,5 @@
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using System;
 using System.Threading.Tasks;
@@ -69,9 +70,14 @@ namespace Fusee.Engine.Core
         #region Members
 
         /// <summary>
-        /// Used to inject functionallity that is ment to be executed when the application is shutting down.
+        /// Used to inject functionality that is meant to be executed when the application is shutting down.
         /// </summary>
-        public event EventHandler<EventArgs> ApplicationIsShuttingDown;
+        public event EventHandler? ApplicationIsShuttingDown;
+
+        /// <summary>
+        /// Used to inject functionality that is meant to execute at the end of each frame. E.g. if components of the SceneGraph need to be changed.
+        /// </summary>
+        public event EventHandler? EndOfFrame;
 
         /// <summary>
         /// Used to stop the rendering process when the application is shutting down.
@@ -159,7 +165,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// <see langword="true"/> when InitAsync() finished
-        /// Prevents <see cref="RenderCanvas.RenderAFrame"/> and <see cref="RenderCanvas.Update"/> while <see langword="false"/>
+        /// Prevents <see cref="RenderAFrame"/> and <see cref="Update"/> while <see langword="false"/>
         /// </summary>
         public bool IsLoaded { get; set; } = false;
 
@@ -180,6 +186,8 @@ namespace Fusee.Engine.Core
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
             RC.SetRenderStateSet(RenderStateSet.Default);
+            RC.GetWindowHeight = () => CanvasImplementor.Height;
+            RC.GetWindowWidth = () => CanvasImplementor.Width;
 
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
@@ -199,7 +207,10 @@ namespace Fusee.Engine.Core
                 if (!IsLoaded) return;
 
                 Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
+                Input.Instance.PreUpdate();
                 Update();
+                // post-rendering
+                Input.Instance.PostUpdate();
             };
 
             CanvasImplementor.Render += delegate
@@ -209,23 +220,26 @@ namespace Fusee.Engine.Core
                 if (IsShuttingDown) return;
 
                 // pre-rendering
-                Input.Instance.PreRender();
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
 
                 // rendering
                 if (Width != 0 || Height != 0)
                     RenderAFrame();
 
-                // post-rendering
-                Input.Instance.PostRender();
+                RC.UpdateAllMeshes();
+                RC.CleanupResourceManagers();
+
+                EndOfFrame?.Invoke(this, EventArgs.Empty);
             };
 
-            CanvasImplementor.Resize += delegate
+            CanvasImplementor.Resize += (s, e) =>
             {
                 if (IsShuttingDown) return;
+                Width = e.Width;
+                Height = e.Height;
                 RC.DefaultState.CanvasWidth = Width;
                 RC.DefaultState.CanvasHeight = Height;
-                Resize(new ResizeEventArgs(Width, Height));
+                Resize(e);
             };
         }
 
@@ -268,8 +282,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         public virtual void DeInit()
         {
-            Time.Instance.Dispose();
             Input.Instance.Dispose();
+            Time.Instance.Dispose();
+            AssetStorage.Instance.Dispose();
         }
 
         /// <summary>
@@ -360,7 +375,6 @@ namespace Fusee.Engine.Core
         {
             IsShuttingDown = true;
             CanvasImplementor.CloseGameWindow();
-            RC.Dispose();
         }
 
         #endregion
@@ -376,7 +390,7 @@ namespace Fusee.Engine.Core
         public int Width
         {
             get { return CanvasImplementor.Width; }
-            set { CanvasImplementor.Width = value; }
+            private set { CanvasImplementor.Width = value; }
         }
 
         /// <summary>
@@ -388,7 +402,7 @@ namespace Fusee.Engine.Core
         public int Height
         {
             get { return CanvasImplementor.Height; }
-            set { CanvasImplementor.Height = value; }
+            private set { CanvasImplementor.Height = value; }
         }
 
         /// <summary>

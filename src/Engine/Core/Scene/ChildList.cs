@@ -15,6 +15,10 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public event EventHandler<AddChildEventArgs> OnAdd;
 
+        /// <summary>
+        /// Adds a <see cref="SceneNode"/> to the parent's list of children.
+        /// </summary>
+        /// <param name="sn">The <see cref="SceneNode"/>.</param>
         public new void Add(SceneNode sn)
         {
             AddSceneNode(sn);

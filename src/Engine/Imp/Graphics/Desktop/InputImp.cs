@@ -14,7 +14,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     public class RenderCanvasInputDriverImp : IInputDriverImp
     {
         /// <summary>
-        /// Constructor. Use this in platform specific application projects. 
+        /// Constructor. Use this in platform specific application projects.
         /// </summary>
         /// <param name="renderCanvas">The render canvas to provide mouse and keyboard input for.</param>
         public RenderCanvasInputDriverImp(IRenderCanvasImp renderCanvas)
@@ -76,7 +76,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string DriverId
@@ -96,49 +96,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// You can register handlers but they will never get called.
         /// </summary>
         public event EventHandler<NewDeviceImpConnectedArgs> NewDeviceConnected;
-#pragma warning restore 0067
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        /// <summary>
-        /// Part of the Dispose pattern.
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                disposedValue = true;
-            }
-        }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~RenderCanvasInputDriverImp() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
-        /// <summary>
-        /// Part of the dispose pattern.
-        /// </summary>
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 
 
@@ -529,7 +486,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Should be called by the driver only.
         /// </summary>
         /// <param name="gameWindow"></param>
-        internal KeyboardDeviceImp(GameWindow gameWindow)
+        public KeyboardDeviceImp(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
             _keymapper = new Keymapper();
@@ -604,7 +561,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string Id
@@ -875,7 +832,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public string Desc => "Standard Mouse implementation.";
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string Id => GetType().FullName;

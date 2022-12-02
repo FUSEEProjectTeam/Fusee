@@ -1,7 +1,7 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core.Primitives
 {
@@ -45,9 +45,9 @@ namespace Fusee.Engine.Core.Primitives
                 verts[i] = vert;
             }
 
-            Vertices = verts.ToArray();
+            Vertices = new MeshAttributes<float3>(verts);
 
-            Triangles = new ushort[]
+            Triangles = new MeshAttributes<uint>(new uint[]
             {
                 5, 11, 0,
                 1, 5, 0,
@@ -69,19 +69,21 @@ namespace Fusee.Engine.Core.Primitives
                 10, 2, 6,
                 7, 6, 8,
                 1, 8, 9
-            };
+            });
 
-            Normals = Array.Empty<float3>();
-            NormalAndUvHelper.CreateVertexNormals(this);
+            var tmpNormals = NormalAndUvHelper.CreateVertexNormals(this);
+            Normals = new MeshAttributes<float3>(tmpNormals);
 
-            UVs = new float2[Vertices.Length];
+            var tmpUvs = new float2[Vertices.Length];
             for (var i = 0; i < Vertices.Length; i++)
             {
-                UVs[i] =
+                tmpUvs[i] =
                     new float2(0.5f + ((float)System.Math.Atan2(Vertices[i].z, Vertices[i].x) / (2 * M.Pi)),
                         0.5f - ((float)System.Math.Asin(Vertices[i].y) / M.Pi));
-                UVs[i].y *= -1;
+                tmpUvs[i].y *= -1;
             }
+
+            UVs = new MeshAttributes<float2>(tmpUvs);
         }
     }
 
@@ -124,16 +126,17 @@ namespace Fusee.Engine.Core.Primitives
             if (recursionLevel == 0) return mesh;
 
             //Add Verts to temp vert list
-            foreach (var vert in mesh.Vertices)
+            foreach (var vert in mesh.Vertices.AsReadOnlySpan)
             {
                 AddNormalizedVertex(vert);
             }
 
             //Subdivide triangles
+            var tmpTris = mesh.Triangles.ToArray().ToList();
             for (var i = 0; i < recursionLevel; i++)
             {
-                var faces2 = new List<ushort>();
-                var tri = new List<ushort>();
+                var faces2 = new List<uint>();
+                var tri = new List<uint>();
 
                 for (var k = 0; k < mesh.Triangles.Length; k++)
                 {
@@ -145,7 +148,7 @@ namespace Fusee.Engine.Core.Primitives
                     var b = MiddlePoint(tri[1], tri[2]);
                     var c = MiddlePoint(tri[2], tri[0]);
 
-                    var temp = new List<ushort>
+                    var temp = new List<uint>
                     {
                         tri[0], a, c,
                         tri[1], b, a,
@@ -155,24 +158,24 @@ namespace Fusee.Engine.Core.Primitives
 
                     faces2.AddRange(temp);
 
-                    tri = new List<ushort>();
+                    tri = new List<uint>();
 
                 }
-                mesh.Triangles = faces2.ToArray();
+                tmpTris = faces2;
             }
 
-            mesh.Vertices = _sphereVertices.ToArray();
-            NormalAndUvHelper.CreateVertexNormals(mesh);
+            var tmpVerts = _sphereVertices.ToArray();
+            var tmpNormals = NormalAndUvHelper.CreateVertexNormals(mesh);
 
-            mesh.UVs = new float2[mesh.Vertices.Length];
+            var tmpUvs = new float2[mesh.Vertices.Length];
 
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
-                mesh.UVs[i] = new float2(0.5f + ((float)System.Math.Atan2(mesh.Vertices[i].z, mesh.Vertices[i].x) / (2 * M.Pi)), 0.5f - ((float)System.Math.Asin(mesh.Vertices[i].y) / M.Pi));
-                mesh.UVs[i].y *= -1;
+                tmpUvs[i] = new float2(0.5f + ((float)System.Math.Atan2(mesh.Vertices[i].z, mesh.Vertices[i].x) / (2 * M.Pi)), 0.5f - ((float)System.Math.Asin(mesh.Vertices[i].y) / M.Pi));
+                tmpUvs[i].y *= -1;
             }
 
-            return mesh;
+            return new Mesh(tmpTris, tmpVerts, tmpNormals, tmpUvs);
         }
 
         //Add vertex to mesh, normalize position to be on unit sphere.
@@ -185,7 +188,7 @@ namespace Fusee.Engine.Core.Primitives
         }
 
         //Return the index of the point in the middle between p1 and p2.
-        private ushort MiddlePoint(int p1, int p2)
+        private uint MiddlePoint(uint p1, uint p2)
         {
 
             //Check the cache...
@@ -196,11 +199,11 @@ namespace Fusee.Engine.Core.Primitives
 
             if (_middlePointIndexCache.TryGetValue(key, out var ret))
             {
-                return (ushort)ret;
+                return (uint)ret;
             }
 
-            var point1 = _sphereVertices[p1];
-            var point2 = _sphereVertices[p2];
+            var point1 = _sphereVertices[(int)p1];
+            var point2 = _sphereVertices[(int)p2];
             var middle = new float3(
                 (point1.x + point2.x) / 2.0f,
                 (point1.y + point2.y) / 2.0f,
@@ -223,41 +226,43 @@ namespace Fusee.Engine.Core.Primitives
         /// Calculates the vertex normals for a given mesh by calculating the avarage of all normals of faces, adjacent to a vertex.
         /// </summary>
         /// <param name="mesh">The mesh for which to calculate the normals.</param>
-        internal static void CreateVertexNormals(Mesh mesh)
+        internal static float3[] CreateVertexNormals(Mesh mesh)
         {
-            mesh.Normals = new float3[mesh.Vertices.Length];
+            var returnArray = new float3[mesh.Vertices.Length];
 
             var triVerts = new List<float3>();
-            var triIndeices = new List<ushort>();
-            foreach (var tri in mesh.Triangles)
+            var triIndeices = new List<uint>();
+            foreach (var tri in mesh.Triangles.AsReadOnlySpan)
             {
-                triVerts.Add(mesh.Vertices[tri]);
+                triVerts.Add(mesh.Vertices[(int)tri]);
                 triIndeices.Add(tri);
 
                 if (triVerts.Count != 3) continue;
 
                 var triNormal = CalculateTriNormal(triVerts);
 
-                CalcAverageNormal(mesh.Normals, triNormal, triIndeices[0]);
-                CalcAverageNormal(mesh.Normals, triNormal, triIndeices[1]);
-                CalcAverageNormal(mesh.Normals, triNormal, triIndeices[2]);
+                CalcAverageNormal(returnArray, triNormal, triIndeices[0]);
+                CalcAverageNormal(returnArray, triNormal, triIndeices[1]);
+                CalcAverageNormal(returnArray, triNormal, triIndeices[2]);
 
                 triVerts = new List<float3>();
-                triIndeices = new List<ushort>();
+                triIndeices = new List<uint>();
             }
+
+            return returnArray;
         }
 
-        private static void CalcAverageNormal(IList<float3> normals, float3 triNormal, ushort triIndex)
+        private static void CalcAverageNormal(IList<float3> normals, float3 triNormal, uint triIndex)
         {
-            if (normals[triIndex] == float3.Zero)
+            if (normals[(int)triIndex] == float3.Zero)
             {
-                normals[triIndex] = triNormal;
+                normals[(int)triIndex] = triNormal;
             }
             else
             {
-                var averageNormal = (triNormal + normals[triIndex]) / 2;
+                var averageNormal = (triNormal + normals[(int)triIndex]) / 2;
                 averageNormal = averageNormal.Normalize();
-                normals[triIndex] = averageNormal;
+                normals[(int)triIndex] = averageNormal;
             }
         }
 

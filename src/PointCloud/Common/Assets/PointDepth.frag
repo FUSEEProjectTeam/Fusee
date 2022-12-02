@@ -14,7 +14,7 @@ in float vWorldSpacePointRad;
 out vec4 oColor;
 
 void main(void)
-{	
+{
 	vec2 distanceVector = (2.0 * gl_PointCoord) - 1.0; //[-1,1]
 	vec4 position;
 	float weight;
@@ -30,10 +30,10 @@ void main(void)
 	case 1: // circle
 
 		float distanceFromCenter = length(2.0 * gl_PointCoord - 1.0);
-			
+
 		if(distanceFromCenter > 1.0)
 			discard;
-			
+
 		gl_FragDepth = gl_FragCoord.z;
 
 		break;
@@ -63,7 +63,7 @@ void main(void)
 
 	case 4: //sphere
 
-		//prevent sqrt(x < 0) - z values can (and should, in this case) become negative 
+		//prevent sqrt(x < 0) - z values can (and should, in this case) become negative
 		float zwerg = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0));
 		if (zwerg < 0.0)
 			weight = -1.0;
@@ -79,5 +79,5 @@ void main(void)
 		break;
 	}
 
-	oColor = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);	
+	oColor = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);
 }

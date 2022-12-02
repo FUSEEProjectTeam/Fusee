@@ -16,12 +16,13 @@ namespace Fusee.PointCloud.Common
         /// Returns a renderable point cloud component.
         /// </summary>
         /// <param name="fileFolderPath">Path to the file.</param>
-        public IPointCloud GetPointCloudComponent(string fileFolderPath);
+        /// <param name="renderMode">Determines which <see cref="RenderMode"/> is used to display the returned point cloud."/></param>
+        public IPointCloud GetPointCloudComponent(RenderMode renderMode);
 
         /// <summary>
         /// Returns the point type.
         /// </summary>
-        public PointType GetPointType();
+        public PointType PointType { get; }
 
         /// <summary>
         /// Reads the Potree file and returns an octree.
@@ -33,7 +34,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <typeparam name="TPoint">The generic point type.</typeparam>
         /// <param name="id">The unique id of the octant.</param>
-        public TPoint[] LoadNodeData<TPoint>(string id) where TPoint : new();
+        public TPoint[] LoadNodeData<TPoint>(OctantId id) where TPoint : new();
 
     }
 }

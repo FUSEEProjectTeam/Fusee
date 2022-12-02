@@ -102,7 +102,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 },
                 Children = new ChildList()
             };
-
+            var mOne = new Mesh(meshOne.Triangles.ToArray(), meshOne.Vertices.ToArray(), meshOne.Normals?.ToArray());
             SceneNode sceneNodeOne = new()
             {
                 Components = new List<SceneComponent>()
@@ -113,15 +113,12 @@ namespace Fusee.Examples.MeshingAround.Core
                         Scale = float3.One,
                         Translation = new float3(0, 0, 0)
                     },
-                    new Mesh()
-                    {
-                        Vertices = meshOne.Vertices,
-                        Triangles = meshOne.Triangles,
-                        Normals = meshOne.Normals,
-                    }
+                    mOne
                 }
             };
             ///////////////////////////////////////////////////////////
+
+            var cubeM = new Mesh(cube.Triangles.ToArray(), cube.Vertices.ToArray(), cube.Normals?.ToArray());
             SceneNode sceneNodeCube = new()
             {
                 Components = new List<SceneComponent>()
@@ -132,16 +129,12 @@ namespace Fusee.Examples.MeshingAround.Core
                         Scale = float3.One,
                         Translation = new float3(-2, -1, 0)
                     },
-                     new Mesh()
-                    {
-                        Vertices = cube.Vertices,
-                        Triangles = cube.Triangles,
-                        Normals = cube.Normals,
-                    }
-
+                    cubeM
                 }
             };
             //////////////////////////////////////////////////////////////////
+            var tMesh = new Mesh(triangle.Triangles.ToArray(), triangle.Vertices.ToArray(), triangle.Normals?.ToArray());
+
             SceneNode sceneNodeCTri = new()
             {
                 Components = new List<SceneComponent>()
@@ -152,12 +145,7 @@ namespace Fusee.Examples.MeshingAround.Core
                         Scale = float3.One,
                         Translation = new float3(1.5f, -1, 0)
                     },
-                    new Mesh()
-                    {
-                        Vertices = triangle.Vertices,
-                        Triangles = triangle.Triangles,
-                        Normals = triangle.Normals,
-                    }
+                    tMesh
                 }
             };
             //////////////////////////////////////////////////////////////////
@@ -204,8 +192,7 @@ namespace Fusee.Examples.MeshingAround.Core
             _renderer = new SceneRendererForward(sc);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
             float2 speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
@@ -213,7 +200,11 @@ namespace Fusee.Examples.MeshingAround.Core
                 _alpha -= speed.x * 0.0001f;
                 _beta -= speed.y * 0.0001f;
             }
+        }
 
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
             _camPivotTransform.RotationQuaternion = QuaternionF.FromEuler(_beta, _alpha, 0);
 
             _renderer.Render(RC);

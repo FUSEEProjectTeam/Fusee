@@ -5,7 +5,7 @@ Exports the current blender scene to the FUSEE file format (.fus)
 bl_info = {
     "name": ".fus format",
     "author": "The FUSEE Project Team",
-    "version": (0, 12, 0),
+    "version": (0, 13, 0),
     "blender": (2, 80, 0),
     "location": "File > Import-Export",
     "description": "Export to the FUSEE .fus format/as a FUSEE Web application",
@@ -33,7 +33,7 @@ from shutil import copyfile
 
 # Add anything from any existing full-fledged Python installation
 # because we need google.protobuf, PTVSD and other stuff!!!
-paths = os.environ['Path']
+paths = os.environ['PATH']
 paths = paths.split(';')
 for path in paths:
     if path.find('Python')!=-1:

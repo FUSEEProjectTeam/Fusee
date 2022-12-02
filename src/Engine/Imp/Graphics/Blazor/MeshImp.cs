@@ -22,12 +22,15 @@ namespace Fusee.Engine.Imp.Blazor
         internal WebGLBuffer VertexBufferObject;
         internal WebGLBuffer NormalBufferObject;
         internal WebGLBuffer ColorBufferObject;
+        internal WebGLBuffer Color1BufferObject;
+        internal WebGLBuffer Color2BufferObject;
         internal WebGLBuffer UVBufferObject;
         internal WebGLBuffer BoneIndexBufferObject;
         internal WebGLBuffer BoneWeightBufferObject;
         internal WebGLBuffer ElementBufferObject;
         internal WebGLBuffer TangentBufferObject;
         internal WebGLBuffer BitangentBufferObject;
+        internal WebGLBuffer FlagsBufferObject;
         internal int NElements;
         #endregion
 
@@ -167,14 +170,28 @@ namespace Fusee.Engine.Imp.Blazor
             VertexArrayObject = null;
         }
 
+        /// <summary>
+        /// Removes the second color array object from GPU
+        /// </summary>
         public void InvalidateColors1()
         {
-            throw new System.NotImplementedException();
+            Color1BufferObject = null;
         }
 
+        /// <summary>
+        /// Removes the third color buffer from GPU
+        /// </summary>
         public void InvalidateColors2()
         {
-            throw new System.NotImplementedException();
+            Color2BufferObject = null;
+        }
+
+        /// <summary>
+        /// Removes the flags buffer from the GPU.
+        /// </summary>
+        public void InvalidateFlags()
+        {
+            FlagsBufferObject = null;
         }
 
         /// <summary>
@@ -191,13 +208,24 @@ namespace Fusee.Engine.Imp.Blazor
         public PrimitiveType MeshType { get; set; }
 
         /// <summary>
-        /// Returns a vertex array object set
+        /// Returns whether the VAO is created on the GPU.
         /// </summary>
         public bool VertexArrayObjectSet => VertexArrayObject != null;
 
-        public bool ColorsSet1 => throw new System.NotImplementedException();
+        /// <summary>
+        /// Returns whether the second color buffer is created on the GPU.
+        /// </summary>
+        public bool ColorsSet1 => Color1BufferObject != null;
 
-        public bool ColorsSet2 => throw new System.NotImplementedException();
+        /// <summary>
+        /// Returns whether the third color buffer is created on the GPU.
+        /// </summary>
+        public bool ColorsSet2 => Color2BufferObject != null;
+
+        /// <summary>
+        /// Returns whether the flags buffer is created on the GPU.
+        /// </summary>
+        public bool FlagsSet => FlagsBufferObject != null;
 
         #endregion
     }

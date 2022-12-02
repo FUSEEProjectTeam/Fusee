@@ -233,7 +233,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
     {
     }
 
-    public partial class WebGLUniformLocation : JSHandler, IDisposable
+    public partial class WebGLUniformLocation : JSHandler
     {
     }
 

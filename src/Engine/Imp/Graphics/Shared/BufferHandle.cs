@@ -26,4 +26,20 @@ namespace Fusee.Engine.Imp.Graphics.Android
     {
         internal int Handle = -1;
     }
+
+    /// <summary>
+    /// VertexArrayObject implementation for WebAsm.
+    /// </summary>
+    public class VertexArrayObject : IBufferHandle
+    {
+        internal int Handle = -1;
+    }
+
+    /// <summary>
+    /// VertexArrayObject implementation for WebAsm.
+    /// </summary>
+    public class VertexBufferObject : IBufferHandle
+    {
+        internal int Handle = -1;
+    }
 }

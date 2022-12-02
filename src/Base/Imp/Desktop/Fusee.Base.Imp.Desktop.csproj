@@ -1,17 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 		
 		<IsPackable>true</IsPackable>
 		<Description>Fusee Base Imp Desktop</Description>
 	</PropertyGroup>
-	
-	<ItemGroup>
-	  <PackageReference Include="SixLabors.ImageSharp" Version="2.1.1" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">

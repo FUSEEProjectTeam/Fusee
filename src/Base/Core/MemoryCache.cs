@@ -8,7 +8,7 @@ namespace Fusee.Base.Core
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TItem">The type of the cached item.</typeparam>
     /// </summary>
-    public class MemoryCache<TKey, TItem> : IDisposable
+    public class MemoryCache<TKey, TItem>
     {
         /// <summary>
         /// Sets how long a cache entry can be inactive (not accessed) before it will be removed.
@@ -26,7 +26,6 @@ namespace Fusee.Base.Core
         public PostEvictionDelegate HandleEvictedItem;
 
         private readonly MemoryCache _cache;
-        private bool _disposed;
 
         /// <summary>
         /// Creates a new instance and initializes the internal <see cref="MemoryCache"/> with the gi
@@ -96,47 +95,5 @@ namespace Fusee.Base.Core
                 _cache.Set(key, cacheEntry, cacheEntryOptions);
             }
         }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <param name="disposing">If disposing equals true, the method has been called directly
-        /// or indirectly by a user's code. Managed and unmanaged resources
-        /// can be disposed.
-        /// If disposing equals false, the method has been called by the
-        /// runtime from inside the finalizer and you should not reference
-        /// other objects. Only unmanaged resources can be disposed.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    // Dispose managed resources.
-                    _cache.Dispose();
-
-                }
-                _disposed = true;
-            }
-        }
-
-        /// <summary>
-        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
-        /// </summary>
-        ~MemoryCache()
-        {
-            Dispose(disposing: false);
-        }
-
     }
 }

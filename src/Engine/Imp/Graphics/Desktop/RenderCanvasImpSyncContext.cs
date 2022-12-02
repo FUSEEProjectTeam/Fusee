@@ -7,9 +7,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 {
     internal class RenderCanvasImpSyncContext : SynchronizationContext
     {
-        private readonly ConcurrentQueue<Tuple<SendOrPostCallback, object?>> _allCallbacks = new();
+        private readonly ConcurrentQueue<Tuple<SendOrPostCallback, object>> _allCallbacks = new();
 
-        public override void Post(SendOrPostCallback d, object? state)
+        public override void Post(SendOrPostCallback d, object state)
         {
             _allCallbacks.Enqueue(Tuple.Create(d, state));
         }

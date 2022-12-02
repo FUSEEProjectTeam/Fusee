@@ -15,14 +15,14 @@ namespace Fusee.Engine.Core.Primitives
         /// <param name="points">The vertices, the line should connect.</param>
         /// <param name="lineThickness">The thickness of the line.</param>
         /// <param name="rectWidth"></param>
-        /// <param name="rectHeight"></param>       
+        /// <param name="rectHeight"></param>
         public Line(List<float3> points, float lineThickness, float rectWidth = 1, float rectHeight = 1)
         {
             var segmentCache = new float3[4];
 
             var verts = new List<float3>();
             var normals = new List<float3>();
-            var tris = new List<ushort>();
+            var tris = new List<uint>();
             var uvs = new List<float2>();
 
             var segmentCount = points.Count - 1;
@@ -214,10 +214,10 @@ namespace Fusee.Engine.Core.Primitives
 
             }
 
-            Vertices = verts.ToArray();
-            Normals = normals.ToArray();
-            Triangles = tris.ToArray();
-            UVs = uvs.ToArray();
+            Vertices = new MeshAttributes<float3>(verts);
+            Normals = new MeshAttributes<float3>(normals);
+            Triangles = new MeshAttributes<uint>(tris);
+            UVs = new MeshAttributes<float2>(uvs);
         }
 
         private float3 RotateVectorInXYPlane(float3 vec, float angle)

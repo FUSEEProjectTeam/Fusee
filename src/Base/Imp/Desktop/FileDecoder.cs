@@ -46,6 +46,7 @@ namespace Fusee.Base.Imp.Desktop
                 var pixels = new byte[bytesPerPixel * image.Width * image.Height];
 
                 ImageData img;
+
                 switch (bitsPerPixel)
                 {
                     case 16:
@@ -78,10 +79,10 @@ namespace Fusee.Base.Imp.Desktop
                         {
                             (image as Image<Rgb48>).CopyPixelDataTo(pixels);
                             img = new ImageData(new byte[bytesPerPixel * image.Width * image.Height], image.Width, image.Height,
-                               new ImagePixelFormat(ColorFormat.fRGB32));
+                               new ImagePixelFormat(ColorFormat.fRGB16));
                             break;
                         }
-                    case 64:
+                    case 96:
                         {
                             (image as Image<Rgba64>).CopyPixelDataTo(pixels);
                             img = new ImageData(new byte[bytesPerPixel * image.Width * image.Height], image.Width, image.Height,

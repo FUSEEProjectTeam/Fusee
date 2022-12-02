@@ -549,7 +549,7 @@ namespace Fusee.Math.Core
             return (item1 - centroid1) * (item2 - centroid2) / numberOfPoints;
         }
 
-        #endregion Covariance        
+        #endregion Covariance
 
         #region MinAngle
 
@@ -740,6 +740,8 @@ namespace Fusee.Math.Core
 
         #endregion Equals
 
+        #region Step
+
         /// <summary>
         /// Generates a step function by comparing "val" to "edge".
         /// 0.0 is returned if "val" is smaller than "edge" and 1.0 is returned otherwise.
@@ -763,6 +765,39 @@ namespace Fusee.Math.Core
         {
             return val < edge ? 0.0 : 1.0;
         }
+
+        #endregion
+
+        #region ScreenToWorldPoint
+
+        /// <summary>
+        /// Calculates a world position from given screen point (e. g. mouse coordinates in window space coordinates)
+        /// at any desired z coordinate specified by <paramref name="zPosition"/>
+        /// </summary>
+        /// <param name="windowCoordIn">Position in window space coordinates</param>
+        /// <param name="zPosition">Desired z coordinate in clip space</param>
+        /// <param name="Projection">Projection matrix</param>
+        /// <param name="View">View matrix</param>
+        /// <param name="InvProjection">Inverse Projection matrix</param>
+        /// <param name="InvView">Inverse View matrix</param>
+        /// <param name="windowWidth">Width of window</param>
+        /// <param name="windowHeight">Height of window</param>
+        /// <returns></returns>
+        public static float3 ScreenPointToWorld(float2 windowCoordIn, float zPosition, float4x4 Projection, float4x4 View, float4x4 InvProjection, float4x4 InvView, int windowWidth, int windowHeight)
+        {
+            var oneInClipSpace = float4x4.TransformPerspective(Projection * View, new float4(0, 0, zPosition, 1));
+
+            var pickPosClip = (windowCoordIn * new float2(2.0f / windowWidth, -2.0f / windowHeight)) + new float2(-1, 1);
+
+            var vec = new float4(pickPosClip.x, pickPosClip.y, oneInClipSpace.z, 1f);
+
+            var pos = float4x4.TransformPerspective(InvProjection, vec);
+            pos = InvView * pos;
+
+            return new float3(pos.x, pos.y, pos.z);
+        }
+
+        #endregion
 
         #endregion Public Members
 

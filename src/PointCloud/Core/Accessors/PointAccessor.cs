@@ -1367,7 +1367,7 @@ namespace Fusee.PointCloud.Core.Accessors
             switch (IntensityType)
             {
                 case PointIntensityType.SByte:
-                    return BitConverter.GetBytes(GetIntensityInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetIntensityInt_8(ref point)));
                 case PointIntensityType.Short:
                     return BitConverter.GetBytes(GetIntensityInt_16(ref point));
                 case PointIntensityType.Int:
@@ -1375,7 +1375,7 @@ namespace Fusee.PointCloud.Core.Accessors
                 case PointIntensityType.Long:
                     return BitConverter.GetBytes(GetIntensityInt_64(ref point));
                 case PointIntensityType.Byte:
-                    return BitConverter.GetBytes(GetIntensityUInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetIntensityUInt_8(ref point)));
                 case PointIntensityType.UShort:
                     return BitConverter.GetBytes(GetIntensityUInt_16(ref point));
                 case PointIntensityType.UInt:
@@ -1421,7 +1421,7 @@ namespace Fusee.PointCloud.Core.Accessors
             switch (ColorType)
             {
                 case PointColorType.SByte:
-                    return BitConverter.GetBytes(GetColorInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetColorInt_8(ref point)));
                 case PointColorType.Short:
                     return BitConverter.GetBytes(GetColorInt_16(ref point));
                 case PointColorType.Int:
@@ -1429,7 +1429,7 @@ namespace Fusee.PointCloud.Core.Accessors
                 case PointColorType.Long:
                     return BitConverter.GetBytes(GetColorInt_64(ref point));
                 case PointColorType.Byte:
-                    return BitConverter.GetBytes(GetColorUInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetColorUInt_8(ref point)));
                 case PointColorType.Ushort:
                     return BitConverter.GetBytes(GetColorUInt_16(ref point));
                 case PointColorType.Uint:
@@ -1470,7 +1470,7 @@ namespace Fusee.PointCloud.Core.Accessors
             switch (LabelType)
             {
                 case PointLabelType.SByte:
-                    return BitConverter.GetBytes(GetLabelInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetLabelInt_8(ref point)));
                 case PointLabelType.Short:
                     return BitConverter.GetBytes(GetLabelInt_16(ref point));
                 case PointLabelType.Int:
@@ -1478,7 +1478,7 @@ namespace Fusee.PointCloud.Core.Accessors
                 case PointLabelType.Long:
                     return BitConverter.GetBytes(GetLabelInt_64(ref point));
                 case PointLabelType.Byte:
-                    return BitConverter.GetBytes(GetLabelUInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetLabelUInt_8(ref point)));
                 case PointLabelType.UShort:
                     return BitConverter.GetBytes(GetLabelUInt_16(ref point));
                 case PointLabelType.UInt:
@@ -1499,7 +1499,7 @@ namespace Fusee.PointCloud.Core.Accessors
             switch (CurvatureType)
             {
                 case PointCurvatureType.SByte:
-                    return BitConverter.GetBytes(GetCurvatureInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetCurvatureInt_8(ref point)));
                 case PointCurvatureType.Short:
                     return BitConverter.GetBytes(GetCurvatureInt_16(ref point));
                 case PointCurvatureType.Int:
@@ -1507,7 +1507,7 @@ namespace Fusee.PointCloud.Core.Accessors
                 case PointCurvatureType.Long:
                     return BitConverter.GetBytes(GetCurvatureInt_64(ref point));
                 case PointCurvatureType.Byte:
-                    return BitConverter.GetBytes(GetCurvatureUInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetCurvatureUInt_8(ref point)));
                 case PointCurvatureType.UShort:
                     return BitConverter.GetBytes(GetCurvatureUInt_16(ref point));
                 case PointCurvatureType.Uint:
@@ -1528,7 +1528,7 @@ namespace Fusee.PointCloud.Core.Accessors
             switch (HitCountType)
             {
                 case PointHitCountType.SByte:
-                    return BitConverter.GetBytes(GetHitCountInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetHitCountInt_8(ref point)));
                 case PointHitCountType.Short:
                     return BitConverter.GetBytes(GetHitCountInt_16(ref point));
                 case PointHitCountType.Int:
@@ -1536,7 +1536,7 @@ namespace Fusee.PointCloud.Core.Accessors
                 case PointHitCountType.Long:
                     return BitConverter.GetBytes(GetHitCountInt_64(ref point));
                 case PointHitCountType.Byte:
-                    return BitConverter.GetBytes(GetHitCountUInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetHitCountUInt_8(ref point)));
                 case PointHitCountType.UShort:
                     return BitConverter.GetBytes(GetHitCountUInt_16(ref point));
                 case PointHitCountType.Uint:
@@ -1557,7 +1557,7 @@ namespace Fusee.PointCloud.Core.Accessors
             switch (GpsTimeType)
             {
                 case PointGpsTimeType.SByte:
-                    return BitConverter.GetBytes(GetGPSTimeInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetGPSTimeInt_8(ref point)));
                 case PointGpsTimeType.Short:
                     return BitConverter.GetBytes(GetGPSTimeInt_16(ref point));
                 case PointGpsTimeType.Int:
@@ -1565,7 +1565,7 @@ namespace Fusee.PointCloud.Core.Accessors
                 case PointGpsTimeType.Long:
                     return BitConverter.GetBytes(GetGPSTimeInt_64(ref point));
                 case PointGpsTimeType.Byte:
-                    return BitConverter.GetBytes(GetGPSTimeUInt_8(ref point));
+                    return BitConverter.GetBytes(((short)GetGPSTimeUInt_8(ref point)));
                 case PointGpsTimeType.UShort:
                     return BitConverter.GetBytes(GetGPSTimeUInt_16(ref point));
                 case PointGpsTimeType.Uint:

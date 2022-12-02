@@ -7,14 +7,14 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// Abstract class that provides input for <see cref="ShaderEffect"/> and <see cref="SurfaceEffectBase"/>.
+    /// Abstract base class for <see cref="ShaderEffect"/>, <see cref="SurfaceEffectBase"/> and <see cref="ComputeEffect"/>.
     /// </summary>
-    public abstract class Effect : SceneComponent
+    public abstract class Effect : SceneComponent, IDisposable
     {
         /// <summary>
         /// Collection of all uniform parameters of this effect. See <see cref="IFxParamDeclaration"/>.
         /// </summary>
-        public Dictionary<int, IFxParamDeclaration> ParamDecl { get; protected set; }
+        public Dictionary<int, IFxParamDeclaration> UniformParameters { get; protected set; }
 
         /// <summary>
         /// The renderer states that are applied for this effect, e.g. the blend and alpha mode.
@@ -36,6 +36,8 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public Suid SessionUniqueIdentifier { get; } = Suid.GenerateSuid();
 
+        private bool _disposed;
+
         /// <summary>
         /// Set effect parameter
         /// </summary>
@@ -43,7 +45,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="value">Value of the uniform variable</param>
         public void SetFxParam<T>(string name, T value)
         {
-            if (ParamDecl != null)
+            if (UniformParameters != null)
             {
                 var hash = name.GetHashCode();
                 SetFxParam(hash, value);
@@ -57,15 +59,12 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="value">Value of the uniform variable</param>
         public void SetFxParam<T>(int hash, T value)
         {
-            if (ParamDecl.ContainsKey(hash))
+            if (UniformParameters.ContainsKey(hash))
             {
-                var dcl = ParamDecl[hash];
-
-                if (!ParamDecl[hash].SetValue(value)) return;
+                if (!UniformParameters[hash].SetValue(value)) return;
 
                 EffectManagerEventArgs.Changed = UniformChangedEnum.Update;
                 EffectManagerEventArgs.ChangedUniformHash = hash;
-                EffectManagerEventArgs.ChangedUniformValue = value;
 
                 EffectChanged?.Invoke(this, EffectManagerEventArgs);
             }
@@ -83,7 +82,7 @@ namespace Fusee.Engine.Core.Effects
         public T GetFxParam<T>(string name)
         {
             var hash = name.GetHashCode();
-            if (ParamDecl.TryGetValue(hash, out var dcl))
+            if (UniformParameters.TryGetValue(hash, out var dcl))
             {
                 return ((FxParamDeclaration<T>)dcl).Value;
             }
@@ -135,6 +134,47 @@ namespace Fusee.Engine.Core.Effects
         public override int GetHashCode()
         {
             return SessionUniqueIdentifier.GetHashCode();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    //dispose managed resources
+                }
+                EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
+
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Destructor calls <see cref="Dispose()"/> in order to fire MeshChanged event.
+        /// </summary>
+        ~Effect()
+        {
+            Dispose(false);
         }
     }
 }

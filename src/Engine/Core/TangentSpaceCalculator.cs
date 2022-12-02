@@ -30,11 +30,11 @@ namespace Fusee.Engine.Core
 
             for (var i = 0; i < m.Triangles.Length; i += 3)
             {
-                var edge1 = m.Vertices[m.Triangles[i + 1]] - m.Vertices[m.Triangles[i]];
-                var edge2 = m.Vertices[m.Triangles[i + 2]] - m.Vertices[m.Triangles[i]];
+                var edge1 = m.Vertices[(int)m.Triangles[i + 1]] - m.Vertices[(int)m.Triangles[i]];
+                var edge2 = m.Vertices[(int)m.Triangles[i + 2]] - m.Vertices[(int)m.Triangles[i]];
 
-                var deltaUv1 = m.UVs[m.Triangles[i + 1]] - m.UVs[m.Triangles[i]];
-                var deltaUv2 = m.UVs[m.Triangles[i + 2]] - m.UVs[m.Triangles[i]];
+                var deltaUv1 = m.UVs[(int)m.Triangles[i + 1]] - m.UVs[(int)m.Triangles[i]];
+                var deltaUv2 = m.UVs[(int)m.Triangles[i + 2]] - m.UVs[(int)m.Triangles[i]];
 
                 var f = 1.0f / (deltaUv1.x * deltaUv2.y - deltaUv2.x * deltaUv1.y);
 
@@ -48,7 +48,7 @@ namespace Fusee.Engine.Core
                 tangent.Normalize();
 
                 //Orthogonalization
-                var normal = m.Normals[m.Triangles[i]];
+                var normal = m.Normals[(int)m.Triangles[i]];
                 var dot = normal.x * tangent.x + normal.y * tangent.y + normal.z * tangent.z;
                 tangent -= normal * dot;
 
@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
                 tangents[m.Triangles[i + 2]].Normalize();
                 tangents[m.Triangles[i + 2]].w = 1;
             }
-            m.Tangents = tangents;
+            m.Tangents = new MeshAttributes<float4>(tangents);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < m.Tangents.Length; i++)
                 bitangents[i] = float3.Cross(m.Normals[i], m.Tangents[i].xyz) * m.Tangents[i].w;
 
-            m.BiTangents = bitangents;
+            m.BiTangents = new MeshAttributes<float3>(bitangents);
         }
     }
 }

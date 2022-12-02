@@ -104,6 +104,12 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Opaque handle to the texture object on the gpu.
+        /// </summary>
+        public ITextureHandle TextureHandle { get; internal set; }
+
+
+        /// <summary>
         /// Creates a new instance of type "WritableTexture".
         /// </summary>
         /// <param name="texType">Defines the type of the render texture.</param>
@@ -235,7 +241,7 @@ namespace Fusee.Engine.Core
         private bool _disposed;
 
         /// <summary>
-        /// Fire dispose mesh event
+        /// Fire dispose texture event
         /// </summary>
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
@@ -244,15 +250,17 @@ namespace Fusee.Engine.Core
             {
                 if (disposing)
                 {
-                    TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+
                 }
+
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
 
                 _disposed = true;
             }
         }
 
         /// <summary>
-        /// Fire dispose mesh event
+        /// Fire dispose texture event
         /// </summary>
         public void Dispose()
         {

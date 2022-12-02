@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+#pragma warning disable CS1591
+
 namespace Fusee.PointCloud.Potree.V2.Data
 {
     public class PotreeHierarchy
@@ -8,3 +10,5 @@ namespace Fusee.PointCloud.Potree.V2.Data
         public List<PotreeNode> Nodes;
     }
 }
+
+#pragma warning restore CS1591

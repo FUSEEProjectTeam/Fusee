@@ -1,4 +1,6 @@
-﻿namespace Fusee.Engine.Core
+﻿using System;
+
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// The Time class provides all time information. Time is a staticton (a singleton with an additional
@@ -12,7 +14,7 @@
     /// directly access <see cref="FramesPerSecond"/>, <see cref="DeltaTime"/> etc.
     /// without even typing a namespace or class name.
     /// </remarks>
-    public class Time
+    public class Time : IDisposable
     {
         #region Fields
 
@@ -178,8 +180,50 @@
 
         #endregion
 
-        internal void Dispose()
+        #region IDisposable Support
+
+        private bool disposed;
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
         {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    _instance = null;
+                }
+
+                disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
+        ~Time()
+        {
+            Dispose(false);
+        }
+
+        #endregion
     }
 }

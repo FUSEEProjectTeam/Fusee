@@ -1,10 +1,12 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
+using SixLabors.ImageSharp.Drawing;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FileMode = System.IO.FileMode;
+using Path = System.IO.Path;
 
 namespace Fusee.Base.Imp.Desktop
 {
@@ -121,18 +123,18 @@ namespace Fusee.Base.Imp.Desktop
 
             // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly
             if (Path.IsPathRooted(id))
-                return new FileStream(id, FileMode.Open);
+                return new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, false);
 
             // Path seems relative. First see if the file exists at the current working directory
             if (File.Exists(id))
-                return new FileStream(id, FileMode.Open);
+                return new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, false);
 
             // At last, look at the specified base directories
             foreach (var baseDir in _baseDirs)
             {
                 string path = Path.Combine(baseDir, id);
                 if (File.Exists(path))
-                    return new FileStream(path, FileMode.Open);
+                    return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, false);
             }
             return null;
         }
@@ -176,8 +178,6 @@ namespace Fusee.Base.Imp.Desktop
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-
-
             // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly
             if (Path.IsPathRooted(id))
                 return new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
@@ -194,8 +194,6 @@ namespace Fusee.Base.Imp.Desktop
                     return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
             }
             return null;
-
-
 
         }
 #pragma warning restore CS1998

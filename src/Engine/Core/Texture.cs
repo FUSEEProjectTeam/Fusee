@@ -11,6 +11,8 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class Texture : ITexture
     {
+        protected Texture() { }
+
         #region RenderContext Asset Management
 
         /// <summary>
@@ -21,15 +23,18 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
         /// </summary>
-        public Suid SessionUniqueIdentifier { get; private set; }
+        public Suid SessionUniqueIdentifier { get; protected set; }
         #endregion
 
-        public IImageData ImageData { get; private set; }
+        /// <summary>
+        /// The <see cref="IImageData"/> of this texture.
+        /// </summary>
+        public IImageData ImageData { get; protected set; }
 
         #region Properties
 
         /// <summary>
-        /// Reference to the original image. Should save  path/file name. 
+        /// Reference to the original image. Should save path/file name.
         /// </summary>
         public string PathAndName;
 
@@ -79,7 +84,7 @@ namespace Fusee.Engine.Core
         public bool DoGenerateMipMaps
         {
             get;
-            private set;
+            protected set;
         }
 
         /// <summary>
@@ -119,9 +124,9 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
         /// </summary>
-        public RenderTargetTextureTypes TextureType { get; private set; }
+        public RenderTargetTextureTypes TextureType { get; protected set; }
 
-        #endregion        
+        #endregion
 
         /// <summary>
         /// Constructor initializes a Texture from a pixelData byte buffer, width and height in pixels and <see cref="ImagePixelFormat"/>.
@@ -216,10 +221,7 @@ namespace Fusee.Engine.Core
         {
             if (!_disposed)
             {
-                if (disposing)
-                {
-                    TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
-                }
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
 
                 _disposed = true;
             }
@@ -232,6 +234,8 @@ namespace Fusee.Engine.Core
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -239,7 +243,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         ~Texture()
         {
-            Dispose(true);
+            Dispose(false);
         }
 
         /// <summary>

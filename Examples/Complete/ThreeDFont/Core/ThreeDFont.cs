@@ -95,6 +95,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             };
 
             //Vladimir
+            var vladMesh = new Mesh(_textMeshVlad.Triangles.ToArray(), _textMeshVlad.Vertices.ToArray(), _textMeshVlad.Normals?.ToArray());
             var sceneNodeCVlad = new SceneNode
             {
                 Components = new List<SceneComponent>()
@@ -106,16 +107,12 @@ namespace Fusee.Examples.ThreeDFont.Core
                         Translation = new float3(0, 2000, 0)
                     },
                     MakeEffect.FromDiffuseSpecular(new float4(26/255f,232/255f,148/255f,1)),
-                    new Mesh
-                    {
-                        Vertices = _textMeshVlad.Vertices,
-                        Triangles = _textMeshVlad.Triangles,
-                        Normals = _textMeshVlad.Normals,
-                    }
+                    vladMesh
                 }
             };
 
             //Lato
+            var latoMesh = new Mesh(_textMeshLato.Triangles.ToArray(), _textMeshLato.Vertices.ToArray(), _textMeshLato.Normals?.ToArray());
             var sceneNodeCLato = new SceneNode
             {
                 Components = new List<SceneComponent>()
@@ -127,16 +124,13 @@ namespace Fusee.Examples.ThreeDFont.Core
                         Translation = new float3(0, 0, 0)
                     },
                     MakeEffect.FromDiffuseSpecular(new float4(27/255f,242/255f,216/255f,1)),
-                    new Mesh
-                    {
-                        Vertices = _textMeshLato.Vertices,
-                        Triangles = _textMeshLato.Triangles,
-                        Normals = _textMeshLato.Normals,
-                    }
+                    latoMesh
                 }
             };
 
             //GNU
+            var gnuMesh = new Mesh(_textMeshGnu.Triangles.ToArray(), _textMeshGnu.Vertices.ToArray(), _textMeshGnu.Normals?.ToArray());
+
             var sceneNodeCGnu = new SceneNode
             {
                 Components = new List<SceneComponent>()
@@ -148,12 +142,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                         Translation = new float3(0, -2000, 0)
                     },
                     MakeEffect.FromDiffuseSpecular(new float4(34/255f,190/255f,219/255f,1)),
-                    new Mesh
-                    {
-                        Vertices = _textMeshGnu.Vertices,
-                        Triangles = _textMeshGnu.Triangles,
-                        Normals = _textMeshGnu.Normals,
-                    }
+                    gnuMesh
                 }
             };
 
@@ -197,8 +186,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             _renderer = new SceneRendererForward(sc);
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
             float2 speed = float2.Zero;
             if (Mouse.LeftButton)
@@ -209,8 +197,12 @@ namespace Fusee.Examples.ThreeDFont.Core
             _alpha += speed.x * 0.0001f;
             _beta += speed.y * 0.0001f;
 
-            _camPivot.RotationMatrix = float4x4.CreateRotationY(_alpha) * float4x4.CreateRotationX(_beta);
+            _camPivot.RotationQuaternion = QuaternionF.FromEuler(_beta, _alpha, 0);
+        }
 
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
             _renderer.Render(RC);
 
             Present();

@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Common;
+using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,17 +40,17 @@ namespace Fusee.Engine.Core
 
     /// <summary>
     /// Handles and manages all input devices. Input is a staticton (a singleton with an additional
-    /// static interface). 
+    /// static interface).
     /// </summary>
     /// <remarks>
-    /// Use the input instance in cases where you actually need an 
+    /// Use the input instance in cases where you actually need an
     /// object to pass around (although there is no such use case in FUSEE code at all).
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Input</code> to
-    /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/>, <see cref="Touch"/>, 
+    /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/>, <see cref="Touch"/>,
     /// without even typing a namespace or class name.
     /// </remarks>
-    public class Input
+    public class Input : IDisposable
     {
         private readonly Dictionary<string, IInputDriverImp> _inputDrivers;
         /// <summary>
@@ -72,7 +72,7 @@ namespace Fusee.Engine.Core
         /// The input driver implementations.
         /// </value>
         /// <remarks>
-        /// This is a static method. Use <see cref="InputDrivers"/> for an instance method 
+        /// This is a static method. Use <see cref="InputDrivers"/> for an instance method
         /// to the same functionality.
         /// </remarks>
         public static IEnumerable<IInputDriverImp> Drivers => Instance._inputDrivers.Values;
@@ -113,7 +113,7 @@ namespace Fusee.Engine.Core
         /// <typeparam name="TDevice">The type of the devices to find.</typeparam>
         /// <returns>The input devices of the specified type</returns>
         /// <remarks>
-        /// This is a static method. Use <see cref="GetInputDevices{TDevice}"/> for an instance method 
+        /// This is a static method. Use <see cref="GetInputDevices{TDevice}"/> for an instance method
         /// to the same functionality.
         /// </remarks>
         public static IEnumerable<TDevice> GetDevices<TDevice>() where TDevice : InputDevice => Instance.GetInputDevices<TDevice>();
@@ -136,7 +136,7 @@ namespace Fusee.Engine.Core
         /// <typeparam name="TDevice">The type of the device to find.</typeparam>
         /// <returns>The first device matching the given type, or null if no such device is currently present.</returns>
         /// <remarks>
-        /// This is a static method. Use <see cref="GetInputDevice{TDevice}"/> for an instance method 
+        /// This is a static method. Use <see cref="GetInputDevice{TDevice}"/> for an instance method
         /// to the same functionality.
         /// </remarks>
         public static TDevice GetDevice<TDevice>(int deviceid = 0) where TDevice : InputDevice => Instance.GetInputDevice<TDevice>(deviceid);
@@ -159,7 +159,7 @@ namespace Fusee.Engine.Core
         /// The mouse (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="MouseInput"/> for an instance property 
+        /// This is a static property. Use <see cref="MouseInput"/> for an instance property
         /// to the same functionality.
         /// </remarks>
         public static MouseDevice Mouse => Instance.MouseInput;
@@ -182,7 +182,7 @@ namespace Fusee.Engine.Core
         /// The keyboard (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="KeyboardInput"/> for an instance property 
+        /// This is a static property. Use <see cref="KeyboardInput"/> for an instance property
         /// to the same functionality.
         /// </remarks>
         public static KeyboardDevice Keyboard => Instance.KeyboardInput;
@@ -206,7 +206,7 @@ namespace Fusee.Engine.Core
         /// The touch device (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="TouchInput"/> for an instance property 
+        /// This is a static property. Use <see cref="TouchInput"/> for an instance property
         /// to the same functionality.
         /// </remarks>
         public static TouchDevice Touch => Instance.TouchInput;
@@ -224,7 +224,7 @@ namespace Fusee.Engine.Core
         /// Occurs when a device such as a gamepad is connected.
         /// </summary>
         /// <remarks>
-        /// This is a static event. Use <see cref="DeviceConnected"/> for an instance property 
+        /// This is a static event. Use <see cref="DeviceConnected"/> for an instance property
         /// to the same functionality.
         /// </remarks>
         public static event EventHandler<DeviceConnectionArgs> DeviceConnected
@@ -257,7 +257,7 @@ namespace Fusee.Engine.Core
         /// Occurs when a device such as a gamepad is disconnected.
         /// </summary>
         /// <remarks>
-        /// This is a static event. Use <see cref="DeviceConnected"/> for an instance property 
+        /// This is a static event. Use <see cref="DeviceConnected"/> for an instance property
         /// to the same functionality.
         /// </remarks>
         public static event EventHandler<DeviceConnectionArgs> DeviceDisconnected
@@ -398,7 +398,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="inputDriver">The new input driver to add.</param>
         /// <remarks>
-        /// This is a static method. Use <see cref="AddInputDriverImp"/> for an instance property 
+        /// This is a static method. Use <see cref="AddInputDriverImp"/> for an instance property
         /// to the same functionality.
         /// </remarks>
         public static void AddDriverImp(IInputDriverImp inputDriver) => Instance.AddInputDriverImp(inputDriver);
@@ -449,10 +449,10 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Should be called from the main (rendering-) loop. Typically not to be called by user code unless
+        /// Should be called from the main (update-) loop. Typically not to be called by user code unless
         /// users implement their own rendering/application loop.
         /// </summary>
-        public void PreRender()
+        public void PreUpdate()
         {
             foreach (var inputDevice in InputDevices)
             {
@@ -460,10 +460,10 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Should be called from the main (rendering-) loop. Typically not to be called by user code unless
+        /// Should be called from the main (update-) loop. Typically not to be called by user code unless
         /// users implement their own rendering/application loop.
         /// </summary>
-        public void PostRender()
+        public void PostUpdate()
         {
             foreach (var inputDevice in InputDevices)
             {
@@ -471,23 +471,60 @@ namespace Fusee.Engine.Core
             }
         }
 
+        #region IDisposable Support
+
+        private bool disposed;
+
         /// <summary>
-        /// Should be called from the application framework before the application stops. Typically not to be called by user code unless
-        /// users implement their own application framework.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            foreach (var device in _inputDevices.Values)
-            {
-                InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = device });
-                device.Disconnect();
-            }
-            _inputDevices.Clear();
-            foreach (var driver in _inputDrivers.Values)
-            {
-                driver.Dispose();
-            }
-            _inputDrivers.Clear();
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    foreach (var device in _inputDevices.Values)
+                    {
+                        InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = device });
+                        device.Disconnect();
+                    }
+
+                    _inputDevices.Clear();
+                    _inputDrivers.Clear();
+                    _instance = null;
+
+                }
+
+                disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
+        ~Input()
+        {
+            Dispose(false);
+        }
+
+        #endregion
+
     }
 }

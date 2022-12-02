@@ -57,7 +57,7 @@
   <ItemGroup>
     <Reference Include="Mono.Android" />
     <Reference Include="System" />
-    <PackageReference Include="protobuf-net" Version="3.1.0" />
+    <PackageReference Include="protobuf-net" Version="3.1.25" />
   </ItemGroup>
   <!-- Fusee References -->
   <ItemGroup>
@@ -88,10 +88,6 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
       <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
       <Name>Fusee.Engine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.Gui.csproj">
-      <Project>{26808b4a-9f15-47f0-b147-e744241b79d2}</Project>
-      <Name>Fusee.Engine.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>

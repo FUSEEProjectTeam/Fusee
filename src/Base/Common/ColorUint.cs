@@ -7,7 +7,7 @@ namespace Fusee.Base.Common
 
     /// <summary>
     /// Represents a 32-bit color (4 bytes) in the form of RGBA (in byte order: R, G, B, A).
-    /// Seen as a 32 bit unsigned integer, each color is in the form AARRGGBB - so the 
+    /// Seen as a 32 bit unsigned integer, each color is in the form AARRGGBB - so the
     /// most significant byte is Alpha and the least significant byte is the blue channel
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Size = 4)]
@@ -160,7 +160,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// The red component of the color.
-        /// </summary> 
+        /// </summary>
         public byte R;
         /// <summary>
         /// The green component of the color.
@@ -232,7 +232,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Fusee.Engine.ColorUint"/> struct.
-        /// 
+        ///
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
         public ColorUint(float value)
@@ -264,10 +264,10 @@ namespace Fusee.Base.Common
         /// <param name="alpha">The alpha component of the color.</param>
         public ColorUint(float red, float green, float blue, float alpha)
         {
-            this.R = ColorUint.ToByte(red);
-            this.G = ColorUint.ToByte(green);
-            this.B = ColorUint.ToByte(blue);
-            this.A = ColorUint.ToByte(alpha);
+            this.R = ToByte(red);
+            this.G = ToByte(green);
+            this.B = ToByte(blue);
+            this.A = ToByte(alpha);
         }
 
         /// <summary>
@@ -276,10 +276,10 @@ namespace Fusee.Base.Common
         /// <param name="value">The red, green, blue, and alpha components of the color.</param>
         public ColorUint(float4 value)
         {
-            this.R = ColorUint.ToByte(value.x);
-            this.G = ColorUint.ToByte(value.y);
-            this.B = ColorUint.ToByte(value.z);
-            this.A = ColorUint.ToByte(value.w);
+            this.R = ToByte(value.x);
+            this.G = ToByte(value.y);
+            this.B = ToByte(value.z);
+            this.A = ToByte(value.w);
         }
 
         /// <summary>
@@ -289,10 +289,10 @@ namespace Fusee.Base.Common
         /// <param name="alpha">The alpha component of the color.</param>
         public ColorUint(float3 value, float alpha)
         {
-            this.R = ColorUint.ToByte(value.x);
-            this.G = ColorUint.ToByte(value.y);
-            this.B = ColorUint.ToByte(value.z);
-            this.A = ColorUint.ToByte(alpha);
+            this.R = ToByte(value.x);
+            this.G = ToByte(value.y);
+            this.B = ToByte(value.z);
+            this.A = ToByte(alpha);
         }
 
         /// <summary>
@@ -329,11 +329,11 @@ namespace Fusee.Base.Common
                 throw new ArgumentNullException(nameof(values));
             if (values.Length != 3 && values.Length != 4)
                 throw new ArgumentOutOfRangeException(nameof(values), "There must be three or four input values for ColorUint.");
-            this.R = ColorUint.ToByte(values[0]);
-            this.G = ColorUint.ToByte(values[1]);
-            this.B = ColorUint.ToByte(values[2]);
+            this.R = ToByte(values[0]);
+            this.G = ToByte(values[1]);
+            this.B = ToByte(values[2]);
             if (values.Length > 3)
-                this.A = ColorUint.ToByte(values[3]);
+                this.A = ToByte(values[3]);
             else
                 this.A = byte.MaxValue;
         }
@@ -968,22 +968,22 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Performs a linear interpolation between two colors.
-        /// 
+        ///
         /// </summary>
         /// <param name="start">Start color.</param><param name="end">End color.</param><param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>
         /// The linear interpolation of the two colors.
         /// </returns>
-        /// 
+        ///
         /// <remarks>
         /// This method performs the linear interpolation based on the following formula.
-        /// 
+        ///
         /// <code>
         /// start + (end - start) * amount
         /// </code>
-        /// 
+        ///
         ///             Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned.
-        /// 
+        ///
         /// </remarks>
         public static ColorUint Lerp(ColorUint start, ColorUint end, float amount)
         {
@@ -992,7 +992,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Performs a cubic interpolation between two colors.
-        /// 
+        ///
         /// </summary>
         /// <param name="start">Start color.</param><param name="end">End color.</param><param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param><param name="result">When the method completes, contains the cubic interpolation of the two colors.</param>
         public static void SmoothStep(ref ColorUint start, ref ColorUint end, float amount, out ColorUint result)
@@ -1007,7 +1007,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Performs a cubic interpolation between two colors.
-        /// 
+        ///
         /// </summary>
         /// <param name="start">Start color.</param><param name="end">End color.</param><param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>
@@ -1022,7 +1022,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Returns a color containing the smallest components of the specified colors.
-        /// 
+        ///
         /// </summary>
         /// <param name="left">The first source color.</param><param name="right">The second source color.</param><param name="result">When the method completes, contains an new color composed of the largest components of the source colors.</param>
         public static void Max(ref ColorUint left, ref ColorUint right, out ColorUint result)
@@ -1035,7 +1035,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Returns a color containing the largest components of the specified colors.
-        /// 
+        ///
         /// </summary>
         /// <param name="left">The first source color.</param><param name="right">The second source color.</param>
         /// <returns>
@@ -1049,7 +1049,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Returns a color containing the smallest components of the specified colors.
-        /// 
+        ///
         /// </summary>
         /// <param name="left">The first source color.</param><param name="right">The second source color.</param><param name="result">When the method completes, contains an new color composed of the smallest components of the source colors.</param>
         public static void Min(ref ColorUint left, ref ColorUint right, out ColorUint result)
@@ -1062,7 +1062,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Returns a color containing the smallest components of the specified colors.
-        /// 
+        ///
         /// </summary>
         /// <param name="left">The first source color.</param><param name="right">The second source color.</param>
         /// <returns>
@@ -1076,7 +1076,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Adjusts the contrast of a color.
-        /// 
+        ///
         /// </summary>
         /// <param name="value">The color whose contrast is to be adjusted.</param><param name="contrast">The amount by which to adjust the contrast.</param><param name="result">When the method completes, contains the adjusted color.</param>
         public static void AdjustContrast(ref ColorUint value, float contrast, out ColorUint result)
@@ -1089,7 +1089,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Adjusts the contrast of a color.
-        /// 
+        ///
         /// </summary>
         /// <param name="value">The color whose contrast is to be adjusted.</param><param name="contrast">The amount by which to adjust the contrast.</param>
         /// <returns>
@@ -1102,7 +1102,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Adjusts the saturation of a color.
-        /// 
+        ///
         /// </summary>
         /// <param name="value">The color whose saturation is to be adjusted.</param><param name="saturation">The amount by which to adjust the saturation.</param><param name="result">When the method completes, contains the adjusted color.</param>
         public static void AdjustSaturation(ref ColorUint value, float saturation, out ColorUint result)
@@ -1116,7 +1116,7 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Adjusts the saturation of a color.
-        /// 
+        ///
         /// </summary>
         /// <param name="value">The color whose saturation is to be adjusted.</param><param name="saturation">The amount by which to adjust the saturation.</param>
         /// <returns>
@@ -1130,12 +1130,12 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents this instance.
-        /// 
+        ///
         /// </summary>
-        /// 
+        ///
         /// <returns>
         /// A <see cref="T:System.String"/> that represents this instance.
-        /// 
+        ///
         /// </returns>
         public override string ToString()
         {
@@ -1144,12 +1144,12 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents this instance.
-        /// 
+        ///
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>
         /// A <see cref="T:System.String"/> that represents this instance.
-        /// 
+        ///
         /// </returns>
         public string ToString(string format)
         {
@@ -1160,12 +1160,12 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents this instance.
-        /// 
+        ///
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
         /// A <see cref="T:System.String"/> that represents this instance.
-        /// 
+        ///
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
@@ -1174,12 +1174,12 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents this instance.
-        /// 
+        ///
         /// </summary>
         /// <param name="format">The format.</param><param name="formatProvider">The format provider.</param>
         /// <returns>
         /// A <see cref="T:System.String"/> that represents this instance.
-        /// 
+        ///
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
@@ -1190,12 +1190,12 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Returns a hash code for this instance.
-        /// 
+        ///
         /// </summary>
-        /// 
+        ///
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-        /// 
+        ///
         /// </returns>
         public override int GetHashCode()
         {
@@ -1204,12 +1204,12 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Determines whether the specified <see cref="T:Fusee.Engine.ColorUint"/> is equal to this instance.
-        /// 
+        ///
         /// </summary>
         /// <param name="other">The <see cref="T:Fusee.Engine.ColorUint"/> to compare with this instance.</param>
         /// <returns>
         /// <c>true</c> if the specified <see cref="T:Fusee.Engine.ColorUint"/> is equal to this instance; otherwise, <c>false</c>.
-        /// 
+        ///
         /// </returns>
         public bool Equals(ColorUint other)
         {
@@ -1221,12 +1221,12 @@ namespace Fusee.Base.Common
 
         /// <summary>
         /// Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
-        /// 
+        ///
         /// </summary>
         /// <param name="value">The <see cref="T:System.Object"/> to compare with this instance.</param>
         /// <returns>
         /// <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
-        /// 
+        ///
         /// </returns>
         public override bool Equals(object value)
         {

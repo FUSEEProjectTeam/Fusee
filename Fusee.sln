@@ -193,11 +193,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scene", "Scene", "{A9EE99FE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{87F19962-A219-45D7-AB71-C0E3618CCF41}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GameWindow", "GameWindow", "{ED2FBF72-1E63-4DDE-8646-9008F2BF3CAC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.Blazor", "Examples\Complete\Simple\Blazor\Fusee.Examples.Simple.Blazor.csproj", "{96A0BDEC-A688-405C-B2E6-443F5B1E98D0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tests.GameWindow.Desktop", "src\Tests\GameWindow\Desktop\Fusee.Tests.GameWindow.Desktop.csproj", "{ABCC5EA8-A485-4083-A31D-58FC348D14CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tests.AssetStorage.Desktop", "src\Tests\AssetStorage\Desktop\Fusee.Tests.AssetStorage.Desktop.csproj", "{C2C92B1F-5EFA-4B09-A656-06942F1280EA}"
 EndProject
@@ -296,14 +292,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.RenderContex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PickingRayCast.Blazor", "Examples\Complete\PickingRayCast\Blazor\Fusee.Examples.PickingRayCast.Blazor.csproj", "{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fusee.Engine.Imp.Graphics.SharedAll", "src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.shproj", "{7638E21E-193F-4AC7-8F01-B595FE8B3CAA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.ImGuiImp.Desktop", "src\ImGui\Desktop\Fusee.ImGui.Desktop\Fusee.ImGuiImp.Desktop.csproj", "{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.FuseeImGui.Desktop", "Examples\Complete\ImGui\Desktop\Fusee.Examples.FuseeImGui.Desktop.csproj", "{A1E5AC7E-97B2-4BED-AB75-780416E422A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImGui", "ImGui", "{D1853E25-C274-44E7-8AB6-9BE3A4E61928}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudPotree2.Gui", "Examples\Complete\PointCloudPotree2\ImGui\Fusee.Examples.PointCloudPotree2.Gui.csproj", "{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
-		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 5
-		src\PointCloud\Las\Shared\Fusee.PointCloud.Las.Shared.projitems*{dcc7da71-3e2e-476c-8391-1f9651637503}*SharedItemsImports = 13
-		src\PointCloud\Las\Shared\Fusee.PointCloud.Las.Shared.projitems*{f28634e7-52b8-4935-b19e-cb8a6844e6f1}*SharedItemsImports = 5
-		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug-Android|Any CPU = Debug-Android|Any CPU
@@ -1170,19 +1169,6 @@ Global
 		{96A0BDEC-A688-405C-B2E6-443F5B1E98D0}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
 		{96A0BDEC-A688-405C-B2E6-443F5B1E98D0}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{96A0BDEC-A688-405C-B2E6-443F5B1E98D0}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{C2C92B1F-5EFA-4B09-A656-06942F1280EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C2C92B1F-5EFA-4B09-A656-06942F1280EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2C92B1F-5EFA-4B09-A656-06942F1280EA}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1263,10 +1249,12 @@ Global
 		{7912EC07-2B08-48E1-A5CD-5E57EB03375F}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{7912EC07-2B08-48E1-A5CD-5E57EB03375F}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
 		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
 		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
 		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
 		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
 		{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
@@ -1714,6 +1702,46 @@ Global
 		{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
 		{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA48469-D4D3-4562-B1E7-FB4F522D3F00}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1795,9 +1823,7 @@ Global
 		{960FB754-E669-4332-B70D-0FBB47CD0FBB} = {918BCBD4-1FE9-4A60-A356-5CB2FD40E079}
 		{A9EE99FE-4939-4526-8B86-87BD267F0F57} = {E1BC200B-7234-4037-9421-E65FD4D915B0}
 		{87F19962-A219-45D7-AB71-C0E3618CCF41} = {A9EE99FE-4939-4526-8B86-87BD267F0F57}
-		{ED2FBF72-1E63-4DDE-8646-9008F2BF3CAC} = {E1BC200B-7234-4037-9421-E65FD4D915B0}
 		{96A0BDEC-A688-405C-B2E6-443F5B1E98D0} = {F799DB2B-D7BA-4B88-A16F-F8E2317137D3}
-		{ABCC5EA8-A485-4083-A31D-58FC348D14CD} = {ED2FBF72-1E63-4DDE-8646-9008F2BF3CAC}
 		{C2C92B1F-5EFA-4B09-A656-06942F1280EA} = {928043B9-4288-4E44-BBE8-DDC283EA41A9}
 		{1CD90056-E2F4-4415-856A-5764893F4F7E} = {AF9A0E10-F967-4483-8DB2-FAE257CB9CB7}
 		{2ED181F9-CB01-4514-8045-4CD9D505D100} = {87F19962-A219-45D7-AB71-C0E3618CCF41}
@@ -1845,8 +1871,23 @@ Global
 		{FF0DEE54-C91E-480F-B103-593FB00E92FF} = {E6E73351-7DED-4B97-B254-A0E903D769C1}
 		{ED0AC25F-615E-4AE6-A491-ADD41ABEB2D2} = {E6E73351-7DED-4B97-B254-A0E903D769C1}
 		{3AFEF2ED-6325-4C11-9B87-A32514FD5AE1} = {425DDCA8-659F-44FB-832E-117C7DED152E}
+		{7638E21E-193F-4AC7-8F01-B595FE8B3CAA} = {6295AB06-EBE4-4887-A811-20737F6F8645}
+		{A1E5AC7E-97B2-4BED-AB75-780416E422A5} = {D1853E25-C274-44E7-8AB6-9BE3A4E61928}
+		{D1853E25-C274-44E7-8AB6-9BE3A4E61928} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
+		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
+		src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.projitems*{717241b4-f2aa-4124-807a-68db3c73157f}*SharedItemsImports = 5
+		src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.projitems*{7638e21e-193f-4ac7-8f01-b595fe8b3caa}*SharedItemsImports = 13
+		src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 5
+		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 5
+		src\PointCloud\Las\Shared\Fusee.PointCloud.Las.Shared.projitems*{dcc7da71-3e2e-476c-8391-1f9651637503}*SharedItemsImports = 13
+		src\PointCloud\Las\Shared\Fusee.PointCloud.Las.Shared.projitems*{f28634e7-52b8-4935-b19e-cb8a6844e6f1}*SharedItemsImports = 5
+		src\Engine\Imp\Graphics\SharedAll\Fusee.Engine.Imp.Graphics.SharedAll.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 5
+		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

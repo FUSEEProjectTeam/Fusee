@@ -15,7 +15,7 @@ namespace Fusee.Examples.ComputeFractal.Core
     {
         private readonly Plane _plane = new();
         private WritableTexture RWTexture;
-        private ComputeShader _computeShader;
+        private ComputeEffect _computeShader;
         private ShaderEffect _renderEffect;
         private bool _move;
         private bool _inputChange;
@@ -65,7 +65,7 @@ namespace Fusee.Examples.ComputeFractal.Core
                     _colorData[i] += new float4(Sawtooth(i * 4, 256) / 256, 0, 0, 1);
                 i++;
             }
-            _computeShader = new ComputeShader(
+            _computeShader = new ComputeEffect(
             shaderCode: AssetStorage.Get<string>("MandelbrotFractal.comp"),
             effectParameters: new IFxParamDeclaration[]
             {
@@ -76,20 +76,17 @@ namespace Fusee.Examples.ComputeFractal.Core
             });
 
             _renderEffect = new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = AssetStorage.Get<string>("RenderTexToScreen.vert"),
-                PS = AssetStorage.Get<string>("RenderTexToScreen.frag"),
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = false,
-                    ZEnable = true,
-                }
-            },
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<WritableTexture> { Name = "srcTex", Value = RWTexture}
-            });
+            },
+            new RenderStateSet
+            {
+                AlphaBlendEnable = false,
+                ZEnable = true,
+            },
+            AssetStorage.Get<string>("RenderTexToScreen.vert"),
+            AssetStorage.Get<string>("RenderTexToScreen.frag"));
 
             RC.SetEffect(_computeShader);
             _rect.SetData(_rectData);
@@ -126,6 +123,7 @@ namespace Fusee.Examples.ComputeFractal.Core
             }
             Present();
         }
+
         private void MoveFractal()
         {
             // in this method we simply change size and position of the view rect in fractal dimension, but it is always projected to the texture
@@ -160,6 +158,7 @@ namespace Fusee.Examples.ComputeFractal.Core
                 _rect.SetData(_rectData);
             }
         }
+
         private float Sawtooth(float i, float m)
         {
             return m - System.Math.Abs(i % (2 * m) - m);

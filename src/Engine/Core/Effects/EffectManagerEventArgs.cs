@@ -18,24 +18,17 @@ namespace Fusee.Engine.Core.Effects
         public int ChangedUniformHash { get; set; }
 
         /// <summary>
-        /// The value of the uniform variable.
-        /// </summary>
-        public object ChangedUniformValue { get; set; }
-
-        /// <summary>
         /// Creates a new instance of type "EffectManagerEventArgs".
         /// </summary>
         /// <param name="changed">The <see cref="UniformChangedEnum"/>.</param>
         /// <param name="changedHash">The hash code of the uniform variable.</param>
-        /// <param name="changedValue">The value of the uniform variable.</param>
-        public EffectManagerEventArgs(UniformChangedEnum changed, int changedHash = 0, object changedValue = null)
+        public EffectManagerEventArgs(UniformChangedEnum changed, int changedHash = 0)
         {
             Changed = changed;
 
-            if (changedHash == 0 || changedValue == null) return;
+            if (changedHash == 0) return;
 
             ChangedUniformHash = changedHash;
-            ChangedUniformValue = changedValue;
         }
     }
 }

@@ -125,8 +125,7 @@ namespace Fusee.Examples.PickingRayCast.Core
             Load();
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void Update()
         {
             if (!_loaded) return;
 
@@ -138,7 +137,7 @@ namespace Fusee.Examples.PickingRayCast.Core
             }
             if (Input.Mouse.RightButton)
             {
-                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * Damping;
+                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTimeUpdate * Damping;
             }
 
             _camTransform.RotateAround(float3.Zero, new float3(0, _angleVelHorz, 0));
@@ -155,6 +154,12 @@ namespace Fusee.Examples.PickingRayCast.Core
 
                 _pick = false;
             }
+        }
+
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
+            if (!_loaded) return;
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
@@ -186,7 +191,6 @@ namespace Fusee.Examples.PickingRayCast.Core
                 var z = rand.Next(-10, 10);
 
                 var mesh = new Engine.Core.Primitives.Cube();
-                mesh.BoundingBox = new AABBf(mesh.Vertices);
 
                 var cube = new SceneNode()
                 {

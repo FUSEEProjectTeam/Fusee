@@ -2,7 +2,6 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
-using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
@@ -39,9 +38,9 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                float2 uva = Mesh.UVs[Mesh.Triangles[Triangle]];
-                float2 uvb = Mesh.UVs[Mesh.Triangles[Triangle + 1]];
-                float2 uvc = Mesh.UVs[Mesh.Triangles[Triangle + 2]];
+                float2 uva = Mesh.UVs[(int)Mesh.Triangles[Triangle]];
+                float2 uvb = Mesh.UVs[(int)Mesh.Triangles[Triangle + 1]];
+                float2 uvc = Mesh.UVs[(int)Mesh.Triangles[Triangle + 2]];
 
                 return float2.Barycentric(uva, uvb, uvc, U, V);
             }
@@ -60,9 +59,9 @@ namespace Fusee.Engine.Core
         /// <param name="c"></param>
         public void GetTriangle(out float3 a, out float3 b, out float3 c)
         {
-            a = Mesh.Vertices[Mesh.Triangles[Triangle + 0]];
-            b = Mesh.Vertices[Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Vertices[Mesh.Triangles[Triangle + 2]];
+            a = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 0]];
+            b = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 1]];
+            c = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 2]];
         }
 
         /// <summary>
@@ -187,7 +186,7 @@ namespace Fusee.Engine.Core
             PrePassVisitor.PrePassTraverse(_sc);
             var cams = PrePassVisitor.CameraPrepassResults;
 
-            float2 pickPosClip = float2.Zero;
+            float2 pickPosClip;
 
             if (cams.Count == 0)
             {
@@ -196,30 +195,29 @@ namespace Fusee.Engine.Core
                 return Viserate();
             }
 
-            Tuple<SceneNode, CameraResult> pickCam = null;
+            CameraResult pickCam = default;
             Rectangle pickCamRect = new();
 
-            foreach (var cam in cams)
+            foreach (var camRes in cams)
             {
                 Rectangle camRect = new();
-                camRect.Left = (int)((cam.Item2.Camera.Viewport.x * rc.ViewportWidth) / 100);
-                camRect.Top = (int)((cam.Item2.Camera.Viewport.y * rc.ViewportHeight) / 100);
-                camRect.Right = (int)((cam.Item2.Camera.Viewport.z * rc.ViewportWidth) / 100) + camRect.Left;
-                camRect.Bottom = (int)((cam.Item2.Camera.Viewport.w * rc.ViewportHeight) / 100) + camRect.Top;
-
+                camRect.Left = (int)(camRes.Camera.Viewport.x * rc.ViewportWidth / 100);
+                camRect.Top = (int)(camRes.Camera.Viewport.y * rc.ViewportHeight / 100);
+                camRect.Right = (int)(camRes.Camera.Viewport.z * rc.ViewportWidth) / 100 + camRect.Left;
+                camRect.Bottom = (int)(camRes.Camera.Viewport.w * rc.ViewportHeight) / 100 + camRect.Top;
 
                 if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos)) continue;
 
-                if (pickCam == null || cam.Item2.Camera.Layer > pickCam.Item2.Camera.Layer)
+                if (pickCam == default || camRes.Camera.Layer > pickCam.Camera.Layer)
                 {
-                    pickCam = cam;
+                    pickCam = camRes;
                     pickCamRect = camRect;
                 }
             }
 
             // Calculate pickPosClip
             pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
-            Ray = new RayF(pickPosClip, float4x4.Invert(pickCam.Item1.GetTransform().Matrix), pickCam.Item2.Camera.GetProjectionMat(rc.ViewportWidth, rc.ViewportHeight, out _));
+            Ray = new RayF(pickPosClip, pickCam.View, pickCam.Camera.GetProjectionMat(rc.ViewportWidth, rc.ViewportHeight, out _));
 
             return Viserate();
         }
@@ -228,7 +226,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RayCasterState"/> is updated.
-        /// </summary> 
+        /// </summary>
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void RenderTransform(Transform transform)
@@ -251,13 +249,13 @@ namespace Fusee.Engine.Core
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // Vertices of the picked triangle in world space
-                var a = new float3(mesh.Vertices[mesh.Triangles[i + 0]]);
+                var a = new float3(mesh.Vertices[(int)mesh.Triangles[i + 0]]);
                 a = float4x4.Transform(State.Model, a);
 
-                var b = new float3(mesh.Vertices[mesh.Triangles[i + 1]]);
+                var b = new float3(mesh.Vertices[(int)mesh.Triangles[i + 1]]);
                 b = float4x4.Transform(State.Model, b);
 
-                var c = new float3(mesh.Vertices[mesh.Triangles[i + 2]]);
+                var c = new float3(mesh.Vertices[(int)mesh.Triangles[i + 2]]);
                 c = float4x4.Transform(State.Model, c);
 
                 // Normal of the plane defined by a, b, and c.

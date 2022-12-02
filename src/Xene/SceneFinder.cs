@@ -262,6 +262,8 @@ namespace Fusee.Xene
         where TNode : class, INode
         where TComponent : class, IComponent
     {
+        private bool _disposed;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneNodeFinder{TNodeToFind, TNode, TComponent}"/> class.
         /// </summary>
@@ -296,6 +298,33 @@ namespace Fusee.Xene
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                _disposed = true;
+            }
+        }
+
     }
 
     /// <summary>
@@ -316,6 +345,8 @@ namespace Fusee.Xene
         where TNode : class, INode
         where TComponent : class, IComponent
     {
+        private bool _disposed;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneComponentFinder{TComponentToFind, TNode, TComponent}"/> class.
         /// </summary>
@@ -350,6 +381,33 @@ namespace Fusee.Xene
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                _disposed = true;
+            }
+        }
+
     }
 
     /// <summary>
@@ -370,6 +428,8 @@ namespace Fusee.Xene
         where TNode : class, INode
         where TComponent : class, IComponent
     {
+        private bool _disposed;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneNodeWhereComponentFinder{TComponentToFind, TNode, TComponent}"/> class.
         /// </summary>
@@ -403,6 +463,33 @@ namespace Fusee.Xene
                 YieldOnCurrentComponent = true;
             }
         }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                _disposed = true;
+            }
+        }
     }
 
     /// <summary>
@@ -428,15 +515,6 @@ namespace Fusee.Xene
             _match = match;
             _rootList = rootList;
             EnumInit(_rootList);
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        public void Dispose()
-        {
-            _rootList = null;
-            _match = null;
         }
 
         /// <summary>

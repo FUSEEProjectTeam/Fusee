@@ -1,9 +1,16 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Common
 {
+    /// <summary>
+    /// Delegate for a method that returns the value of a shader parameter.
+    /// </summary>
+    /// <returns></returns>
+    public delegate object GetUniformValue();
+
     /// <summary>
     /// The render context interface contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you are worked with OpenGL or DirectX before you will find
@@ -41,7 +48,7 @@ namespace Fusee.Engine.Common
         float ClearDepth { set; get; }
 
         /// <summary>
-        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping.
         /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
         /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
         /// </summary>
@@ -102,7 +109,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will detach the texture currently associated with the ColorAttachment1.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with the DepthAttachment will be detached.</param>       
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with the DepthAttachment will be detached.</param>
         void DetachTextureFromFbo(IRenderTarget renderTarget, bool isDepthTex, int attachment = 0);
 
 
@@ -111,7 +118,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will attach the texture to the ColorAttachment1.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to the DepthAttachment.</param>        
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to the DepthAttachment.</param>
         /// <param name="texHandle">The gpu handle of the texture.</param>
         void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0);
 
@@ -125,13 +132,13 @@ namespace Fusee.Engine.Common
         /// uniform parameters that are accessed by either the vertex shader, the pixel shader, or both shaders compiled into
         /// the given shader.
         /// </returns>
-        IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram);
+        IList<IActiveUniform> GetActiveUniformsList(IShaderHandle shaderProgram);
 
         /// <summary>
         /// Get a list of shader storage buffer variables accessed by the given shader.
         /// </summary>
         /// <param name="shaderProgram">The shader program to query for parameters.</param>
-        IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram);
+        IList<IActiveUniform> GetShaderStorageBufferList(IShaderHandle shaderProgram);
 
         /// <summary>
         /// Returns an identifier for the named (uniform) parameter used in the specified shader program.
@@ -142,8 +149,7 @@ namespace Fusee.Engine.Common
         /// <remarks>
         /// The returned handle can be used to assign values to a (uniform) shader parameter.
         /// </remarks>
-        /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
-        IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName);
+        IUniformHandle GetShaderUniformParam(IShaderHandle shaderProgram, string paramName);
 
         /// <summary>
         /// Sets the specified shader parameter to a float value.
@@ -154,7 +160,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, float val);
+        void SetShaderParam(IUniformHandle param, float val);
 
         /// <summary>
         /// Sets the specified shader parameter to a double value.
@@ -165,7 +171,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, double val);
+        void SetShaderParam(IUniformHandle param, double val);
 
         /// <summary>
         /// Sets the shader parameter to a float2 value.
@@ -176,18 +182,18 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, float2 val);
+        void SetShaderParam(IUniformHandle param, float2 val);
 
         /// <summary>
         /// Sets the shader parameter to a float2 array.
         /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="param">The <see cref="IUniformHandle"/> identifier.</param>
         /// <param name="val">The float2 array that should be assigned to the shader array parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, float2[] val);
+        void SetShaderParam(IUniformHandle param, float2[] val);
 
         /// <summary>
         /// Sets the shader parameter to a float3 value.
@@ -198,18 +204,18 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, float3 val);
+        void SetShaderParam(IUniformHandle param, float3 val);
 
         /// <summary>
         /// Sets the shader parameter to a float3 array.
         /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="param">The <see cref="IUniformHandle"/> identifier.</param>
         /// <param name="val">The float3 array that should be assigned to the shader array parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, float3[] val);
+        void SetShaderParam(IUniformHandle param, float3[] val);
 
         /// <summary>
         /// Sets the shader parameter to a float4 value.
@@ -220,18 +226,18 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, float4 val);
+        void SetShaderParam(IUniformHandle param, float4 val);
 
         /// <summary>
         /// Sets the shader parameter to a float4 array.
         /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="param">The <see cref="IUniformHandle"/> identifier.</param>
         /// <param name="val">The float4 array that should be assigned to the shader array parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, float4[] val);
+        void SetShaderParam(IUniformHandle param, float4[] val);
 
         /// <summary>
         /// Sets the shader parameter to a float4x4 matrix value.
@@ -242,7 +248,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, float4x4 val);
+        void SetShaderParam(IUniformHandle param, float4x4 val);
 
         /// <summary>
         /// Sets the shader parameter to a float4x4 matrix array.
@@ -253,7 +259,14 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, float4x4[] val);
+        void SetShaderParam(IUniformHandle param, float4x4[] val);
+
+        /// <summary>
+        /// Sets a <see cref="int2" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IUniformHandle param, int2 val);
 
         /// <summary>
         /// Sets the shader parameter to a integer value.
@@ -264,7 +277,7 @@ namespace Fusee.Engine.Common
         /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        void SetShaderParam(IShaderParam param, int val);
+        void SetShaderParam(IUniformHandle param, int val);
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
@@ -273,7 +286,7 @@ namespace Fusee.Engine.Common
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="format">The internal sized format of the texture.</param>
-        void SetShaderParamImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format);
+        void SetShaderParamImage(IUniformHandle param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format);
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
@@ -281,7 +294,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget);
+        void SetShaderParamTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget);
 
         /// <summary>
         /// Sets a texture active and binds it.
@@ -290,7 +303,7 @@ namespace Fusee.Engine.Common
         /// <param name="texId">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="texUnit">The texture unit.</param>
-        void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget, out int texUnit);
+        void SetActiveAndBindTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget, out int texUnit);
 
         /// <summary>
         /// Sets a texture active and binds it.
@@ -298,7 +311,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter, associated with this texture.</param>
         /// <param name="texId">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget);
+        void SetActiveAndBindTexture(IUniformHandle param, ITextureHandle texId, TextureType texTarget);
 
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
@@ -306,7 +319,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
         /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
+        void SetShaderParamTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget);
 
         /// <summary>
         /// Uploads the given data to the SSBO. If the buffer is not created on the GPU by no it will be.
@@ -337,7 +350,7 @@ namespace Fusee.Engine.Common
         /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="texUnitArray">The texture units.</param>
-        void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray);
+        void SetActiveAndBindTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray);
 
         /// <summary>
         /// Sets a texture active and binds it.
@@ -345,7 +358,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter, associated with this texture.</param>
         /// <param name="texIds">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
+        void SetActiveAndBindTextureArray(IUniformHandle param, ITextureHandle[] texIds, TextureType texTarget);
 
         /// <summary>
         /// Updates the given region of a texture with the passed image data.
@@ -379,25 +392,25 @@ namespace Fusee.Engine.Common
         /// Method should be called after LoadImage method to process
         /// the BitmapData an make them available for the shader.
         /// </remarks>
-        /// <param name="img">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        /// <param name="img">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>
         ITextureHandle CreateTexture(ITexture img);
 
         /// <summary>
         /// Creates a new cube map and binds it to the shader.
-        /// </summary>        
-        /// <param name="img">An <see cref="IWritableArrayTexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        /// </summary>
+        /// <param name="img">An <see cref="IWritableArrayTexture"/>, containing necessary information for the upload to the graphics card.</param>
         ITextureHandle CreateTexture(IWritableArrayTexture img);
 
         /// <summary>
         /// Creates a new cube map and binds it to the shader.
-        /// </summary>        
-        /// <param name="img">An <see cref="IWritableCubeMap"/>, containing necessary information for the upload to the graphics card.</param>       
+        /// </summary>
+        /// <param name="img">An <see cref="IWritableCubeMap"/>, containing necessary information for the upload to the graphics card.</param>
         ITextureHandle CreateTexture(IWritableCubeMap img);
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
-        /// </summary>      
-        /// <param name="img">An <see cref="IWritableTexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        /// </summary>
+        /// <param name="img">An <see cref="IWritableTexture"/>, containing necessary information for the upload to the graphics card.</param>
         ITextureHandle CreateTexture(IWritableTexture img);
 
         /// <summary>
@@ -440,7 +453,23 @@ namespace Fusee.Engine.Common
         /// <param name="mesh">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="vertices">The vertices.</param>
         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
-        void SetVertices(IMeshImp mesh, float3[] vertices);
+        void SetVertices(IMeshImp mesh, ReadOnlySpan<float3> vertices);
+
+        /// <summary>
+        /// Creates and binds the instance model matrices onto the GL render context and assigns an buffer object index to the passed <see cref="IInstanceDataImp" /> instance.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
+        /// <param name="instancePositions">The instance positions.</param>
+        /// <param name="instanceRotations">The instance rotations.</param>
+        /// <param name="instanceScales">The instance scale values.</param>
+        public void SetInstanceTransform(IInstanceDataImp instanceImp, float3[] instancePositions, float3[] instanceRotations, float3[] instanceScales);
+
+        /// <summary>
+        /// Binds the instance colors onto the GL render context and assigns an buffer object index to the passed <see cref="IInstanceDataImp" /> instance.
+        /// </summary>
+        /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
+        /// <param name="instanceColors">The instance colors.</param>
+        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors);
 
         /// <summary>
         /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -449,7 +478,7 @@ namespace Fusee.Engine.Common
         /// <param name="tangents">The tangents.</param>
         /// <exception cref="System.ArgumentException">Tangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        void SetTangents(IMeshImp mr, float4[] tangents);
+        void SetTangents(IMeshImp mr, ReadOnlySpan<float4> tangents);
 
         /// <summary>
         /// Binds the bitangents onto the GL render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -458,7 +487,7 @@ namespace Fusee.Engine.Common
         /// <param name = "bitangents">The bitangents.</param>
         /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        void SetBiTangents(IMeshImp mr, float3[] bitangents);
+        void SetBiTangents(IMeshImp mr, ReadOnlySpan<float3> bitangents);
 
         /// <summary>
         /// Binds the normals onto the GL render context and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -466,7 +495,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="normals">The normals.</param>
         /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
-        void SetNormals(IMeshImp mr, float3[] normals);
+        void SetNormals(IMeshImp mr, ReadOnlySpan<float3> normals);
 
         /// <summary>
         /// Binds the UV coordinates onto the GL render context and assigns an UVBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -474,7 +503,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
-        void SetUVs(IMeshImp mr, float2[] uvs);
+        void SetUVs(IMeshImp mr, ReadOnlySpan<float2> uvs);
 
         /// <summary>
         /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -482,7 +511,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
-        void SetColors(IMeshImp mr, uint[] colors);
+        void SetColors(IMeshImp mr, ReadOnlySpan<uint> colors);
 
         /// <summary>
         /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -490,7 +519,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
-        void SetColors1(IMeshImp mr, uint[] colors);
+        void SetColors1(IMeshImp mr, ReadOnlySpan<uint> colors);
 
         /// <summary>
         /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -498,7 +527,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
-        void SetColors2(IMeshImp mr, uint[] colors);
+        void SetColors2(IMeshImp mr, ReadOnlySpan<uint> colors);
 
         /// <summary>
         /// Binds the triangles onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -506,7 +535,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
-        void SetTriangles(IMeshImp mr, ushort[] triangleIndices);
+        void SetTriangles(IMeshImp mr, ReadOnlySpan<uint> triangleIndices);
 
         /// <summary>
         /// Binds the bone indices onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -514,7 +543,7 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
-        void SetBoneIndices(IMeshImp mr, float4[] boneIndices);
+        void SetBoneIndices(IMeshImp mr, ReadOnlySpan<float4> boneIndices);
 
         /// <summary>
         /// Binds the bone weights onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -522,21 +551,35 @@ namespace Fusee.Engine.Common
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
-        void SetBoneWeights(IMeshImp mr, float4[] boneWeights);
+        void SetBoneWeights(IMeshImp mr, ReadOnlySpan<float4> boneWeights);
+
+        /// <summary>
+        /// Binds the flags onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="flags">The flags.</param>
+        /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
+        void SetFlags(IMeshImp mr, ReadOnlySpan<uint> flags);
 
         /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="shaderProgramImp">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
-        /// <seealso cref="IRenderContextImp.CreateShaderProgram"/>
-        /// <see cref="IRenderContextImp.Render(IMeshImp)"/>
+        /// <seealso cref="CreateShaderProgram"/>
+        /// <see cref="Render(IMeshImp, IInstanceDataImp)"/>
         void SetShader(IShaderHandle shaderProgramImp);
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffers associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mesh">The mesh for which to delete the GPU buffers.</param>
         void RemoveVertices(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffers associated with the instance data implementation.
+        /// </summary>
+        /// <param name="instanceDataImp">The instance data for which to delete the GPU buffers.</param>
+        void RemoveInstanceData(IInstanceDataImp instanceDataImp);
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
@@ -599,6 +642,12 @@ namespace Fusee.Engine.Common
         void RemoveBiTangents(IMeshImp mesh);
 
         /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveFlags(IMeshImp mesh);
+
+        /// <summary>
         /// Sets the rectangular output region within the output buffer(s).
         /// </summary>
         /// <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
@@ -633,12 +682,13 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
-        /// <param name="mr">The mesh that should be rendered.</param>        
+        /// <param name="mr">The mesh that should be rendered.</param>
+        /// <param name="instanceData">Contains the buffers that need to be bound when using instanced rendering.</param>
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        void Render(IMeshImp mr);
+        void Render(IMeshImp mr, IInstanceDataImp instanceData = null);
 
         /// <summary>
         /// Launch the bound Compute Shader Program.
@@ -677,6 +727,12 @@ namespace Fusee.Engine.Common
         IMeshImp CreateMeshImp();
 
         /// <summary>
+        /// Creates the instance data implementation.
+        /// </summary>
+        /// <returns>The <see cref="IInstanceDataImp" /> instance.</returns>
+        IInstanceDataImp CreateInstanceDataImp(IMeshImp meshImp);
+
+        /// <summary>
         /// Sets the specified render state to the given setting.
         /// </summary>
         /// <param name="renderState">The render state to set.</param>
@@ -689,6 +745,14 @@ namespace Fusee.Engine.Common
         /// <param name="renderState">The render state to retrieve.</param>
         /// <returns>the current value of the render state.</returns>
         uint GetRenderState(RenderState renderState);
+
+        /// <summary>
+        /// Takes a WritableMultisampleTexture  and blits the result of all samples into an
+        /// existing WritableTexture for further use (e. g. bind and use as Albedo texture)
+        /// </summary>
+        /// <param name="input">WritableMultisampleTexture</param>
+        /// <param name="output">WritableTexture</param>
+        void BlitMultisample2DTextureToTexture(IWritableTexture input, IWritableTexture output);
 
         /// <summary>
         /// Renders into the given textures of the RenderTarget.
@@ -737,17 +801,17 @@ namespace Fusee.Engine.Common
         /// <returns>The Z value at (x, y).</returns>
         float GetPixelDepth(int x, int y);
 
-        /// <summary> 
-        /// Returns the capabilities of the underlying graphics hardware 
-        /// </summary> 
-        /// <param name="capability">The capability to check against</param> 
-        /// <returns>uint</returns> 
+        /// <summary>
+        /// Returns the capabilities of the underlying graphics hardware
+        /// </summary>
+        /// <param name="capability">The capability to check against</param>
+        /// <returns>uint</returns>
         uint GetHardwareCapabilities(HardwareCapability capability);
 
-        /// <summary> 
-        /// Returns a human readable description of the underlying graphics hardware 
-        /// </summary> 
-        /// <returns>Description</returns> 
+        /// <summary>
+        /// Returns a human readable description of the underlying graphics hardware
+        /// </summary>
+        /// <returns>Description</returns>
         string GetHardwareDescription();
     }
 
@@ -765,7 +829,12 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Checks if geometry shaders can be used.
         /// </summary>
-        CanUseGeometryShaders
+        CanUseGeometryShaders,
+
+        /// <summary>
+        /// Returns the max value for GL_MAX_SAMPLES usable in multi-sample <see cref="IWritableTexture"/> textures
+        /// </summary>
+        MaxSamples
     }
 
     /// <summary>

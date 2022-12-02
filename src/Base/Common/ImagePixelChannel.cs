@@ -3,7 +3,7 @@
     /// <summary>
     /// The ImagePixelChannel contains data about pixel bits and pixel encoding
     /// </summary>
-    public struct ImagePixelChannel
+    public readonly struct ImagePixelChannel
     {
         /// <summary>
         /// The first bit belonging to this pixel channel

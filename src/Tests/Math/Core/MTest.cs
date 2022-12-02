@@ -1,4 +1,4 @@
-﻿using Fusee.Math.Core;
+using Fusee.Math.Core;
 using System.Collections.Generic;
 using Xunit;
 
@@ -150,7 +150,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 1.192093E-07f;
 
-            Assert.Equal(expected, M.EpsilonFloat);
+            Assert.Equal(M.EpsilonFloat, expected);
         }
 
         [Fact]
@@ -158,7 +158,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 1.11022302462516E-16d;
 
-            Assert.Equal(expected, M.EpsilonDouble);
+            Assert.Equal(M.EpsilonDouble, expected);
         }
 
         [Fact]
@@ -166,7 +166,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 3.14159265358979f;
 
-            Assert.Equal(expected, M.Pi);
+            Assert.Equal(M.Pi, expected);
         }
 
         [Fact]
@@ -174,7 +174,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 3.14159265358979f / 2;
 
-            Assert.Equal(expected, M.PiOver2);
+            Assert.Equal(M.PiOver2, expected);
         }
 
         [Fact]
@@ -182,7 +182,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 3.14159265358979f / 3;
 
-            Assert.Equal(expected, M.PiOver3);
+            Assert.Equal(M.PiOver3, expected);
         }
 
         [Fact]
@@ -190,7 +190,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 3.14159265358979f / 4;
 
-            Assert.Equal(expected, M.PiOver4);
+            Assert.Equal(M.PiOver4, expected);
         }
 
         [Fact]
@@ -198,7 +198,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 3.14159265358979f / 6;
 
-            Assert.Equal(expected, M.PiOver6);
+            Assert.Equal(M.PiOver6, expected);
         }
 
         [Fact]
@@ -206,7 +206,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 3.14159265358979f * 2;
 
-            Assert.Equal(expected, M.TwoPi);
+            Assert.Equal(M.TwoPi, expected);
         }
 
         [Fact]
@@ -214,7 +214,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 3.14159265358979f * 3 / 2;
 
-            Assert.Equal(expected, M.ThreePiOver2);
+            Assert.Equal(M.ThreePiOver2, expected);
         }
 
         [Fact]
@@ -222,7 +222,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 2.71828182845904523536f;
 
-            Assert.Equal(expected, M.E);
+            Assert.Equal(M.E, expected);
         }
 
         [Fact]
@@ -230,7 +230,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 0.434294482f;
 
-            Assert.Equal(expected, M.Log10E);
+            Assert.Equal(M.Log10E, expected);
         }
 
         [Fact]
@@ -238,7 +238,7 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = 1.442695041f;
 
-            Assert.Equal(expected, M.Log2E);
+            Assert.Equal(M.Log2E, expected);
         }
         #endregion
 
@@ -251,7 +251,7 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = M.Cos(value);
 
-            Assert.Equal(expected, actual, 5);
+            Assert.Equal(expected, actual, 5f);
         }
 
         [Theory]
@@ -262,7 +262,7 @@ namespace Fusee.Tests.Math.Core
         {
             var actual = M.Sin(value);
 
-            Assert.Equal(expected, actual, 5);
+            Assert.Equal(expected, actual, 5f);
         }
 
         #endregion
@@ -653,5 +653,32 @@ namespace Fusee.Tests.Math.Core
 
         #endregion
 
+        #region ScreenToWorldPos
+
+        [Theory]
+        [MemberData(nameof(ScreenToWorldPosData))]
+        public void ScreenToWorldPos(float2 data, float3 expected)
+        {
+            var height = 1000;
+            var width = 1000;
+
+            var p = float4x4.CreatePerspectiveFieldOfView(M.PiOver2, (float)width / height, 1, 1000);
+
+            var actual = M.ScreenPointToWorld(data, 1, p, float4x4.Identity, p.Invert(), float4x4.Identity.Invert(), width, height);
+
+            Assert.Equal(expected.x, actual.x);
+            Assert.Equal(expected.y, actual.y);
+            Assert.Equal(expected.z, actual.z);
+        }
+
+
+        public static IEnumerable<object[]> ScreenToWorldPosData()
+        {
+            yield return new object[] { new float2(0, 0), new float3(-1, 1, 1) };
+            yield return new object[] { new float2(500, 500), new float3(0, 0, 1) };
+            yield return new object[] { new float2(1000, 1000), new float3(1, -1, 1) };
+        }
+
+        #endregion
     }
 }

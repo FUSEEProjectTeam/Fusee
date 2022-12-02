@@ -5,15 +5,10 @@ using System.Collections.Generic;
 namespace Fusee.PointCloud.Common
 {
     /// <summary>
-    /// Smallest common set of properties that are needed to render point clouds out of core.
+    /// Non-generic, point type independent interface, used in point cloud implementations.
     /// </summary>
-    public interface IPointCloudImp
+    public interface IPointCloudImpBase
     {
-        /// <summary>
-        /// The <see cref="GpuMesh"/>, created from visible octants/point chunks, that are ready to be rendered.
-        /// </summary>
-        public List<GpuMesh> MeshesToRender { get; set; }
-
         /// <summary>
         /// Center of the PointCloud's AABB
         /// </summary>
@@ -64,7 +59,19 @@ namespace Fusee.PointCloud.Common
         /// <param name="viewportHeight">The current viewport height.</param>
         /// <param name="renderFrustum">The current viewport width.</param>
         /// <param name="camPos">The current camera position in world coordinates.</param>
-        public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos);
+        /// <param name="modelMat">The model matrix of the SceneNode the PointCloud(Component) is part of.</param>
+        public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos, float4x4 modelMat);
+    }
+
+    /// <summary>
+    /// Smallest common set of properties that are needed to render point clouds out of core.
+    /// </summary>
+    public interface IPointCloudImp<TGpuData> : IPointCloudImpBase
+    {
+        /// <summary>
+        /// The <see cref="GpuMesh"/>, created from visible octants/point chunks, that are ready to be rendered.
+        /// </summary>
+        public List<TGpuData> GpuDataToRender { get; set; }
 
     }
 }

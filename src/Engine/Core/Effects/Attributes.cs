@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core.Effects
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    sealed class FxShaderAttribute : Attribute
+    public sealed class FxShaderAttribute : Attribute
     {
         public readonly ShaderCategory ShaderCategory;
 
@@ -20,7 +20,7 @@ namespace Fusee.Engine.Core.Effects
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    sealed class FxShardAttribute : Attribute
+    public sealed class FxShardAttribute : Attribute
     {
         public readonly ShardCategory ShardCategory;
 
@@ -31,7 +31,7 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Used to flag which shader type a <see cref="ShaderEffect"/> property belongs to. 
+    /// Used to flag which shader type a <see cref="ShaderEffect"/> property belongs to.
     /// Supports vertex, pixel and geometry shaders.
     /// </summary>
     [Flags]
@@ -77,34 +77,35 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         SurfOutStruct = 4,
 
-        /// <summary>
-        /// The shader shard belongs is a property of the source shader.
+        /// <summary> 
+        /// Those are uniforms in the shader code but should not be properties of a <see cref="SurfaceEffectBase"/> because they will be updated by the SceneRenderer.
         /// </summary>
-        Uniform = 8,
+        InternalUniform = 8,
 
         /// <summary>
         /// The shader shard belongs is a property of the source shader.
         /// </summary>
-        Property = 16,
+        Uniform = 16,
+
+        /// <summary>
+        /// The shader shard belongs is a property of the source shader.
+        /// </summary>
+        Property = 32,
 
         /// <summary>
         /// The shader shard is a method of the source shader.
         /// </summary>
-        Method = 32,
+        Method = 64,
 
         /// <summary>
         /// The shader shard the surface output method of the source shader.
         /// </summary>
-        SurfOut = 64,
+        SurfOut = 128,
 
         /// <summary>
         /// The shader shard is, or is part of, the main method of the source shader.
         /// </summary>
-        Main = 128,
+        Main = 256,
 
-        /// <summary> 
-        /// Those are uniforms in the shader code but should not be properties of a <see cref="SurfaceEffectBase"/> because they will be updated by the SceneRenderer.
-        /// </summary>
-        InternalUniform = 256
     }
 }

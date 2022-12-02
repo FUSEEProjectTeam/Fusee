@@ -309,7 +309,7 @@ namespace Fusee.Engine.Core
                     normals.Add(CalcFaceNormal(_faces[i]));
                 }
                 // Quick and dirty solution: if the smoothing angle holds for all combinations we create a shared normal,
-                // otherwise we create individual normals for each face. 
+                // otherwise we create individual normals for each face.
                 // TODO: Build groups of shared normals where faces are connected by edges (need edges to do this)
                 bool smoothit = true;
                 for (int i = 0; i < normals.Count; i++)
@@ -358,31 +358,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-
-
-        #region Structs
-
-        internal struct TripleInx
-        {
-            /// <summary>
-            /// The i V
-            /// </summary>
-            public int iV, iT, iN;
-            /// <summary>
-            /// Returns a hash code for this instance.
-            /// </summary>
-            /// <returns>
-            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-            /// </returns>
-            public override int GetHashCode()
-            {
-                return iV ^ iT ^ iN;
-            }
-        }
-
-        #endregion
-
-
         /// <summary>
         /// Converts the whole geometry to a <see cref="Mesh"/>.
         /// </summary>
@@ -391,9 +366,9 @@ namespace Fusee.Engine.Core
         {
             // TODO: make a big case decision based on HasTexCoords and HasNormals around the implementation and implement each case individually
 
-            Dictionary<TripleInx, int> _vDict = new();
+            Dictionary<int3, int> _vDict = new();
 
-            List<ushort> mTris = new();
+            List<uint> mTris = new();
             List<float3> mVerts = new();
             List<float2> mTexCoords = (HasTexCoords) ? new List<float2>() : null;
             List<float3> mNormals = (HasNormals) ? new List<float3>() : null;
@@ -403,11 +378,11 @@ namespace Fusee.Engine.Core
                 int[] mFace = new int[f.InxVert.Length];
                 for (int i = 0; i < f.InxVert.Length; i++)
                 {
-                    TripleInx ti = new()
+                    int3 ti = new()
                     {
-                        iV = f.InxVert[i],
-                        iT = (HasTexCoords) ? f.InxTexCoord[i] : 0,
-                        iN = (HasNormals) ? f.InxNormal[i] : 0
+                        x = f.InxVert[i],
+                        y = (HasTexCoords) ? f.InxTexCoord[i] : 0,
+                        z = (HasNormals) ? f.InxNormal[i] : 0
                     };
                     if (!_vDict.TryGetValue(ti, out int inx))
                     {
@@ -434,20 +409,12 @@ namespace Fusee.Engine.Core
                 mTris.AddRange(Triangulate(f, mFace));
             }
 
-            Mesh m = new()
-            {
-                Vertices = mVerts.ToArray()
-            };
-            if (HasNormals)
-                m.Normals = mNormals.ToArray();
-            if (HasTexCoords)
-                m.UVs = mTexCoords.ToArray();
+            Mesh m = new(mTris, mVerts, mNormals, mTexCoords);
 
-            m.Triangles = mTris.ToArray();
             return m;
         }
 
-        private IEnumerable<ushort> Triangulate(Face f, int[] indices)
+        private IEnumerable<uint> Triangulate(Face f, int[] indices)
         {
             if (f.InxVert.Length < 3)
                 return null;
@@ -455,13 +422,13 @@ namespace Fusee.Engine.Core
             if (indices == null)
                 indices = f.InxVert;
 
-            ushort[] ret = new ushort[3 * (f.InxVert.Length - 2)];
+            uint[] ret = new uint[3 * (f.InxVert.Length - 2)];
             // Perform a fan triangulation
             for (int i = 2; i < f.InxVert.Length; i++)
             {
-                ret[(i - 2) * 3 + 0] = (ushort)indices[0];
-                ret[(i - 2) * 3 + 1] = (ushort)indices[i - 1];
-                ret[(i - 2) * 3 + 2] = (ushort)indices[i];
+                ret[(i - 2) * 3 + 0] = (uint)indices[0];
+                ret[(i - 2) * 3 + 1] = (uint)indices[i - 1];
+                ret[(i - 2) * 3 + 2] = (uint)indices[i];
             }
             return ret;
         }

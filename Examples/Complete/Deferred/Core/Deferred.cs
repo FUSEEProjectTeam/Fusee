@@ -37,6 +37,8 @@ namespace Fusee.Examples.Deferred.Core
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
+        private bool _renderDeferred = true;
+
         private async Task Load()
         {
             VSync = false;
@@ -165,34 +167,8 @@ namespace Fusee.Examples.Deferred.Core
             await base.InitAsync();
         }
 
-        private bool _renderDeferred = true;
-
         public override void Update()
         {
-            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f) * DeltaTime * 50, 0 ,0));
-
-            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
-            if (deg < 0)
-                deg = (360 + deg);
-
-            var normalizedDeg = (deg) / 360;
-            float localLerp;
-
-            if (normalizedDeg <= 0.5)
-            {
-                _backgroundColor = _backgroundColorDay;
-                localLerp = normalizedDeg / 0.5f;
-                _backgroundColor.xyz = float3.Lerp(_backgroundColorDay.xyz, _backgroundColorNight.xyz, localLerp);
-            }
-            else
-            {
-                _backgroundColor = _backgroundColorNight;
-                localLerp = (normalizedDeg - 0.5f) / (0.5f);
-                _backgroundColor.xyz = float3.Lerp(_backgroundColorNight.xyz, _backgroundColorDay.xyz, localLerp);
-            }
-
-            _campComp.BackgroundColor = _backgroundColor;
-
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -202,22 +178,22 @@ namespace Fusee.Examples.Deferred.Core
             if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
             else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTimeUpdate;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTimeUpdate;
                 }
             }
 
@@ -226,35 +202,7 @@ namespace Fusee.Examples.Deferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 200);
-        }
-
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
-        {
-            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f) * DeltaTime * 50, 0 ,0));
-
-            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
-            if (deg < 0)
-                deg = (360 + deg);
-
-            var normalizedDeg = (deg) / 360;
-            float localLerp;
-
-            if (normalizedDeg <= 0.5)
-            {
-                _backgroundColor = _backgroundColorDay;
-                localLerp = normalizedDeg / 0.5f;
-                _backgroundColor.xyz = float3.Lerp(_backgroundColorDay.xyz, _backgroundColorNight.xyz, localLerp);
-            }
-            else
-            {
-                _backgroundColor = _backgroundColorNight;
-                localLerp = (normalizedDeg - 0.5f) / (0.5f);
-                _backgroundColor.xyz = float3.Lerp(_backgroundColorNight.xyz, _backgroundColorDay.xyz, localLerp);
-            }
-
-            _campComp.BackgroundColor = _backgroundColor;
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 200);
 
             if (Keyboard.IsKeyDown(KeyCodes.F))
                 _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
@@ -266,6 +214,35 @@ namespace Fusee.Examples.Deferred.Core
                 _renderDeferred = false;
             else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
                 _renderDeferred = true;
+        }
+
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
+            //Diagnostics.Warn(FramesPerSecond);
+            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f) * DeltaTime * 50, 0 ,0));
+
+            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
+            if (deg < 0)
+                deg = (360 + deg);
+
+            var normalizedDeg = (deg) / 360;
+            float localLerp;
+
+            if (normalizedDeg <= 0.5)
+            {
+                _backgroundColor = _backgroundColorDay;
+                localLerp = normalizedDeg / 0.5f;
+                _backgroundColor.xyz = float3.Lerp(_backgroundColorDay.xyz, _backgroundColorNight.xyz, localLerp);
+            }
+            else
+            {
+                _backgroundColor = _backgroundColorNight;
+                localLerp = (normalizedDeg - 0.5f) / (0.5f);
+                _backgroundColor.xyz = float3.Lerp(_backgroundColorNight.xyz, _backgroundColorDay.xyz, localLerp);
+            }
+
+            _campComp.BackgroundColor = _backgroundColor;
 
             if (_renderDeferred)
                 _sceneRendererDeferred.Render(RC);

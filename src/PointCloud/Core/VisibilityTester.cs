@@ -14,7 +14,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         ///All nodes that are visible in this frame.
         /// </summary>
-        public List<string> VisibleNodes { get; private set; }
+        public List<OctantId> VisibleNodes { get; private set; }
 
         /// <summary>
         /// Current Field of View - set by the SceneRenderer if a PointCloud Component is visited.
@@ -22,9 +22,24 @@ namespace Fusee.PointCloud.Core
         public float Fov { get; set; }
 
         /// <summary>
+        /// Model matrix of the SceneNode the point cloud (component) is part of.
+        /// </summary>
+        public float4x4 Model { get; set; } = float4x4.Identity;
+
+        /// <summary>
         /// Current camera position - set by the SceneRenderer if a PointCloud Component is visited.
         /// </summary>
-        public float3 CamPos { get; set; }
+        public float3 CamPos
+        {
+            get => _camPos;
+            set
+            {
+                _camPos = value;
+                _camPosD = new double3(_camPos.x, _camPos.y, _camPos.z);
+            }
+        }
+        private float3 _camPos;
+
 
         /// <summary>
         /// Current height of the viewport - set by the SceneRenderer if a PointCloud Component is visited.
@@ -81,7 +96,6 @@ namespace Fusee.PointCloud.Core
         private readonly SortedDictionary<double, PointCloudOctant> _visibleNodesOrderedByProjectionSize;
 
         private double3 _camPosD;
-        private float _fov;
         private float _minProjSizeModifier = 0.1f;
         private readonly TriggerPointLoading _triggerPointLoading;
         private float _deltaTimeSinceLastUpdate;
@@ -105,10 +119,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public void Update()
         {
-            _camPosD = new double3(CamPos.x, CamPos.y, CamPos.z);
-            _fov = Fov;
-
-            SetMinScreenProjectedSize(_camPosD, _fov);
+            SetMinScreenProjectedSize(_camPosD, Fov);
 
             if (_deltaTimeSinceLastUpdate < UpdateRate)
                 _deltaTimeSinceLastUpdate += Time.DeltaTime;
@@ -129,7 +140,6 @@ namespace Fusee.PointCloud.Core
             NumberOfVisiblePoints = 0;
             _visibleNodesOrderedByProjectionSize.Clear();
             VisibleNodes.Clear();
-
             DetermineVisibilityForNode((PointCloudOctant)Octree.Root);
 
             while (_visibleNodesOrderedByProjectionSize.Count > 0 && NumberOfVisiblePoints <= PointThreshold)
@@ -138,10 +148,10 @@ namespace Fusee.PointCloud.Core
                 var kvp = _visibleNodesOrderedByProjectionSize.Last();
                 var octant = kvp.Value;
 
-                _triggerPointLoading(octant.Guid);
+                _triggerPointLoading(octant.OctId);
 
                 NumberOfVisiblePoints += octant.NumberOfPointsInNode;
-                VisibleNodes.Add(octant.Guid);
+                VisibleNodes.Add(octant.OctId);
                 _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
                 DetermineVisibilityForChildren(kvp.Value);
             }
@@ -161,24 +171,30 @@ namespace Fusee.PointCloud.Core
 
         private void DetermineVisibilityForNode(PointCloudOctant node)
         {
+            var scale = float3.One; //Model.Scale()
+            var translation = Model.Translation();
             // gets pixel radius of the node
-            node.ComputeScreenProjectedSize(_camPosD, ViewportHeight, _fov);
+            node.ComputeScreenProjectedSize(_camPosD, ViewportHeight, Fov, translation, scale);
 
             //If node does not intersect the viewing frustum or is smaller than the minimal projected size:
             //Return -> will not be added to _visibleNodesOrderedByProjectionSize -> traversal of this branch stops.
-            if (!node.InsideOrIntersectingFrustum(RenderFrustum) || node.ProjectedScreenSize < _minScreenProjectedSize)
+            if (!node.InsideOrIntersectingFrustum(RenderFrustum, translation, scale) || node.ProjectedScreenSize < _minScreenProjectedSize)
             {
+                node.IsVisible = false;
                 return;
             }
 
             // Else if the node is visible and big enough, load if necessary and add to visible nodes.
             // If by chance two same nodes have the same screen-projected-size can't add it to the dictionary....
-            _visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node);
+            if (_visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node))
+                node.IsVisible = true;
+            else
+                node.IsVisible = false;
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
         {
-            ((PointCloudOctant)Octree.Root).ComputeScreenProjectedSize(camPos, ViewportHeight, fov);
+            ((PointCloudOctant)Octree.Root).ComputeScreenProjectedSize(camPos, ViewportHeight, fov, Model.Translation(), float3.One);
             _minScreenProjectedSize = ((PointCloudOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
         }
     }
