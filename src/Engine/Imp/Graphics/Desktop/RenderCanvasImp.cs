@@ -209,13 +209,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #endregion
 
         #region Constructors
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
-        /// </summary>
-        public RenderCanvasImp() : this(null, false)
-        {
-
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.

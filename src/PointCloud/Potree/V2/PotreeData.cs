@@ -1,4 +1,5 @@
-﻿using Fusee.Math.Core;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Math.Core;
 using Fusee.PointCloud.Potree.V2.Data;
 using Newtonsoft.Json;
 using System;
@@ -25,6 +26,8 @@ namespace Fusee.PointCloud.Potree.V2
 
         public PotreeData(string folderPath)
         {
+            Guard.IsNotNullOrWhiteSpace(folderPath, nameof(folderPath));
+
             LoadHierarchy(folderPath);
         }
 
@@ -32,6 +35,9 @@ namespace Fusee.PointCloud.Potree.V2
         {
             var metadataFilePath = Path.Combine(folderPath, Potree2Consts.MetadataFileName);
             var hierarchyFilePath = Path.Combine(folderPath, Potree2Consts.HierarchyFileName);
+
+            Guard.IsTrue(File.Exists(metadataFilePath), metadataFilePath);
+            Guard.IsTrue(File.Exists(metadataFilePath), hierarchyFilePath);
 
             Metadata = LoadPotreeMetadata(metadataFilePath);
             Hierarchy = new()
@@ -51,6 +57,9 @@ namespace Fusee.PointCloud.Potree.V2
             Hierarchy.Root.Aabb = new AABBd(Metadata.BoundingBox.Min, Metadata.BoundingBox.Max);
 
             var data = File.ReadAllBytes(hierarchyFilePath);
+
+            Guard.IsNotNull(data, nameof(data));
+
             LoadHierarchyRecursive(ref Hierarchy.Root, ref data, 0, Metadata.Hierarchy.FirstChunkSize);
 
             Hierarchy.Nodes = new();
@@ -64,7 +73,11 @@ namespace Fusee.PointCloud.Potree.V2
 
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)
         {
-            return JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilepath));
+            var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilepath));
+
+            Guard.IsNotNull(potreeData, nameof(potreeData));
+
+            return potreeData;
         }
 
         private static void LoadHierarchyRecursive(ref PotreeNode root, ref byte[] data, long offset, long size)

@@ -120,14 +120,17 @@ namespace Fusee.PointCloud.Potree.V2
                                 {
                                     if (offsetPosition > -1)
                                     {
-                                        // TODO: Fix position conversion
-                                        //binaryWriter.BaseStream.Position = node.ByteOffset + offsetPosition + i * _potreeData.Metadata.PointSize;
+                                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetPosition + i * _potreeData.Metadata.PointSize;
 
-                                        //var position = Potree2Consts.YZflip * point.Position;
+                                        var position = Potree2Consts.YZflip * point.Position;
 
-                                        //binaryWriter.Write(position.x);
-                                        //binaryWriter.Write(position.y);
-                                        //binaryWriter.Write(position.z);
+                                        int x = Convert.ToInt32(position.x / _potreeData.Metadata.Scale.x);
+                                        int y = Convert.ToInt32(position.y / _potreeData.Metadata.Scale.y);
+                                        int z = Convert.ToInt32(position.z / _potreeData.Metadata.Scale.z);
+
+                                        binaryWriter.Write(x);
+                                        binaryWriter.Write(y);
+                                        binaryWriter.Write(z);
                                     }
 
                                     if (offsetIntensity > -1)
@@ -174,16 +177,15 @@ namespace Fusee.PointCloud.Potree.V2
 
                                     if (offsetColor > -1)
                                     {
-                                        // TODO: Fix color conversion
-                                        //binaryWriter.BaseStream.Position = node.ByteOffset + offsetColor + i * _potreeData.Metadata.PointSize;
+                                        binaryWriter.BaseStream.Position = node.ByteOffset + offsetColor + i * _potreeData.Metadata.PointSize;
 
-                                        //ushort r = (ushort)MathF.Floor(point.Color.r >= 1f ? 255 : point.Color.r * 256f);
-                                        //ushort g = (ushort)MathF.Floor(point.Color.g >= 1f ? 255 : point.Color.g * 256f);
-                                        //ushort b = (ushort)MathF.Floor(point.Color.b >= 1f ? 255 : point.Color.b * 256f);
+                                        ushort r = Convert.ToUInt16(point.Color.r * 256);
+                                        ushort g = Convert.ToUInt16(point.Color.g * 256);
+                                        ushort b = Convert.ToUInt16(point.Color.b * 256);
 
-                                        //binaryWriter.Write(r);
-                                        //binaryWriter.Write(g);
-                                        //binaryWriter.Write(b);
+                                        binaryWriter.Write(r);
+                                        binaryWriter.Write(g);
+                                        binaryWriter.Write(b);
                                     }
                                 }
 
