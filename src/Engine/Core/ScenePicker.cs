@@ -506,7 +506,7 @@ namespace Fusee.Engine.Core
             // TODO (MR):
             // Custom picking method
             // Geometry shader
-            //
+            // Render XForm (usually MVP based not ray traced ...)
 
             switch (mesh.MeshType)
             {
@@ -609,7 +609,7 @@ namespace Fusee.Engine.Core
 
             var ray = new RayF(PickPosClip, viewMatrix, projectionMatrix);
             var box = State.Model * mesh.BoundingBox;
-            if (!box.IntersectRay(ray)) return;
+            //if (!box.IntersectRay(ray)) return;
 
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {

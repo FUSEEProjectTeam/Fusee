@@ -48,7 +48,7 @@ namespace Fusee.Examples.Picking.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene);
+            _scenePicker = new ScenePicker(_scene, RC.CurrentRenderState.CullMode);
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
             // Create the interaction handler
@@ -119,35 +119,35 @@ namespace Fusee.Examples.Picking.Core
             _sceneRenderer.Render(RC);
 
             //Picking
-            if (_pick)
-            {
-                float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
+            //if (_pick)
+            //{
+            //    float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                var newPick = (MeshPickResult)_scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z)
-                    .FirstOrDefault();
-                if (newPick != null)
-                    Diagnostics.Debug(newPick.Node.Name);
+            //    var newPick = (MeshPickResult)_scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z)
+            //        .FirstOrDefault();
+            //    if (newPick != null)
+            //        Diagnostics.Debug(newPick.Node.Name);
 
-                if (newPick?.Node != _currentPick?.Node)
-                {
-                    if (_currentPick != null)
-                    {
-                        var ef = _currentPick.Node.GetComponent<SurfaceEffect>();
-                        ef.SurfaceInput.Albedo = _oldColor;
-                    }
+            //    if (newPick?.Node != _currentPick?.Node)
+            //    {
+            //        if (_currentPick != null)
+            //        {
+            //            var ef = _currentPick.Node.GetComponent<SurfaceEffect>();
+            //            ef.SurfaceInput.Albedo = _oldColor;
+            //        }
 
-                    if (newPick != null)
-                    {
-                        var ef = newPick.Node.GetComponent<SurfaceEffect>();
-                        _oldColor = ef.SurfaceInput.Albedo;
-                        ef.SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
-                    }
+            //        if (newPick != null)
+            //        {
+            //            var ef = newPick.Node.GetComponent<SurfaceEffect>();
+            //            _oldColor = ef.SurfaceInput.Albedo;
+            //            ef.SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
+            //        }
 
-                    _currentPick = newPick;
-                }
+            //        _currentPick = newPick;
+            //    }
 
-                _pick = false;
-            }
+            //    _pick = false;
+            //}
 
             _guiRenderer.Render(RC);
 
