@@ -5,10 +5,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
-
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace Fusee.Engine.Core
@@ -48,7 +45,14 @@ namespace Fusee.Engine.Core
         /// The clip position
         /// </summary>
         public float3 ClipPos;
+    }
 
+    public class MeshPickResult : PickResult
+    {
+        public int Triangle;
+        public float U;
+        public float V;
+        public float DistanceFromOrigin;
     }
 
     /// <summary>
@@ -121,6 +125,8 @@ namespace Fusee.Engine.Core
                 set => _cullMode.Tos = value;
             }
 
+            public PickComponent? CurrentPickComp;
+
             /// <summary>
             /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for model, UI rectangle, and canvas transform, as well as cull mode.
             /// </summary>
@@ -132,12 +138,17 @@ namespace Fusee.Engine.Core
                 RegisterState(_canvasXForm);
                 RegisterState(_cullMode);
             }
-        };
+        }
 
         /// <summary>
         /// The current view matrix.
         /// </summary>
         public float4x4 View { get; private set; }
+
+        /// <summary>
+        /// The pick position on the screen.
+        /// </summary>
+        public float2 PickPosClip { get; set; }
 
         /// <summary>
         /// The current projection matrix.
@@ -155,13 +166,15 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The constructor to initialize a new ScenePicker.
         /// </summary>
+        /// <param name="cullMode"></param>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
-        public ScenePicker(SceneContainer scene, IEnumerable<IPickerModule> customPickModule = null)
+        public ScenePicker(SceneContainer scene, Cull cullMode = Cull.None, IEnumerable<IPickerModule> customPickModule = null)
             : base(scene.Children, customPickModule)
         {
             IgnoreInactiveComponents = true;
             View = float4x4.Identity;
             Projection = float4x4.Identity;
+            State.CullMode = cullMode;
         }
 
         /// <summary>
@@ -172,15 +185,14 @@ namespace Fusee.Engine.Core
             base.InitState();
             State.Model = float4x4.Identity;
             State.CanvasXForm = float4x4.Identity;
-            State.CullMode = Cull.None; // todo: set via camera visitor
         }
 
         /// <summary>
         /// Returns a collection of objects that fall in the area of the pick position and that can be iterated over.
         /// </summary>
         /// <param name="pickPos">The pick position.</param>
-        /// <param name="canvasWidth">The width of the current canvas, gets overwritte if a <see cref="Camera.RenderTexture"/> is bound</param>
-        /// <param name="canvasHeight">The height of the current canvas, gets overwritte if a <see cref="Camera.RenderTexture"/> is bound</param>
+        /// <param name="canvasWidth">The width of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
+        /// <param name="canvasHeight">The height of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
         /// <returns></returns>
         public IEnumerable<PickResult> Pick(float2 pickPos, int canvasWidth, int canvasHeight)
         {
@@ -246,6 +258,8 @@ namespace Fusee.Engine.Core
             Projection = CurrentCamera.RenderTexture != null
             ? CurrentCamera.GetProjectionMat(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height, out var _)
             : CurrentCamera.GetProjectionMat(_canvasWidth, _canvasHeight, out var _);
+
+
         }
 
         /// <summary>
@@ -466,16 +480,16 @@ namespace Fusee.Engine.Core
             State.Model *= transform.Matrix;
         }
 
-
-        ///// <summary>
-        ///// Creates pick results from a given point cloud if it is within the pick position.
-        ///// </summary>
-        ///// <param name="pc">The given point cloud.</param>
-        //[VisitMethod]
-        //public void PickMesh(PointCloudComponent pc)
-        //{
-        //    // TODO: Impl
-        //}
+        /// <summary>
+        /// Handles custom pick component with pick layer and custom picking methods.
+        /// If <see cref="PickComponent"/> is not active, the picking is being skipped
+        /// </summary>
+        /// <param name="comp"></param>
+        [VisitMethod]
+        public void HandlePickComponent(PickComponent comp)
+        {
+            State.CurrentPickComp = comp;
+        }
 
         /// <summary>
         /// Creates pick results from a given mesh if it is within the pick position.
@@ -484,117 +498,161 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
+            if (State.CurrentPickComp?.Active == false) return;
+
             if (!mesh.Active) return;
+            if (mesh == null) return;
 
+            // TODO (MR):
+            // Custom picking method
+            // Geometry shader
+            //
 
-            var mvp = Projection * View * State.Model;
-
-            if (mesh != null && (mesh.MeshType == PrimitiveType.Triangles ||
-                mesh.MeshType == PrimitiveType.TriangleFan ||
-                mesh.MeshType == PrimitiveType.TriangleStrip))
+            switch (mesh.MeshType)
             {
-                PickTriangleGeometry(mesh, mvp);
+                case PrimitiveType.Triangles:
+                case PrimitiveType.TriangleFan:
+                case PrimitiveType.TriangleStrip:
+                    PickTriangleGeometry(mesh, Projection, View);
+                    break;
+                case PrimitiveType.Lines:
+                    PickLineGeometry(mesh);
+                    break;
+                default:
+                    Diagnostics.Warn($"Unknown primitive type {mesh.MeshType}, picking not possible!");
+                    break;
             }
-            else if (mesh?.MeshType == PrimitiveType.Lines)
+        }
+
+        private void PickLineGeometry(Mesh mesh)
+        {
+            var mvp = Projection * View * State.Model;
+            var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
+            if (matOfNode == null)
             {
-                var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
-                if (matOfNode == null)
+                Diagnostics.Debug("No shader effect for line renderer found!");
+                return;
+            }
+            var thicknessFromShader = matOfNode.GetFxParam<float>("Thickness");
+
+            if (mesh.Triangles == null) return;
+            if (mesh.Vertices == null) return;
+            if (CurrentCamera == null)
+            {
+                Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
+                return;
+            }
+
+            for (var i = 0; i < mesh.Triangles.Length; i += 2)
+            {
+                var viewportHeight = CurrentCamera.Viewport.w;
+                var thickness = (thicknessFromShader / viewportHeight);
+
+                var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]).xy;
+                var pt2 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]).xy;
+                var pt0 = PickPosClip;
+
+                // Line Eq = ax + by + c = 0
+                // A = (y1 - y2)
+                // B = (x2 - x1)
+                // C = (x1 * y2 - x2 * y1)
+
+                // dist(line, pt) = |Ax + By + C| / A² + B²
+                var a = pt1.y - pt2.y;
+                var b = pt2.x - pt1.x;
+                var c = (pt1.x * pt2.y) - (pt2.x * pt1.y);
+
+                var d = MathF.Abs((a * pt0.x) + (b * pt0.y) + c) / ((a * a) + (b * b));
+
+                if (d <= thickness)
                 {
-                    Diagnostics.Debug("No shader effect for line renderer found!");
-                    return;
-                }
-                var thicknessFromShader = matOfNode.GetFxParam<float>("Thickness");
-
-                if (mesh.Triangles == null) return;
-                if (mesh.Vertices == null) return;
-                if (CurrentCamera == null)
-                {
-                    Diagnostics.Warn("No camera found in SceneGraph, no picking possible");
-                    return;
-                }
-
-                for (var i = 0; i < mesh.Triangles.Length; i += 2)
-                {
-                    var viewportHeight = CurrentCamera.Viewport.w;
-                    var thickness = (thicknessFromShader / viewportHeight);
-
-                    var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]).xy;
-                    var pt2 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]).xy;
-                    var pt0 = PickPosClip;
-
-                    // Line Eq = ax + by + c = 0
-                    // A = (y1 - y2)
-                    // B = (x2 - x1)
-                    // C = (x1 * y2 - x2 * y1)
-
-                    // dist(line, pt) = |Ax + By + C| / A² + B²
-                    var a = pt1.y - pt2.y;
-                    var b = pt2.x - pt1.x;
-                    var c = pt1.x * pt2.y - pt2.x * pt1.y;
-
-                    var d = (MathF.Abs(a * pt0.x + b * pt0.y + c) / (a * a + b * b));
-
-                    if (d <= thickness)
+                    YieldItem(new PickResult
                     {
-                        YieldItem(new PickResult
+                        Mesh = mesh,
+                        Node = CurrentNode,
+                        Model = State.Model,
+                        ClipPos = float4x4.TransformPerspective(Projection * View, CurrentNode.GetTransform().Translation),
+                        View = View,
+                        Projection = Projection
+                    });
+                }
+            }
+        }
+
+
+        private void PickTriangleGeometry(Mesh mesh, float4x4 projectionMatrix, float4x4 viewMatrix)
+        {
+            if (mesh == null) return;
+            if (mesh.Triangles == null) return;
+            if (mesh.Vertices == null) return;
+
+            if (mesh.BoundingBox == default)
+            {
+                Diagnostics.Warn($"Current bounding box of {mesh} is default while mesh is being picked. Generating box ...");
+                mesh.BoundingBox = new(mesh.Vertices.AsReadOnlySpan);
+            }
+
+            if (mesh.BoundingBox.Size.x <= 0 || mesh.BoundingBox.Size.y <= 0 || mesh.BoundingBox.Size.z <= 0)
+            {
+                Diagnostics.Warn($"Current bounding box of {mesh} is smaller or equal to zero. Forcing a thickness in zero direction of >= float.Epsilon");
+                var maxX = mesh.BoundingBox.Size.x <= 0 ? float.Epsilon : mesh.BoundingBox.max.x;
+                var maxY = mesh.BoundingBox.Size.y <= 0 ? float.Epsilon : mesh.BoundingBox.max.y;
+                var maxZ = mesh.BoundingBox.Size.z <= 0 ? float.Epsilon : mesh.BoundingBox.max.z;
+
+                var minX = mesh.BoundingBox.Size.x <= 0 ? 0 : mesh.BoundingBox.min.x;
+                var minY = mesh.BoundingBox.Size.y <= 0 ? 0 : mesh.BoundingBox.min.y;
+                var minZ = mesh.BoundingBox.Size.z <= 0 ? 0 : mesh.BoundingBox.min.z;
+
+                mesh.BoundingBox = new AABBf(new float3(minX, minY, minZ), new float3(maxX, maxY, maxZ));
+            }
+
+
+            var ray = new RayF(PickPosClip, viewMatrix, projectionMatrix);
+            var box = State.Model * mesh.BoundingBox;
+            if (!box.IntersectRay(ray)) return;
+
+            for (int i = 0; i < mesh.Triangles.Length; i += 3)
+            {
+                // Vertices of the picked triangle in world space
+                var a = new float3(mesh.Vertices[(int)mesh.Triangles[i + 0]]);
+                a = float4x4.Transform(State.Model, a);
+
+                var b = new float3(mesh.Vertices[(int)mesh.Triangles[i + 1]]);
+                b = float4x4.Transform(State.Model, b);
+
+                var c = new float3(mesh.Vertices[(int)mesh.Triangles[i + 2]]);
+                c = float4x4.Transform(State.Model, c);
+
+                // Normal of the plane defined by a, b, and c.
+                var n = float3.Normalize(float3.Cross(a - c, b - c));
+
+                // Distance between "Origin" and the plane abc when following the Direction.
+                var distance = -float3.Dot(ray.Origin - a, n) / float3.Dot(ray.Direction, n);
+
+                if (distance < 0)
+                    continue;
+
+                // Position of the intersection point between ray and plane.
+                var point = ray.Origin + (ray.Direction * distance);
+
+                if (float3.PointInTriangle(a, b, c, point, out float u, out float v))
+                {
+                    if (State.CullMode == Cull.None || (State.CullMode == Cull.Clockwise) == (float3.Dot(n, ray.Direction) < 0))
+                    {
+                        YieldItem(new MeshPickResult
                         {
                             Mesh = mesh,
                             Node = CurrentNode,
+                            Triangle = i,
                             Model = State.Model,
-                            ClipPos = float4x4.TransformPerspective(Projection * View, CurrentNode.GetTransform().Translation),
-                            View = View,
-                            Projection = Projection
+                            U = u,
+                            V = v,
+                            DistanceFromOrigin = distance
                         });
                     }
                 }
             }
         }
-
-        private void PickTriangleGeometry(Mesh mesh, float4x4 mvp)
-        {
-            if (mesh.Triangles == null) return;
-            if (mesh.Vertices == null) return;
-
-            for (var i = 0; i < mesh.Triangles.Length; i += 3)
-            {
-                // a, b c: current triangle's vertices in clip coordinates
-                var a = new float4(mesh.Vertices[(int)mesh.Triangles[i + 0]], 1);
-                a = float4x4.TransformPerspective(mvp, a);
-
-                var b = new float4(mesh.Vertices[(int)mesh.Triangles[i + 1]], 1);
-                b = float4x4.TransformPerspective(mvp, b);
-
-                var c = new float4(mesh.Vertices[(int)mesh.Triangles[i + 2]], 1);
-                c = float4x4.TransformPerspective(mvp, c);
-
-                // Point-in-Triangle-Test
-                if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out var u, out var v))
-                {
-                    var pickPos = float3.Barycentric(a.xyz, b.xyz, c.xyz, u, v);
-
-                    if (pickPos.z >= -1 && pickPos.z <= 1)
-                    {
-                        if (State.CullMode == Cull.None || float2.IsTriangleCW(a.xy, b.xy, c.xy) == (State.CullMode == Cull.Clockwise))
-                        {
-                            YieldItem(new PickResult
-                            {
-                                Mesh = mesh,
-                                Node = CurrentNode,
-                                Model = State.Model,
-                                View = View,
-                                ClipPos = float4x4.TransformPerspective(Projection * View, State.Model.Translation()),
-                                Projection = Projection
-                            });
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// The pick position on the screen.
-        /// </summary>
-        public float2 PickPosClip { get; set; }
 
         #endregion
 

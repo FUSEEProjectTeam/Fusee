@@ -123,7 +123,7 @@ namespace Fusee.Examples.Picking.Core
             {
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                PickResult newPick = _scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z)
+                var newPick = (MeshPickResult)_scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z)
                     .FirstOrDefault();
                 if (newPick != null)
                     Diagnostics.Debug(newPick.Node.Name);

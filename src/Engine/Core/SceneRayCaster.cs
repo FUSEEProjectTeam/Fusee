@@ -200,11 +200,13 @@ namespace Fusee.Engine.Core
 
             foreach (var camRes in cams)
             {
-                Rectangle camRect = new();
-                camRect.Left = (int)(camRes.Camera.Viewport.x * rc.ViewportWidth / 100);
-                camRect.Top = (int)(camRes.Camera.Viewport.y * rc.ViewportHeight / 100);
-                camRect.Right = (int)(camRes.Camera.Viewport.z * rc.ViewportWidth) / 100 + camRect.Left;
-                camRect.Bottom = (int)(camRes.Camera.Viewport.w * rc.ViewportHeight) / 100 + camRect.Top;
+                Rectangle camRect = new()
+                {
+                    Left = (int)(camRes.Camera.Viewport.x * rc.ViewportWidth / 100),
+                    Top = (int)(camRes.Camera.Viewport.y * rc.ViewportHeight / 100)
+                };
+                camRect.Right = ((int)(camRes.Camera.Viewport.z * rc.ViewportWidth) / 100) + camRect.Left;
+                camRect.Bottom = ((int)(camRes.Camera.Viewport.w * rc.ViewportHeight) / 100) + camRect.Top;
 
                 if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos)) continue;
 
