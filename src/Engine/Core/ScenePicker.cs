@@ -504,9 +504,21 @@ namespace Fusee.Engine.Core
             if (mesh == null) return;
 
             // TODO (MR):
-            // Custom picking method
             // Geometry shader
-            // Render XForm (usually MVP based not ray traced ...)
+            // PointCloud -> module
+
+            if (State?.CurrentPickComp != null)
+            {
+                if (State?.CurrentPickComp?.CustomPickMethod != null)
+                {
+                    var res = State?.CurrentPickComp?.CustomPickMethod(mesh, CurrentNode, State.Model, View, Projection, PickPosClip);
+                    if (res != null)
+                    {
+                        YieldItem(res);
+                        return;
+                    }
+                }
+            }
 
             switch (mesh.MeshType)
             {
