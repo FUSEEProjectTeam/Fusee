@@ -138,12 +138,22 @@ namespace Fusee.Engine.Core
                 RegisterState(_canvasXForm);
                 RegisterState(_cullMode);
             }
+
+            /// <summary>
+            /// The current view matrix.
+            /// </summary>
+            public float4x4 View { get; set; }
+
+            /// <summary>
+            /// The current projection matrix.
+            /// </summary>
+            public float4x4 Projection { get; set; }
         }
 
         /// <summary>
         /// The current view matrix.
         /// </summary>
-        public float4x4 View { get; private set; }
+        public float4x4 View { get; set; }
 
         /// <summary>
         /// The pick position on the screen.
@@ -212,7 +222,7 @@ namespace Fusee.Engine.Core
         {
             foreach (var module in VisitorModules)
             {
-                ((IPickerModule)module).GetPickerState = () => State;
+                ((IPickerModule)module).SetState(State);
             }
         }
 
@@ -259,7 +269,8 @@ namespace Fusee.Engine.Core
             ? CurrentCamera.GetProjectionMat(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height, out var _)
             : CurrentCamera.GetProjectionMat(_canvasWidth, _canvasHeight, out var _);
 
-
+            State.View = View;
+            State.Projection = Projection;
         }
 
         /// <summary>
@@ -496,7 +507,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="mesh">The given Mesh.</param>
         [VisitMethod]
-        public void PickMesh(Mesh mesh)
+        public void HandleMesh(Mesh mesh)
         {
             if (State.CurrentPickComp?.Active == false) return;
 
@@ -504,7 +515,7 @@ namespace Fusee.Engine.Core
             if (mesh == null) return;
 
             // TODO (MR):
-            // Geometry shader
+            // Geometry shader -> PickComp?
             // PointCloud -> module
 
             if (State?.CurrentPickComp != null)
@@ -621,7 +632,7 @@ namespace Fusee.Engine.Core
 
             var ray = new RayF(PickPosClip, viewMatrix, projectionMatrix);
             var box = State.Model * mesh.BoundingBox;
-            //if (!box.IntersectRay(ray)) return;
+            if (!box.IntersectRay(ray)) return;
 
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {

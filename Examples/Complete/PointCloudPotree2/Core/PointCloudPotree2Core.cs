@@ -8,6 +8,7 @@ using Fusee.PointCloud.Potree.V2;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {
@@ -50,6 +51,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private Potree2Reader _potreeReader;
         private PotreeData _potreeData;
 
+        private ScenePicker _picker;
+
         private readonly RenderContext _rc;
 
         public void OnLoadNewFile(object sender, EventArgs e)
@@ -69,6 +72,12 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _pointCloud.Camera = _cam;
 
             _pointCloudNode.Components[3] = _pointCloud;
+
+            // re-generate picker and octree
+            _picker = new ScenePicker(_scene, Engine.Common.Cull.None, new List<IPickerModule>()
+            {
+                new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree)
+            });
         }
 
         public PointCloudPotree2Core(RenderContext rc)
@@ -157,6 +166,12 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
 
             _pointCloud.Camera = _cam;
+
+            _picker = new ScenePicker(_scene, Engine.Common.Cull.None, new List<IPickerModule>()
+            {
+                new PointCloudPickerModule(((PointCloud.Potree.Potree2Cloud)_pointCloud.PointCloudImp).VisibilityTester.Octree)
+            });
+
         }
 
         // RenderAFrame is called once a frame
@@ -227,6 +242,15 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _angleVelVert = 0;
 
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
+
+            if (!_keys && Input.Mouse.LeftButton)
+            {
+                var width = _rc.ViewportWidth;
+                var height = _rc.ViewportHeight;
+                var pickPosClip = (Input.Mouse.Position * new float2(2.0f / width, -2.0f / height)) + new float2(-1, 1);
+                var result = _picker.Pick(pickPosClip, width, height).ToList();
+                Console.WriteLine(result.Count > 0);
+            }
         }
 
         private void OnThresholdChanged(int newValue)
