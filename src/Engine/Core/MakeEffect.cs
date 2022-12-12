@@ -55,6 +55,37 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(uniformParameters, RenderStateSet.Default, vs, ps, gs);
         }
 
+
+        /// <summary>
+        /// Generates a line shader which can be used with a <see cref="Mesh"/> with <see cref="Mesh.MeshType"/> set to <see cref="PrimitiveType.Lines"/>.        /// Loads shader files via <see cref="AssetStorage.Get{T}(string)"/>
+        /// For an asynchronous version use <see cref="LineEffectAsync(float, float4, bool)"/>
+        /// </summary>
+        /// <param name="lineThickness"></param>
+        /// <param name="albedoColor"></param>
+        /// <param name="enableVertexColors"></param>
+        /// <returns></returns>
+        public static Effect LineEffectAdjacency(float lineThickness, float4 albedoColor, bool enableVertexColors = false)
+        {
+            var vs = AssetStorage.Get<string>("line.vert");
+            var gs = AssetStorage.Get<string>("lineAdjacency.geom");
+            var ps = AssetStorage.Get<string>("line.frag");
+            var uniformParameters = new List<IFxParamDeclaration>
+            {
+                new FxParamDeclaration<float4x4>
+                    { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4>
+                    { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4>
+                    { Name = UniformNameDeclarations.Projection, Value = float4x4.Identity },
+                new FxParamDeclaration<float> { Name = "Thickness", Value = lineThickness },
+                new FxParamDeclaration<int2> { Name = UniformNameDeclarations.ViewportPx, Value = int2.Zero },
+                new FxParamDeclaration<float4> { Name = "Albedo", Value = albedoColor },
+                new FxParamDeclaration<bool> { Name = "EnableVertexColors", Value = enableVertexColors }
+            };
+
+            return new ShaderEffect(uniformParameters, RenderStateSet.Default, vs, ps, gs);
+        }
+
         /// <summary>
         /// Generates a line shader which can be used with a <see cref="Mesh"/> with <see cref="Mesh.MeshType"/> set to <see cref="PrimitiveType.Lines"/>.
         /// Loads shader files via <see cref="AssetStorage.GetAsync{T}(string)"/>

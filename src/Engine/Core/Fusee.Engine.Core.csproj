@@ -40,6 +40,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="Assets\lineAdjacency.geom">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Assets\line.frag">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>

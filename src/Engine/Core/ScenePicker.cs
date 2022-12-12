@@ -563,7 +563,7 @@ namespace Fusee.Engine.Core
                     }
                 }
             }
-            else if (mesh.MeshType == PrimitiveType.Lines)
+            else if (mesh.MeshType == PrimitiveType.Lines || mesh.MeshType == PrimitiveType.LineAdjacency)
             {
                 var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
                 if (matOfNode == null)

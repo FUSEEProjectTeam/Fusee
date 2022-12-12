@@ -890,6 +890,11 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Relates to OpenGl GL_PATCHES.
         /// </summary>
-        Patches
+        Patches,
+
+        /// <summary>
+        /// Relates to OpenGl GL_LINES_ADJACENCY.
+        /// </summary>
+        LineAdjacency
     }
 }
