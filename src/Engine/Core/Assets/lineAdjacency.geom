@@ -37,20 +37,28 @@ void main()
     vec2 dir1 = normalize(vec2(line_vector1.x, line_vector1.y * u_aspect_ratio));
     vec2 dir2 = normalize(vec2(line_vector2.x, line_vector2.y * u_aspect_ratio));
 
-    //normals of the three segments (previous, current, next) */
+    //normals of the three segments (previous, current, next)
     vec2 n0 = vec2( -dir0.y, dir0.x );
     vec2 n1 = vec2( -dir1.y, dir1.x );
     vec2 n2 = vec2( -dir2.y, dir2.x );
 
-    // determine miter lines by averaging the normals of the 2 segments */
+    // determine miter lines by averaging the normals of the 2 segments
     vec2 miter_a = normalize( n0 + n1 );// miter at start of current segment
     vec2 miter_b = normalize( n1 + n2 );// miter at end of current segment
+
+    // determine the length of the miter by projecting it onto normal and then inverse it
+    float an1 = dot(miter_a, n1);
+    float bn1 = dot(miter_b, n2);
+    if (an1==0) an1 = 1;
+    if (bn1==0) bn1 = 1;
+    float length_a = line_width / an1;
+    float length_b = line_width / bn1;
 
     n0 = vec2(line_width/u_width, line_width/u_height) * n0;
     n1 = vec2(line_width/u_width, line_width/u_height) * n1;
     n2 = vec2(line_width/u_width, line_width/u_height) * n2;
-    miter_a = vec2(line_width/u_width, line_width/u_height) * miter_a;
-    miter_b = vec2(line_width/u_width, line_width/u_height) * miter_b;
+    miter_a = vec2(length_a/u_width, length_a/u_height) * miter_a;
+    miter_b = vec2(length_b/u_width, length_b/u_height) * miter_b;
 
     if(EnableVertexColors)
         gColor = vColor0[0];
