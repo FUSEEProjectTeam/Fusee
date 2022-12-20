@@ -51,8 +51,19 @@ void main()
     float bn1 = dot(miter_b, n2);
     if (an1==0) an1 = 1;
     if (bn1==0) bn1 = 1;
+
     float length_a = line_width / an1;
+    if( dot(dir0, dir1 ) < -0.1/*MiterLimit*/) 
+    {
+        miter_a = n1;
+        length_a = Thickness;
+    }
+    
     float length_b = line_width / bn1;
+    if( dot(dir1, dir2) < -0.1/*MiterLimit*/) {
+        miter_b = n1;
+        length_b = Thickness;
+    }
 
     n0 = vec2(line_width/u_width, line_width/u_height) * n0;
     n1 = vec2(line_width/u_width, line_width/u_height) * n1;
