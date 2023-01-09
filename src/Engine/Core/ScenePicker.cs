@@ -6,7 +6,7 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -212,7 +212,19 @@ namespace Fusee.Engine.Core
 
             State.PickPosClip = pickPos;
             SetState();
-            return Viserate();
+            var res = Viserate().ToList();
+            res.AddRange(CheckVisitorModuleResults());
+            return res;
+        }
+
+        private IEnumerable<PickResult> CheckVisitorModuleResults()
+        {
+            foreach (var module in VisitorModules)
+            {
+                var m = (IPickerModule)module;
+                if (m.PickResult != null)
+                    yield return m.PickResult;
+            }
         }
 
         /// <summary>
@@ -222,7 +234,8 @@ namespace Fusee.Engine.Core
         {
             foreach (var module in VisitorModules)
             {
-                ((IPickerModule)module).SetState(State);
+                var m = (IPickerModule)module;
+                m.SetState(State);
             }
         }
 

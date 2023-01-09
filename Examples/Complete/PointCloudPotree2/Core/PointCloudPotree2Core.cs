@@ -1,4 +1,5 @@
 ﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
@@ -25,7 +26,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         }
         private bool _closingRequested;
 
-        public RenderMode PointRenderMode = RenderMode.StaticMesh;
+        public RenderMode PointRenderMode = RenderMode.DynamicMesh;
         public string AssetsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
@@ -76,7 +77,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             // re-generate picker and octree
             _picker = new ScenePicker(_scene, Engine.Common.Cull.None, new List<IPickerModule>()
             {
-                new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree)
+                new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree, (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp)
             });
         }
 
@@ -167,9 +168,14 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _pointCloud.Camera = _cam;
 
+            //_picker = new ScenePicker(_scene, Engine.Common.Cull.None, new List<IPickerModule>()
+            //{
+            //    new PointCloudPickerModule(((PointCloud.Potree.Potree2Cloud)_pointCloud.PointCloudImp).VisibilityTester.Octree, null)
+            //});
+
             _picker = new ScenePicker(_scene, Engine.Common.Cull.None, new List<IPickerModule>()
             {
-                new PointCloudPickerModule(((PointCloud.Potree.Potree2Cloud)_pointCloud.PointCloudImp).VisibilityTester.Octree)
+                new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree, (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp)
             });
 
         }
@@ -248,8 +254,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 var width = _rc.ViewportWidth;
                 var height = _rc.ViewportHeight;
                 var pickPosClip = (Input.Mouse.Position * new float2(2.0f / width, -2.0f / height)) + new float2(-1, 1);
-                var result = _picker.Pick(pickPosClip, width, height).ToList();
-                Console.WriteLine(result.Count > 0);
+                var result = _picker?.Pick(pickPosClip, width, height).ToList();
+                if (result != null) Diagnostics.Debug(((PointCloudPickResult)result[0]).OctandID);
             }
         }
 

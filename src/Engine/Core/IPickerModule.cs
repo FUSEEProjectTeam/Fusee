@@ -13,5 +13,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="state">The state to set.</param>
         public void SetState(PickerState state);
+
+        public PickResult PickResult { get; set; }
     }
 }
