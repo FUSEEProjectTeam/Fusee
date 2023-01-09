@@ -116,7 +116,7 @@ namespace Fusee.Examples.Picking.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            _sceneRenderer.Render(RC);
+            //_sceneRenderer.Render(RC);
 
             //Picking
             //if (_pick)

@@ -151,23 +151,13 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// The current view matrix.
-        /// </summary>
-        public float4x4 View { get; set; }
-
-        /// <summary>
         /// The pick position on the screen.
         /// </summary>
         public float2 PickPosClip { get; set; }
 
-        /// <summary>
-        /// The current projection matrix.
-        /// </summary>
-        public float4x4 Projection { get; private set; }
+        public float4x4 InvView => State.View.Invert();
 
-        public float4x4 InvView => View.Invert();
-
-        public float4x4 InvProjection => Projection.Invert();
+        public float4x4 InvProjection => State.Projection.Invert();
 
         public Camera? CurrentCamera { get; private set; }
 
@@ -182,8 +172,6 @@ namespace Fusee.Engine.Core
             : base(scene.Children, customPickModule)
         {
             IgnoreInactiveComponents = true;
-            View = float4x4.Identity;
-            Projection = float4x4.Identity;
             State.CullMode = cullMode;
         }
 
@@ -194,6 +182,8 @@ namespace Fusee.Engine.Core
         {
             base.InitState();
             State.Model = float4x4.Identity;
+            State.View = float4x4.Identity;
+            State.Projection = float4x4.Identity;
             State.CanvasXForm = float4x4.Identity;
         }
 
@@ -206,14 +196,17 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public IEnumerable<PickResult> Pick(float2 pickPos, int canvasWidth, int canvasHeight)
         {
-            PickPosClip = pickPos;
+
             _canvasWidth = canvasWidth;
             _canvasHeight = canvasHeight;
 
+            PickPosClip = pickPos;
             State.PickPosClip = pickPos;
+
             SetState();
             var res = Viserate().ToList();
             res.AddRange(CheckVisitorModuleResults());
+
             return res;
         }
 
@@ -253,7 +246,7 @@ namespace Fusee.Engine.Core
             CurrentCamera = cam;
 
             var view = State.Model;
-            var scale = float4x4.GetScale(View);
+            var scale = float4x4.GetScale(State.View);
 
             if (scale.x != 1)
             {
@@ -276,14 +269,12 @@ namespace Fusee.Engine.Core
                 view.M33 /= scale.z;
             }
 
-            View = view.Invert();
+            State.View = view.Invert();
             // TODO(mr): TEST Renderlayer
-            Projection = CurrentCamera.RenderTexture != null
+            State.Projection = CurrentCamera.RenderTexture != null
             ? CurrentCamera.GetProjectionMat(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height, out var _)
             : CurrentCamera.GetProjectionMat(_canvasWidth, _canvasHeight, out var _);
 
-            State.View = View;
-            State.Projection = Projection;
         }
 
         /// <summary>
@@ -311,7 +302,7 @@ namespace Fusee.Engine.Core
             }
             else if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
-                var invProj = float4x4.Invert(Projection);
+                var invProj = float4x4.Invert(State.Projection);
 
                 var frustumCorners = new float4[4];
 
@@ -535,7 +526,7 @@ namespace Fusee.Engine.Core
             {
                 if (State?.CurrentPickComp?.CustomPickMethod != null)
                 {
-                    var res = State?.CurrentPickComp?.CustomPickMethod(mesh, CurrentNode, State.Model, View, Projection, PickPosClip);
+                    var res = State?.CurrentPickComp?.CustomPickMethod(mesh, CurrentNode, State.Model, State.View, State.Projection, PickPosClip);
                     if (res != null)
                     {
                         YieldItem(res);
@@ -549,7 +540,7 @@ namespace Fusee.Engine.Core
                 case PrimitiveType.Triangles:
                 case PrimitiveType.TriangleFan:
                 case PrimitiveType.TriangleStrip:
-                    PickTriangleGeometry(mesh, Projection, View);
+                    PickTriangleGeometry(mesh, State.Projection, State.View);
                     break;
                 case PrimitiveType.Lines:
                     PickLineGeometry(mesh);
@@ -562,7 +553,7 @@ namespace Fusee.Engine.Core
 
         private void PickLineGeometry(Mesh mesh)
         {
-            var mvp = Projection * View * State.Model;
+            var mvp = State.Projection * State.View * State.Model;
             var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
             if (matOfNode == null)
             {
@@ -586,7 +577,7 @@ namespace Fusee.Engine.Core
 
                 var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]).xy;
                 var pt2 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]).xy;
-                var pt0 = PickPosClip;
+                var pt0 = State.PickPosClip;
 
                 // Line Eq = ax + by + c = 0
                 // A = (y1 - y2)
@@ -607,9 +598,9 @@ namespace Fusee.Engine.Core
                         Mesh = mesh,
                         Node = CurrentNode,
                         Model = State.Model,
-                        ClipPos = float4x4.TransformPerspective(Projection * View, CurrentNode.GetTransform().Translation),
-                        View = View,
-                        Projection = Projection
+                        ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
+                        View = State.View,
+                        Projection = State.Projection
                     });
                 }
             }
@@ -642,10 +633,13 @@ namespace Fusee.Engine.Core
                 mesh.BoundingBox = new AABBf(new float3(minX, minY, minZ), new float3(maxX, maxY, maxZ));
             }
 
-
             var ray = new RayF(PickPosClip, viewMatrix, projectionMatrix);
+            Diagnostics.Debug($"Origin: {ray.Origin}, Dir: {ray.Direction}, Inv: {ray.Inverse}");
+
             var box = State.Model * mesh.BoundingBox;
-            if (!box.IntersectRay(ray)) return;
+            Diagnostics.Debug($"Box: {box.Center}");
+            if (!box.IntersectRay(ray))
+                return;
 
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
