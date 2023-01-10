@@ -131,7 +131,7 @@ namespace Fusee.PointCloud.Potree.V2
 
             var binaryReader = new BinaryReader(File.OpenRead(OctreeFilePath));
 
-            // Commented code is to read the entire Potree2 file format. Since we don't use everything atm unused 
+            // Commented code is to read the entire Potree2 file format. Since we don't use everything atm unused
             // things are commented for performance.
             for (int i = 0; i < node.NumPoints; i++)
             {
@@ -220,7 +220,8 @@ namespace Fusee.PointCloud.Potree.V2
 
             var points = new TPotreePoint[node.NumPoints];
 
-            Array.Fill(points, new TPotreePoint());
+            for (var i = 0; i < points.Length; i++)
+                points[i] = new TPotreePoint();
 
             var binaryReader = new BinaryReader(File.OpenRead(OctreeFilePath));
 
