@@ -102,7 +102,7 @@ namespace Fusee.Engine.Core.Scene
         /// but if this delegate is not null its out values (Projection matrix and Viewport) 
         /// will overwrite the ones calculated from the other camera parameters.
         /// </summary>
-        public CustomCameraUpdate CustomCameraUpdate;
+        public CustomCameraUpdate? CustomCameraUpdate;
 
         /// <summary>
         /// Sets the RenderLayer for this camera.
