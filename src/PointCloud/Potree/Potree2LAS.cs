@@ -3,10 +3,8 @@ using Fusee.Base.Core;
 using Fusee.PointCloud.Potree.V2;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -15,74 +13,71 @@ namespace Fusee.PointCloud.Potree
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct LASHeader
+    internal struct LASHeader
     {
-        public LASHeader()
-        {
-
-        }
+        public LASHeader() { }
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public char[] FileSignature = new char[] { 'L', 'A', 'S', 'F' };
+        internal char[] FileSignature = new char[] { 'L', 'A', 'S', 'F' };
 
-        public ushort FileSourceID = 0;
-        public ushort GlobalEncoding = 0;
+        internal ushort FileSourceID = 0;
+        internal ushort GlobalEncoding = 0;
 
-        public uint GUIDData1 = 0;
-        public ushort GUIDData2 = 0;
-        public ushort GUIDData3 = 0;
+        internal uint GUIDData1 = 0;
+        internal ushort GUIDData2 = 0;
+        internal ushort GUIDData3 = 0;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public byte[] GUIData4 = new byte[8];
+        internal byte[] GUIData4 = new byte[8];
 
-        public byte VersionMajor = 1;
-        public byte VersionMinor = 4;
+        internal byte VersionMajor = 1;
+        internal byte VersionMinor = 4;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public byte[] SystemIdentifier = new byte[32];
+        internal byte[] SystemIdentifier = new byte[32];
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public byte[] GeneratingSoftware = new byte[32];
+        internal byte[] GeneratingSoftware = new byte[32];
 
-        public ushort FileCreationDayOfYear = (ushort)DateTime.Now.Day;
-        public ushort FileCreationYear = (ushort)DateTime.Now.Year;
-        public ushort HeaderSize = 375;
-        public uint OffsetToPointData = 375; // sizeof(LASHeader)
-        public uint NumberOfVariableLengthRecords = 0;
-        public byte PointDataRecordFormat = 2;
-        public ushort PointDataRecordLength = 26; // sizeof(LASPoint)
-        public uint LegacyNbrOfPoints = 0;
+        internal ushort FileCreationDayOfYear = (ushort)DateTime.Now.Day;
+        internal ushort FileCreationYear = (ushort)DateTime.Now.Year;
+        internal ushort HeaderSize = 375;
+        internal uint OffsetToPointData = 375; // sizeof(LASHeader)
+        internal uint NumberOfVariableLengthRecords = 0;
+        internal byte PointDataRecordFormat = 2;
+        internal ushort PointDataRecordLength = 26; // sizeof(LASPoint)
+        internal uint LegacyNbrOfPoints = 0;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-        public uint[] LeacyNbrOfPointsByRtn = new uint[5];
+        internal uint[] LeacyNbrOfPointsByRtn = new uint[5];
 
-        public double ScaleFactorX = 0;
-        public double ScaleFactorY = 0;
-        public double ScaleFactorZ = 0;
+        internal double ScaleFactorX = 0;
+        internal double ScaleFactorY = 0;
+        internal double ScaleFactorZ = 0;
 
-        public double OffsetX = 0;
-        public double OffsetY = 0;
-        public double OffsetZ = 0;
+        internal double OffsetX = 0;
+        internal double OffsetY = 0;
+        internal double OffsetZ = 0;
 
-        public double MaxX = 0;
-        public double MinX = 0;
+        internal double MaxX = 0;
+        internal double MinX = 0;
 
-        public double MaxY = 0;
-        public double MinY = 0;
+        internal double MaxY = 0;
+        internal double MinY = 0;
 
-        public double MaxZ = 0;
-        public double MinZ = 0;
+        internal double MaxZ = 0;
+        internal double MinZ = 0;
 
-        public ulong StartOfWaveformPacket = 0;
-        public ulong StartOfFirstExtendend = 0;
-        public uint NbrOfExtendedVariableLength = 0;
+        internal ulong StartOfWaveformPacket = 0;
+        internal ulong StartOfFirstExtendend = 0;
+        internal uint NbrOfExtendedVariableLength = 0;
 
-        public ulong NumberOfPtRecords = 0;
+        internal ulong NumberOfPtRecords = 0;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 15)]
-        public ulong[] NbrOfPointsByReturn = new ulong[15];
+        internal ulong[] NbrOfPointsByReturn = new ulong[15];
 
-        public byte[] ToByteArray()
+        internal byte[] ToByteArray()
         {
-            var arr = new byte[] { };
+            var arr = Array.Empty<byte>();
             var ptr = IntPtr.Zero;
             try
             {
@@ -107,31 +102,30 @@ namespace Fusee.PointCloud.Potree
 
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct LASPoint
+    internal struct LASPoint
     {
-        public LASPoint()
-        { }
+        public LASPoint() { }
 
-        public uint X = 0;
-        public uint Y = 0;
-        public uint Z = 0;
+        internal uint X = 0;
+        internal uint Y = 0;
+        internal uint Z = 0;
 
-        public ushort Intensity = 0;
-        public byte ReturnNbrOfScanDirAndEdgeByte = 0;
+        internal ushort Intensity = 0;
+        internal byte ReturnNbrOfScanDirAndEdgeByte = 0;
 
-        public byte Classification = 0;
-        public byte ScanAngleRank = 0;
-        public byte UserData = 0;
+        internal byte Classification = 0;
+        internal byte ScanAngleRank = 0;
+        internal byte UserData = 0;
 
-        public ushort PtSrcID = 0;
+        internal ushort PtSrcID = 0;
 
-        public ushort R = 0;
-        public ushort G = 0;
-        public ushort B = 0;
+        internal ushort R = 0;
+        internal ushort G = 0;
+        internal ushort B = 0;
 
-        public byte[] ToByteArray()
+        internal byte[] ToByteArray()
         {
-            var arr = new byte[] { };
+            var arr = Array.Empty<byte>();
             var ptr = IntPtr.Zero;
             try
             {
@@ -162,9 +156,21 @@ namespace Fusee.PointCloud.Potree
     public static class Potree2LAS
     {
         /// <summary>
+        /// Converts a list of <see cref="PotreePoint"/>s to a LAS 1.4 file and writes it to the disk in an async manner
+        /// </summary>
+        /// <param name="points"><see cref="PotreePoint"/>s as input</param>
+        /// <param name="metadata"><see cref="PotreeMetadata"/> for offset and LAS header writing</param>
+        /// <param name="savePath"><see cref="FileInfo"/> where to save the *.las file to, existing file is being overwritten!</param>
+        public static async Task WritePotree2LASAsync(IEnumerable<PotreePoint> points, PotreeMetadata metadata, FileInfo savePath)
+        {
+            await Task.Run(() => WritePotree2LAS(points, metadata, savePath));
+        }
+
+        /// <summary>
         /// Converts a list of <see cref="PotreePoint"/>s to a LAS 1.4 file and writes it to the disk
         /// </summary>
         /// <param name="points"><see cref="PotreePoint"/>s as input</param>
+        /// <param name="metadata"><see cref="PotreeMetadata"/> for offset and LAS header writing</param>
         /// <param name="savePath"><see cref="FileInfo"/> where to save the *.las file to, existing file is being overwritten!</param>
         public static void WritePotree2LAS(IEnumerable<PotreePoint> points, PotreeMetadata metadata, FileInfo savePath)
         {
@@ -176,10 +182,9 @@ namespace Fusee.PointCloud.Potree
             Guard.IsEqualTo(Marshal.SizeOf<LASHeader>(), 375);
 
             if (savePath.Exists)
-                Diagnostics.Warn($"File {savePath.FullName} already existing, overwriting ...");
+                Diagnostics.Warn($"File {savePath.FullName} does exist, overwriting ...");
 
             var scaleFactor = metadata.Scale;
-            var offset = metadata.Offset;
 
             const float maxColorValuePotree = byte.MaxValue;
             const short maxIntensityValuePotree = short.MaxValue;
@@ -187,24 +192,18 @@ namespace Fusee.PointCloud.Potree
 
             var invFlipMatrix = Potree2Consts.YZflip.Invert();
 
-            var convertedData = new ConcurrentBag<LASPoint>();
-            //Parallel.ForEach(points, (p) =>
+            var convertedData = new List<LASPoint>();
+
             foreach (var p in points)
             {
+                // flipped y/z
                 var ptFlipped = invFlipMatrix * p.Position;
-
-                var X = (uint)((ptFlipped.x ) / scaleFactor.x);
-                var Y = (uint)((ptFlipped.y ) / scaleFactor.y);
-                var Z = (uint)((ptFlipped.z ) / scaleFactor.z);
-                var R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS);
-                var G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS);
-                var B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS);
 
                 convertedData.Add(new LASPoint
                 {
-                    X = (uint)((ptFlipped.x /* + offset.x*/) / scaleFactor.x),
-                    Y = (uint)((ptFlipped.y /* + offset.y*/) / scaleFactor.y), // flipped y/z
-                    Z = (uint)((ptFlipped.z /* + offset.z*/) / scaleFactor.z),
+                    X = (uint)((ptFlipped.x) / scaleFactor.x),
+                    Y = (uint)((ptFlipped.y) / scaleFactor.y),
+                    Z = (uint)((ptFlipped.z) / scaleFactor.z),
                     Classification = p.Classification,
                     Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
                     R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
@@ -212,7 +211,6 @@ namespace Fusee.PointCloud.Potree
                     B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
                 });
             }
-            //);
 
             var min = metadata.Attributes["position"].Min;
             var max = metadata.Attributes["position"].Max;
@@ -248,8 +246,5 @@ namespace Fusee.PointCloud.Potree
             bw.Close();
             fs.Close();
         }
-
-
-
     }
 }
