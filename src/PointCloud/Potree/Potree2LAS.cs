@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Potree
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct LASHeader
@@ -74,30 +73,6 @@ namespace Fusee.PointCloud.Potree
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 15)]
         internal ulong[] NbrOfPointsByReturn = new ulong[15];
-
-        internal byte[] ToByteArray()
-        {
-            var arr = Array.Empty<byte>();
-            var ptr = IntPtr.Zero;
-            try
-            {
-                int size = Marshal.SizeOf<LASHeader>();
-                arr = new byte[size];
-                ptr = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(this, ptr, true);
-                Marshal.Copy(ptr, arr, 0, size);
-            }
-            catch (Exception e)
-            {
-                Diagnostics.Error(e);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
-
-            return arr;
-        }
     }
 
 
@@ -122,33 +97,7 @@ namespace Fusee.PointCloud.Potree
         internal ushort R = 0;
         internal ushort G = 0;
         internal ushort B = 0;
-
-        internal byte[] ToByteArray()
-        {
-            var arr = Array.Empty<byte>();
-            var ptr = IntPtr.Zero;
-            try
-            {
-                int size = Marshal.SizeOf<LASPoint>();
-                arr = new byte[size];
-                ptr = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(this, ptr, true);
-                Marshal.Copy(ptr, arr, 0, size);
-            }
-            catch (Exception e)
-            {
-                Diagnostics.Error(e);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
-
-            return arr;
-        }
     }
-
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     /// <summary>
     /// This class provides methods to convert and save <see cref="PotreePoint"/> clouds to LAS 1.4
@@ -236,15 +185,51 @@ namespace Fusee.PointCloud.Potree
             using var fs = savePath.Create();
             using var bw = new BinaryWriter(fs);
 
-            bw.Write(header.ToByteArray());
+            bw.Write(ToByteArray(header));
 
             foreach (var p in convertedData)
             {
-                bw.Write(p.ToByteArray());
+                bw.Write(ToByteArray(p));
             }
 
             bw.Close();
             fs.Close();
+        }
+
+        /// <summary>
+        /// Convert a struct to a byte array
+        /// </summary>
+        /// <typeparam name="T">struct</typeparam>
+        /// <param name="input">converted byte array</param>
+        /// <returns></returns>
+        private static byte[] ToByteArray<T>(T input) where T : struct
+        {
+            var arr = Array.Empty<byte>();
+            var ptr = IntPtr.Zero;
+            try
+            {
+                var size = Marshal.SizeOf<T>();
+
+                // check for overflow
+                Guard.IsGreaterThan(size, 0);
+                Guard.IsLessThanOrEqualTo(size, int.MaxValue);
+
+                arr = new byte[size];
+                ptr = Marshal.AllocHGlobal(size);
+                Marshal.StructureToPtr(input, ptr, true);
+                Marshal.Copy(ptr, arr, 0, size);
+            }
+            catch (Exception e)
+            {
+                Diagnostics.Error(e);
+                Diagnostics.Error(Marshal.GetLastWin32Error());
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
+
+            return arr;
         }
     }
 }
