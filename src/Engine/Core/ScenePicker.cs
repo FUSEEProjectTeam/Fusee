@@ -540,10 +540,12 @@ namespace Fusee.Engine.Core
                 case PrimitiveType.Triangles:
                 case PrimitiveType.TriangleFan:
                 case PrimitiveType.TriangleStrip:
-                    PickTriangleGeometry(mesh, State.Projection, State.View);
-                    break;
                 case PrimitiveType.Lines:
-                    PickLineGeometry(mesh);
+                    if (State != null)
+                        PickTriangleGeometry(mesh, State.Projection, State.View);
+                    break;
+                //case PrimitiveType.Lines:
+                //    PickLineGeometry(mesh);
                     break;
                 default:
                     Diagnostics.Warn($"Unknown primitive type {mesh.MeshType}, picking not possible!");
@@ -634,12 +636,10 @@ namespace Fusee.Engine.Core
             }
 
             var ray = new RayF(PickPosClip, viewMatrix, projectionMatrix);
-            Diagnostics.Debug($"Origin: {ray.Origin}, Dir: {ray.Direction}, Inv: {ray.Inverse}");
 
-            var box = State.Model * mesh.BoundingBox;
-            Diagnostics.Debug($"Box: {box.Center}");
-            if (!box.IntersectRay(ray))
-                return;
+            // does not work for Planes or Ortographic Cameras!
+            //if (!box.IntersectRay(ray))
+            //    return;
 
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
@@ -656,11 +656,13 @@ namespace Fusee.Engine.Core
                 // Normal of the plane defined by a, b, and c.
                 var n = float3.Normalize(float3.Cross(a - c, b - c));
 
+
                 // Distance between "Origin" and the plane abc when following the Direction.
                 var distance = -float3.Dot(ray.Origin - a, n) / float3.Dot(ray.Direction, n);
 
-                if (distance < 0)
-                    continue;
+                // does not work for Planes or Ortographic Cameras!
+                //if (distance < 0)
+                //    continue;
 
                 // Position of the intersection point between ray and plane.
                 var point = ray.Origin + (ray.Direction * distance);
