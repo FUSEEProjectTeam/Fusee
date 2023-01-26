@@ -1,5 +1,8 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.Base.Core;
+using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Common.Accessors;
+using Fusee.PointCloud.Core.Accessors;
 using Fusee.PointCloud.Potree.V2;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
@@ -99,137 +102,110 @@ namespace Fusee.PointCloud.Potree
         internal ushort B = 0;
     }
 
+    internal class PotreeAccessor : PointAccessor<PotreePoint>
+    {
+
+    }
+
     /// <summary>
     /// This class provides methods to convert and save <see cref="PotreePoint"/> clouds to LAS 1.4
     /// </summary>
-    public static class Potree2LAS
+    public class Potree2LAS : IPointWriter
     {
         /// <summary>
-        /// Converts a list of <see cref="PotreePoint"/>s to a LAS 1.4 file and writes it to the disk in an async manner
+        /// A PointAccessor allows access to the point information (position, color, ect.) without casting it to a specific <see cref="PointType"/>.
         /// </summary>
-        /// <param name="points"><see cref="PotreePoint"/>s as input</param>
-        /// <param name="metadata"><see cref="PotreeMetadata"/> for offset and LAS header writing</param>
-        /// <param name="savePath"><see cref="FileInfo"/> where to save the *.las file to, existing file is being overwritten!</param>
-        public static async Task WritePotree2LASAsync(IEnumerable<PotreePoint> points, PotreeMetadata metadata, FileInfo savePath)
-        {
-            await Task.Run(() => WritePotree2LAS(points, metadata, savePath));
-        }
+        public IPointAccessor PointAccessor => new PotreeAccessor();
 
         /// <summary>
-        /// Converts a list of <see cref="PotreePoint"/>s to a LAS 1.4 file and writes it to the disk
+        /// Returns the point type.
         /// </summary>
-        /// <param name="points"><see cref="PotreePoint"/>s as input</param>
-        /// <param name="metadata"><see cref="PotreeMetadata"/> for offset and LAS header writing</param>
-        /// <param name="savePath"><see cref="FileInfo"/> where to save the *.las file to, existing file is being overwritten!</param>
-        public static void WritePotree2LAS(IEnumerable<PotreePoint> points, PotreeMetadata metadata, FileInfo savePath)
+        public PointType PointType => PointType.PosD3ColF3InUsLblB;
+
+        public void WritePointcloudPoints(FileInfo savePath, ReadOnlySpan<PointType> points, IPointWriterMetadata metadata)
         {
-            Guard.IsNotNull(savePath);
-            Guard.IsNotNull(points);
-            Guard.IsTrue(savePath.Extension == ".las");
-
-            Guard.IsEqualTo(Marshal.SizeOf<LASPoint>(), 26);
-            Guard.IsEqualTo(Marshal.SizeOf<LASHeader>(), 375);
-
-            if (savePath.Exists)
-                Diagnostics.Warn($"File {savePath.FullName} does exist, overwriting ...");
-
-            var scaleFactor = metadata.Scale;
-
-            const float maxColorValuePotree = byte.MaxValue;
-            const short maxIntensityValuePotree = short.MaxValue;
-            const ushort maxColorAndIntensityValueLAS = ushort.MaxValue;
-
-            var invFlipMatrix = Potree2Consts.YZflip.Invert();
-
-            var convertedData = new List<LASPoint>();
-
-            foreach (var p in points)
-            {
-                // flipped y/z
-                var ptFlipped = invFlipMatrix * p.Position;
-
-                convertedData.Add(new LASPoint
-                {
-                    X = (uint)((ptFlipped.x) / scaleFactor.x),
-                    Y = (uint)((ptFlipped.y) / scaleFactor.y),
-                    Z = (uint)((ptFlipped.z) / scaleFactor.z),
-                    Classification = p.Classification,
-                    Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
-                    R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
-                    G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
-                    B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
-                });
-            }
-
-            var min = metadata.Attributes["position"].Min;
-            var max = metadata.Attributes["position"].Max;
-
-            var header = new LASHeader
-            {
-                // flipped y/z
-                OffsetX = metadata.Offset.x,
-                OffsetY = metadata.Offset.y,
-                OffsetZ = metadata.Offset.z,
-                ScaleFactorX = metadata.Scale.x,
-                ScaleFactorY = metadata.Scale.y,
-                ScaleFactorZ = metadata.Scale.z,
-                NumberOfPtRecords = (ulong)convertedData.Count,
-                MinX = min.x,
-                MaxX = max.x,
-                MinY = min.y,
-                MaxY = max.y,
-                MinZ = min.z,
-                MaxZ = max.z
-            };
-
-            using var fs = savePath.Create();
-            using var bw = new BinaryWriter(fs);
-
-            bw.Write(ToByteArray(header));
-
-            foreach (var p in convertedData)
-            {
-                bw.Write(ToByteArray(p));
-            }
-
-            bw.Close();
-            fs.Close();
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Convert a struct to a byte array
-        /// </summary>
-        /// <typeparam name="T">struct</typeparam>
-        /// <param name="input">converted byte array</param>
-        /// <returns></returns>
-        private static byte[] ToByteArray<T>(T input) where T : struct
+        public Task WritePointcloudPointsAsync(FileInfo savePath, ReadOnlyMemory<PointType> points, IPointWriterMetadata metadata)
         {
-            var arr = Array.Empty<byte>();
-            var ptr = IntPtr.Zero;
-            try
-            {
-                var size = Marshal.SizeOf<T>();
-
-                // check for overflow
-                Guard.IsGreaterThan(size, 0);
-                Guard.IsLessThanOrEqualTo(size, int.MaxValue);
-
-                arr = new byte[size];
-                ptr = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(input, ptr, true);
-                Marshal.Copy(ptr, arr, 0, size);
-            }
-            catch (Exception e)
-            {
-                Diagnostics.Error(e);
-                Diagnostics.Error(Marshal.GetLastWin32Error());
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
-
-            return arr;
+            throw new NotImplementedException();
         }
+
+        // old code, replace
+        //private static void WritePotree2LAS(IEnumerable<PotreePoint> points, PotreeMetadata metadata, FileInfo savePath)
+        //{
+        //    Guard.IsNotNull(savePath);
+        //    Guard.IsNotNull(points);
+        //    Guard.IsTrue(savePath.Extension == ".las");
+
+        //    Guard.IsEqualTo(Marshal.SizeOf<LASPoint>(), 26);
+        //    Guard.IsEqualTo(Marshal.SizeOf<LASHeader>(), 375);
+
+        //    if (savePath.Exists)
+        //        Diagnostics.Warn($"File {savePath.FullName} does exist, overwriting ...");
+
+        //    var scaleFactor = metadata.Scale;
+
+        //    const float maxColorValuePotree = byte.MaxValue;
+        //    const short maxIntensityValuePotree = short.MaxValue;
+        //    const ushort maxColorAndIntensityValueLAS = ushort.MaxValue;
+
+        //    var invFlipMatrix = Potree2Consts.YZflip.Invert();
+
+        //    var convertedData = new List<LASPoint>();
+
+        //    foreach (var p in points)
+        //    {
+        //        // flipped y/z
+        //        var ptFlipped = invFlipMatrix * p.Position;
+
+        //        convertedData.Add(new LASPoint
+        //        {
+        //            X = (uint)((ptFlipped.x) / scaleFactor.x),
+        //            Y = (uint)((ptFlipped.y) / scaleFactor.y),
+        //            Z = (uint)((ptFlipped.z) / scaleFactor.z),
+        //            Classification = p.Classification,
+        //            Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
+        //            R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
+        //            G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
+        //            B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
+        //        });
+        //    }
+
+        //    var min = metadata.Attributes["position"].Min;
+        //    var max = metadata.Attributes["position"].Max;
+
+        //    var header = new LASHeader
+        //    {
+        //        // flipped y/z
+        //        OffsetX = metadata.Offset.x,
+        //        OffsetY = metadata.Offset.y,
+        //        OffsetZ = metadata.Offset.z,
+        //        ScaleFactorX = metadata.Scale.x,
+        //        ScaleFactorY = metadata.Scale.y,
+        //        ScaleFactorZ = metadata.Scale.z,
+        //        NumberOfPtRecords = (ulong)convertedData.Count,
+        //        MinX = min.x,
+        //        MaxX = max.x,
+        //        MinY = min.y,
+        //        MaxY = max.y,
+        //        MinZ = min.z,
+        //        MaxZ = max.z
+        //    };
+
+        //    using var fs = savePath.Create();
+        //    using var bw = new BinaryWriter(fs);
+
+        //    bw.Write(ToByteArray(header));
+
+        //    foreach (var p in convertedData)
+        //    {
+        //        bw.Write(ToByteArray(p));
+        //    }
+
+        //    bw.Close();
+        //    fs.Close();
+        //}
     }
 }
