@@ -1,4 +1,6 @@
-﻿using Fusee.Base.Core;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
@@ -163,16 +165,23 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        // deferred renderer for RGB FBO picking
+        private SceneRendererForward _sceneRenderer;
+        private WritableTexture _writableTexture;
+        private Transform _cameraPosition = new();
+        private RenderContext _rc;
+
         /// <summary>
         /// The constructor to initialize a new ScenePicker.
         /// </summary>
         /// <param name="cullMode"></param>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
-        public ScenePicker(SceneContainer scene, Cull cullMode = Cull.None, IEnumerable<IPickerModule> customPickModule = null)
+        public ScenePicker(SceneContainer scene, RenderContext rc = null, Cull cullMode = Cull.None, IEnumerable<IPickerModule> customPickModule = null)
             : base(scene.Children, customPickModule)
         {
             IgnoreInactiveComponents = true;
             State.CullMode = cullMode;
+            _rc = rc;
         }
 
         /// <summary>
@@ -537,18 +546,55 @@ namespace Fusee.Engine.Core
 
             switch (mesh.MeshType)
             {
+                // we should be able to pick all Triangle* with Raycast
                 case PrimitiveType.Triangles:
                 case PrimitiveType.TriangleFan:
                 case PrimitiveType.TriangleStrip:
-                case PrimitiveType.Lines:
                     if (State != null)
                         PickTriangleGeometry(mesh, State.Projection, State.View);
                     break;
-                //case PrimitiveType.Lines:
-                //    PickLineGeometry(mesh);
+                // everything else should be pickable with an color coded FBO at mouse position
+                // point cloud will be picked via PointCloudPicker Module
+                case PrimitiveType.Points:
+                    Diagnostics.Warn($"Unknown primitive type {mesh.MeshType}, picking not possible!");
                     break;
                 default:
-                    Diagnostics.Warn($"Unknown primitive type {mesh.MeshType}, picking not possible!");
+                    // non-triangle picking is only possible with camera
+                    Guard.IsNotNull(CurrentCamera, nameof(CurrentCamera));
+
+                    var cam = new Camera(CurrentCamera.ProjectionMethod, 1, 1000, CurrentCamera.Fov);
+
+                    // if scene renderer is empty, generate new with camera and custom shader stuff
+                    // attach current scene node to shader
+                    var container = new SceneContainer
+                    {
+                        Children = new List<SceneNode>
+                        {
+                            new SceneNode
+                            {
+                                Components = new List<SceneComponent>
+                                {
+                                    _cameraPosition,
+                                    cam
+                                }
+                            }
+                            // add current node without material here
+                        }
+                    };
+                    // generate texture size 1,1, move the current camera at mouse position
+                    _writableTexture ??= new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGB), 10, 10, false);
+                    var iVP = (State.Projection * State.View).Invert();
+                    _cameraPosition.Translation = iVP * new float3(PickPosClip.x, PickPosClip.y, 0);
+                    //cam.RenderTexture = _writableTexture;
+                    cam.FrustumCullingOn = false;
+                    var compCopy = CurrentNode.Components.ToArray().ToList();
+
+                    container.Children.Insert(1, new SceneNode { Components = compCopy });
+                    _sceneRenderer = new SceneRendererForward(container);
+                   _sceneRenderer.Render(_rc);
+
+                    Console.WriteLine("Render");
+
                     break;
             }
         }
@@ -636,10 +682,10 @@ namespace Fusee.Engine.Core
             }
 
             var ray = new RayF(PickPosClip, viewMatrix, projectionMatrix);
-
+            var box = State.Model * mesh.BoundingBox;
             // does not work for Planes or Ortographic Cameras!
-            //if (!box.IntersectRay(ray))
-            //    return;
+            if (!box.IntersectRay(ray))
+                return;
 
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
@@ -661,8 +707,8 @@ namespace Fusee.Engine.Core
                 var distance = -float3.Dot(ray.Origin - a, n) / float3.Dot(ray.Direction, n);
 
                 // does not work for Planes or Ortographic Cameras!
-                //if (distance < 0)
-                //    continue;
+                if (distance < 0)
+                    continue;
 
                 // Position of the intersection point between ray and plane.
                 var point = ray.Origin + (ray.Direction * distance);
