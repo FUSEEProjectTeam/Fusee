@@ -121,7 +121,18 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// <summary>
         /// Background color of pop up window
         /// </summary>
-        public Vector4 WindowBackground = new(200, 200, 200, 255);
+        public Vector4 WindowBackground 
+        { 
+            get => _windowBackground; 
+            set
+            {
+                _windowBackground = value;
+                _windowBackgroundUint = _windowBackground.ToUintColor();
+            }
+        } 
+        private Vector4 _windowBackground = new(200, 200, 200, 255);
+
+        public uint _windowBackgroundUint = new Vector4(200, 200, 200, 255).ToUintColor();
 
         /// <summary>
         /// Background of file selection menu
@@ -182,7 +193,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, WindowPadding);
             ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0);
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, WindowBackground.ToUintColor());
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, _windowBackgroundUint);
 
             if (DoFocusPicker)
                 ImGui.SetNextWindowFocus();
