@@ -5,11 +5,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.SLIRP.Network
+namespace Fusee.SLIRP.Network.Common
 {
-    internal interface IConnectionRequestHandler
+    public interface IConnectionRequestHandler
     {
         public event Action<IConnectionRequestHandler, Socket> OnClientConnect;
+
+        public void Shutdown();
 
         public void Run();
     }

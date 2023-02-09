@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿// <copyright file=IConnectHandler company="Hochschule Furtwangen">
+//   Copyright (c) 2023 All Rights Reserved
+//   </copyright>
+//   <author>Marc-Alexander Lohfink</author>
+//   <date>2/9/2023 4:58:00 PM</date>
 
-namespace Fusee.SLIRP.Network
+
+using System.Net.Sockets;
+
+namespace Fusee.SLIRP.Network.Common
 {
-    internal interface IConnectHandler
+    public interface IConnectHandler
     {
-        public void OnClientConnected(IConnectHandler sender, Socket clientSocket);
+        public void OnClientConnected(IConnectionRequestHandler sender, Socket clientSocket);
     }
 }

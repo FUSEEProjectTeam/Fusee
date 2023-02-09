@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Fusee.SLIRP.Network.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.SLIRP.Network
+namespace Fusee.SLIRP.Network.Client
 {
-    internal interface IRenderServer
+    public interface IClient
     {
         public void Init(in ServerConnectionMetaData? metaData = null, int maxConnections = 6);
 
@@ -15,5 +16,6 @@ namespace Fusee.SLIRP.Network
         public void StartServer(in ServerConnectionMetaData? metaData = null);
 
         public void StopServer();
+
     }
 }

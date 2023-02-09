@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Fusee.SLIRP.Network
+namespace Fusee.SLIRP.Network.Common
 {
     public struct ServerConnectionMetaData
     {
@@ -17,13 +12,15 @@ namespace Fusee.SLIRP.Network
        
         public SocketType SocketType = SocketType.Stream;
 
-        public ServerConnectionMetaData(IPAddress validIPAdress, int port, AddressFamily addressFamily,ProtocolType protocolType)
+        public NetworkPackageMeta NetworkPackageMeta; 
+
+        public ServerConnectionMetaData(IPAddress validIPAdress, int port, AddressFamily addressFamily,ProtocolType protocolType, NetworkPackageMeta networkPackageMeta)
         {
             ValidIPAdress = validIPAdress;
             Port = port;
             AddressFamily = addressFamily;
             ProtocolType = protocolType;
-           
+            NetworkPackageMeta = networkPackageMeta;
         }
     }
 }

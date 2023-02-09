@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Sockets;
+using Fusee.SLIRP.Network.Common;
 
 namespace Fusee.SLIRP.Network
 {
@@ -14,12 +10,20 @@ namespace Fusee.SLIRP.Network
     internal class ConnectionHandler<T> : IConnectionHandler, IConnectHandler, IDisconnectHandler, IDisposable where T : IConnectionHandlingThread, new ()
     {
         private IConnectionRequestHandler _requestHandler;
+        private NetworkPackageMeta _packageMeta;    
+
         private bool _isInitialized;
 
-        Dictionary<Socket, Thread> handlingThreads = new Dictionary<Socket, Thread>();
+        private Dictionary<Socket, Thread> _handlingThreads = new Dictionary<Socket, Thread>();
 
-        public void Init(IConnectionRequestHandler requestHandler)
+        public event Action<IConnectionHandler, Socket> EventClientConnected;
+
+        public event Action<IConnectionHandler, Socket> EventClientDisconnected;
+
+        public void Init(IConnectionRequestHandler requestHandler, NetworkPackageMeta packageMeta)
         {
+            _packageMeta = packageMeta;
+
             //make sure that it is not already registered
             DeregisterFromRequestHandler();
 
@@ -42,14 +46,14 @@ namespace Fusee.SLIRP.Network
         {
             if (_requestHandler == null) throw new NullReferenceException("Client Handler initialization was called without an IConnectionRequestHandler!");
 
-            _requestHandler.OnClientConnect += HandleClient;
+            _requestHandler.OnClientConnect += OnClientConnected;
         }
 
         private void DeregisterFromRequestHandler()
         {
             if (_requestHandler != null)
             {
-                _requestHandler.OnClientConnect -= HandleClient;
+                _requestHandler.OnClientConnect -= OnClientConnected;
             }
         }
 
@@ -61,26 +65,46 @@ namespace Fusee.SLIRP.Network
             if (clientSocket == null) throw new NullReferenceException("Client Handler was called without an argument");
 
             T clientHandling = new T();
-            clientHandling.Init(clientSocket, this);
+            clientHandling.Init(this, clientSocket, _packageMeta);
 
             Thread clientThread = new Thread(new ThreadStart(clientHandling.RunHandleConnection));
 
-            handlingThreads.Add(clientSocket, clientThread);
+            AddSocketToDictionary(clientSocket, clientThread);
 
             clientThread.Start();
         }
 
-        public void OnClientConnected(IConnectHandler sender, Socket clientSocket)
+        public void OnClientConnected(IConnectionRequestHandler sender, Socket clientSocket)
         {
             if (sender != _requestHandler)
                 return;
 
             HandleClient(clientSocket);
+
+            EventClientConnected?.Invoke(this, clientSocket);
         }
 
         public void OnClientDisconnected(IConnectionHandlingThread sender, Socket clientSocket)
         {
-            
+            if (sender != _requestHandler)
+                return;
+
+            RemoveSocketFromDictionary(clientSocket);
+
+            EventClientDisconnected?.Invoke(this, clientSocket);
+        }
+
+        private void AddSocketToDictionary(Socket clientSocket, Thread clientThread)
+        {
+            _handlingThreads.Add(clientSocket, clientThread);
+        }
+
+        private void RemoveSocketFromDictionary(Socket clientSocket)
+        {
+            if (_handlingThreads.ContainsKey(clientSocket))
+            {
+                _handlingThreads.Remove(clientSocket);
+            }
         }
 
         public void Dispose()

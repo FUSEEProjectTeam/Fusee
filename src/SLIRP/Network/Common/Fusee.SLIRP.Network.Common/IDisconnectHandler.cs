@@ -5,9 +5,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.SLIRP.Network
+namespace Fusee.SLIRP.Network.Common
 {
-    internal interface IDisconnectHandler
+    public interface IDisconnectHandler
     {
 
         public void OnClientDisconnected(IConnectionHandlingThread sender, Socket clientSocket);

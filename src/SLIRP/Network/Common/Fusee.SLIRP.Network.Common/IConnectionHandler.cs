@@ -5,10 +5,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.SLIRP.Network
+namespace Fusee.SLIRP.Network.Common
 {
-    internal interface IConnectionHandler
+    public interface IConnectionHandler
     {
+        public event Action<IConnectionHandler, Socket> EventClientConnected;
+        public event Action<IConnectionHandler, Socket> EventClientDisconnected;
+
         /// <summary>
         /// Initialize the Handler so that he is able to handle accepted connections and disconnected clients.
         /// </summary>
@@ -17,9 +20,6 @@ namespace Fusee.SLIRP.Network
         public void Init(IConnectionRequestHandler requestHandler);
 
         public void Shutdown();
-
-        //public void HandleClient(IConnectionRequestHandler sender, Socket clientSocket);
-        
 
     }
 }

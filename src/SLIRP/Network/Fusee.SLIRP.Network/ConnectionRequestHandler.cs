@@ -1,45 +1,59 @@
-﻿using System.Net;
+﻿using Fusee.SLIRP.Network.Common;
+using System.Net;
 using System.Net.Sockets;
 
 namespace Fusee.SLIRP.Network
 {
     internal class ConnectionRequestHandler : IConnectionRequestHandler
     {
-        private RenderServerMetaData serverMetaData;
+        private ServerMetaData serverMetaData;
+        private Socket serverSocket;
 
         IPEndPoint listeningEndPoint;
-
-        List<Socket> connectedClients;
 
         bool threadContinue = false;
 
         public event Action<IConnectionRequestHandler, Socket> OnClientConnect;
 
-        public ConnectionRequestHandler(RenderServerMetaData serverMetaData)
+        public ConnectionRequestHandler(ServerMetaData serverMetaData)
         {
             this.serverMetaData = serverMetaData;
-            connectedClients = new List<Socket>();
         }
-        
+
+
+        public void Shutdown()
+        {
+            threadContinue = false;
+
+            if(serverSocket != null) 
+                serverSocket.Close();
+        }
+
         public void Run()
         {
             threadContinue = true;
 
-            Socket workingSocket = serverMetaData.RenderSocket;
+            serverSocket = serverMetaData.ServerSocket;
 
             listeningEndPoint = new IPEndPoint(serverMetaData.ConnectionData.ValidIPAdress, serverMetaData.ConnectionData.Port);
 
-            workingSocket.Bind(listeningEndPoint);
-            workingSocket.Listen(serverMetaData.MaxConnections);
- 
+            serverSocket.Bind(listeningEndPoint);
+            serverSocket.Listen(serverMetaData.MaxConnections);
+
             while (threadContinue)
             {
-                Socket clientSocket = workingSocket.Accept();
-                connectedClients.Add(clientSocket);
+                try
+                {
+                    Socket clientSocket = serverSocket.Accept();
 
-                OnClientConnect?.Invoke(this, clientSocket);
+                    OnClientConnect?.Invoke(this, clientSocket);
+
+                }
+                catch (System.Exception)
+                {
+                    throw;
+                }
             }
         }
-
     }
 }

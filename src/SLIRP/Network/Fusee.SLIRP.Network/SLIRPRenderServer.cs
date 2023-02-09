@@ -1,11 +1,13 @@
-﻿using System.Net;
+﻿using Fusee.SLIRP.Network.Common;
+using System.Net;
 using System.Net.Sockets;
 
 namespace Fusee.SLIRP.Network
 {
-    public class SLIRPRenderServer : IRenderServer
+    public class SLIRPRenderServer : IServer
     {
-        public static ServerConnectionMetaData DefaultSLIRP = new ServerConnectionMetaData(IPAddress.Any, 1300, AddressFamily.InterNetwork, ProtocolType.Udp);
+        public const int BUFFERSIZE = 1024;
+        public static ServerConnectionMetaData DefaultSLIRP = new ServerConnectionMetaData(IPAddress.Any, 1300, AddressFamily.InterNetwork, ProtocolType.Udp, new NetworkPackageMeta(BUFFERSIZE));
 
         private bool _isInitialized;
         private bool _isRunning;
@@ -14,7 +16,7 @@ namespace Fusee.SLIRP.Network
         private Thread? _connRequestHandlerThread;
 
         private ServerConnectionMetaData curServerConnectionMetaData;
-        private RenderServerMetaData serverMetaData;
+        private ServerMetaData serverMetaData;
 
         private Socket? renderSocket;
         private int maxConnections = 10;
@@ -34,17 +36,18 @@ namespace Fusee.SLIRP.Network
             else
             {
                 curServerConnectionMetaData = DefaultSLIRP;
+                //curServerConnectionMetaData.NetworkPackageMeta = new NetworkPackageMeta(BUFFERSIZE);
             }
 
             renderSocket = new Socket(curServerConnectionMetaData.AddressFamily, curServerConnectionMetaData.SocketType, curServerConnectionMetaData.ProtocolType);
-            serverMetaData = new RenderServerMetaData(this, renderSocket, this.maxConnections, curServerConnectionMetaData);
+            serverMetaData = new ServerMetaData(this, renderSocket, this.maxConnections, curServerConnectionMetaData);
 
             _connRequestHandler = new ConnectionRequestHandler(serverMetaData);
 
-            _clientHandler = new ConnectionHandler<ConnectionHandlingThread>();
+            _clientHandler = new ConnectionHandler<BasicPingPongHandler>();
             _clientHandler.Init(_connRequestHandler);
-
         }
+
 
         public void Shutdown()
         {
@@ -56,6 +59,9 @@ namespace Fusee.SLIRP.Network
                 Console.WriteLine("Stop server before calling \"Shutdown()\".");
                 return;
             }
+
+            if(_connRequestHandler!= null)  
+                _connRequestHandler.Shutdown();
 
             _isInitialized = false;
         }
