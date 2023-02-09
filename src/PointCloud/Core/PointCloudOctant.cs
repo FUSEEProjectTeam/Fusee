@@ -132,7 +132,7 @@ namespace Fusee.PointCloud.Core
             var distance = (translatedCenter - camPos).Length;
             if (translatedCenter == camPos)
                 distance = 0.0001f;
-            var slope = (float)System.Math.Tan(fov / 2d);
+            var slope = System.Math.Abs((float)System.Math.Tan(fov / 2d));
 
             var maxRad = System.Math.Max(System.Math.Max(scaledRad.x, scaledRad.y), scaledRad.z);
             ProjectedScreenSize = screenHeight / 2d * maxRad / (slope * distance);
