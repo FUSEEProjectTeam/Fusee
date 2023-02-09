@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+	  <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
+
+	  <OutputPath>$(BaseOutputPath)\Tests\SLIRP\</OutputPath>
+	  <OutputType>Exe</OutputType>
+	  <StartupObject>Fusee.Tests.SLIRP.SLIRPTest.Run</StartupObject>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\SLIRP\Common\Fusee.SLIRP.Common.csproj" />
+		<ProjectReference Include="..\..\..\..\Examples\Complete\PointCloudPotree2\Core\Fusee.Examples.PointCloudPotree2.Core.csproj" />
+		<ProjectReference Include="..\..\..\..\Examples\Complete\PointCloudPotree2\Desktop\Fusee.Examples.PointCloudPotree2.Desktop.csproj" />
+		<ProjectReference Include="..\..\..\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
+		<ProjectReference Include="..\..\..\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
+		<ProjectReference Include="..\..\..\PointCloud\Potree\Fusee.PointCloud.Potree.csproj" />
+		<ProjectReference Include="..\..\..\SLIRP\Core\Fusee.SLIRP.Desktop.csproj" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
+		<PackageReference Include="xunit" Version="2.4.2" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="protobuf-net" Version="3.1.25" />
+	</ItemGroup>
+	
+</Project>

@@ -1,4 +1,5 @@
 ﻿using NUnitLite;
+using System;
 
 namespace Fusee.Tests.Render.Desktop
 {
@@ -6,6 +7,8 @@ namespace Fusee.Tests.Render.Desktop
     {
         public static int Main(string[] args)
         {
+            Console.WriteLine("Start Render");
+
             Program.Example = new Fusee.Examples.AdvancedUI.Core.AdvancedUI() { rnd = new System.Random(12345) };
             Program.Init("AdvancedUI.png");
 
