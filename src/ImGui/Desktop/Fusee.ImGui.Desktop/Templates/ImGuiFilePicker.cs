@@ -121,15 +121,15 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// <summary>
         /// Background color of pop up window
         /// </summary>
-        public Vector4 WindowBackground 
-        { 
-            get => _windowBackground; 
+        public Vector4 WindowBackground
+        {
+            get => _windowBackground;
             set
             {
                 _windowBackground = value;
                 _windowBackgroundUint = _windowBackground.ToUintColor();
             }
-        } 
+        }
         private Vector4 _windowBackground = new(200, 200, 200, 255);
 
         public uint _windowBackgroundUint = new Vector4(200, 200, 200, 255).ToUintColor();
@@ -219,10 +219,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             }
             ImGui.SameLine();
 
-            if (ImGui.Button($"{BackTxt}##{_filePickerCount}", TopButtonSize))
+            if (LastOpenendFolders.Count != 0)
             {
-                if (LastOpenendFolders.Count != 0)
+                if (ImGui.Button($"{BackTxt}##{_filePickerCount}", TopButtonSize))
                 {
+
                     var lastFolder = LastOpenendFolders.Pop();
                     var lastDi = new DirectoryInfo(lastFolder);
                     if (lastDi.Exists)
@@ -231,6 +232,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                         SelectedFile = "";
                     }
                 }
+            }
+            else
+            {
+                ImGui.BeginDisabled();
+                ImGui.Button($"{BackTxt}##{_filePickerCount}", TopButtonSize);
+                ImGui.EndDisabled();
             }
 
             if ((IntPtr)SymbolsFontPtr.NativePtr != IntPtr.Zero)
@@ -364,7 +371,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             var selectedFile = !string.IsNullOrWhiteSpace(SelectedFile) ? SelectedFile : "";
             ImGui.SetNextItemWidth(FileTextInputWidth - ImGui.CalcTextSize(FileLabelTxt).X - ImGui.GetStyle().ItemSpacing.X);
-            ImGui.InputTextWithHint(FileLabelTxt, FileInputHintTxt, ref selectedFile, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
+            if (ImGui.InputTextWithHint(FileLabelTxt, FileInputHintTxt, ref selectedFile, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
                 var arr = selectedFile.ToCharArray();
 
@@ -375,7 +382,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                         ImGuiInputImp.CurrentlySelectedText = new string(selectedText);
                 }
                 return 0;
-            });
+            }))
+            {
+                SelectedFile = selectedFile;
+            }
+
             if (_sizeOfInputText == Vector2.Zero)
                 _sizeOfInputText = ImGui.GetItemRectSize();
 
@@ -383,7 +394,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             if (!string.IsNullOrWhiteSpace(SelectedFile))
             {
                 var fi = new FileInfo(Path.Combine(CurrentOpenFolder, SelectedFile));
-                if (fi.Exists && AllowedExtensions != null && AllowedExtensions.Contains(fi.Extension))
+                if (AllowedExtensions != null && AllowedExtensions.Contains(fi.Extension))
                 {
                     ImGui.SameLine(sameLineOffset);
                     if (ImGui.Button($"{PickedFileTxt}##{_filePickerCount}", BottomButtonSize))
@@ -394,6 +405,13 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                             filePickerOpen = false;
                         }
                     }
+                }
+                else
+                {
+                    ImGui.SameLine(sameLineOffset);
+                    ImGui.BeginDisabled();
+                    ImGui.Button(PickedFileTxt, BottomButtonSize);
+                    ImGui.EndDisabled();
                 }
             }
             else
