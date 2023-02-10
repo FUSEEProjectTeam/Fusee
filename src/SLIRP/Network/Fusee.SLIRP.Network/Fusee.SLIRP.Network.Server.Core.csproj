@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DataTransformation\Fusee.SLIRP.DataTransformation\Fusee.SLIRP.DataTransformation.csproj" />
     <ProjectReference Include="..\Common\Fusee.SLIRP.Network.Common\Fusee.SLIRP.Network.Common.csproj" />
+    <ProjectReference Include="..\Server\Common\Fusee.SLIRP.Network.Server.Common\Fusee.SLIRP.Network.Server.Common.csproj" />
   </ItemGroup>
 
 </Project>

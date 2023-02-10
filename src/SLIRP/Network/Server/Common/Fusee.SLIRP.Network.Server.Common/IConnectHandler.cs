@@ -7,10 +7,14 @@
 
 using System.Net.Sockets;
 
-namespace Fusee.SLIRP.Network.Common
+namespace Fusee.SLIRP.Network.Server.Common
 {
     public interface IConnectHandler
     {
+        public bool IsHandlingConnections { get; }
+
+        public event Action<IConnectionHandler, Socket> EventClientConnected;
+
         public void OnClientConnected(IConnectionRequestHandler sender, Socket clientSocket);
     }
 }

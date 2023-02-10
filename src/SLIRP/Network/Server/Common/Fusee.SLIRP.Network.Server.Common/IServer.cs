@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.SLIRP.Network.Client
+namespace Fusee.SLIRP.Network.Server.Common
 {
-    public interface IClient
+    public interface IServer
     {
         public void Init(in ServerConnectionMetaData? metaData = null, int maxConnections = 6);
 
@@ -16,6 +16,5 @@ namespace Fusee.SLIRP.Network.Client
         public void StartServer(in ServerConnectionMetaData? metaData = null);
 
         public void StopServer();
-
     }
 }

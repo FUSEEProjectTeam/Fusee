@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Fusee.SLIRP.Network.Common;
 using System.Net.Sockets;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Fusee.SLIRP.Network.Common
+
+namespace Fusee.SLIRP.Network.Server.Common
 {
     public abstract class IConnectionHandlingThread
     {
@@ -40,6 +36,11 @@ namespace Fusee.SLIRP.Network.Common
             _connectionHandler = connectionHandler;
             _packageMeta = packageMeta;
             _isInitialized = true;
+        }
+
+        public virtual void Shutdown()
+        {
+            _isInitialized = false; 
         }
 
         public abstract void RunHandleConnection();

@@ -1,7 +1,11 @@
 ﻿using System.Net.Sockets;
 
-namespace Fusee.SLIRP.Network.Common
+namespace Fusee.SLIRP.Network.Server.Common
 {
+
+    /// <summary>
+    /// The data of a server with references.
+    /// </summary>
     public struct ServerMetaData
     {
         public IServer Server;

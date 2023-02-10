@@ -5,11 +5,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.SLIRP.Network.Common
+namespace Fusee.SLIRP.Network.Server.Common
 {
     public interface IConnectionRequestHandler
     {
-        public event Action<IConnectionRequestHandler, Socket> OnClientConnect;
+        public void Init(ServerMetaData serverMetaData, IConnectionHandler connectHandler);
 
         public void Shutdown();
 

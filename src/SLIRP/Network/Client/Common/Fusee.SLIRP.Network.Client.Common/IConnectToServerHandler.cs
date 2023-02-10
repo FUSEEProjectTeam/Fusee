@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fusee.SLIRP.Network.Server
+namespace Fusee.SLIRP.Network.Client.Common
 {
-    internal class ClientHandler
+    public interface IConnectToServerHandler
     {
     }
 }

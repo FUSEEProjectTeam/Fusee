@@ -15,7 +15,7 @@ namespace Fusee.SLIRP.Network.Common
 {
     public struct NetworkPackageMeta
     {
-        public int BufferSize;
+        public int BufferSize = 1024;
 
         public NetworkPackageMeta(int bufferSize)
         {
