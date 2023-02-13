@@ -20,7 +20,7 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Hierarchy step size
         /// </summary>
-        public int StepSize  { get; set; }
+        public int StepSize { get; set; }
 
         /// <summary>
         /// Depth of the Hierarchy
@@ -63,12 +63,12 @@ namespace Fusee.PointCloud.Common
         /// The point cloud hierarchy information 
         /// </summary>
         public IPointWriterHierarchy Hierarchy { get; set; }
-     
+
         /// <summary>
         /// Global offset of each point
         /// </summary>
         public double3 Offset { get; set; }
-       
+
         /// <summary>
         /// Global scale value. Points are being converted to int 
         /// During load this scale factor is being applied to convert int to double
@@ -84,7 +84,7 @@ namespace Fusee.PointCloud.Common
         /// Global <see cref="AABBd"/> of the point cloud
         /// </summary>
         public AABBd BoundingBox { get; set; }
-        
+
         /// <summary>
         /// The encoding of every point, as we save the point cloud as <see cref="sbyte"/> elements
         /// Default is <see cref="Encoding.Default"/>
@@ -106,7 +106,7 @@ namespace Fusee.PointCloud.Common
         /// A PointAccessor allows access to the point information (position, color, ect.) without casting it to a specific <see cref="PointType"/>.
         /// </summary>
         public IPointAccessor PointAccessor { get; }
-        
+
         /// <summary>
         /// Returns the point type.
         /// </summary>
