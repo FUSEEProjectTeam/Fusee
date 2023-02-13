@@ -129,29 +129,36 @@ namespace Fusee.Examples.Picking.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+           // RC.EnableStencil();
+           // RC.SetStencilMask(0xFF);
+           //
             _sceneRenderer.Render(RC);
 
+            //RC.DisableStencil();
+
+
             // Picking
-            //if (_pick)
-            //{
+            if (_pick)
+            {
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                var newPick = (MeshPickResult)_scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z)
+                var newPick = _scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z)
                     .FirstOrDefault();
+
                 if (newPick != null)
                     Diagnostics.Debug(newPick.Node.Name);
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
-                    if (_currentPick != null)
+                    if (_currentPick != null && _currentPick is MeshPickResult mpr)
                     {
-                        var ef = _currentPick.Node.GetComponent<SurfaceEffect>();
+                        var ef = mpr.Node.GetComponent<SurfaceEffect>();
                         ef.SurfaceInput.Albedo = _oldColor;
                     }
 
-                    if (newPick != null)
+                    if (newPick != null && newPick is MeshPickResult newMpr)
                     {
-                        var ef = newPick.Node.GetComponent<SurfaceEffect>();
+                        var ef = newMpr.Node.GetComponent<SurfaceEffect>();
                         _oldColor = ef.SurfaceInput.Albedo;
                         ef.SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
                     }
@@ -160,7 +167,7 @@ namespace Fusee.Examples.Picking.Core
                 }
 
                 _pick = false;
-            //}
+            }
 
             //_guiRenderer.Render(RC);
 

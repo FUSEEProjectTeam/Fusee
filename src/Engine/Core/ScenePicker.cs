@@ -561,6 +561,7 @@ namespace Fusee.Engine.Core
                 default:
                     // non-triangle picking is only possible with camera
                     Guard.IsNotNull(CurrentCamera, nameof(CurrentCamera));
+                    Guard.IsNotNull(State, nameof(State));
 
                     var cam = new Camera(CurrentCamera.ProjectionMethod, 1, 1000, CurrentCamera.Fov);
 
@@ -569,7 +570,7 @@ namespace Fusee.Engine.Core
                     var container = new SceneContainer
                     {
                         Children = new List<SceneNode>
-                        {
+                       {
                             new SceneNode
                             {
                                 Components = new List<SceneComponent>
@@ -578,22 +579,28 @@ namespace Fusee.Engine.Core
                                     cam
                                 }
                             }
-                            // add current node without material here
-                        }
+                       }
                     };
-                    // generate texture size 1,1, move the current camera at mouse position
-                    _writableTexture ??= new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGB), 10, 10, false);
-                    var iVP = (State.Projection * State.View).Invert();
-                    _cameraPosition.Translation = iVP * new float3(PickPosClip.x, PickPosClip.y, 0);
-                    //cam.RenderTexture = _writableTexture;
+
+                    _writableTexture ??= new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGB), _rc.ViewportWidth, _rc.ViewportHeight, false);
+                    _cameraPosition.Matrix = State.View.Invert();
+                    cam.RenderTexture = _writableTexture;
                     cam.FrustumCullingOn = false;
                     var compCopy = CurrentNode.Components.ToArray().ToList();
-
                     container.Children.Insert(1, new SceneNode { Components = compCopy });
                     _sceneRenderer = new SceneRendererForward(container);
-                   _sceneRenderer.Render(_rc);
 
-                    Console.WriteLine("Render");
+                    _sceneRenderer.Render(_rc);
+
+                    var pixels = _rc.ReadPixels((int)Input.Mouse.X, (int)(_canvasHeight - Input.Mouse.Y), new ImagePixelFormat(ColorFormat.RGB), 1, 1);
+
+                    if (pixels[0] != 0)
+                        YieldItem(new PickResult
+                        {
+                            Mesh = mesh,
+                            Node = CurrentNode,
+                            Model = State.Model
+                        });
 
                     break;
             }

@@ -6,6 +6,7 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Imp.SharedAll;
 using Fusee.Math.Core;
 using OpenTK.Graphics.OpenGL;
+using SixLabors.ImageSharp.Formats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1234,6 +1235,33 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void EnableDepthClamp()
         {
             GL.Enable(EnableCap.DepthClamp);
+        }
+
+        /// <summary>
+        /// Retrieve pixels from bound framebuffer
+        /// </summary>
+        /// <param name="x">x pixel position</param>
+        /// <param name="y">y pixel position</param>
+        /// <param name="pixelFormat">format to retrieve, this has to match the current bound FBO!</param>
+        /// <param name="width">how many pixel in x direction</param>
+        /// <param name="height">how many pixel in y direction</param>
+        /// <returns><see cref="ReadOnlySpan{T}"/> with pixel content</returns>
+        /// <remarks>Does usually not throw on error (e. g. wrong pixel format, out of bounds, etc), uses GL.GetError() to retrieve
+        /// potential error</remarks>
+        public ReadOnlySpan<byte> ReadPixels(int x, int y, ImagePixelFormat pixelFormat, int width, int height)
+        {
+            var format = GetTexturePixelInfo(pixelFormat);
+            var data = new byte[width * height * pixelFormat.BytesPerPixel];
+
+            GL.ReadPixels(x, y, 1, 1, format.Format, format.PxType, data);
+
+            var err = GL.GetError();
+            if (err != ErrorCode.NoError)
+            {
+                throw new Exception($"ReadPixel failed with error code {err}!");
+            }
+
+            return data;
         }
 
         /// <summary>
