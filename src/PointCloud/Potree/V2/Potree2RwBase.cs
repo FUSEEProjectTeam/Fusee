@@ -1,8 +1,13 @@
-﻿using Fusee.PointCloud.Common;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Common.Accessors;
 using Fusee.PointCloud.Core.Accessors;
 using Fusee.PointCloud.Potree.V2.Data;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.IO.MemoryMappedFiles;
+using System.Threading;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -22,7 +27,35 @@ namespace Fusee.PointCloud.Potree.V2
         protected int offsetPointSourceId = -1;
         protected int offsetColor = -1;
 
-        protected string OctreeFilePath => Path.Combine(_potreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName);
+        private string _octreeFilePath;
+        private MemoryMappedFile _octreeMappedFile;
+        private MemoryMappedViewAccessor _octreeViewAccessor;
+
+        protected MemoryMappedViewAccessor OctreeMappedViewAccessor
+        {
+            get
+            {
+                Guard.IsNotNull(_octreeViewAccessor, nameof(_octreeViewAccessor));
+                Guard.IsNotNull(_octreeMappedFile, nameof(_octreeMappedFile));
+
+                return _octreeViewAccessor;
+
+            }
+        }
+
+        protected string OctreeFilePath
+        {
+            set
+            {
+                Guard.IsNotNullOrEmpty(value, nameof(value));
+                Guard.IsTrue(File.Exists(value));
+
+                _octreeFilePath = value;
+                _octreeMappedFile = MemoryMappedFile.CreateFromFile(_octreeFilePath, FileMode.Open);
+                _octreeViewAccessor = _octreeMappedFile.CreateViewAccessor();
+            }
+            get => _octreeFilePath;
+        }
 
         public Potree2RwBase(ref PotreeData potreeData)
         {
@@ -30,6 +63,8 @@ namespace Fusee.PointCloud.Potree.V2
             PointAccessor = new PosD3ColF3LblBAccessor();
 
             CacheMetadata();
+
+            OctreeFilePath = Path.Combine(_potreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName);
         }
 
         /// <summary>
@@ -103,5 +138,6 @@ namespace Fusee.PointCloud.Potree.V2
         {
             return potreeHierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdToPotreeName(id));
         }
+
     }
 }

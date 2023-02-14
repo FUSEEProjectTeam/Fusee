@@ -1,4 +1,7 @@
-﻿using Fusee.PointCloud.Common.Accessors;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.PointCloud.Common.Accessors;
+using System;
+using System.Buffers;
 
 namespace Fusee.PointCloud.Common
 {
@@ -34,7 +37,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <typeparam name="TPoint">The generic point type.</typeparam>
         /// <param name="id">The unique id of the octant.</param>
-        public TPoint[] LoadNodeData<TPoint>(OctantId id) where TPoint : new();
+        public MemoryOwner<TPoint> LoadNodeData<TPoint>(OctantId id) where TPoint : struct;
 
     }
 }

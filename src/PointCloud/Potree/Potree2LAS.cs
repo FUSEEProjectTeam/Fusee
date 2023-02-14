@@ -154,7 +154,7 @@ namespace Fusee.PointCloud.Potree
                     Y = (uint)((ptFlipped.y) / scaleFactor.y),
                     Z = (uint)((ptFlipped.z) / scaleFactor.z),
                     Classification = p.Classification,
-                    Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
+                    //Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
                     R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
                     G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
                     B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
