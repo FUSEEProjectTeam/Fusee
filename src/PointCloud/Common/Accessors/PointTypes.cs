@@ -1,5 +1,6 @@
 ﻿
 using Fusee.Math.Core;
+using System.Runtime.InteropServices;
 
 namespace Fusee.PointCloud.Common.Accessors
 {
@@ -207,6 +208,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Label"/>.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3ColF3LblB
     {
         /// <summary>

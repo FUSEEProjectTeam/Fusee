@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Fusee.Base.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Common.Accessors;
@@ -153,7 +153,18 @@ namespace Fusee.PointCloud.Potree
 
         //    var invFlipMatrix = Potree2Consts.YZflip.Invert();
 
-        //    var convertedData = new List<LASPoint>();
+                convertedData.Add(new LASPoint
+                {
+                    X = (uint)((ptFlipped.x) / scaleFactor.x),
+                    Y = (uint)((ptFlipped.y) / scaleFactor.y),
+                    Z = (uint)((ptFlipped.z) / scaleFactor.z),
+                    Classification = p.Classification,
+                    //Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
+                    R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
+                    G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
+                    B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
+                });
+            }
 
         //    foreach (var p in points)
         //    {

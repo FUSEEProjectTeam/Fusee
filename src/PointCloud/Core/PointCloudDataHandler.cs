@@ -1,3 +1,5 @@
+using CommunityToolkit.HighPerformance;
+using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
@@ -5,6 +7,7 @@ using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core.Accessors;
 using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +24,7 @@ namespace Fusee.PointCloud.Core
     /// Delegate that allows to inject the loading method of the PointReader - loads the points from file.
     /// </summary>
     /// <param name="guid">Unique ID of an octant.</param>
-    public delegate TPoint[] LoadPointsHandler<TPoint>(OctantId guid);
+    public delegate MemoryOwner<TPoint> LoadPointsHandler<TPoint>(OctantId guid);
 
     /// <summary>
     /// Delegate for a method that tries to get the mesh(es) of an octant. If they are not cached yet, they should be created an added to the _gpuDataCache.
@@ -52,7 +55,7 @@ namespace Fusee.PointCloud.Core
     /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/> that can be used to access the point data without casting the points.</param>
     /// <param name="points">The point cloud points as generic array.</param>
     /// <returns></returns>
-    public delegate TGpuData CreateGpuData<TGpuData, TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, OctantId octantId);
+    public delegate TGpuData CreateGpuData<TGpuData, TPoint>(MemoryOwner<TPoint> points, OctantId octantId);
 
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
@@ -64,7 +67,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private MemoryCache<OctantId, TPoint[]> _pointCache;
+        private MemoryCache<OctantId, MemoryOwner<TPoint>> _pointCache;
 
         /// <summary>
         /// Caches loaded points.
@@ -106,6 +109,15 @@ namespace Fusee.PointCloud.Core
             DisposeQueue = new Dictionary<OctantId, IEnumerable<TGpuData>>((8 ^ 8) / 8);
 
             _gpuDataCache.HandleEvictedItem = OnItemEvictedFromCache;
+
+            _pointCache.HandleEvictedItem += (object key, object? value, EvictionReason reason, object? state) =>
+            {
+                if(value != null && value is MemoryOwner<TPoint> mo)
+                {
+                    mo.Dispose();
+                }
+            };
+
         }
 
         /// <summary>
@@ -131,9 +143,9 @@ namespace Fusee.PointCloud.Core
             else if (_pointCache.TryGetValue(octantId, out var points))
             {
                 if (!_doRenderInstanced)
-                    gpuData = MeshMaker.CreateMeshes(_pointAccessor, points, _createGpuDataHandler, octantId);
+                    gpuData = MeshMaker.CreateMeshes(points, _createGpuDataHandler, octantId);
                 else
-                    gpuData = MeshMaker.CreateInstanceData(_pointAccessor, points, _createGpuDataHandler, octantId);
+                    gpuData = MeshMaker.CreateInstanceData(points, _createGpuDataHandler, octantId);
                 _gpuDataCache.Add(octantId, gpuData);
             }
             //no points yet, probably in loading queue
