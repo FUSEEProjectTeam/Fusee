@@ -112,7 +112,7 @@ namespace Fusee.PointCloud.Core
 
             _pointCache.HandleEvictedItem += (object key, object? value, EvictionReason reason, object? state) =>
             {
-                if(value != null && value is MemoryOwner<TPoint> mo)
+                if (value != null && value is MemoryOwner<TPoint> mo)
                 {
                     mo.Dispose();
                 }
