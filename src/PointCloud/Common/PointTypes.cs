@@ -1,8 +1,7 @@
-﻿
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using System.Runtime.InteropServices;
 
-namespace Fusee.PointCloud.Common.Accessors
+namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Enum that contains all available point types.

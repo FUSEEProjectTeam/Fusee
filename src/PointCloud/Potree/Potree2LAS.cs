@@ -2,7 +2,6 @@ using CommunityToolkit.Diagnostics;
 using Fusee.Base.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Common.Accessors;
-using Fusee.PointCloud.Core.Accessors;
 using Fusee.PointCloud.Potree.V2;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
@@ -102,21 +101,11 @@ namespace Fusee.PointCloud.Potree
         internal ushort B = 0;
     }
 
-    internal class PotreeAccessor : PointAccessor<PotreePoint>
-    {
-
-    }
-
     /// <summary>
     /// This class provides methods to convert and save <see cref="PotreePoint"/> clouds to LAS 1.4
     /// </summary>
     public class Potree2LAS : IPointWriter
     {
-        /// <summary>
-        /// A PointAccessor allows access to the point information (position, color, ect.) without casting it to a specific <see cref="PointType"/>.
-        /// </summary>
-        public IPointAccessor PointAccessor => new PotreeAccessor();
-
         /// <summary>
         /// Returns the point type.
         /// </summary>
@@ -153,18 +142,18 @@ namespace Fusee.PointCloud.Potree
 
         //    var invFlipMatrix = Potree2Consts.YZflip.Invert();
 
-        convertedData.Add(new LASPoint
-                {
-                    X = (uint) ((ptFlipped.x) / scaleFactor.x),
-                    Y = (uint) ((ptFlipped.y) / scaleFactor.y),
-                    Z = (uint) ((ptFlipped.z) / scaleFactor.z),
-                    Classification = p.Classification,
-                    //Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
-                    R = (ushort) (p.Color.r / maxColorValuePotree* maxColorAndIntensityValueLAS),
-                    G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
-                    B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
-                });
-            }
+            //    convertedData.Add(new LASPoint
+            //    {
+            //        X = (uint)((ptFlipped.x) / scaleFactor.x),
+            //        Y = (uint)((ptFlipped.y) / scaleFactor.y),
+            //        Z = (uint)((ptFlipped.z) / scaleFactor.z),
+            //        Classification = p.Classification,
+            //        //Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
+            //        R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
+            //        G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
+            //        B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
+            //    });
+            //}
 
         //    foreach (var p in points)
         //    {

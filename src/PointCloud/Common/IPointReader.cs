@@ -11,11 +11,6 @@ namespace Fusee.PointCloud.Common
     public interface IPointReader
     {
         /// <summary>
-        /// A PointAccessor allows access to the point information (position, color, ect.) without casting it to a specific <see cref="PointType"/>.
-        /// </summary>
-        public IPointAccessor PointAccessor { get; }
-
-        /// <summary>
         /// Returns a renderable point cloud component.
         /// </summary>
         /// <param name="fileFolderPath">Path to the file.</param>

@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Common.Accessors;
-using Fusee.PointCloud.Core.Accessors;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.Collections.Generic;
@@ -60,7 +59,6 @@ namespace Fusee.PointCloud.Potree.V2
         public Potree2RwBase(ref PotreeData potreeData)
         {
             _potreeData = potreeData;
-            PointAccessor = new PosD3ColF3LblBAccessor();
 
             CacheMetadata();
 
@@ -71,11 +69,6 @@ namespace Fusee.PointCloud.Potree.V2
         /// Returns the point type.
         /// </summary>
         public PointType PointType => PointType.PosD3ColF3LblB;
-
-        /// <summary>
-        /// A PointAccessor allows access to the point information (position, color, ect.) without casting it to a specific <see cref="PointType"/>.
-        /// </summary>
-        public IPointAccessor PointAccessor { get; protected set; }
 
         protected void CacheMetadata()
         {

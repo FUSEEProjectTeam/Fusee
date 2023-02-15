@@ -5,7 +5,6 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Common.Accessors;
-using Fusee.PointCloud.Core.Accessors;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -20,7 +19,6 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Generic method that creates meshes with 65k points maximum.
         /// </summary>
-        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to a explicit point type."/></param>
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a GpuMesh from the point cloud points.</param>
         /// <returns></returns>

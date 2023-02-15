@@ -4,7 +4,6 @@ using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Core.Accessors;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Buffers;
@@ -74,7 +73,6 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         private MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
-        private readonly PointAccessor<TPoint> _pointAccessor;
         private readonly CreateGpuData<TGpuData, TPoint> _createGpuDataHandler;
         private readonly LoadPointsHandler<TPoint> _loadPointsHandler;
         private const int _maxNumberOfDisposals = 1;
@@ -86,11 +84,10 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Creates a new instance.
         /// </summary>
-        /// <param name="pointAccessor">The point accessor that allows to access the point data.</param>
         /// <param name="createMeshHandler">Method that knows how to create a mesh for the explicit point type (see <see cref="MeshMaker"/>).</param>
         /// <param name="loadPointsHandler">The method that is able to load the points from the hard drive/file.</param>
         /// <param name="doRenderInstanced"></param>
-        public PointCloudDataHandler(PointAccessor<TPoint> pointAccessor, CreateGpuData<TGpuData, TPoint> createMeshHandler, LoadPointsHandler<TPoint> loadPointsHandler, bool doRenderInstanced = false)
+        public PointCloudDataHandler(CreateGpuData<TGpuData, TPoint> createMeshHandler, LoadPointsHandler<TPoint> loadPointsHandler, bool doRenderInstanced = false)
         {
             _pointCache = new();
             _gpuDataCache = new()
@@ -101,7 +98,6 @@ namespace Fusee.PointCloud.Core
 
             _createGpuDataHandler = createMeshHandler;
             _loadPointsHandler = loadPointsHandler;
-            _pointAccessor = pointAccessor;
 
             _doRenderInstanced = doRenderInstanced;
 

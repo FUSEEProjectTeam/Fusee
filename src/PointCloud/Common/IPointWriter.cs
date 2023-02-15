@@ -103,11 +103,6 @@ namespace Fusee.PointCloud.Common
     public interface IPointWriter
     {
         /// <summary>
-        /// A PointAccessor allows access to the point information (position, color, ect.) without casting it to a specific <see cref="PointType"/>.
-        /// </summary>
-        public IPointAccessor PointAccessor { get; }
-
-        /// <summary>
         /// Returns the point type.
         /// </summary>
         public PointType PointType { get; }
