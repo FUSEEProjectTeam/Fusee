@@ -8,6 +8,7 @@ using Fusee.PointCloud.Core;
 using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
+using System.Buffers;
 using System.Runtime.InteropServices;
 
 namespace Fusee.PointCloud.Potree.V2
@@ -37,21 +38,21 @@ namespace Fusee.PointCloud.Potree.V2
                 case RenderMode.StaticMesh:
                     {
                         var dataHandler = new PointCloudDataHandler<GpuMesh, PosD3ColF3LblB>(MeshMaker.CreateMeshPosD3ColF3LblB,
-                            LoadNodeData<PosD3ColF3LblB>);
+                            LoadNodeDataPosD3ColF3LblB);
                         var imp = new Potree2Cloud(dataHandler, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.Instanced:
                     {
                         var dataHandlerInstanced = new PointCloudDataHandler<InstanceData, PosD3ColF3LblB>(MeshMaker.CreateInstanceDataPosD3ColF3LblB,
-                            LoadNodeData<PosD3ColF3LblB>, true);
+                            LoadNodeDataPosD3ColF3LblB, true);
                         var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.DynamicMesh:
                     {
                         var dataHandlerDynamic = new PointCloudDataHandler<Mesh, PosD3ColF3LblB>(MeshMaker.CreateDynamicMeshPosD3ColF3LblB,
-                            LoadNodeData<PosD3ColF3LblB>);
+                            LoadNodeDataPosD3ColF3LblB);
                         var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
@@ -90,35 +91,32 @@ namespace Fusee.PointCloud.Potree.V2
             return octree;
         }
 
-        /// <summary>
-        /// Returns the points for one octant as generic array.
-        /// </summary>
-        /// <typeparam name="TPoint">The generic point type.</typeparam>
-        /// <param name="id">The unique id of the octant.</param>
-        /// <returns></returns>
-        public MemoryOwner<TPoint> LoadNodeData<TPoint>(OctantId id) where TPoint : struct
+        public MemoryOwner<PosD3ColF3LblB> LoadNodeDataPosD3ColF3LblB(OctantId id)
         {
             var node = FindNode(ref _potreeData.Hierarchy, id);
 
             // if node is null the hierarchy is broken and we look for an octant that isn't there...
             Guard.IsNotNull(node);
 
-            return LoadNodeData<TPoint>(node);
+            return LoadNodeData<PosD3ColF3LblB>(node, PointType.PosD3ColF3LblB);
         }
 
-        private MemoryOwner<TPoint> LoadNodeData<TPoint>(PotreeNode potreeNode) where TPoint : struct
+
+        private MemoryOwner<TPoint> LoadNodeData<TPoint>(PotreeNode potreeNode, PointType type) where TPoint : struct
         {
             // if the potree node is null #nullable doesn't work!
             Guard.IsNotNull(potreeNode);
-
-            // TODO: Add switch to cast to the the correct point type
-
             potreeNode.IsLoaded = true;
-            return ReadNodeData<TPoint>(potreeNode);
+            return type switch
+            {
+                // TODO: add missing cases
+                PointType.PosD3ColF3LblB => ReadNodeDataPosD3ColF3LblB<TPoint>(potreeNode),
+                _ => ThrowHelper.ThrowArgumentOutOfRangeException<MemoryOwner<TPoint>>(nameof(type)),
+            };
         }
 
 
-        private MemoryOwner<TPoint> ReadNodeData<TPoint>(PotreeNode node) where TPoint : struct
+        private MemoryOwner<TPoint> ReadNodeDataPosD3ColF3LblB<TPoint>(PotreeNode node) where TPoint : struct
         {
             Guard.IsLessThanOrEqualTo(node.NumPoints, int.MaxValue);
 

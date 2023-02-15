@@ -58,9 +58,9 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         protected int offsetColor = -1;
 
-        private string _octreeFilePath;
-        private MemoryMappedFile _octreeMappedFile;
-        private MemoryMappedViewAccessor _octreeViewAccessor;
+        private string? _octreeFilePath;
+        private MemoryMappedFile? _octreeMappedFile;
+        private MemoryMappedViewAccessor? _octreeViewAccessor;
 
         /// <summary>
         /// The <see cref="MemoryMappedViewAccessor"/> to the underlying octree.bin file
@@ -92,7 +92,11 @@ namespace Fusee.PointCloud.Potree.V2
                 _octreeMappedFile = MemoryMappedFile.CreateFromFile(_octreeFilePath, FileMode.Open);
                 _octreeViewAccessor = _octreeMappedFile.CreateViewAccessor();
             }
-            get => _octreeFilePath;
+            get
+            {
+                Guard.IsNotNullOrEmpty(_octreeFilePath);
+                return _octreeFilePath;
+            }
         }
 
         /// <summary>

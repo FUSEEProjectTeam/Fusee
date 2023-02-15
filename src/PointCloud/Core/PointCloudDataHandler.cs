@@ -51,7 +51,6 @@ namespace Fusee.PointCloud.Core
     /// </summary>
     /// <typeparam name="TGpuData"></typeparam>
     /// <typeparam name="TPoint">Generic that describes the point type.</typeparam>
-    /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/> that can be used to access the point data without casting the points.</param>
     /// <param name="points">The point cloud points as generic array.</param>
     /// <returns></returns>
     public delegate TGpuData CreateGpuData<TGpuData, TPoint>(MemoryOwner<TPoint> points, OctantId octantId);

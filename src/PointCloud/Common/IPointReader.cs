@@ -27,11 +27,11 @@ namespace Fusee.PointCloud.Common
         public IPointCloudOctree GetOctree();
 
         /// <summary>
-        /// Returns the points for one octant as generic array.
+        /// 
         /// </summary>
-        /// <typeparam name="TPoint">The generic point type.</typeparam>
-        /// <param name="id">The unique id of the octant.</param>
-        public MemoryOwner<TPoint> LoadNodeData<TPoint>(OctantId id) where TPoint : struct;
+        /// <param name="id"></param>
+        /// <returns></returns>
+        MemoryOwner<PosD3ColF3LblB> LoadNodeDataPosD3ColF3LblB(OctantId id);
 
     }
 }
