@@ -25,13 +25,5 @@ namespace Fusee.PointCloud.Common
         /// Reads the Potree file and returns an octree.
         /// </summary>
         public IPointCloudOctree GetOctree();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        MemoryOwner<PosD3ColF3LblB> LoadNodeDataPosD3ColF3LblB(OctantId id);
-
     }
 }

@@ -15,4 +15,5 @@
         public ushort G;
         public ushort B;
     }
+
 }
