@@ -137,18 +137,18 @@ namespace Fusee.PointCloud.Potree
 
         //    var invFlipMatrix = Potree2Consts.YZflip.Invert();
 
-            //    convertedData.Add(new LASPoint
-            //    {
-            //        X = (uint)((ptFlipped.x) / scaleFactor.x),
-            //        Y = (uint)((ptFlipped.y) / scaleFactor.y),
-            //        Z = (uint)((ptFlipped.z) / scaleFactor.z),
-            //        Classification = p.Classification,
-            //        //Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
-            //        R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
-            //        G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
-            //        B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
-            //    });
-            //}
+        //    convertedData.Add(new LASPoint
+        //    {
+        //        X = (uint)((ptFlipped.x) / scaleFactor.x),
+        //        Y = (uint)((ptFlipped.y) / scaleFactor.y),
+        //        Z = (uint)((ptFlipped.z) / scaleFactor.z),
+        //        Classification = p.Classification,
+        //        //Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
+        //        R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
+        //        G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
+        //        B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
+        //    });
+        //}
 
         //    foreach (var p in points)
         //    {
