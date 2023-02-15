@@ -6,8 +6,15 @@ using System.IO;
 
 namespace Fusee.PointCloud.Potree.V2
 {
+    /// <summary>
+    /// Writes Potree data 
+    /// </summary>
     public class Potree2Writer : Potree2RwBase
     {
+        /// <summary>
+        /// Generate a <see cref="Potree2Writer"/> instance.
+        /// </summary>
+        /// <param name="potreeData"></param>
         public Potree2Writer(ref PotreeData potreeData) : base(ref potreeData) { }
 
         /// <summary>

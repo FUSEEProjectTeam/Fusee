@@ -1,5 +1,4 @@
 ﻿using Fusee.Math.Core;
-using Fusee.PointCloud.Common.Accessors;
 using System;
 using System.IO;
 using System.Text;

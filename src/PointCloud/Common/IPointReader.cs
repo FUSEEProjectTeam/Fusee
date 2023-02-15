@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.HighPerformance.Buffers;
-using Fusee.PointCloud.Common.Accessors;
 using System;
 using System.Buffers;
 

@@ -4,18 +4,11 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Common.Accessors;
 using Fusee.PointCloud.Core;
 using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
-using System.Buffers;
-using System.Diagnostics;
-using System.IO;
-using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -71,6 +64,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <returns></returns>
         public IPointCloudOctree GetOctree()
         {
+
             int pointSize = 0;
 
             if (_potreeData.Metadata != null)
@@ -82,6 +76,8 @@ namespace Fusee.PointCloud.Potree.V2
 
                 _potreeData.Metadata.PointSize = pointSize;
             }
+
+            Guard.IsNotNull(_potreeData.Metadata);
 
             var center = _potreeData.Hierarchy.Root.Aabb.Center;
             var size = _potreeData.Hierarchy.Root.Aabb.Size.y;
@@ -104,30 +100,26 @@ namespace Fusee.PointCloud.Potree.V2
         {
             var node = FindNode(ref _potreeData.Hierarchy, id);
 
-            if (node != null)
-            {
-                return LoadNodeData<TPoint>(node);
-            }
+            // if node is null the hierarchy is broken and we look for an octant that isn't there...
+            Guard.IsNotNull(node);
 
-            return null;
+            return LoadNodeData<TPoint>(node);
         }
 
-        public MemoryOwner<TPoint> LoadNodeData<TPoint>(PotreeNode potreeNode) where TPoint : struct
+        private MemoryOwner<TPoint> LoadNodeData<TPoint>(PotreeNode potreeNode) where TPoint : struct
         {
-            if (potreeNode != null)
-            {
-                potreeNode.IsLoaded = true;
-                return ReadNodeData<TPoint>(potreeNode);
-            }
+            // if the potree node is null #nullable doesn't work!
+            Guard.IsNotNull(potreeNode);
 
-            return null;
+            // TODO: Add switch to cast to the the correct point type
+
+            potreeNode.IsLoaded = true;
+            return ReadNodeData<TPoint>(potreeNode);
         }
 
 
         private MemoryOwner<TPoint> ReadNodeData<TPoint>(PotreeNode node) where TPoint : struct
         {
-            // PosD3 ColF3 LblB
-
             Guard.IsLessThanOrEqualTo(node.NumPoints, int.MaxValue);
 
             var potreePointSize = (int)node.NumPoints * _potreeData.Metadata.PointSize;
@@ -156,7 +148,7 @@ namespace Fusee.PointCloud.Potree.V2
                 var colorSlice = new Span<byte>(pointArray).Slice(i + offsetColor, Marshal.SizeOf<ushort>() * 3);
                 var rgb = MemoryMarshal.Cast<byte, ushort>(colorSlice);
 
-                float3 color = float3.Zero;
+                var color = float3.Zero;
 
                 color.r = ((byte)(rgb[0] > 255 ? rgb[0] / 256 : rgb[0]));
                 color.g = ((byte)(rgb[1] > 255 ? rgb[1] / 256 : rgb[1]));
@@ -167,11 +159,9 @@ namespace Fusee.PointCloud.Potree.V2
                 byte label = new Span<byte>(pointArray).Slice(i + offsetClassification, Marshal.SizeOf<byte>())[0];
 
                 var currentMemoryPt = MemoryMarshal.Cast<TPoint, byte>(returnMemory.Span.Slice(pointCount, 1));
-                posSpan.CopyTo(currentMemoryPt.Slice(0));
-                colorSpan.CopyTo(currentMemoryPt.Slice(posSpan.Length));
+                posSpan.CopyTo(currentMemoryPt[..]);
+                colorSpan.CopyTo(currentMemoryPt[posSpan.Length..]);
                 currentMemoryPt[^1] = label;
-
-                var currentPt = MemoryMarshal.Cast<byte, TPoint>(currentMemoryPt);
 
                 pointCount++;
             }

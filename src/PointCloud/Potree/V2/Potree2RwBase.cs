@@ -1,35 +1,70 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Common.Accessors;
 using Fusee.PointCloud.Potree.V2.Data;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
-using System.Threading;
 
 namespace Fusee.PointCloud.Potree.V2
 {
+    /// <summary>
+    /// This is the base class for reading and writing <see cref="PotreePoint"/>s.
+    /// </summary>
     public abstract class Potree2RwBase
     {
+        /// <summary>
+        /// The <see cref="PotreeData"/>
+        /// </summary>
         protected PotreeData _potreeData;
 
-        protected bool cachedMetadata = false;
+        /// <summary>
+        /// Save if metadata has already been cached
+        /// </summary>
+        protected bool isMetadataCached = false;
 
+        /// <summary>
+        /// Offset in bytes to the position value in bytes in raw Potree stream
+        /// </summary>
         protected int offsetPosition = -1;
+        /// <summary>
+        /// Offset in bytes to the intensity value in bytes in raw Potree stream
+        /// </summary>
         protected int offsetIntensity = -1;
+        /// <summary>
+        /// Offset in bytes to the return number value in bytes in raw Potree stream
+        /// </summary>
         protected int offsetReturnNumber = -1;
+        /// <summary>
+        /// Offset in bytes to the number of returns value in bytes in raw Potree stream
+        /// </summary>
         protected int offsetNumberOfReturns = -1;
+        /// <summary>
+        /// Offset in bytes to the classification value in bytes in raw Potree stream
+        /// </summary>
         protected int offsetClassification = -1;
+        /// <summary>
+        /// Offset in bytes to the scan angle rank value in bytes in raw Potree stream
+        /// </summary>
         protected int offsetScanAngleRank = -1;
+        /// <summary>
+        /// Offset in bytes to the user data value in bytes in raw Potree stream
+        /// </summary>
         protected int offsetUserData = -1;
+        /// <summary>
+        /// Offset in bytes to the point source id value in bytes in raw Potree stream
+        /// </summary>
         protected int offsetPointSourceId = -1;
+        /// <summary>
+        /// Offset in bytes to the color value in bytes in raw Potree stream
+        /// </summary>
         protected int offsetColor = -1;
 
         private string _octreeFilePath;
         private MemoryMappedFile _octreeMappedFile;
         private MemoryMappedViewAccessor _octreeViewAccessor;
 
+        /// <summary>
+        /// The <see cref="MemoryMappedViewAccessor"/> to the underlying octree.bin file
+        /// </summary>
         protected MemoryMappedViewAccessor OctreeMappedViewAccessor
         {
             get
@@ -42,6 +77,10 @@ namespace Fusee.PointCloud.Potree.V2
             }
         }
 
+        /// <summary>
+        /// The path to the octree.bin file
+        /// On assign the <see cref="MemoryMappedFile"/> and the <see cref="MemoryMappedViewAccessor"/> is being created.
+        /// </summary>
         protected string OctreeFilePath
         {
             set
@@ -56,6 +95,10 @@ namespace Fusee.PointCloud.Potree.V2
             get => _octreeFilePath;
         }
 
+        /// <summary>
+        /// Ctor for RW base. Reads and chaches metadata and sets the path to the octree.bin file
+        /// </summary>
+        /// <param name="potreeData"></param>
         public Potree2RwBase(ref PotreeData potreeData)
         {
             _potreeData = potreeData;
@@ -70,9 +113,12 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         public PointType PointType => PointType.PosD3ColF3LblB;
 
+        /// <summary>
+        /// Read and cache metadata from the metadata.json file
+        /// </summary>
         protected void CacheMetadata()
         {
-            if (!cachedMetadata)
+            if (!isMetadataCached)
             {
                 if (_potreeData.Metadata.Attributes.ContainsKey("position"))
                 {
@@ -123,10 +169,16 @@ namespace Fusee.PointCloud.Potree.V2
                     _potreeData.Metadata.PointSize = pointSize;
                 }
 
-                cachedMetadata = true;
+                isMetadataCached = true;
             }
         }
 
+        /// <summary>
+        /// Iterate the hierarchy, find the node from the given <see cref="OctantId"/>.
+        /// </summary>
+        /// <param name="potreeHierarchy"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public static PotreeNode FindNode(ref PotreeHierarchy potreeHierarchy, OctantId id)
         {
             return potreeHierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdToPotreeName(id));

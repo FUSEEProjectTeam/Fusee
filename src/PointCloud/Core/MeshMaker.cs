@@ -4,8 +4,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Common.Accessors;
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
