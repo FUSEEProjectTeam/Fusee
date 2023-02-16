@@ -578,10 +578,9 @@ namespace Fusee.Engine.Core
                     // check if we have a geometry shader --> use FBO picking
                     if (State == null) return;
                     if (State.ShaderEffect.GeometryShaderSrc == null) return;
-
                     // non-triangle picking is only possible with camera
-                    Guard.IsNotNull(CurrentCamera, nameof(CurrentCamera));
-                    Guard.IsNotNull(State, nameof(State));
+                    if (CurrentCamera == null) return;
+
 
                     var cam = new Camera(CurrentCamera.ProjectionMethod, 1, 1000, CurrentCamera.Fov);
 
