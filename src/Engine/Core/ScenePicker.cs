@@ -88,6 +88,7 @@ namespace Fusee.Engine.Core
             private readonly CollapsingStateStack<float4x4> _model = new();
             private readonly CollapsingStateStack<MinMaxRect> _uiRect = new();
             private readonly CollapsingStateStack<Cull> _cullMode = new();
+            private readonly CollapsingStateStack<ShaderEffect> _shaderFX = new();
 
             public float2 PickPosClip { get; set; }
 
@@ -118,6 +119,12 @@ namespace Fusee.Engine.Core
                 set => _canvasXForm.Tos = value;
             }
 
+            public ShaderEffect ShaderEffect
+            {
+                get => _shaderFX.Tos;
+                set => _shaderFX.Tos = value;
+            }
+
             /// <summary>
             /// The registered cull mode.
             /// </summary>
@@ -139,6 +146,7 @@ namespace Fusee.Engine.Core
                 RegisterState(_uiRect);
                 RegisterState(_canvasXForm);
                 RegisterState(_cullMode);
+                RegisterState(_shaderFX);
             }
 
             /// <summary>
@@ -194,6 +202,7 @@ namespace Fusee.Engine.Core
             State.View = float4x4.Identity;
             State.Projection = float4x4.Identity;
             State.CanvasXForm = float4x4.Identity;
+
         }
 
         /// <summary>
@@ -505,6 +514,17 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Save the current shader effect
+        /// Later we can check if we have a geometry shader source and use FBO picking
+        /// </summary>
+        /// <param name="effect"></param>
+        [VisitMethod]
+        public void RenderShaderEffect(ShaderEffect effect)
+        {
+            State.ShaderEffect = effect;
+        }
+
+        /// <summary>
         /// Handles custom pick component with pick layer and custom picking methods.
         /// If <see cref="PickComponent"/> is not active, the picking is being skipped
         /// </summary>
@@ -526,10 +546,6 @@ namespace Fusee.Engine.Core
 
             if (!mesh.Active) return;
             if (mesh == null) return;
-
-            // TODO (MR):
-            // Geometry shader -> PickComp?
-            // PointCloud -> module
 
             if (State?.CurrentPickComp != null)
             {
@@ -559,6 +575,10 @@ namespace Fusee.Engine.Core
                     Diagnostics.Warn($"Unknown primitive type {mesh.MeshType}, picking not possible!");
                     break;
                 default:
+                    // check if we have a geometry shader --> use FBO picking
+                    if (State == null) return;
+                    if (State.ShaderEffect.GeometryShaderSrc == null) return;
+
                     // non-triangle picking is only possible with camera
                     Guard.IsNotNull(CurrentCamera, nameof(CurrentCamera));
                     Guard.IsNotNull(State, nameof(State));
@@ -581,18 +601,25 @@ namespace Fusee.Engine.Core
                             }
                        }
                     };
-
-                    _writableTexture ??= new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGB), _rc.ViewportWidth, _rc.ViewportHeight, false);
+                    var w = _canvasWidth;
+                    var h = _canvasHeight;
+                    _writableTexture ??= WritableTexture.CreateAlbedoTex(w, h, new ImagePixelFormat(ColorFormat.Intensity));
                     _cameraPosition.Matrix = State.View.Invert();
                     cam.RenderTexture = _writableTexture;
                     cam.FrustumCullingOn = false;
-                    var compCopy = CurrentNode.Components.ToArray().ToList();
-                    container.Children.Insert(1, new SceneNode { Components = compCopy });
-                    _sceneRenderer = new SceneRendererForward(container);
+                    container.Children.Insert(1, CurrentNode);
 
+                    _sceneRenderer = new SceneRendererForward(container);
                     _sceneRenderer.Render(_rc);
 
-                    var pixels = _rc.ReadPixels((int)Input.Mouse.X, (int)(_canvasHeight - Input.Mouse.Y), new ImagePixelFormat(ColorFormat.RGB), 1, 1);
+                    // convert mouse from ClipSpace back to world coordinates
+                    // reverse pickPosClip calculation
+                    // var pickPosClip = (mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight)) + new float2(-1, 1);
+                    var mouseModelPos = PickPosClip - new float2(-1, 1);
+                    mouseModelPos = new float2(mouseModelPos.x / (2.0f / w), mouseModelPos.y / (-2.0f / h));
+
+                    // read pixel value at mouse coordinates/position
+                    var pixels = _rc.ReadPixels((int)mouseModelPos.x, (int)mouseModelPos.y, new ImagePixelFormat(ColorFormat.Intensity), 1, 1);
 
                     if (pixels[0] != 0)
                         YieldItem(new PickResult
@@ -601,7 +628,6 @@ namespace Fusee.Engine.Core
                             Node = CurrentNode,
                             Model = State.Model
                         });
-
                     break;
             }
         }
