@@ -28,7 +28,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <summary>
         /// Save if metadata has already been cached
         /// </summary>
-        protected bool isMetadataCached = false;
+        protected bool _isMetadataCached = false;
 
         /// <summary>
         /// Offset in bytes to the position value in bytes in raw Potree stream
@@ -83,7 +83,6 @@ namespace Fusee.PointCloud.Potree.V2
                 Guard.IsNotNull(_octreeMappedFile, nameof(_octreeMappedFile));
 
                 return _octreeViewAccessor;
-
             }
         }
 
@@ -93,7 +92,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         protected string OctreeFilePath
         {
-            set
+            private set
             {
                 Guard.IsNotNullOrEmpty(value, nameof(value));
                 Guard.IsTrue(File.Exists(value));
@@ -125,6 +124,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <param name="potreeData">Meta and octree data of the potree file.</param>
         public void ReadNewFile(string path, out PotreeData potreeData)
         {
+            _isMetadataCached = false;
             PotreeData = new PotreeData(path);
 
             CacheMetadata();
@@ -140,7 +140,7 @@ namespace Fusee.PointCloud.Potree.V2
         {
             Guard.IsNotNull(_potreeData);
 
-            if (!isMetadataCached)
+            if (!_isMetadataCached)
             {
                 if (_potreeData.Metadata.Attributes.ContainsKey("position"))
                 {
@@ -191,7 +191,7 @@ namespace Fusee.PointCloud.Potree.V2
                     _potreeData.Metadata.PointSize = pointSize;
                 }
 
-                isMetadataCached = true;
+                _isMetadataCached = true;
             }
         }
 
