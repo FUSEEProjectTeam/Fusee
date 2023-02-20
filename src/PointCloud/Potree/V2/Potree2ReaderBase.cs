@@ -18,7 +18,7 @@ namespace Fusee.PointCloud.Potree.V2
         public PotreeData? PotreeData
         {
             get => _potreeData;
-            private set 
+            private set
             {
                 _potreeData = value;
             }
