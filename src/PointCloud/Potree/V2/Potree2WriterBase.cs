@@ -1,20 +1,30 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Potree.V2.Data;
+using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 
 namespace Fusee.PointCloud.Potree.V2
 {
+    //TODO: cleanup fields/methods that arent necessary for the writer but are present due to this classes historic relation to the reader.
     /// <summary>
     /// This is the base class for reading and writing <see cref="PotreePoint"/>s.
     /// </summary>
-    public abstract class Potree2RwBase
+    public abstract class Potree2WriterBase : IDisposable
     {
         /// <summary>
-        /// The <see cref="PotreeData"/>
+        /// The <see cref="V2.PotreeData"/>
         /// </summary>
-        protected PotreeData _potreeData;
+        public PotreeData? PotreeData
+        {
+            get => _potreeData;
+            private set 
+            {
+                _potreeData = value;
+            }
+        }
+        private PotreeData? _potreeData;
 
         /// <summary>
         /// Save if metadata has already been cached
@@ -61,6 +71,7 @@ namespace Fusee.PointCloud.Potree.V2
         private string? _octreeFilePath;
         private MemoryMappedFile? _octreeMappedFile;
         private MemoryMappedViewAccessor? _octreeViewAccessor;
+        private bool disposedValue;
 
         /// <summary>
         /// The <see cref="MemoryMappedViewAccessor"/> to the underlying octree.bin file
@@ -89,6 +100,10 @@ namespace Fusee.PointCloud.Potree.V2
                 Guard.IsTrue(File.Exists(value));
 
                 _octreeFilePath = value;
+
+                _octreeMappedFile?.Dispose();
+                _octreeViewAccessor?.Dispose();
+
                 _octreeMappedFile = MemoryMappedFile.CreateFromFile(_octreeFilePath, FileMode.Open);
                 _octreeViewAccessor = _octreeMappedFile.CreateViewAccessor();
             }
@@ -102,20 +117,16 @@ namespace Fusee.PointCloud.Potree.V2
         /// <summary>
         /// Ctor for RW base. Reads and chaches metadata and sets the path to the octree.bin file
         /// </summary>
-        /// <param name="potreeData"></param>
-        public Potree2RwBase(ref PotreeData potreeData)
+        public Potree2WriterBase(PotreeData potreeData)
         {
-            _potreeData = potreeData;
-
-            CacheMetadata();
-
-            OctreeFilePath = Path.Combine(_potreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName);
+            PotreeData = potreeData;
         }
 
         /// <summary>
         /// Returns the point type.
         /// </summary>
         public PointType PointType => PointType.PosD3ColF3LblB;
+
 
         /// <summary>
         /// Read and cache metadata from the metadata.json file
@@ -188,5 +199,28 @@ namespace Fusee.PointCloud.Potree.V2
             return potreeHierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdToPotreeName(id));
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                    _octreeMappedFile?.Dispose();
+                    _octreeViewAccessor?.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

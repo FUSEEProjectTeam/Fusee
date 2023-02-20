@@ -1,5 +1,4 @@
 using Fusee.Math.Core;
-using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.IO;
@@ -9,13 +8,12 @@ namespace Fusee.PointCloud.Potree.V2
     /// <summary>
     /// Writes Potree data 
     /// </summary>
-    public class Potree2Writer : Potree2RwBase
+    public class Potree2Writer : Potree2WriterBase
     {
         /// <summary>
         /// Generate a <see cref="Potree2Writer"/> instance.
         /// </summary>
-        /// <param name="potreeData"></param>
-        public Potree2Writer(ref PotreeData potreeData) : base(ref potreeData) { }
+        public Potree2Writer(PotreeData potreeData) : base(potreeData) { }
 
         /// <summary>
         /// Directly writes the action of one given set of selectors to disk.
@@ -225,7 +223,7 @@ namespace Fusee.PointCloud.Potree.V2
 
                 double3 point = double3.Zero;
 
-                foreach (var node in _potreeData.Hierarchy.Nodes)
+                foreach (var node in PotreeData.Hierarchy.Nodes)
                 {
                     if (nodeSelector(node))
                     {
@@ -233,17 +231,17 @@ namespace Fusee.PointCloud.Potree.V2
 
                         for (int i = 0; i < node.NumPoints; i++)
                         {
-                            binaryReader.BaseStream.Position = node.ByteOffset + 0 + i * _potreeData.Metadata.PointSize;
+                            binaryReader.BaseStream.Position = node.ByteOffset + 0 + i * PotreeData.Metadata.PointSize;
 
-                            point.x = (binaryReader.ReadInt32() * _potreeData.Metadata.Scale.x);
-                            point.z = (binaryReader.ReadInt32() * _potreeData.Metadata.Scale.y);
-                            point.y = (binaryReader.ReadInt32() * _potreeData.Metadata.Scale.z);
+                            point.x = (binaryReader.ReadInt32() * PotreeData.Metadata.Scale.x);
+                            point.z = (binaryReader.ReadInt32() * PotreeData.Metadata.Scale.y);
+                            point.y = (binaryReader.ReadInt32() * PotreeData.Metadata.Scale.z);
 
                             if (pointSelector(point))
                             {
                                 if (!dryrun)
                                 {
-                                    binaryWriter.BaseStream.Position = node.ByteOffset + 16 + i * _potreeData.Metadata.PointSize;
+                                    binaryWriter.BaseStream.Position = node.ByteOffset + 16 + i * PotreeData.Metadata.PointSize;
                                     binaryWriter.Write(Label);
                                 }
 
