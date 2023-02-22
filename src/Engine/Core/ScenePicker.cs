@@ -70,13 +70,6 @@ namespace Fusee.Engine.Core
         private int _canvasWidth;
         private int _canvasHeight;
 
-        public class MousePos
-        {
-            /// <summary>
-            /// Current mouse position (in clip space)
-            /// </summary>
-            public int PickPosClip { get; set; }
-        }
 
         #region State
         /// <summary>
@@ -90,7 +83,7 @@ namespace Fusee.Engine.Core
             private readonly CollapsingStateStack<Cull> _cullMode = new();
             private readonly CollapsingStateStack<ShaderEffect> _shaderFX = new();
 
-            public float2 PickPosClip { get; set; }
+            public static float2 PickPosClip { get; set; }
 
             /// <summary>
             /// The registered model.
@@ -173,23 +166,17 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        // deferred renderer for RGB FBO picking
-        private SceneRendererForward _sceneRenderer;
-        private WritableTexture _writableTexture;
-        private Transform _cameraPosition = new();
-        private RenderContext _rc;
-
         /// <summary>
         /// The constructor to initialize a new ScenePicker.
         /// </summary>
         /// <param name="cullMode"></param>
+        /// <param name="customPickModule"></param>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
-        public ScenePicker(SceneContainer scene, RenderContext rc = null, Cull cullMode = Cull.None, IEnumerable<IPickerModule> customPickModule = null)
+        public ScenePicker(SceneContainer scene, Cull cullMode = Cull.None, IEnumerable<IPickerModule>? customPickModule = null)
             : base(scene.Children, customPickModule)
         {
             IgnoreInactiveComponents = true;
             State.CullMode = cullMode;
-            _rc = rc;
         }
 
         /// <summary>
@@ -219,7 +206,7 @@ namespace Fusee.Engine.Core
             _canvasHeight = canvasHeight;
 
             PickPosClip = pickPos;
-            State.PickPosClip = pickPos;
+            PickerState.PickPosClip = pickPos;
 
             SetState();
             var res = Viserate().ToList();
@@ -569,66 +556,25 @@ namespace Fusee.Engine.Core
                     if (State != null)
                         PickTriangleGeometry(mesh, State.Projection, State.View);
                     break;
-                // everything else should be pickable with an color coded FBO at mouse position
+                case PrimitiveType.Lines:
+                    PickLineGeometry(mesh);
+                    break;
+                case PrimitiveType.LineAdjacency:
+                    PickLineAdjacencyGeometry(mesh);
+                    break;
                 // point cloud will be picked via PointCloudPicker Module
                 case PrimitiveType.Points:
-                    Diagnostics.Warn($"Unknown primitive type {mesh.MeshType}, picking not possible!");
+                    Diagnostics.Warn($"Picking of points not possible! Use the PointCloudPicker module!");
                     break;
                 default:
-                    // check if we have a geometry shader --> use FBO picking
-                    if (State == null) return;
-                    if (State.ShaderEffect.GeometryShaderSrc == null) return;
-                    // non-triangle picking is only possible with camera
-                    if (CurrentCamera == null) return;
-
-
-                    var cam = new Camera(CurrentCamera.ProjectionMethod, 1, 1000, CurrentCamera.Fov);
-
-                    // if scene renderer is empty, generate new with camera and custom shader stuff
-                    // attach current scene node to shader
-                    var container = new SceneContainer
-                    {
-                        Children = new List<SceneNode>
-                       {
-                            new SceneNode
-                            {
-                                Components = new List<SceneComponent>
-                                {
-                                    _cameraPosition,
-                                    cam
-                                }
-                            }
-                       }
-                    };
-                    var w = _canvasWidth;
-                    var h = _canvasHeight;
-                    _writableTexture ??= WritableTexture.CreateAlbedoTex(w, h, new ImagePixelFormat(ColorFormat.Intensity));
-                    _cameraPosition.Matrix = State.View.Invert();
-                    cam.RenderTexture = _writableTexture;
-                    cam.FrustumCullingOn = false;
-                    container.Children.Insert(1, CurrentNode);
-
-                    _sceneRenderer = new SceneRendererForward(container);
-                    _sceneRenderer.Render(_rc);
-
-                    // convert mouse from ClipSpace back to world coordinates
-                    // reverse pickPosClip calculation
-                    // var pickPosClip = (mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight)) + new float2(-1, 1);
-                    var mouseModelPos = PickPosClip - new float2(-1, 1);
-                    mouseModelPos = new float2(mouseModelPos.x / (2.0f / w), mouseModelPos.y / (-2.0f / h));
-
-                    // read pixel value at mouse coordinates/position
-                    var pixels = _rc.ReadPixels((int)mouseModelPos.x, (int)mouseModelPos.y, new ImagePixelFormat(ColorFormat.Intensity), 1, 1);
-
-                    if (pixels[0] != 0)
-                        YieldItem(new PickResult
-                        {
-                            Mesh = mesh,
-                            Node = CurrentNode,
-                            Model = State.Model
-                        });
+                    Diagnostics.Warn($"Picking failed, unknown primitive type {mesh.MeshType}. Use PickComponent.CustomPickMethod!");
                     break;
             }
+        }
+
+        private void PickLineAdjacencyGeometry(Mesh mesh)
+        {
+
         }
 
         private void PickLineGeometry(Mesh mesh)
@@ -657,7 +603,7 @@ namespace Fusee.Engine.Core
 
                 var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]).xy;
                 var pt2 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]).xy;
-                var pt0 = State.PickPosClip;
+                var pt0 = PickerState.PickPosClip;
 
                 // Line Eq = ax + by + c = 0
                 // A = (y1 - y2)

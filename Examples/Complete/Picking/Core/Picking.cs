@@ -61,7 +61,7 @@ namespace Fusee.Examples.Picking.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene, RC, RC.CurrentRenderState.CullMode);
+            _scenePicker = new ScenePicker(_scene, RC.CurrentRenderState.CullMode);
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
             // Create the interaction handler
