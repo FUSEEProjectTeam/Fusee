@@ -166,6 +166,8 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        private SceneContainer sc;
+
         /// <summary>
         /// The constructor to initialize a new ScenePicker.
         /// </summary>
@@ -177,6 +179,7 @@ namespace Fusee.Engine.Core
         {
             IgnoreInactiveComponents = true;
             State.CullMode = cullMode;
+            sc = scene;
         }
 
         /// <summary>
