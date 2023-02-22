@@ -3,7 +3,6 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
-using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
@@ -13,49 +12,6 @@ using System.Threading.Tasks;
 
 namespace Fusee.Examples.Picking.Core
 {
-    public class LineCircle : Mesh
-    {
-        public LineCircle(int segments)
-        {
-            var verts = new List<float3>();
-            var triangles = new List<uint>();
-            var angleStep = 2 * M.Pi / segments;
-            for (uint i = 0; i < segments; i++)
-            {
-                var vert = new float3
-                {
-                    x = 0.5f * (float)System.Math.Cos(i * angleStep),
-                    y = 0.5f * (float)System.Math.Sin(i * angleStep)
-                };
-                verts.Add(vert);
-            }
-
-            for (uint i = 0; i < verts.Count; i++)
-            {
-                if (i == 0)
-                    triangles.Add((uint)verts.Count - 1);
-                else
-                    triangles.Add(i - 1);
-
-                triangles.Add(i);
-
-                if (i + 1 < verts.Count)
-                    triangles.Add(i + 1);
-                else
-                    triangles.Add(0);
-
-                if (i + 2 < verts.Count)
-                    triangles.Add(i + 2);
-                else
-                    triangles.Add((uint)(i + 2 - verts.Count));
-            }
-
-            Vertices = new MeshAttributes<float3>(verts);
-            Triangles = new MeshAttributes<uint>(triangles);
-            MeshType = Fusee.Engine.Common.PrimitiveType.LineAdjacency;
-        }
-    }
-
     [FuseeApplication(Name = "FUSEE Picking Example", Description = "How to use the Scene Picker.")]
     public class Picking : RenderCanvas
     {
@@ -68,7 +24,6 @@ namespace Fusee.Examples.Picking.Core
         private SceneContainer _scene;
         private Transform _camPivotTransform;
         private SceneRendererForward _sceneRenderer;
-        private SceneRendererDeferred _pickRenderer;
         private ScenePicker _scenePicker;
 
         private bool _keys;
@@ -91,28 +46,9 @@ namespace Fusee.Examples.Picking.Core
             // Create the robot model
             _scene = CreateScene();
 
-
-            _scene.Children.Add(new SceneNode
-            {
-                Components = new List<SceneComponent> {
-                    new Transform
-                    {
-                        //Translation = new float3(1,-2,1),
-                        //Scale = float3.One * 100,
-                        ////Rotation = new float3(0, M.PiOver2, 0)
-                    },
-                    MakeEffect.LineEffect(5, new float4(1,0,0,1)),
-                    new Mesh(new uint[] {0, 1}, new float3[] {new float3(0,150,0), new float3(5,170,5) })
-                    {
-                        Name = "Line",
-                        MeshType = PrimitiveType.Lines
-                    }
-                }
-            });
-
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene, RC.CurrentRenderState.CullMode);
+            _scenePicker = new ScenePicker(_scene);
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
             // Create the interaction handler
@@ -180,36 +116,28 @@ namespace Fusee.Examples.Picking.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-           // RC.EnableStencil();
-           // RC.SetStencilMask(0xFF);
-           //
             _sceneRenderer.Render(RC);
 
-            //RC.DisableStencil();
-
-
-            // Picking
+            //Picking
             if (_pick)
             {
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                var newPick = _scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z)
+                PickResult newPick = _scenePicker.Pick(pickPosClip, RC.ViewportWidth, RC.ViewportHeight).ToList().OrderBy(pr => pr.ClipPos.z)
                     .FirstOrDefault();
-
-                if (newPick != null)
-                    Diagnostics.Debug(newPick.Node.Name);
+                Diagnostics.Debug(newPick);
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
-                    if (_currentPick != null && _currentPick is MeshPickResult mpr)
+                    if (_currentPick != null)
                     {
-                        var ef = mpr.Node.GetComponent<SurfaceEffect>();
+                        var ef = _currentPick.Node.GetComponent<SurfaceEffect>();
                         ef.SurfaceInput.Albedo = _oldColor;
                     }
 
-                    if (newPick != null && newPick is MeshPickResult newMpr)
+                    if (newPick != null)
                     {
-                        var ef = newMpr.Node.GetComponent<SurfaceEffect>();
+                        var ef = newPick.Node.GetComponent<SurfaceEffect>();
                         _oldColor = ef.SurfaceInput.Albedo;
                         ef.SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
                     }
@@ -220,16 +148,16 @@ namespace Fusee.Examples.Picking.Core
                 _pick = false;
             }
 
-            //_guiRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             // Constantly check for interactive objects.
-            //if (!Input.Mouse.Desc.Contains("Android"))
-            //    _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
-            //
-            //if (Input.Touch != null && Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
-            //{
-            //    _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            //}
+            if (!Input.Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+
+            if (Input.Touch != null && Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
 
             // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
             Present();
