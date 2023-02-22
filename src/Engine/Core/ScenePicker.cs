@@ -686,41 +686,71 @@ namespace Fusee.Engine.Core
                 return;
             }
 
+            var viewportHeight = CurrentCamera.Viewport.w * (_canvasHeight / 100.0f);
+            var viewportWidth = CurrentCamera.Viewport.z * (_canvasWidth / 100.0f);
+            var aspect = viewportHeight / viewportWidth;
+            var line_width = M.Max(1.0f, thicknessFromShader);
+
             for (var i = 0; i < mesh.Triangles.Length; i += 2)
             {
-                var viewportHeight = CurrentCamera.Viewport.w * (_canvasHeight / 100.0f);
-                var viewportWidth = CurrentCamera.Viewport.z * (_canvasWidth / 100.0f);
-                var w = thicknessFromShader / viewportWidth; // transform thickness from pixel to NDC
-
-
-                // see: https://math.stackexchange.com/a/3633025
-                // for calculation
                 var pt0 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]).xy;
                 var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]).xy;
                 var pt = PickerState.PickPosClip;
 
-                var nom = (pt.x - pt0.x) * (pt1.x - pt0.x) + (pt.y - pt0.y) * (pt1.y - pt0.y);
-                var denom = MathF.Pow((pt1.x - pt.x), 2) + MathF.Pow((pt1.y - pt0.y), 2);
-                var t = nom / denom;
+                var lineVector = pt1 - pt0;
+                var viewport_line_vector = lineVector * new float2(viewportWidth, viewportHeight);
+                var dir = new float2(lineVector.x, lineVector.y * aspect).Normalize();
 
-                // point is somewhere on the line
-                if(t >= 0 && t <= 1)
+                var lineLength = viewport_line_vector.Length;
+
+                var normal = new float2(-dir.y, dir.x);
+                var normal_a = new float2(line_width / viewportWidth, line_width / viewportHeight) * normal;
+                var normal_b = new float2(line_width / viewportWidth, line_width / viewportHeight) * normal;
+
+                var vert0 = pt0 + normal_a;
+                var vert1 = pt0 - normal_a;
+                var vert2 = pt1 + normal_b;
+                var vert3 = pt1 - normal_b;
+
+                if (float2.PointInTriangle(vert0.xy, vert1.xy, vert2.xy, PickPosClip, out _, out _) ||
+                   float2.PointInTriangle(vert2.xy, vert1.xy, vert3.xy, PickPosClip, out _, out _))
                 {
-                    var dSqrd = MathF.Pow(pt.x - pt0.x - t * (pt1.x - pt0.x), 2) + MathF.Pow(pt.y - pt0.y - t * (pt1.y - pt0.y), 2);
-
-                    if(dSqrd < 0.25 * (w * w)) {
-
-                        YieldItem(new PickResult
-                        {
-                            Mesh = mesh,
-                            Node = CurrentNode,
-                            Model = State.Model,
-                            ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
-                            View = State.View,
-                            Projection = State.Projection
-                        });
-                    }
+                    YieldItem(new PickResult
+                    {
+                        Mesh = mesh,
+                        Node = CurrentNode,
+                        Model = State.Model,
+                        ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
+                        View = State.View,
+                        Projection = State.Projection
+                    });
                 }
+
+
+                //// see: https://math.stackexchange.com/a/3633025
+                //// for calculation, does not work  :(
+                //var nom = (pt.x - pt0.x) * (pt1.x - pt0.x) + (pt.y - pt0.y) * (pt1.y - pt0.y);
+                //var denom = MathF.Pow((pt1.x - pt.x), 2) + MathF.Pow((pt1.y - pt0.y), 2);
+                //var t = nom / denom;
+
+                //// point is somewhere on the line
+                //if(t >= 0 && t <= 1)
+                //{
+                //    var dSqrd = MathF.Pow(pt.x - pt0.x - t * (pt1.x - pt0.x), 2) + MathF.Pow(pt.y - pt0.y - t * (pt1.y - pt0.y), 2);
+
+                //    if(dSqrd < 0.25 * (w * w)) {
+
+                //        YieldItem(new PickResult
+                //        {
+                //            Mesh = mesh,
+                //            Node = CurrentNode,
+                //            Model = State.Model,
+                //            ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
+                //            View = State.View,
+                //            Projection = State.Projection
+                //        });
+                //    }
+                //}
             }
         }
 
