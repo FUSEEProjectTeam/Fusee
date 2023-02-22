@@ -91,7 +91,7 @@ namespace Fusee.Engine.Core.Scene
         /// The texture given here will be used as render target.
         /// If this is not null the output gets rendered into the texture, otherwise to the screen.
         /// </summary>
-        public IWritableTexture RenderTexture;
+        public IWritableTexture? RenderTexture;
 
         /// <summary>
         /// Allows to overwrite the calculation of the projection matrix. 
@@ -102,7 +102,7 @@ namespace Fusee.Engine.Core.Scene
         /// but if this delegate is not null its out values (Projection matrix and Viewport) 
         /// will overwrite the ones calculated from the other camera parameters.
         /// </summary>
-        public CustomCameraUpdate CustomCameraUpdate;
+        public CustomCameraUpdate? CustomCameraUpdate;
 
         /// <summary>
         /// Sets the RenderLayer for this camera.

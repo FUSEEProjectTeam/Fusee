@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
     /// </summary>
-    public abstract class PointCloudDataHandlerBase<TGpuData>
+    public abstract class PointCloudDataHandlerBase<TGpuData> : IDisposable where TGpuData : IDisposable
     {
         /// <summary>
         /// Used to manage gpu pressure when disposing of a large quantity of meshes.
@@ -31,11 +32,11 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Locking object for the loading queue.
         /// </summary>
-        protected static object LockLoadingQueue = new();
+        protected object LockLoadingQueue = new();
         /// <summary>
         /// Locking object for the dispose queue.
         /// </summary>
-        protected static object LockDisposeQueue = new();
+        protected object LockDisposeQueue = new();
 
         /// <summary>
         /// First looks in the mesh cache, if there are meshes return, 
@@ -55,5 +56,65 @@ namespace Fusee.PointCloud.Common
         /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the MeshCache.
         /// </summary>
         public abstract void ProcessDisposeQueue();
+
+        private bool _disposed = false;
+
+        /// <summary>
+        /// Implement IDisposable.
+        /// Do not make this method virtual.
+        /// A derived class should not be able to override this method.
+        ///</summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose(bool disposing) executes in two distinct scenarios.
+        /// If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.
+        ///</summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!_disposed)
+            {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources.
+                if (disposing)
+                {
+                    // Dispose managed resources.
+
+                }
+
+                // Call the appropriate methods to clean up
+                // unmanaged resources here.
+                foreach (var kvp in DisposeQueue)
+                {
+                    foreach (var val in kvp.Value)
+                    {
+                        val.Dispose();
+                    }
+                }
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Use C# finalizer syntax for finalization code.
+        /// This finalizer will run only if the Dispose method
+        /// does not get called.
+        /// It gives your base class the opportunity to finalize.
+        /// Do not provide finalizer in types derived from this class.
+        /// </summary>
+        ~PointCloudDataHandlerBase()
+        {
+            Dispose(disposing: false);
+        }
     }
 }

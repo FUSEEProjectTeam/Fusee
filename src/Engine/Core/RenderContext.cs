@@ -1926,7 +1926,7 @@ namespace Fusee.Engine.Core
         ///  Renders into the given texture.
         /// </summary>
         /// <param name="tex">The render texture.</param>
-        public void SetRenderTarget(IWritableTexture tex)
+        public void SetRenderTarget(IWritableTexture? tex)
         {
             if (tex == null)
                 SetRenderTarget();

@@ -509,7 +509,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="parentGlobalRot">Global (accumulated) rotation of the parent node.</param>
         public static void RotateGlobal(this Transform tc, QuaternionF rotation, QuaternionF parentGlobalRot)
         {
-            tc.RotationQuaternion *= parentGlobalRot * rotation * QuaternionF.Invert(parentGlobalRot);
+            tc.RotationQuaternion *= QuaternionF.Invert(parentGlobalRot) * rotation * parentGlobalRot;
         }
 
         /// <summary>

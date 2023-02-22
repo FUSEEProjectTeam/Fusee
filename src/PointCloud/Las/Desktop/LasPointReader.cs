@@ -1,8 +1,6 @@
 ﻿using Fusee.Base.Imp.Desktop;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Common.Accessors;
-using Fusee.PointCloud.Core.Accessors;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -15,8 +13,6 @@ namespace Fusee.PointCloud.Las.Desktop
     /// </summary>
     public class LasPointReader : IDisposable, IPointReader
     {
-        public IPointAccessor PointAccessor { get; private set; }
-
         /// <summary>
         /// The point cloud meta data, usually stored in the header of the las file.
         /// </summary>
@@ -106,6 +102,7 @@ namespace Fusee.PointCloud.Las.Desktop
         /// <param name="filePath">The path to a las encoded file.</param>
         public LasPointReader(string filePath)
         {
+            throw new NotImplementedException("");
             _filePath = filePath;
             OpenFile(filePath);
         }
@@ -129,17 +126,16 @@ namespace Fusee.PointCloud.Las.Desktop
         /// Reads the given amount of points from stream
         /// </summary>
         /// <param name="n"></param>
-        /// <param name="pa"></param>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
-        public TPoint[] ReadNPoints<TPoint>(int n, IPointAccessor pa) where TPoint : new()
+        public TPoint[] ReadNPoints<TPoint>(int n) where TPoint : new()
         {
             if (_ptrToLASClass == IntPtr.Zero)
                 throw new FileNotFoundException("No file was specified yet. Call 'OpenFile' first");
             var points = new TPoint[n];
             for (var i = 0; i < points.Length; i++)
             {
-                if (!ReadNextPoint(ref points[i], pa)) break;
+                if (!ReadNextPoint(ref points[i])) break;
             }
             return points;
         }
@@ -150,7 +146,7 @@ namespace Fusee.PointCloud.Las.Desktop
         /// <param name="point"></param>
         /// <param name="pa"></param>
         /// <returns></returns>
-        public bool ReadNextPoint<TPoint>(ref TPoint point, IPointAccessor pa) where TPoint : new()
+        public bool ReadNextPoint<TPoint>(ref TPoint point) where TPoint : new()
         {
             if (point == null)
                 throw new ArgumentOutOfRangeException("No writable point found!");
@@ -162,21 +158,12 @@ namespace Fusee.PointCloud.Las.Desktop
             var currentPoint = new LasInternalPoint();
             GetPoint(_ptrToLASClass, ref currentPoint);
 
-            var typedAccessor = (PointAccessor<TPoint>)pa;
+            var pos = new double3(currentPoint.X * MetaInfo.ScaleFactorX, currentPoint.Y * MetaInfo.ScaleFactorY, currentPoint.Z * MetaInfo.ScaleFactorZ);
+            var intensity = currentPoint.Intensity;
+            var color = new float3(currentPoint.R, currentPoint.G, currentPoint.B);
 
-            if ((MetaInfo.PointDataFormat == 2 || MetaInfo.PointDataFormat == 3) && typedAccessor.ColorType == PointColorType.Float3)
-                typedAccessor.SetColorFloat3_32(ref point, new float3(currentPoint.R, currentPoint.G, currentPoint.B));
 
-            //TODO: Complete
-            //if (typedAccessor.PositionType == PointPositionType.Double3)
-            // -> always the case right now
-            typedAccessor.SetPositionFloat3_64(ref point, new double3(currentPoint.X * MetaInfo.ScaleFactorX, currentPoint.Y * MetaInfo.ScaleFactorY, currentPoint.Z * MetaInfo.ScaleFactorZ));
-
-            //if (currentFormat.HasIntensity && typedAccessor.IntensityType == PointIntensityType.UInt_16)
-            // -> always true right now!
-            typedAccessor.SetIntensityUInt_16(ref point, currentPoint.Intensity);
-
-            // -> never the case right now!
+           // -> never the case right now!
             //if (currentFormat.HasClassification && typedAccessor.LabelType == PointLabelType.UInt_8)
             //{
             //    //TODO: HACK!! label was somehow written to UserData and not to classification
@@ -208,12 +195,12 @@ namespace Fusee.PointCloud.Las.Desktop
             }
         }
 
-        public Task<TPoint[]> LoadPointsForNodeAsync<TPoint>(string guid, IPointAccessor pointAccessor) where TPoint : new()
+        public Task<TPoint[]> LoadPointsForNodeAsync<TPoint>(string guid) where TPoint : new()
         {
             throw new NotImplementedException();
         }
 
-        public TPoint[] LoadNodeData<TPoint>(string id, IPointAccessor pointAccessor) where TPoint : new()
+        public TPoint[] LoadNodeData<TPoint>(string id) where TPoint : new()
         {
             throw new NotImplementedException();
         }

@@ -2302,6 +2302,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 Common.PrimitiveType.TriangleFan => OpenTK.Graphics.OpenGL.PrimitiveType.TriangleFan,
                 Common.PrimitiveType.TriangleStrip => OpenTK.Graphics.OpenGL.PrimitiveType.TriangleStrip,
                 Common.PrimitiveType.Quads => OpenTK.Graphics.OpenGL.PrimitiveType.Quads,
+                Common.PrimitiveType.LineAdjacency => OpenTK.Graphics.OpenGL.PrimitiveType.LinesAdjacency,
                 _ => OpenTK.Graphics.OpenGL.PrimitiveType.Triangles,
             };
 

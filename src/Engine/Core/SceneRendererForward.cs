@@ -377,7 +377,7 @@ namespace Fusee.Engine.Core
             _rc.SetRenderTarget(tex);
 
             _rc.Projection = tex != null
-                ? cam.Camera.GetProjectionMat(cam.Camera.RenderTexture.Width, cam.Camera.RenderTexture.Height, out float4 viewport)
+                ? cam.Camera.GetProjectionMat(tex.Width, tex.Height, out float4 viewport)
                 : cam.Camera.GetProjectionMat(_rc.GetWindowWidth(), _rc.GetWindowHeight(), out viewport);
 
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
