@@ -278,10 +278,15 @@ namespace Fusee.Engine.Core
             }
 
             State.View = view.Invert();
+
+            var sizeInPx = CurrentCamera.RenderTexture == null ?
+                CurrentCamera.GetViewportInPx(_canvasWidth, _canvasHeight)
+                : CurrentCamera.GetViewportInPx(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height);
+
             // TODO(mr): TEST Renderlayer
             State.Projection = CurrentCamera.RenderTexture != null
             ? CurrentCamera.GetProjectionMat(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height, out var _)
-            : CurrentCamera.GetProjectionMat(_canvasWidth, _canvasHeight, out var _);
+            : CurrentCamera.GetProjectionMat((int)sizeInPx.z, (int)sizeInPx.w, out var _);
 
         }
 
@@ -594,8 +599,9 @@ namespace Fusee.Engine.Core
                 return;
             }
 
-            var viewportHeight = CurrentCamera.Viewport.w * (_canvasHeight / 100.0f);
-            var viewportWidth = CurrentCamera.Viewport.z * (_canvasWidth / 100.0f);
+            var size = CurrentCamera.GetViewportInPx(_canvasWidth, _canvasHeight);
+            var viewportHeight = size.w;
+            var viewportWidth = size.z;
             var aspect = viewportHeight / viewportWidth;
             var line_width = M.Max(1.0f, thicknessFromShader);
 
@@ -688,9 +694,9 @@ namespace Fusee.Engine.Core
                 Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
                 return;
             }
-
-            var viewportHeight = CurrentCamera.Viewport.w * (_canvasHeight / 100.0f);
-            var viewportWidth = CurrentCamera.Viewport.z * (_canvasWidth / 100.0f);
+            var size = CurrentCamera.GetViewportInPx(_canvasWidth, _canvasHeight);
+            var viewportHeight = size.w;
+            var viewportWidth = size.z;
             var aspect = viewportHeight / viewportWidth;
             var line_width = M.Max(1.0f, thicknessFromShader);
 
@@ -728,7 +734,6 @@ namespace Fusee.Engine.Core
                         Projection = State.Projection
                     });
                 }
-
 
                 //// see: https://math.stackexchange.com/a/3633025
                 //// for calculation, does not work  :(
