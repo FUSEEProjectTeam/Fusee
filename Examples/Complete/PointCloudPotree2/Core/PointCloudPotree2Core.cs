@@ -64,7 +64,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 return;
 
             _potreeData = new PotreeData(path);
-            _potreeReader = new Potree2Reader(ref _potreeData);
+            _potreeReader = new Potree2Reader();
 
             _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(RenderMode.DynamicMesh);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
@@ -75,7 +75,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _pointCloudNode.Components[3] = _pointCloud;
 
             // re-generate picker and octree
-            _picker = new ScenePicker(_scene, _rc, Engine.Common.Cull.None, new List<IPickerModule>()
+            _picker = new ScenePicker(_scene, Engine.Common.Cull.None, new List<IPickerModule>()
             {
                 new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree, (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp)
             });
@@ -84,7 +84,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         public PointCloudPotree2Core(RenderContext rc)
         {
             _potreeData = new PotreeData(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
-            _potreeReader = new Potree2Reader(ref _potreeData);
+            _potreeReader = new Potree2Reader();
             _rc = rc;
         }
 
@@ -173,7 +173,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             //    new PointCloudPickerModule(((PointCloud.Potree.Potree2Cloud)_pointCloud.PointCloudImp).VisibilityTester.Octree, null)
             //});
 
-            _picker = new ScenePicker(_scene, _rc, Engine.Common.Cull.None, new List<IPickerModule>()
+            _picker = new ScenePicker(_scene, Engine.Common.Cull.None, new List<IPickerModule>()
             {
                 new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree, (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp)
             });

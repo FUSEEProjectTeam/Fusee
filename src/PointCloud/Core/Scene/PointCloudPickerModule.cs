@@ -39,7 +39,7 @@ namespace Fusee.PointCloud.Core.Scene
         {
             if (!pointCloud.Active) return;
 
-            var ray = new RayD(new double2(State.PickPosClip.x, State.PickPosClip.y), (double4x4)State.View, (double4x4)State.Projection);
+            var ray = new RayD(new double2(PickerState.PickPosClip.x, PickerState.PickPosClip.y), (double4x4)State.View, (double4x4)State.Projection);
             var tmpList = new List<PointCloudOctant>();
             var allHitBoxes = PickOctantRecursively((PointCloudOctant)_octree.Root, ray, tmpList).OrderBy(x => x.ProjectedScreenSize);
             if (allHitBoxes != null && allHitBoxes.Any())

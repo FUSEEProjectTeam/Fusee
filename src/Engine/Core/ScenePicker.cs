@@ -574,7 +574,97 @@ namespace Fusee.Engine.Core
 
         private void PickLineAdjacencyGeometry(Mesh mesh)
         {
+            var mvp = State.Projection * State.View * State.Model;
+            var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
+            if (matOfNode == null)
+            {
+                Diagnostics.Debug("No shader effect for line renderer found!");
+                return;
+            }
+            var thicknessFromShader = matOfNode.GetFxParam<float>("Thickness");
 
+            if (mesh.Triangles == null) return;
+            if (mesh.Vertices == null) return;
+            if (CurrentCamera == null)
+            {
+                Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
+                return;
+            }
+
+            var viewportHeight = CurrentCamera.Viewport.w * (_canvasHeight / 100.0f);
+            var viewportWidth = CurrentCamera.Viewport.z * (_canvasWidth / 100.0f);
+            var aspect = viewportHeight / viewportWidth;
+            var line_width = M.Max(1.0f, thicknessFromShader);
+
+            for (var i = 1; i < mesh.Triangles.Length - 1; i += 2)
+            {
+                // recreate the mesh of the geometry shader, pt in triangle check for three vertices
+                // not very perfomant, however this is currently the only way to yield the resulting vertices.
+                // The GLSL.TransformFeedback is cluttered with problems and GLSL performance warnings
+                var ndc0 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i - 1]]);
+                var ndc1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]);
+                var ndc2 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]);
+                var ndc3 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 2]]);
+
+                //direction of the three segments (previous, current, next) */
+                var line_vector0 = ndc1 - ndc0;
+                var line_vector1 = ndc2 - ndc1;
+                var line_vector2 = ndc3 - ndc2;
+                var dir0 = new float2(line_vector0.x, line_vector0.y * aspect).Normalize();
+                var dir1 = new float2(line_vector1.x, line_vector1.y * aspect).Normalize();
+                var dir2 = new float2(line_vector2.x, line_vector2.y * aspect).Normalize();
+
+                //normals of the three segments (previous, current, next)
+                var n0 = new float2(-dir0.y, dir0.x);
+                var n1 = new float2(-dir1.y, dir1.x);
+                var n2 = new float2(-dir2.y, dir2.x);
+
+                // determine miter lines by averaging the normals of the 2 segments
+                var miter_a = (n0 + n1).Normalize();// miter at start of current segment
+                var miter_b = (n1 + n2).Normalize();// miter at end of current segment
+
+                // determine the length of the miter by projecting it onto normal and then inverse it
+                float an1 = float2.Dot(miter_a, n1);
+                float bn1 = float2.Dot(miter_b, n2);
+                if (an1 == 0) an1 = 1;
+                if (bn1 == 0) bn1 = 1;
+
+                float length_a = line_width / an1;
+                if (float2.Dot(dir0, dir1) < -0.1)
+                {
+                    miter_a = n1;
+                    length_a = line_width;
+                }
+
+                float length_b = line_width / bn1;
+                if (float2.Dot(dir1, dir2) < -0.1)
+                {
+                    miter_b = n1;
+                    length_b = line_width;
+                }
+
+                miter_a = new float2(length_a / viewportWidth, length_a / viewportHeight) * miter_a;
+                miter_b = new float2(length_b / viewportWidth, length_b / viewportHeight) * miter_b;
+
+                var vert0 = new float3(ndc1.x + miter_a.x, ndc1.y + miter_a.y, ndc1.z);
+                var vert1 = new float3(ndc1.x - miter_a.x, ndc1.y - miter_a.y, ndc1.z);
+                var vert2 = new float3(ndc2.x + miter_b.x, ndc2.y + miter_b.y, ndc2.z);
+                var vert3 = new float3(ndc2.x - miter_b.x, ndc2.y - miter_b.y, ndc2.z);
+
+                if (float2.PointInTriangle(vert0.xy, vert1.xy, vert2.xy, PickPosClip, out _, out _) ||
+                    float2.PointInTriangle(vert2.xy, vert1.xy, vert3.xy, PickPosClip, out _, out _))
+                {
+                    YieldItem(new PickResult
+                    {
+                        Mesh = mesh,
+                        Node = CurrentNode,
+                        Model = State.Model,
+                        ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
+                        View = State.View,
+                        Projection = State.Projection
+                    });
+                }
+            }
         }
 
         private void PickLineGeometry(Mesh mesh)
@@ -598,41 +688,48 @@ namespace Fusee.Engine.Core
 
             for (var i = 0; i < mesh.Triangles.Length; i += 2)
             {
-                var viewportHeight = CurrentCamera.Viewport.w;
-                var thickness = (thicknessFromShader / viewportHeight);
+                var viewportHeight = CurrentCamera.Viewport.w * (_canvasHeight / 100.0f);
+                var viewportWidth = CurrentCamera.Viewport.z * (_canvasWidth / 100.0f);
+                var w = thicknessFromShader / viewportWidth; // transform thickness from pixel to NDC
 
-                var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]).xy;
-                var pt2 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]).xy;
-                var pt0 = PickerState.PickPosClip;
 
-                // Line Eq = ax + by + c = 0
-                // A = (y1 - y2)
-                // B = (x2 - x1)
-                // C = (x1 * y2 - x2 * y1)
+                // see: https://math.stackexchange.com/a/3633025
+                // for calculation
+                var pt0 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]).xy;
+                var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]).xy;
+                var pt = PickerState.PickPosClip;
 
-                // dist(line, pt) = |Ax + By + C| / A² + B²
-                var a = pt1.y - pt2.y;
-                var b = pt2.x - pt1.x;
-                var c = (pt1.x * pt2.y) - (pt2.x * pt1.y);
+                var nom = (pt.x - pt0.x) * (pt1.x - pt0.x) + (pt.y - pt0.y) * (pt1.y - pt0.y);
+                var denom = MathF.Pow((pt1.x - pt.x), 2) + MathF.Pow((pt1.y - pt0.y), 2);
+                var t = nom / denom;
 
-                var d = MathF.Abs((a * pt0.x) + (b * pt0.y) + c) / ((a * a) + (b * b));
-
-                if (d <= thickness)
+                // point is somewhere on the line
+                if(t >= 0 && t <= 1)
                 {
-                    YieldItem(new PickResult
-                    {
-                        Mesh = mesh,
-                        Node = CurrentNode,
-                        Model = State.Model,
-                        ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
-                        View = State.View,
-                        Projection = State.Projection
-                    });
+                    var dSqrd = MathF.Pow(pt.x - pt0.x - t * (pt1.x - pt0.x), 2) + MathF.Pow(pt.y - pt0.y - t * (pt1.y - pt0.y), 2);
+
+                    if(dSqrd < 0.25 * (w * w)) {
+
+                        YieldItem(new PickResult
+                        {
+                            Mesh = mesh,
+                            Node = CurrentNode,
+                            Model = State.Model,
+                            ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
+                            View = State.View,
+                            Projection = State.Projection
+                        });
+                    }
                 }
             }
         }
 
-
+        /// <summary>
+        /// Pick triangle geometry via ray cast.
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="projectionMatrix"></param>
+        /// <param name="viewMatrix"></param>
         private void PickTriangleGeometry(Mesh mesh, float4x4 projectionMatrix, float4x4 viewMatrix)
         {
             if (mesh == null) return;

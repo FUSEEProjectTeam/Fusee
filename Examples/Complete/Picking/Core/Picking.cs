@@ -3,6 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
@@ -12,6 +13,49 @@ using System.Threading.Tasks;
 
 namespace Fusee.Examples.Picking.Core
 {
+    public class LineCircle : Mesh
+    {
+        public LineCircle(int segments)
+        {
+            var verts = new List<float3>();
+            var triangles = new List<uint>();
+            var angleStep = 2 * M.Pi / segments;
+            for (uint i = 0; i < segments; i++)
+            {
+                var vert = new float3
+                {
+                    x = 0.5f * (float)System.Math.Cos(i * angleStep),
+                    y = 0.5f * (float)System.Math.Sin(i * angleStep)
+                };
+                verts.Add(vert);
+            }
+
+            for (uint i = 0; i < verts.Count; i++)
+            {
+                if (i == 0)
+                    triangles.Add((uint)verts.Count - 1);
+                else
+                    triangles.Add(i - 1);
+
+                triangles.Add(i);
+
+                if (i + 1 < verts.Count)
+                    triangles.Add(i + 1);
+                else
+                    triangles.Add(0);
+
+                if (i + 2 < verts.Count)
+                    triangles.Add(i + 2);
+                else
+                    triangles.Add((uint)(i + 2 - verts.Count));
+            }
+
+            Vertices = new MeshAttributes<float3>(verts);
+            Triangles = new MeshAttributes<uint>(triangles);
+            MeshType = Fusee.Engine.Common.PrimitiveType.LineAdjacency;
+        }
+    }
+
     [FuseeApplication(Name = "FUSEE Picking Example", Description = "How to use the Scene Picker.")]
     public class Picking : RenderCanvas
     {
@@ -47,13 +91,20 @@ namespace Fusee.Examples.Picking.Core
             // Create the robot model
             _scene = CreateScene();
 
+
             _scene.Children.Add(new SceneNode
             {
                 Components = new List<SceneComponent> {
-                    new Transform(),
-                    MakeEffect.LineEffect(5, new float4(1,0,0,0)),
+                    new Transform
+                    {
+                        //Translation = new float3(1,-2,1),
+                        //Scale = float3.One * 100,
+                        ////Rotation = new float3(0, M.PiOver2, 0)
+                    },
+                    MakeEffect.LineEffect(5, new float4(1,0,0,1)),
                     new Mesh(new uint[] {0, 1}, new float3[] {new float3(0,150,0), new float3(5,170,5) })
                     {
+                        Name = "Line",
                         MeshType = PrimitiveType.Lines
                     }
                 }
