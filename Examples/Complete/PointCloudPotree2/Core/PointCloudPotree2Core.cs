@@ -59,8 +59,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             if (path == null || path == string.Empty)
                 return;
 
-            _potreeData = new PotreeData(path);
-            _potreeReader = new Potree2Reader(ref _potreeData);
+            _potreeReader.ReadNewFile(path, out _potreeData);
 
             _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(RenderMode.DynamicMesh);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
@@ -73,8 +72,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public PointCloudPotree2Core(RenderContext rc)
         {
-            _potreeData = new PotreeData(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
-            _potreeReader = new Potree2Reader(ref _potreeData);
+            _potreeReader = new Potree2Reader();
+            _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile), out _potreeData);
             _rc = rc;
         }
 
