@@ -63,14 +63,13 @@ namespace Fusee.Engine.Core
     public class ScenePicker : Viserator<PickResult, ScenePicker.PickerState, SceneNode, SceneComponent>
     {
         private CanvasTransform? _ctc;
-        private PrePassVisitor _prePassVisitor;
-        private SceneContainer _scene;
 
         private bool isCtcInitialized = false;
         private MinMaxRect _parentRect;
 
         private int _canvasWidth;
         private int _canvasHeight;
+
 
         #region State
         /// <summary>
@@ -163,9 +162,11 @@ namespace Fusee.Engine.Core
 
         public float4x4 InvProjection => State.Projection.Invert();
 
-        private Camera CurrentCamera = default;
+        public Camera? CurrentCamera { get; private set; }
 
         #endregion
+
+        private SceneContainer sc;
 
         /// <summary>
         /// The constructor to initialize a new ScenePicker.
@@ -178,8 +179,7 @@ namespace Fusee.Engine.Core
         {
             IgnoreInactiveComponents = true;
             State.CullMode = cullMode;
-            _scene = scene;
-            _prePassVisitor = new PrePassVisitor(); 
+            sc = scene;
         }
 
         /// <summary>
@@ -198,52 +198,18 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns a collection of objects that fall in the area of the pick position and that can be iterated over.
         /// </summary>
-        /// <param name="pickPos">The pick position in canvas coordinates (e. g. 1280x720).</param>
+        /// <param name="pickPos">The pick position.</param>
         /// <param name="canvasWidth">The width of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
         /// <param name="canvasHeight">The height of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
         /// <returns></returns>
         public IEnumerable<PickResult> Pick(float2 pickPos, int canvasWidth, int canvasHeight)
         {
+
             _canvasWidth = canvasWidth;
             _canvasHeight = canvasHeight;
 
-            _prePassVisitor.PrePassTraverse(_scene);
-            var cams = _prePassVisitor.CameraPrepassResults;
-
-            if (cams.Count == 0)
-            {
-                Diagnostics.Warn("No camera in scene. Unable to pick.");
-                return Array.Empty<PickResult>();                
-            }
-
-            CameraResult pickCam = default;
-            Rectangle pickCamRect = new();
-
-            foreach (var camRes in cams)
-            {
-                Rectangle camRect = new()
-                {
-                    Left = (int)(camRes.Camera.Viewport.x * canvasWidth / 100),
-                    Top = (int)(camRes.Camera.Viewport.y * canvasHeight / 100)
-                };
-                camRect.Right = ((int)(camRes.Camera.Viewport.z * canvasWidth) / 100) + camRect.Left;
-                camRect.Bottom = ((int)(camRes.Camera.Viewport.w * canvasHeight) / 100) + camRect.Top;
-
-                if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos)) 
-                    continue;
-
-                if (pickCam == default || camRes.Camera.Layer > pickCam.Camera.Layer)
-                {
-                    pickCam = camRes;
-                    pickCamRect = camRect;
-                }
-            }
-
-            // Calculate pickPosClip
-            PickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
+            PickPosClip = pickPos;
             PickerState.PickPosClip = pickPos;
-
-            CurrentCamera = pickCam.Camera;
 
             SetState();
             var res = Viserate().ToList();
@@ -275,6 +241,54 @@ namespace Fusee.Engine.Core
         }
 
         #region Visitors
+
+        /// <summary>
+        /// Set the current camera, update View and Projection matrices
+        /// </summary>
+        /// <param name="cam"></param>
+        [VisitMethod]
+        public void UpdateCamera(Camera cam)
+        {
+            if (!cam.Active) return;
+
+            CurrentCamera = cam;
+
+            var view = State.Model;
+            var scale = float4x4.GetScale(State.View);
+
+            if (scale.x != 1)
+            {
+                view.M11 /= scale.x;
+                view.M21 /= scale.x;
+                view.M31 /= scale.x;
+            }
+
+            if (scale.y != 1)
+            {
+                view.M12 /= scale.y;
+                view.M22 /= scale.y;
+                view.M32 /= scale.y;
+            }
+
+            if (scale.z != 1)
+            {
+                view.M13 /= scale.z;
+                view.M23 /= scale.z;
+                view.M33 /= scale.z;
+            }
+
+            State.View = view.Invert();
+
+            var sizeInPx = CurrentCamera.RenderTexture == null ?
+                CurrentCamera.GetViewportInPx(_canvasWidth, _canvasHeight)
+                : CurrentCamera.GetViewportInPx(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height);
+
+            // TODO(mr): TEST Renderlayer
+            State.Projection = CurrentCamera.RenderTexture != null
+            ? CurrentCamera.GetProjectionMat(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height, out var _)
+            : CurrentCamera.GetProjectionMat((int)sizeInPx.z, (int)sizeInPx.w, out var _);
+
+        }
 
         /// <summary>
         /// Sets the state of the model matrices and UiRects.
