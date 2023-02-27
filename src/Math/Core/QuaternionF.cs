@@ -14,10 +14,10 @@ namespace Fusee.Math.Core
     {
         #region Fields
 
-        [JsonProperty(PropertyName = "XYZ")] 
+        [JsonProperty(PropertyName = "XYZ")]
         private float3 _xyz;
-        
-        [JsonProperty(PropertyName = "W")] 
+
+        [JsonProperty(PropertyName = "W")]
         private float _w;
 
         #endregion Fields

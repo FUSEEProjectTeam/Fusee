@@ -16,8 +16,8 @@ namespace Fusee.Math.Core
 
         [JsonProperty(PropertyName = "XYZ")]
         private double3 _xyz;
-        
-        [JsonProperty(PropertyName = "W")] 
+
+        [JsonProperty(PropertyName = "W")]
         private double _w;
 
         #endregion Fields

@@ -11,7 +11,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The point in world coordinates from which the ray originates.
         /// </summary>
-        [JsonProperty(PropertyName = "Origin")] 
+        [JsonProperty(PropertyName = "Origin")]
         public double3 Origin;
 
         private double3 _direction;
@@ -19,7 +19,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The direction of the ray.
         /// </summary>
-        [JsonProperty(PropertyName = "Direction")] 
+        [JsonProperty(PropertyName = "Direction")]
         public double3 Direction
         {
             get { return _direction; }

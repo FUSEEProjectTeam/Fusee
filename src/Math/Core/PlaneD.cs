@@ -60,7 +60,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The D plane coefficient.
         /// </summary>
-        [JsonProperty(PropertyName = "D")] 
+        [JsonProperty(PropertyName = "D")]
         public double D;
 
         /// <summary>
