@@ -62,7 +62,12 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Position (double), Color (float), Classification (byte), Intensity (ushort)
         /// </summary>
-        PosD3ColF3InUsLblB
+        PosD3ColF3InUsLblB,
+
+        /// <summary>
+        /// Everything....
+        /// </summary>
+        Raw
     }
 
     /// <summary>

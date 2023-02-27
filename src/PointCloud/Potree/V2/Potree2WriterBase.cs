@@ -24,7 +24,7 @@ namespace Fusee.PointCloud.Potree.V2
                 _potreeData = value;
             }
         }
-        private PotreeData? _potreeData;
+        protected PotreeData? _potreeData;
 
         /// <summary>
         /// Save if metadata has already been cached
