@@ -715,7 +715,7 @@ namespace Fusee.Engine.Core
                         Mesh = mesh,
                         Node = CurrentNode,
                         Model = State.Model,
-                        ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
+                        ClipPos = float4x4.TransformPerspective(State.Projection * State.View, State.Model.Translation()), // prevents exception when node has no Transform
                         View = State.View,
                         Projection = State.Projection
                     });
