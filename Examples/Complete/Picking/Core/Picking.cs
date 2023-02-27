@@ -121,9 +121,7 @@ namespace Fusee.Examples.Picking.Core
             //Picking
             if (_pick)
             {
-                float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
-
-                PickResult newPick = _scenePicker.Pick(pickPosClip, RC.ViewportWidth, RC.ViewportHeight).ToList().OrderBy(pr => pr.ClipPos.z)
+                PickResult newPick = _scenePicker.Pick(Input.Mouse.Position, RC.ViewportWidth, RC.ViewportHeight).ToList().OrderBy(pr => pr.ClipPos.z)
                     .FirstOrDefault();
                 Diagnostics.Debug(newPick);
 

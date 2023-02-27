@@ -1,8 +1,4 @@
-﻿using CommunityToolkit.HighPerformance.Buffers;
-using System;
-using System.Buffers;
-
-namespace Fusee.PointCloud.Common
+﻿namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Implement this into any Point Cloud Reader.
@@ -12,7 +8,6 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Returns a renderable point cloud component.
         /// </summary>
-        /// <param name="fileFolderPath">Path to the file.</param>
         /// <param name="renderMode">Determines which <see cref="RenderMode"/> is used to display the returned point cloud."/></param>
         public IPointCloud GetPointCloudComponent(RenderMode renderMode);
 

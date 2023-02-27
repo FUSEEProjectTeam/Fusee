@@ -64,9 +64,9 @@ namespace Fusee.Engine.Gui
         /// <param name="canvasHeight">Canvas height - needed to determine the mouse position in clip space.</param>
         public void CheckForInteractiveObjects(float2 mousePos, int canvasWidth, int canvasHeight)
         {
-            var pickPosClip = (mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight)) + new float2(-1, 1);
+            //var pickPosClip = (mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight)) + new float2(-1, 1);
 
-            var pickResults = _scenePicker.Pick(pickPosClip, canvasWidth, canvasHeight).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
+            var pickResults = _scenePicker.Pick(mousePos, canvasWidth, canvasHeight).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
             var pickResNodes = pickResults.ConvertAll(x => x.Node);
             var firstPickRes = pickResults.FirstOrDefault();
 
