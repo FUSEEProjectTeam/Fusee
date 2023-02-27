@@ -1,4 +1,5 @@
 ﻿
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace Fusee.Math.Core
@@ -6,36 +7,43 @@ namespace Fusee.Math.Core
     /// <summary>
     /// Describes a frustum by using six <see cref="PlaneD"/>s. 
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class FrustumD
     {
         /// <summary>
         /// The near plane of the frustum.
         /// </summary>
+        [JsonProperty(PropertyName = "Near")]
         public PlaneD Near { get; private set; }
 
         /// <summary>
         /// The far plane of the frustum.
         /// </summary>
+        [JsonProperty(PropertyName = "Far")]
         public PlaneD Far { get; private set; }
 
         /// <summary>
         /// The left plane of the frustum.
         /// </summary>
+        [JsonProperty(PropertyName = "Left")]
         public PlaneD Left { get; private set; }
 
         /// <summary>
         /// The right plane of the frustum.
         /// </summary>
+        [JsonProperty(PropertyName = "Right")]
         public PlaneD Right { get; private set; }
 
         /// <summary>
         /// The top plane of the frustum.
         /// </summary>
+        [JsonProperty(PropertyName = "Top")]
         public PlaneD Top { get; private set; }
 
         /// <summary>
         /// The bottom plane of the frustum.
         /// </summary>
+        [JsonProperty(PropertyName = "Bottom")]
         public PlaneD Bottom { get; private set; }
 
         /// <summary>

@@ -16,13 +16,13 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The minimum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
-        [JsonProperty]
+        [JsonProperty(PropertyName = "Min")]
         [ProtoMember(1)] public float3 min;
 
         /// <summary>
         /// The maximum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
-        [JsonProperty]
+        [JsonProperty(PropertyName = "Max")]
         [ProtoMember(2)] public float3 max;
 
         /// <summary>

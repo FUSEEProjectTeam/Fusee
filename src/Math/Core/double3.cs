@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using Newtonsoft.Json;
+using ProtoBuf;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -11,6 +12,7 @@ namespace Fusee.Math.Core
     /// <remarks>
     /// The double3 structure is suitable for inter-operation with unmanaged code requiring three consecutive doubles.
     /// </remarks>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct double3 : IEquatable<double3>
@@ -20,18 +22,21 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The x component of the double3.
         /// </summary>
+        [JsonProperty(PropertyName = "X")]
         [ProtoMember(1)]
         public double x;
 
         /// <summary>
         /// The y component of the double3.
         /// </summary>
+        [JsonProperty(PropertyName = "Y")]
         [ProtoMember(2)]
         public double y;
 
         /// <summary>
         /// The z component of the double3.
         /// </summary>
+        [JsonProperty(PropertyName = "Z")]
         [ProtoMember(3)]
         public double z;
 

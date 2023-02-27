@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
@@ -7,6 +8,7 @@ namespace Fusee.Math.Core
     /// <summary>
     ///     Represents a 3x3 Matrix
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [StructLayout(LayoutKind.Sequential)]
     public struct double3x3 : IEquatable<double3x3>
     {
@@ -15,16 +17,19 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Top row of the matrix
         /// </summary>
+        [JsonProperty(PropertyName = "Row1")]
         public double3 Row1;
 
         /// <summary>
         ///     2nd row of the matrix
         /// </summary>
+        [JsonProperty(PropertyName = "Row2")]
         public double3 Row2;
 
         /// <summary>
         ///     3rd row of the matrix
         /// </summary>
+        [JsonProperty(PropertyName = "Row3")]
         public double3 Row3;
 
         /// <summary>
