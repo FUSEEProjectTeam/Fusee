@@ -189,7 +189,7 @@ namespace Fusee.Engine.Core
                 Guard.IsGreaterThan(_canvasHeight, 0);
 
                 _currentCameraResult = value;
-                _projection = _currentCameraResult.Camera.GetProjectionMat(_canvasWidth, _canvasHeight, out _);
+                _projection = _currentCameraResult.Camera == null ? float4x4.Identity : _currentCameraResult.Camera.GetProjectionMat(_canvasWidth, _canvasHeight, out _);
                 _view = _currentCameraResult.View;
                 _invView = _view.Invert();
                 _invProj = _projection.Invert();
@@ -242,7 +242,7 @@ namespace Fusee.Engine.Core
             float2 pickPosClip;
             if (_prePassResults.Count() == 0)
             {
-                Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
+                //Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
                 return null;
             }
 
@@ -602,6 +602,9 @@ namespace Fusee.Engine.Core
                 return;
             }
 
+            if (CurrentCameraResult.Camera == default)
+                return;
+
             var size = CurrentCameraResult.Camera.GetViewportInPx(_canvasWidth, _canvasHeight);
             var viewportHeight = size.w;
             var viewportWidth = size.z;
@@ -699,6 +702,10 @@ namespace Fusee.Engine.Core
                 Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
                 return;
             }
+
+            if (CurrentCameraResult.Camera == default)
+                return;
+
             var size = CurrentCameraResult.Camera.GetViewportInPx(_canvasWidth, _canvasHeight);
             var viewportHeight = size.w;
             var viewportWidth = size.z;
@@ -732,7 +739,7 @@ namespace Fusee.Engine.Core
                         Mesh = mesh,
                         Node = CurrentNode,
                         Model = State.Model,
-                        ClipPos = float4x4.TransformPerspective(_projection * _view, CurrentNode.GetTransform().Translation),
+                        ClipPos = float4x4.TransformPerspective(_projection * _view, State.Model.Translation()),
                         View = _view,
                         Projection = _projection
                     });
