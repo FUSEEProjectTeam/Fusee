@@ -43,7 +43,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected SceneContainer _sc;
 
-
         private readonly IEnumerable<CameraResult> _prePassResults;
 
         #region State
@@ -110,46 +109,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns a collection of objects that are hit by the ray and that can be iterated over.
         /// </summary>
-        /// <param name="pickPos">The pick position in canvas coordinates (e.g. [1270x720]), usually <see cref="Input.Mouse"/>.Position.</param>
-        /// <param name="canvasWidth">The width of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
-        /// <param name="canvasHeight">The height of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
+        /// <param name="ray">The <see cref="RayF"/> which should travel through the scene</param>
         /// <returns></returns>
-        public IEnumerable<RayCastResult>? RayPick(float2 pickPos, int canvasWidth, int canvasHeight)
+        public IEnumerable<RayCastResult>? Traverse(RayF ray)
         {
-            float2 pickPosClip;
-
-            if (_prePassResults.Count() == 0)
-            {
-                Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
-                return null;
-            }
-
-            CameraResult pickCam = default;
-            Rectangle pickCamRect = new();
-
-            foreach (var camRes in _prePassResults)
-            {
-                Rectangle camRect = new()
-                {
-                    Left = (int)(camRes.Camera.Viewport.x * canvasWidth / 100),
-                    Top = (int)(camRes.Camera.Viewport.y * canvasHeight / 100)
-                };
-                camRect.Right = ((int)(camRes.Camera.Viewport.z * canvasWidth) / 100) + camRect.Left;
-                camRect.Bottom = ((int)(camRes.Camera.Viewport.w * canvasHeight) / 100) + camRect.Top;
-
-                if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos)) continue;
-
-                if (pickCam == default || camRes.Camera.Layer > pickCam.Camera.Layer)
-                {
-                    pickCam = camRes;
-                    pickCamRect = camRect;
-                }
-            }
-
-            // Calculate pickPosClip
-            pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
-            Ray = new RayF(pickPosClip, pickCam.View, pickCam.Camera.GetProjectionMat(canvasWidth, canvasHeight, out _));
-
+            Ray = ray;
             return Viserate();
         }
 
