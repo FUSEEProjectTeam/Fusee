@@ -242,7 +242,7 @@ namespace Fusee.Engine.Core
             float2 pickPosClip;
             if (_prePassResults.Count() == 0)
             {
-                //Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
+                Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
                 return null;
             }
 
