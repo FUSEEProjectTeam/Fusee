@@ -41,9 +41,6 @@ namespace Fusee.Examples.Simple.Core
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
 
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
-
             // Load the rocket model
             _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
             _camPivotTransform = new Transform();
@@ -72,6 +69,9 @@ namespace Fusee.Examples.Simple.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            // Create the interaction handler
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override async Task InitAsync()

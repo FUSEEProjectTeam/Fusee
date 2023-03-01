@@ -44,8 +44,6 @@ namespace Fusee.Examples.Camera.Core
         {
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
 
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
 
             _frustum = new WireframeCube();
             SceneNode frustumNode = new()
@@ -118,6 +116,9 @@ namespace Fusee.Examples.Camera.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            // Create the interaction handler
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override async Task InitAsync()

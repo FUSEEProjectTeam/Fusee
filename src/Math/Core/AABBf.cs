@@ -229,8 +229,8 @@ namespace Fusee.Math.Core
             if (this.Intersects(ray.Origin))
                 return true;
 
-            float t1 = (min[0] - ray.Origin[0]) * ray.Inverse[0];
-            float t2 = (max[0] - ray.Origin[0]) * ray.Inverse[0];
+            float t1 = (min.x - ray.Origin.x) * ray.Inverse.x;
+            float t2 = (max.x - ray.Origin.x) * ray.Inverse.x;
 
             float tmin = M.Min(t1, t2);
             float tmax = M.Max(t1, t2);

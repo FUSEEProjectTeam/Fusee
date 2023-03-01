@@ -52,8 +52,6 @@ namespace Fusee.Engine.Player.Core
             _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, _canvasRenderMode, "FUSEE Player");
 
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
 
             AABBCalculator aabbc = new(_scene);
             var bbox = aabbc.GetBox();
@@ -111,6 +109,9 @@ namespace Fusee.Engine.Player.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            // Create the interaction handler
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override async Task InitAsync()

@@ -48,12 +48,12 @@ namespace Fusee.Examples.Picking.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene);
+            _scenePicker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults);
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
             // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override async Task InitAsync()
@@ -121,9 +121,9 @@ namespace Fusee.Examples.Picking.Core
             //Picking
             if (_pick)
             {
-                float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
+                //float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                PickResult newPick = _scenePicker.Pick(pickPosClip, RC.ViewportWidth, RC.ViewportHeight).ToList().OrderBy(pr => pr.ClipPos.z)
+                PickResult newPick = _scenePicker.Pick(Input.Mouse.Position, RC.ViewportWidth, RC.ViewportHeight).ToList().OrderBy(pr => pr.ClipPos.z)
                     .FirstOrDefault();
                 Diagnostics.Debug(newPick);
 

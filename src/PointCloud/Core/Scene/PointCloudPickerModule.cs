@@ -18,7 +18,6 @@ namespace Fusee.PointCloud.Core.Scene
     public class PointCloudPickResult : PickResult
     {
         public OctantId OctandID;
-
     }
 
     public class PointCloudPickerModule : IPickerModule
@@ -26,7 +25,6 @@ namespace Fusee.PointCloud.Core.Scene
         private PickerState State;
         private PointCloudOctree _octree;
         private IPointCloudImp<Mesh> _pcImp;
-
 
         public PickResult PickResult { get; set; }
 
@@ -39,22 +37,22 @@ namespace Fusee.PointCloud.Core.Scene
         {
             if (!pointCloud.Active) return;
 
-            var ray = new RayD(new double2(PickerState.PickPosClip.x, PickerState.PickPosClip.y), (double4x4)State.View, (double4x4)State.Projection);
-            var tmpList = new List<PointCloudOctant>();
-            var allHitBoxes = PickOctantRecursively((PointCloudOctant)_octree.Root, ray, tmpList).OrderBy(x => x.ProjectedScreenSize);
-            if (allHitBoxes != null && allHitBoxes.Any())
-            {
-                var mvp = State.Projection * State.View * State.Model;
-                PickResult = new PointCloudPickResult
-                {
-                    Node = null,
-                    Projection = State.Projection,
-                    View = State.View,
-                    Model = State.Model,
-                    ClipPos = float4x4.TransformPerspective(mvp, (float3)allHitBoxes.ElementAt(0).Center),
-                    OctandID = allHitBoxes.ElementAt(0).OctId,
-                };
-            }
+            //var ray = new RayD(new double2(PickerState.PickPosClip.x, PickerState.PickPosClip.y), (double4x4)State.View, (double4x4)State.Projection);
+            //var tmpList = new List<PointCloudOctant>();
+            //var allHitBoxes = PickOctantRecursively((PointCloudOctant)_octree.Root, ray, tmpList).OrderBy(x => x.ProjectedScreenSize);
+            //if (allHitBoxes != null && allHitBoxes.Any())
+            //{
+            //    var mvp = State.Projection * State.View * State.Model;
+            //    PickResult = new PointCloudPickResult
+            //    {
+            //        Node = null,
+            //        Projection = State.Projection,
+            //        View = State.View,
+            //        Model = State.Model,
+            //        ClipPos = float4x4.TransformPerspective(mvp, (float3)allHitBoxes.ElementAt(0).Center),
+            //        OctandID = allHitBoxes.ElementAt(0).OctId,
+            //    };
+            //}
         }
 
         private List<PointCloudOctant> PickOctantRecursively(PointCloudOctant node, RayD ray, List<PointCloudOctant> list)

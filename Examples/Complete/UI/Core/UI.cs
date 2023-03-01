@@ -25,7 +25,7 @@ namespace Fusee.Examples.UI.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _scene;
-        private SceneRendererForward _sceneRenderer;
+        private SceneRendererForward _guiRenderer;
 
         private bool _keys;
 
@@ -411,11 +411,11 @@ namespace Fusee.Examples.UI.Core
             // Set the scene by creating a scene graph
             _scene = CreateNineSliceScene();
 
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_scene);
-
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_scene);
+            _guiRenderer = new SceneRendererForward(_scene);
+
+            // Create the interaction handler
+            _sih = new SceneInteractionHandler(_scene, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override void Update()
@@ -465,7 +465,7 @@ namespace Fusee.Examples.UI.Core
         {
             _fpsText.Text = "FPS: " + Time.FramesPerSecond.ToString("0.00");
 
-            _sceneRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))

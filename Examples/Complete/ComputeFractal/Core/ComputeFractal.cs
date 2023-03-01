@@ -91,7 +91,8 @@ namespace Fusee.Examples.ComputeFractal.Core
             RC.SetEffect(_computeShader);
             _rect.SetData(_rectData);
             _colors.SetData(_colorData);
-            _sih = new SceneInteractionHandler(_gui);
+
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         // RenderAFrame is called once a frame

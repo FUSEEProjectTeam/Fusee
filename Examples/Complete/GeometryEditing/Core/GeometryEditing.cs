@@ -120,7 +120,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };
 
             _renderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene);
+            _scenePicker = new ScenePicker(_scene, _renderer.PrePassVisitor.CameraPrepassResults);
 
             _activeGeometrys = new Dictionary<int, Geometry>();
         }

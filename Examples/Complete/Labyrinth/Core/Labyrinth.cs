@@ -284,7 +284,6 @@ namespace Fusee.Examples.Labyrinth.Core
         public override void Init()
         {
             _gui = CreateGui();
-            _sih = new SceneInteractionHandler(_gui);
 
             // Find the ball and create AABB
             FindBall();
@@ -311,6 +310,8 @@ namespace Fusee.Examples.Labyrinth.Core
             _bodyPivotTransform = _scene.Children.FindNodes(node => node.Name == "Bodytrans").FirstOrDefault()?.GetTransform();
             _bodyNode = _scene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault();
             _bodyTransform = _bodyNode?.GetTransform();
+
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override void Update()
@@ -843,7 +844,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 if (!_isGuiCreated)
                 {
                     _gui = CreateWinningGui();
-                    _sih = new SceneInteractionHandler(_gui);
+                    _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
                     _guiRenderer = new SceneRendererForward(_gui);
                     _isGuiCreated = true;
                 }

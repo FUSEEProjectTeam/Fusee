@@ -70,7 +70,6 @@ namespace Fusee.Engine.Core
         private int _canvasWidth;
         private int _canvasHeight;
 
-
         #region State
         /// <summary>
         /// The picker state upon scene traversal.
@@ -141,16 +140,6 @@ namespace Fusee.Engine.Core
                 RegisterState(_cullMode);
                 RegisterState(_shaderFX);
             }
-
-            /// <summary>
-            /// The current view matrix.
-            /// </summary>
-            public float4x4 View { get; set; }
-
-            /// <summary>
-            /// The current projection matrix.
-            /// </summary>
-            public float4x4 Projection { get; set; }
         }
 
         /// <summary>
@@ -158,15 +147,33 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float2 PickPosClip { get; set; }
 
-        public float4x4 InvView => State.View.Invert();
+        private float4x4 _view;
+        private float4x4 _invView;
+        private float4x4 _projection;
+        private float4x4 _invProj;
 
-        public float4x4 InvProjection => State.Projection.Invert();
+        private CameraResult _currentCameraResult;
 
-        public Camera? CurrentCamera { get; private set; }
+        internal CameraResult CurrentCameraResult
+        {
+            get => _currentCameraResult;
+            private set
+            {
+                Guard.IsGreaterThan(_canvasWidth, 0);
+                Guard.IsGreaterThan(_canvasHeight, 0);
+
+                _currentCameraResult = value;
+                _projection = _currentCameraResult.Camera.GetProjectionMat(_canvasWidth, _canvasHeight, out _);
+                _view = _currentCameraResult.View;
+                _invView = _view.Invert();
+                _invProj = _projection.Invert();
+            }
+        }
+
+        private readonly IEnumerable<CameraResult> _prePassResults;
 
         #endregion
 
-        private SceneContainer sc;
 
         /// <summary>
         /// The constructor to initialize a new ScenePicker.
@@ -174,12 +181,13 @@ namespace Fusee.Engine.Core
         /// <param name="cullMode"></param>
         /// <param name="customPickModule"></param>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
-        public ScenePicker(SceneContainer scene, Cull cullMode = Cull.None, IEnumerable<IPickerModule>? customPickModule = null)
+        public ScenePicker(SceneContainer scene, IEnumerable<CameraResult> prePassCameraResults, Cull cullMode = Cull.None, IEnumerable<IPickerModule>? customPickModule = null)
             : base(scene.Children, customPickModule)
         {
             IgnoreInactiveComponents = true;
             State.CullMode = cullMode;
-            sc = scene;
+            _prePassResults = prePassCameraResults;
+
         }
 
         /// <summary>
@@ -189,32 +197,67 @@ namespace Fusee.Engine.Core
         {
             base.InitState();
             State.Model = float4x4.Identity;
-            State.View = float4x4.Identity;
-            State.Projection = float4x4.Identity;
             State.CanvasXForm = float4x4.Identity;
-
         }
 
         /// <summary>
         /// Returns a collection of objects that fall in the area of the pick position and that can be iterated over.
         /// </summary>
-        /// <param name="pickPos">The pick position.</param>
+        /// <param name="pickPos">The pick position in canvas coordinates (e.g. [1270x720]), usually <see cref="Input.Mouse"/>.Position.</param>
         /// <param name="canvasWidth">The width of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
         /// <param name="canvasHeight">The height of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
         /// <returns></returns>
         public IEnumerable<PickResult> Pick(float2 pickPos, int canvasWidth, int canvasHeight)
         {
-
             _canvasWidth = canvasWidth;
             _canvasHeight = canvasHeight;
 
-            PickPosClip = pickPos;
-            PickerState.PickPosClip = pickPos;
+            float2 pickPosClip;
+            if (_prePassResults.Count() == 0)
+            {
+                pickPosClip = (pickPos * new float2(2.0f / _canvasWidth, -2.0f / _canvasHeight)) + new float2(-1, 1);
+
+                PickPosClip = pickPosClip;
+                PickerState.PickPosClip = pickPosClip;
+
+                SetState();
+                var resNoCam = Viserate().ToList();
+                resNoCam.AddRange(CheckVisitorModuleResults());
+                return resNoCam;
+            }
+
+            CameraResult pickCam = default;
+            Rectangle pickCamRect = new();
+
+            foreach (var camRes in _prePassResults)
+            {
+                Rectangle camRect = new()
+                {
+                    Left = (int)(camRes.Camera.Viewport.x * _canvasWidth / 100),
+                    Top = (int)(camRes.Camera.Viewport.y * _canvasHeight / 100)
+                };
+                camRect.Right = ((int)(camRes.Camera.Viewport.z * _canvasWidth) / 100) + camRect.Left;
+                camRect.Bottom = ((int)(camRes.Camera.Viewport.w * _canvasHeight) / 100) + camRect.Top;
+
+                if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos))
+                    continue;
+
+                if (pickCam == default || camRes.Camera.Layer > pickCam.Camera.Layer)
+                {
+                    pickCam = camRes;
+                    pickCamRect = camRect;
+                }
+            }
+
+            CurrentCameraResult = pickCam;
+
+            pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
+            PickPosClip = pickPosClip;
+            PickerState.PickPosClip = pickPosClip;
 
             SetState();
             var res = Viserate().ToList();
             res.AddRange(CheckVisitorModuleResults());
-
             return res;
         }
 
@@ -243,54 +286,6 @@ namespace Fusee.Engine.Core
         #region Visitors
 
         /// <summary>
-        /// Set the current camera, update View and Projection matrices
-        /// </summary>
-        /// <param name="cam"></param>
-        [VisitMethod]
-        public void UpdateCamera(Camera cam)
-        {
-            if (!cam.Active) return;
-
-            CurrentCamera = cam;
-
-            var view = State.Model;
-            var scale = float4x4.GetScale(State.View);
-
-            if (scale.x != 1)
-            {
-                view.M11 /= scale.x;
-                view.M21 /= scale.x;
-                view.M31 /= scale.x;
-            }
-
-            if (scale.y != 1)
-            {
-                view.M12 /= scale.y;
-                view.M22 /= scale.y;
-                view.M32 /= scale.y;
-            }
-
-            if (scale.z != 1)
-            {
-                view.M13 /= scale.z;
-                view.M23 /= scale.z;
-                view.M33 /= scale.z;
-            }
-
-            State.View = view.Invert();
-
-            var sizeInPx = CurrentCamera.RenderTexture == null ?
-                CurrentCamera.GetViewportInPx(_canvasWidth, _canvasHeight)
-                : CurrentCamera.GetViewportInPx(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height);
-
-            // TODO(mr): TEST Renderlayer
-            State.Projection = CurrentCamera.RenderTexture != null
-            ? CurrentCamera.GetProjectionMat(CurrentCamera.RenderTexture.Width, CurrentCamera.RenderTexture.Height, out var _)
-            : CurrentCamera.GetProjectionMat((int)sizeInPx.z, (int)sizeInPx.w, out var _);
-
-        }
-
-        /// <summary>
         /// Sets the state of the model matrices and UiRects.
         /// </summary>
         /// <param name="ctc">The CanvasTransformComponent.</param>
@@ -315,14 +310,12 @@ namespace Fusee.Engine.Core
             }
             else if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
-                var invProj = float4x4.Invert(State.Projection);
-
                 var frustumCorners = new float4[4];
 
-                frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
-                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr
-                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl
-                frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr
+                frustumCorners[0] = _invProj * new float4(-1, -1, -1, 1); //nbl
+                frustumCorners[1] = _invProj * new float4(1, -1, -1, 1); //nbr
+                frustumCorners[2] = _invProj * new float4(-1, 1, -1, 1); //ntl
+                frustumCorners[3] = _invProj * new float4(1, 1, -1, 1); //ntr
 
                 for (var i = 0; i < frustumCorners.Length; i++)
                 {
@@ -335,7 +328,7 @@ namespace Fusee.Engine.Core
                 var height = (frustumCorners[0] - frustumCorners[2]).Length;
 
                 var zNear = frustumCorners[0].z;
-                var canvasPos = new float3(InvView.M14, InvView.M24, InvView.M34 + zNear);
+                var canvasPos = new float3(_invView.M14, _invView.M24, _invView.M34 + zNear);
 
                 ctc.ScreenSpaceSize = new MinMaxRect
                 {
@@ -358,7 +351,7 @@ namespace Fusee.Engine.Core
                     isCtcInitialized = true;
 
                 }
-                State.CanvasXForm *= State.Model.Invert() * InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
+                State.CanvasXForm *= State.Model.Invert() * _invView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
                 State.Model *= State.CanvasXForm;
 
                 _parentRect = newRect;
@@ -435,7 +428,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderXFormText(XFormText xfc)
         {
-            var zNear = (InvProjection * new float4(-1, -1, -1, 1)).z;
+            var zNear = (_invProj * new float4(-1, -1, -1, 1)).z;
             var scaleFactor = zNear / 100;
             var invScaleFactor = 1 / scaleFactor;
 
@@ -546,7 +539,7 @@ namespace Fusee.Engine.Core
             {
                 if (State?.CurrentPickComp?.CustomPickMethod != null)
                 {
-                    var res = State?.CurrentPickComp?.CustomPickMethod(mesh, CurrentNode, State.Model, State.View, State.Projection, PickPosClip);
+                    var res = State?.CurrentPickComp?.CustomPickMethod(mesh, CurrentNode, State.Model, _view, _projection, PickPosClip);
                     if (res != null)
                     {
                         YieldItem(res);
@@ -562,7 +555,7 @@ namespace Fusee.Engine.Core
                 case PrimitiveType.TriangleFan:
                 case PrimitiveType.TriangleStrip:
                     if (State != null)
-                        PickTriangleGeometry(mesh, State.Projection, State.View);
+                        PickTriangleGeometry(mesh);
                     break;
                 case PrimitiveType.Lines:
                     PickLineGeometry(mesh);
@@ -582,7 +575,8 @@ namespace Fusee.Engine.Core
 
         private void PickLineAdjacencyGeometry(Mesh mesh)
         {
-            var mvp = State.Projection * State.View * State.Model;
+
+            var mvp = _projection * _view * State.Model;
             var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
             if (matOfNode == null)
             {
@@ -593,13 +587,13 @@ namespace Fusee.Engine.Core
 
             if (mesh.Triangles == null) return;
             if (mesh.Vertices == null) return;
-            if (CurrentCamera == null)
+            if (CurrentCameraResult == null)
             {
                 Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
                 return;
             }
 
-            var size = CurrentCamera.GetViewportInPx(_canvasWidth, _canvasHeight);
+            var size = CurrentCameraResult.Camera.GetViewportInPx(_canvasWidth, _canvasHeight);
             var viewportHeight = size.w;
             var viewportWidth = size.z;
             var aspect = viewportHeight / viewportWidth;
@@ -668,9 +662,9 @@ namespace Fusee.Engine.Core
                         Mesh = mesh,
                         Node = CurrentNode,
                         Model = State.Model,
-                        ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
-                        View = State.View,
-                        Projection = State.Projection
+                        ClipPos = float4x4.TransformPerspective(_projection * _view, CurrentNode.GetTransform().Translation),
+                        View = _view,
+                        Projection = _projection
                     });
                 }
             }
@@ -678,7 +672,9 @@ namespace Fusee.Engine.Core
 
         private void PickLineGeometry(Mesh mesh)
         {
-            var mvp = State.Projection * State.View * State.Model;
+
+            var mvp = _projection * _view * State.Model;
+
             var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
             if (matOfNode == null)
             {
@@ -689,12 +685,12 @@ namespace Fusee.Engine.Core
 
             if (mesh.Triangles == null) return;
             if (mesh.Vertices == null) return;
-            if (CurrentCamera == null)
+            if (CurrentCameraResult == null)
             {
                 Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
                 return;
             }
-            var size = CurrentCamera.GetViewportInPx(_canvasWidth, _canvasHeight);
+            var size = CurrentCameraResult.Camera.GetViewportInPx(_canvasWidth, _canvasHeight);
             var viewportHeight = size.w;
             var viewportWidth = size.z;
             var aspect = viewportHeight / viewportWidth;
@@ -709,8 +705,6 @@ namespace Fusee.Engine.Core
                 var lineVector = pt1 - pt0;
                 var viewport_line_vector = lineVector * new float2(viewportWidth, viewportHeight);
                 var dir = new float2(lineVector.x, lineVector.y * aspect).Normalize();
-
-                var lineLength = viewport_line_vector.Length;
 
                 var normal = new float2(-dir.y, dir.x);
                 var normal_a = new float2(line_width / viewportWidth, line_width / viewportHeight) * normal;
@@ -729,9 +723,9 @@ namespace Fusee.Engine.Core
                         Mesh = mesh,
                         Node = CurrentNode,
                         Model = State.Model,
-                        ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
-                        View = State.View,
-                        Projection = State.Projection
+                        ClipPos = float4x4.TransformPerspective(_projection * _view, CurrentNode.GetTransform().Translation),
+                        View = _view,
+                        Projection = _projection
                     });
                 }
 
@@ -766,9 +760,7 @@ namespace Fusee.Engine.Core
         /// Pick triangle geometry via ray cast.
         /// </summary>
         /// <param name="mesh"></param>
-        /// <param name="projectionMatrix"></param>
-        /// <param name="viewMatrix"></param>
-        private void PickTriangleGeometry(Mesh mesh, float4x4 projectionMatrix, float4x4 viewMatrix)
+        private void PickTriangleGeometry(Mesh mesh)
         {
             if (mesh == null) return;
             if (mesh.Triangles == null) return;
@@ -783,9 +775,9 @@ namespace Fusee.Engine.Core
             if (mesh.BoundingBox.Size.x <= 0 || mesh.BoundingBox.Size.y <= 0 || mesh.BoundingBox.Size.z <= 0)
             {
                 Diagnostics.Warn($"Current bounding box of {mesh} is smaller or equal to zero. Forcing a thickness in zero direction of >= float.Epsilon");
-                var maxX = mesh.BoundingBox.Size.x <= 0 ? float.Epsilon : mesh.BoundingBox.max.x;
-                var maxY = mesh.BoundingBox.Size.y <= 0 ? float.Epsilon : mesh.BoundingBox.max.y;
-                var maxZ = mesh.BoundingBox.Size.z <= 0 ? float.Epsilon : mesh.BoundingBox.max.z;
+                var maxX = mesh.BoundingBox.Size.x <= 0 ? 0.1f : mesh.BoundingBox.max.x;
+                var maxY = mesh.BoundingBox.Size.y <= 0 ? 0.1f : mesh.BoundingBox.max.y;
+                var maxZ = mesh.BoundingBox.Size.z <= 0 ? 0.1f : mesh.BoundingBox.max.z;
 
                 var minX = mesh.BoundingBox.Size.x <= 0 ? 0 : mesh.BoundingBox.min.x;
                 var minY = mesh.BoundingBox.Size.y <= 0 ? 0 : mesh.BoundingBox.min.y;
@@ -794,9 +786,9 @@ namespace Fusee.Engine.Core
                 mesh.BoundingBox = new AABBf(new float3(minX, minY, minZ), new float3(maxX, maxY, maxZ));
             }
 
-            var ray = new RayF(PickPosClip, viewMatrix, projectionMatrix);
+            var ray = new RayF(PickPosClip, _view, _projection);
+
             var box = State.Model * mesh.BoundingBox;
-            // does not work for Planes or Ortographic Cameras!
             if (!box.IntersectRay(ray))
                 return;
 
@@ -815,11 +807,9 @@ namespace Fusee.Engine.Core
                 // Normal of the plane defined by a, b, and c.
                 var n = float3.Normalize(float3.Cross(a - c, b - c));
 
-
                 // Distance between "Origin" and the plane abc when following the Direction.
                 var distance = -float3.Dot(ray.Origin - a, n) / float3.Dot(ray.Direction, n);
 
-                // does not work for Planes or Ortographic Cameras!
                 if (distance < 0)
                     continue;
 

@@ -25,10 +25,11 @@ namespace Fusee.Engine.Gui
         /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.
         /// </summary>
         /// <param name="scene">The scene the interaction handler belongs to.</param>
-        public SceneInteractionHandler(SceneContainer scene)
+        /// <param name="prePassCameraResults">The <see cref="CameraResult"/> of the <see cref="PrePassVisitor.PrePassTraverse(SceneContainer)"/> operation.</param>
+        public SceneInteractionHandler(SceneContainer scene, IEnumerable<CameraResult> prePassCameraResults)
         {
             IgnoreInactiveComponents = true;
-            _scenePicker = new ScenePicker(scene);
+            _scenePicker = new ScenePicker(scene, prePassCameraResults);
         }
 
         private static SceneNode FindLeafNodeInPickRes(SceneNode firstPickRes, IList<SceneNode> pickResults)
@@ -64,9 +65,9 @@ namespace Fusee.Engine.Gui
         /// <param name="canvasHeight">Canvas height - needed to determine the mouse position in clip space.</param>
         public void CheckForInteractiveObjects(float2 mousePos, int canvasWidth, int canvasHeight)
         {
-            var pickPosClip = (mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight)) + new float2(-1, 1);
+            //var pickPosClip = (mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight)) + new float2(-1, 1);
 
-            var pickResults = _scenePicker.Pick(pickPosClip, canvasWidth, canvasHeight).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
+            var pickResults = _scenePicker.Pick(mousePos, canvasWidth, canvasHeight).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
             var pickResNodes = pickResults.ConvertAll(x => x.Node);
             var firstPickRes = pickResults.FirstOrDefault();
 

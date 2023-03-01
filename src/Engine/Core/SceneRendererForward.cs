@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
         private MinMaxRect _parentRect;
         private int _numberOfLights;
 
-        internal PrePassVisitor PrePassVisitor { get; private set; }
+        public PrePassVisitor PrePassVisitor { get; private set; }
 
         /// <summary>
         /// Caches SceneNodes and their model matrices. Used when visiting a <see cref="Bone"/>.
@@ -399,7 +399,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected void AccumulateLight()
         {
-            LightViseratorResults = PrePassVisitor.LightPrepassResuls;
+            LightViseratorResults = PrePassVisitor.LightPrepassResults;
 
             if (LightViseratorResults.Count == 0)
                 SetDefaultLight();
