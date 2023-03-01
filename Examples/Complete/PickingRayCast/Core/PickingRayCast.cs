@@ -83,7 +83,7 @@ namespace Fusee.Examples.PickingRayCast.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _sceneRayCaster = new SceneRayCaster(_scene, Cull.Clockwise);
+            _sceneRayCaster = new SceneRayCaster(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Cull.Clockwise);
 
             // Create the interaction handler
             _guiRenderer = new SceneRendererForward(_gui);
@@ -147,7 +147,7 @@ namespace Fusee.Examples.PickingRayCast.Core
             // Check for hits
             if (_pick)
             {
-                var castHit = _sceneRayCaster.RayPick(RC, _pickPos).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
+                var castHit = _sceneRayCaster.RayPick(_pickPos, RC.ViewportWidth, RC.ViewportHeight).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
 
                 if (castHit != null)
                     castHit.Node.GetComponent<SurfaceEffect>().SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;

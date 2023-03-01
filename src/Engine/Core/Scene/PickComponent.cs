@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core.Scene
     public class PickComponent : SceneComponent
     {
         /// <summary>
-        /// Pick layer, on picking the result with the higher layer will be prefered
+        /// Pick layer, on picking the result with the higher layer will be preferred
         /// </summary>
         public int PickLayer { get; set; }
 

@@ -1,5 +1,4 @@
 using CommunityToolkit.Diagnostics;
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
@@ -24,11 +23,6 @@ namespace Fusee.Engine.Core
         public SceneNode? Node;
 
         /// <summary>
-        /// The mesh.
-        /// </summary>
-        public Mesh? Mesh;
-
-        /// <summary>
         /// The model matrix.
         /// </summary>
         public float4x4 Model;
@@ -49,11 +43,43 @@ namespace Fusee.Engine.Core
         public float3 ClipPos;
     }
 
+    /// <summary>
+    /// A possible line <see cref="PickResult"/>.
+    /// Contains specific information for a line geometry.
+    /// </summary>
+    public class LinePickResult : PickResult
+    {
+        /// <summary>
+        /// The mesh.
+        /// </summary>
+        public Mesh? Mesh;
+    }
+
+    /// <summary>
+    /// A possible mesh <see cref="PickResult"/>.
+    /// Contains specific information for a triangle geometry.
+    /// </summary>
     public class MeshPickResult : PickResult
     {
+        /// <summary>
+        /// The mesh.
+        /// </summary>
+        public Mesh? Mesh;
+        /// <summary>
+        /// The hit triangle.
+        /// </summary>
         public int Triangle;
+        /// <summary>
+        /// U coordinate.
+        /// </summary>
         public float U;
+        /// <summary>
+        /// V coordinate.
+        /// </summary>
         public float V;
+        /// <summary>
+        /// The distance from the <see cref="RayF"/> (mouse position) to the <see cref="Mesh"/>.
+        /// </summary>
         public float DistanceFromOrigin;
     }
 
@@ -82,6 +108,9 @@ namespace Fusee.Engine.Core
             private readonly CollapsingStateStack<Cull> _cullMode = new();
             private readonly CollapsingStateStack<ShaderEffect> _shaderFX = new();
 
+            /// <summary>
+            /// The current pick position in clip coordinate space.
+            /// </summary>
             public static float2 PickPosClip { get; set; }
 
             /// <summary>
@@ -111,12 +140,6 @@ namespace Fusee.Engine.Core
                 set => _canvasXForm.Tos = value;
             }
 
-            public ShaderEffect ShaderEffect
-            {
-                get => _shaderFX.Tos;
-                set => _shaderFX.Tos = value;
-            }
-
             /// <summary>
             /// The registered cull mode.
             /// </summary>
@@ -126,6 +149,9 @@ namespace Fusee.Engine.Core
                 set => _cullMode.Tos = value;
             }
 
+            /// <summary>
+            /// The currently bound optional <see cref="PickComponent"/> which can be used for storing custom pick methods as well as a <see cref="PickComponent.PickLayer"/>.
+            /// </summary>
             public PickComponent? CurrentPickComp;
 
             /// <summary>
@@ -178,9 +204,10 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The constructor to initialize a new ScenePicker.
         /// </summary>
-        /// <param name="cullMode"></param>
-        /// <param name="customPickModule"></param>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
+        /// <param name="prePassCameraResults">The collected <see cref="IEnumerable{CameraResult}"/> from the <see cref="PrePassVisitor.PrePassTraverse(SceneContainer)"/> functionality.</param>
+        /// <param name="cullMode">The <see cref="Mesh"/>'s <see cref="Cull"/> mode.</param>
+        /// <param name="customPickModule">Any custom <see cref="IPickerModule"/>s, e. g. a point cloud picker module. Has to be registered from "external" like Desktop.Core.</param>
         public ScenePicker(SceneContainer scene, IEnumerable<CameraResult> prePassCameraResults, Cull cullMode = Cull.None, IEnumerable<IPickerModule>? customPickModule = null)
             : base(scene.Children, customPickModule)
         {
@@ -207,7 +234,7 @@ namespace Fusee.Engine.Core
         /// <param name="canvasWidth">The width of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
         /// <param name="canvasHeight">The height of the current canvas, gets overwrite if a <see cref="Camera.RenderTexture"/> is bound</param>
         /// <returns></returns>
-        public IEnumerable<PickResult> Pick(float2 pickPos, int canvasWidth, int canvasHeight)
+        public IEnumerable<PickResult>? Pick(float2 pickPos, int canvasWidth, int canvasHeight)
         {
             _canvasWidth = canvasWidth;
             _canvasHeight = canvasHeight;
@@ -215,15 +242,8 @@ namespace Fusee.Engine.Core
             float2 pickPosClip;
             if (_prePassResults.Count() == 0)
             {
-                pickPosClip = (pickPos * new float2(2.0f / _canvasWidth, -2.0f / _canvasHeight)) + new float2(-1, 1);
-
-                PickPosClip = pickPosClip;
-                PickerState.PickPosClip = pickPosClip;
-
-                SetState();
-                var resNoCam = Viserate().ToList();
-                resNoCam.AddRange(CheckVisitorModuleResults());
-                return resNoCam;
+                Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
+                return null;
             }
 
             CameraResult pickCam = default;
@@ -502,17 +522,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Save the current shader effect
-        /// Later we can check if we have a geometry shader source and use FBO picking
-        /// </summary>
-        /// <param name="effect"></param>
-        [VisitMethod]
-        public void RenderShaderEffect(ShaderEffect effect)
-        {
-            State.ShaderEffect = effect;
-        }
-
-        /// <summary>
         /// Handles custom pick component with pick layer and custom picking methods.
         /// If <see cref="PickComponent"/> is not active, the picking is being skipped
         /// </summary>
@@ -657,7 +666,7 @@ namespace Fusee.Engine.Core
                 if (float2.PointInTriangle(vert0.xy, vert1.xy, vert2.xy, PickPosClip, out _, out _) ||
                     float2.PointInTriangle(vert2.xy, vert1.xy, vert3.xy, PickPosClip, out _, out _))
                 {
-                    YieldItem(new PickResult
+                    YieldItem(new LinePickResult
                     {
                         Mesh = mesh,
                         Node = CurrentNode,
@@ -718,7 +727,7 @@ namespace Fusee.Engine.Core
                 if (float2.PointInTriangle(vert0.xy, vert1.xy, vert2.xy, PickPosClip, out _, out _) ||
                    float2.PointInTriangle(vert2.xy, vert1.xy, vert3.xy, PickPosClip, out _, out _))
                 {
-                    YieldItem(new PickResult
+                    YieldItem(new LinePickResult
                     {
                         Mesh = mesh,
                         Node = CurrentNode,
