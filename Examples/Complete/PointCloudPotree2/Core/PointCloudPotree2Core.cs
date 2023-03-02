@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
@@ -83,8 +84,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public PointCloudPotree2Core(RenderContext rc)
         {
-            _potreeData = new PotreeData(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
             _potreeReader = new Potree2Reader();
+            _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile), out _potreeData);
             _rc = rc;
         }
 
@@ -159,6 +160,15 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 Children = new List<SceneNode>()
                 {
                     _camNode,
+                    new SceneNode
+                    {
+                        Components = new List<SceneComponent>()
+                        {
+                            _debugTransform,
+                            MakeEffect.FromDiffuse(new float4(1,0,0,1)),
+                            new Cube()
+                        }
+                    },
                     _pointCloudNode
                 }
             };
@@ -206,6 +216,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _sceneRenderer.Render(_rc);
         }
 
+        private Transform _debugTransform = new();
+
         public void Update(bool allowInput)
         {
             if (!allowInput) return;
@@ -251,11 +263,18 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             if (!_keys && Input.Mouse.LeftButton)
             {
+                _debugTransform.Translation = float3.Zero;
+                _debugTransform.Scale = float3.One * 0.001f;
+
                 var width = _rc.ViewportWidth;
                 var height = _rc.ViewportHeight;
-                var pickPosClip = (Input.Mouse.Position * new float2(2.0f / width, -2.0f / height)) + new float2(-1, 1);
-                var result = _picker?.Pick(pickPosClip, width, height).ToList();
-                if (result != null) Diagnostics.Debug(((PointCloudPickResult)result[0]).OctandID);
+                var result = _picker?.Pick(Input.Mouse.Position, width, height).ToList();
+                if (result != null && result.Count > 0 && result[0] is PointCloudPickResult ppr)
+                {
+                    _debugTransform.Translation = (float3)ppr.Octant.Center;
+                    _debugTransform.Scale = new float3((float)ppr.Octant.Size);
+                }
+
             }
         }
 

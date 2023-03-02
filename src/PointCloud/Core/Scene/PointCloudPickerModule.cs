@@ -12,12 +12,14 @@ using System.Linq;
 using Microsoft.Extensions.Options;
 using Fusee.PointCloud.Common;
 using Fusee.Base.Core;
+using Fusee.Structures;
 
 namespace Fusee.PointCloud.Core.Scene
 {
     public class PointCloudPickResult : PickResult
     {
         public OctantId OctandID;
+        public PointCloudOctant Octant;
     }
 
     public class PointCloudPickerModule : IPickerModule
@@ -37,27 +39,47 @@ namespace Fusee.PointCloud.Core.Scene
         {
             if (!pointCloud.Active) return;
 
-            //var ray = new RayD(new double2(PickerState.PickPosClip.x, PickerState.PickPosClip.y), (double4x4)State.View, (double4x4)State.Projection);
-            //var tmpList = new List<PointCloudOctant>();
-            //var allHitBoxes = PickOctantRecursively((PointCloudOctant)_octree.Root, ray, tmpList).OrderBy(x => x.ProjectedScreenSize);
-            //if (allHitBoxes != null && allHitBoxes.Any())
-            //{
-            //    var mvp = State.Projection * State.View * State.Model;
-            //    PickResult = new PointCloudPickResult
-            //    {
-            //        Node = null,
-            //        Projection = State.Projection,
-            //        View = State.View,
-            //        Model = State.Model,
-            //        ClipPos = float4x4.TransformPerspective(mvp, (float3)allHitBoxes.ElementAt(0).Center),
-            //        OctandID = allHitBoxes.ElementAt(0).OctId,
-            //    };
-            //}
+            var proj = (double4x4)State.CurrentCameraResult.Camera.GetProjectionMat(State.ScreenSize.x, State.ScreenSize.y, out _);
+            var view = (double4x4)State.CurrentCameraResult.View;
+            var ray = new RayD(new double2(State.PickPosClip.x, State.PickPosClip.y), view, proj);
+
+            var tmpList = new List<PointCloudOctant>();
+            var allHitBoxes = PickOctantRecursively((PointCloudOctant)_octree.Root, ray, tmpList).ToList();
+
+            if (allHitBoxes == null || allHitBoxes.Count == 0) return;
+            foreach (var box in allHitBoxes)
+                box.ComputeScreenProjectedSize(view.Translation(), State.ScreenSize.y, State.CurrentCameraResult.Camera.Fov, (float3)box.Center, new float3((float)box.Size));
+            var octant = allHitBoxes.OrderBy(x => x.ProjectedScreenSize).ToList()[0];
+
+            //foreach (var box in allHitBoxes)
+            //    if ((float)box.Center.x - State.View.Translation().x < (float)octant.Center.x - State.View.Translation().x
+            //       && (float)box.Center.y - State.View.Translation().y < (float)octant.Center.y - State.View.Translation().y
+            //       && (float)box.Center.z - State.View.Translation().z < (float)octant.Center.z - State.View.Translation().z)
+            //        octant = box;
+
+            if (allHitBoxes != null && allHitBoxes.Any())
+            {
+                var mvp = (float4x4)proj * (float4x4)view * State.Model;
+                PickResult = new PointCloudPickResult
+                {
+                    Node = null,
+                    Projection = (float4x4)proj,
+                    View = (float4x4)view,
+                    Model = State.Model,
+                    ClipPos = float4x4.TransformPerspective(mvp, (float3)allHitBoxes.ElementAt(0).Center),
+                    OctandID = octant.OctId,
+                    Octant = octant
+                };
+            }
         }
 
         private List<PointCloudOctant> PickOctantRecursively(PointCloudOctant node, RayD ray, List<PointCloudOctant> list)
         {
-            list.Add(node);
+            if (node?.IsVisible == true && node.IntersectRay(ray))
+            {
+                list.Add(node);
+            }
+
             if (node.Children[0] != null)
             {
                 foreach (var child in node.Children.Cast<PointCloudOctant>())
