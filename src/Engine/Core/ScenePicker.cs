@@ -242,7 +242,7 @@ namespace Fusee.Engine.Core
             float2 pickPosClip;
             if (_prePassResults.Count() == 0)
             {
-                //Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
+                Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
                 return null;
             }
 
@@ -716,10 +716,8 @@ namespace Fusee.Engine.Core
             {
                 var pt0 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 0]]).xy;
                 var pt1 = float4x4.TransformPerspective(mvp, mesh.Vertices[(int)mesh.Triangles[i + 1]]).xy;
-                var pt = PickerState.PickPosClip;
 
                 var lineVector = pt1 - pt0;
-                var viewport_line_vector = lineVector * new float2(viewportWidth, viewportHeight);
                 var dir = new float2(lineVector.x, lineVector.y * aspect).Normalize();
 
                 var normal = new float2(-dir.y, dir.x);
@@ -744,31 +742,6 @@ namespace Fusee.Engine.Core
                         Projection = _projection
                     });
                 }
-
-                //// see: https://math.stackexchange.com/a/3633025
-                //// for calculation, does not work  :(
-                //var nom = (pt.x - pt0.x) * (pt1.x - pt0.x) + (pt.y - pt0.y) * (pt1.y - pt0.y);
-                //var denom = MathF.Pow((pt1.x - pt.x), 2) + MathF.Pow((pt1.y - pt0.y), 2);
-                //var t = nom / denom;
-
-                //// point is somewhere on the line
-                //if(t >= 0 && t <= 1)
-                //{
-                //    var dSqrd = MathF.Pow(pt.x - pt0.x - t * (pt1.x - pt0.x), 2) + MathF.Pow(pt.y - pt0.y - t * (pt1.y - pt0.y), 2);
-
-                //    if(dSqrd < 0.25 * (w * w)) {
-
-                //        YieldItem(new PickResult
-                //        {
-                //            Mesh = mesh,
-                //            Node = CurrentNode,
-                //            Model = State.Model,
-                //            ClipPos = float4x4.TransformPerspective(State.Projection * State.View, CurrentNode.GetTransform().Translation),
-                //            View = State.View,
-                //            Projection = State.Projection
-                //        });
-                //    }
-                //}
             }
         }
 
@@ -844,6 +817,9 @@ namespace Fusee.Engine.Core
                             Model = State.Model,
                             U = u,
                             V = v,
+                            ClipPos = float4x4.TransformPerspective(_projection * _view, CurrentNode.GetTransform().Translation),
+                            Projection = _projection,
+                            View = _view,
                             DistanceFromOrigin = distance
                         });
                     }
