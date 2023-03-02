@@ -111,7 +111,7 @@ namespace Fusee.Engine.Core
             /// <summary>
             /// The current pick position in clip coordinate space.
             /// </summary>
-            public static float2 PickPosClip { get; set; }
+            public static float2 PickPosClip { get; internal set; }
 
             /// <summary>
             /// The registered model.
