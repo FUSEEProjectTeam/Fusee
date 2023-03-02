@@ -157,7 +157,6 @@ namespace Fusee.Engine.Core
             /// <summary>
             /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for model, UI rectangle, and canvas transform, as well as cull mode.
             /// </summary>
-            // TODO: Ask @CMl why this is being called after every Iteration/Viseration
             public PickerState()
             {
                 RegisterState(_model);
@@ -674,7 +673,7 @@ namespace Fusee.Engine.Core
                         Mesh = mesh,
                         Node = CurrentNode,
                         Model = State.Model,
-                        ClipPos = float4x4.TransformPerspective(_projection * _view, CurrentNode.GetTransform().Translation),
+                        ClipPos = float4x4.TransformPerspective(_projection * _view, State.Model.Translation()),
                         View = _view,
                         Projection = _projection
                     });
@@ -817,7 +816,7 @@ namespace Fusee.Engine.Core
                             Model = State.Model,
                             U = u,
                             V = v,
-                            ClipPos = float4x4.TransformPerspective(_projection * _view, CurrentNode.GetTransform().Translation),
+                            ClipPos = float4x4.TransformPerspective(_projection * _view, State.Model.Translation()),
                             Projection = _projection,
                             View = _view,
                             DistanceFromOrigin = distance
