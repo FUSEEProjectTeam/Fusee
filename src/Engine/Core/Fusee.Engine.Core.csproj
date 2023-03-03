@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.0.0" />
+	  <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
