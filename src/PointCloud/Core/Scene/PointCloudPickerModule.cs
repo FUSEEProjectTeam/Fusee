@@ -28,9 +28,9 @@ namespace Fusee.PointCloud.Core.Scene
 {
     public class PointCloudPickResult : PickResult
     {
-        public OctantId OctandID;
         public Mesh Mesh;
         public int VertIdx;
+        public OctantId OctantId;
     }
 
     public class PointCloudPickerModule : IPickerModule

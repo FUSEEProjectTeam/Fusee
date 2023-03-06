@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
@@ -56,6 +57,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         private readonly RenderContext _rc;
 
+        private Transform _debugTransform = new();
         public void OnLoadNewFile(object sender, EventArgs e)
         {
             var path = PointRenderingParams.Instance.PathToOocFile;
