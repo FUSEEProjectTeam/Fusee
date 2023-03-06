@@ -8,7 +8,7 @@ namespace Fusee.Base.Core
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TItem">The type of the cached item.</typeparam>
     /// </summary>
-    public class MemoryCache<TKey, TItem>
+    public class MemoryCache<TKey, TItem> : IDisposable
     {
         /// <summary>
         /// Sets how long a cache entry can be inactive (not accessed) before it will be removed.
@@ -27,8 +27,10 @@ namespace Fusee.Base.Core
 
         private readonly MemoryCache _cache;
 
+        private bool _disposed = false;
+
         /// <summary>
-        /// Creates a new instance and initializes the internal <see cref="MemoryCache"/> with the gi
+        /// Creates a new instance and initializes the internal <see cref="MemoryCache"/>.
         /// </summary>
         public MemoryCache()
         {
@@ -94,6 +96,58 @@ namespace Fusee.Base.Core
                 // Key not in cache, so get data.
                 _cache.Set(key, cacheEntry, cacheEntryOptions);
             }
+        }
+
+        /// <summary>
+        /// Implement IDisposable.
+        /// Do not make this method virtual.
+        /// A derived class should not be able to override this method.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose(bool disposing) executes in two distinct scenarios.
+        /// If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!_disposed)
+            {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources.
+                if (disposing)
+                {
+                    // Dispose managed resources.
+                }
+
+                _cache.Compact(100);
+                _cache.Dispose();
+
+                // Note disposing has been done.
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Use C# finalizer syntax for finalization code.
+        /// This finalizer will run only if the Dispose method
+        /// does not get called.
+        /// It gives your base class the opportunity to finalize.
+        /// Do not provide finalizer in types derived from this class.
+        /// </summary>
+        ~MemoryCache()
+        {
+            Dispose(disposing: false);
         }
     }
 }

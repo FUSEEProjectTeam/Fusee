@@ -1,12 +1,11 @@
-﻿using Fusee.Engine.Common;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Common.Accessors;
-using Fusee.PointCloud.Core.Accessors;
-using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Fusee.PointCloud.Core
 {
@@ -18,11 +17,10 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Generic method that creates meshes with 65k points maximum.
         /// </summary>
-        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to a explicit point type."/></param>
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a GpuMesh from the point cloud points.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateMeshes<TGpuData, TPoint>(PointAccessor<TPoint> pointAccessor, TPoint[] points, CreateGpuData<TGpuData, TPoint> createGpuDataHandler, OctantId octantId)
+        public static IEnumerable<TGpuData> CreateMeshes<TGpuData, TPoint>(MemoryOwner<TPoint> points, CreateGpuData<TGpuData, TPoint> createGpuDataHandler, OctantId octantId)
         {
             List<TGpuData> meshes;
 
@@ -41,18 +39,18 @@ namespace Fusee.PointCloud.Core
                 else
                     numberOfPointsInMesh = maxVertCount;
 
-                TPoint[] pointsPerMesh;
+                MemoryOwner<TPoint> pointsPerMesh;
                 if (ptCnt > maxVertCount)
                 {
-                    pointsPerMesh = new TPoint[numberOfPointsInMesh];
-                    Array.Copy(points, i, pointsPerMesh, 0, numberOfPointsInMesh);
+                    pointsPerMesh = MemoryOwner<TPoint>.Allocate(numberOfPointsInMesh);
+                    points.Span.Slice(i, numberOfPointsInMesh).CopyTo(pointsPerMesh.Span.Slice(0));
                 }
                 else
                 {
                     pointsPerMesh = points;
                 }
 
-                meshes.Add(createGpuDataHandler(pointAccessor, pointsPerMesh, octantId));
+                meshes.Add(createGpuDataHandler(pointsPerMesh, octantId));
                 meshCnt++;
             }
             return meshes;
@@ -63,36 +61,37 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <typeparam name="TGpuData">Can be of type <see cref="GpuMesh"/> or <see cref="InstanceData"/>. The latter is used when rendering instanced.</typeparam>
         /// <typeparam name="TPoint">The generic point type.</typeparam>
-        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to a explicit point type."/></param>
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a InstanceData from the point cloud points.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData, TPoint>(PointAccessor<TPoint> pointAccessor, TPoint[] points, CreateGpuData<TGpuData, TPoint> createGpuDataHandler, OctantId octantId)
+        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData, TPoint>(MemoryOwner<TPoint> points, CreateGpuData<TGpuData, TPoint> createGpuDataHandler, OctantId octantId)
         {
             return new List<TGpuData>
             {
-                createGpuDataHandler(pointAccessor, points, octantId)
+                createGpuDataHandler(points, octantId)
             };
         }
 
         /// <summary>
         /// Returns meshes for point clouds of type <see cref="PosD3"/>.
         /// </summary>
-        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to explicit a explicit point type."/></param>
         /// <param name="points">The lists of "raw" points.</param>
-        /// <param name="octantId">The id of the octant.</param>
-        public static GpuMesh CreateMeshPosD3<TPoint>(PointAccessor<TPoint> pointAccessor, TPoint[] points)
+        public static GpuMesh CreateMeshPosD3<TPoint>(MemoryOwner<TPoint> points) where TPoint : struct
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
-            var firstPos = (float3)pointAccessor.GetPositionFloat3_64(ref points[0]);
+
+            var pointsCasted = MemoryMarshal.Cast<TPoint, PosD3>(points.Span);
+
+
+            var firstPos = (float3)pointsCasted[0].Position;
             var vertices = new float3[numberOfPointsInMesh];
             var triangles = new uint[numberOfPointsInMesh];
             var boundingBox = new AABBf(firstPos, firstPos);
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = (float3)pointAccessor.GetPositionFloat3_64(ref points[i]);
+                var pos = (float3)pointsCasted[i].Position;
 
                 vertices[i] = pos;
                 boundingBox |= pos;
@@ -106,15 +105,17 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Returns meshes for point clouds of type <see cref="PosD3LblB"/>.
         /// </summary>
-        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to explicit a explicit point type."/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="octantId">The id of the octant.</param>
-        public static GpuMesh CreateMeshPosD3ColF3LblB<TPoint>(PointAccessor<TPoint> pointAccessor, TPoint[] points, OctantId octantId)
+        public static GpuMesh CreateMeshPosD3ColF3LblB<TPoint>(MemoryOwner<TPoint> points, OctantId octantId) where TPoint : struct
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = (float3)pointAccessor.GetPositionFloat3_64(ref points[0]);
+            // we know that we have a MeshPosD3ColF3LblB
+            var pointsCasted = MemoryMarshal.Cast<TPoint, PosD3ColF3LblB>(points.Span);
+
+            var firstPos = (float3)pointsCasted[0].Position;
             var vertices = new float3[numberOfPointsInMesh];
             var triangles = new uint[numberOfPointsInMesh];
             var colors = new uint[numberOfPointsInMesh];
@@ -123,18 +124,18 @@ namespace Fusee.PointCloud.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = (float3)pointAccessor.GetPositionFloat3_64(ref points[i]);
+                var pos = (float3)pointsCasted[i].Position;
 
                 vertices[i] = pos;
                 boundingBox |= vertices[i];
 
                 triangles[i] = (uint)i;
-                var col = pointAccessor.GetColorFloat3_32(ref points[i]);//points[i].Color;
+                var col = pointsCasted[i].Color;
                 colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
                 flags[i] = 1 << 30;
 
                 //TODO: add labels correctly
-                var label = pointAccessor.GetLabelUInt_8(ref points[i]);//points[i].Label;
+                var label = pointsCasted[i].Label;
             }
             var mesh = ModuleExtensionPoint.CreateGpuMesh(PrimitiveType.Points, vertices, triangles, null, colors, null, null, null, null, null, null, null, flags);
             mesh.BoundingBox = boundingBox;
@@ -144,15 +145,17 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Returns meshes for point clouds of type <see cref="PosD3LblB"/>.
         /// </summary>
-        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to explicit a explicit point type."/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="octantId">The id of the octant.</param>
-        public static Mesh CreateDynamicMeshPosD3ColF3LblB<TPoint>(PointAccessor<TPoint> pointAccessor, TPoint[] points, OctantId octantId)
+        public static Mesh CreateDynamicMeshPosD3ColF3LblB<TPoint>(MemoryOwner<TPoint> points, OctantId octantId) where TPoint : struct
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = (float3)pointAccessor.GetPositionFloat3_64(ref points[0]);
+            // we know that we have a MeshPosD3ColF3LblB
+            var pointsCasted = MemoryMarshal.Cast<TPoint, PosD3ColF3LblB>(points.Span);
+
+            var firstPos = (float3)pointsCasted[0].Position;
             var vertices = new float3[numberOfPointsInMesh];
             var triangles = new uint[numberOfPointsInMesh];
             var colors = new uint[numberOfPointsInMesh];
@@ -161,18 +164,18 @@ namespace Fusee.PointCloud.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = (float3)pointAccessor.GetPositionFloat3_64(ref points[i]);
+                var pos = (float3)pointsCasted[i].Position;
 
                 vertices[i] = pos;
                 boundingBox |= vertices[i];
 
                 triangles[i] = (uint)i;
-                var col = pointAccessor.GetColorFloat3_32(ref points[i]);//points[i].Color;
+                var col = pointsCasted[i].Color;
                 colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
                 flags[i] = 1 << 30;
 
                 //TODO: add labels correctly
-                var label = pointAccessor.GetLabelUInt_8(ref points[i]);//points[i].Label;
+                var label = pointsCasted[i].Label;
             }
 
             return new Mesh(triangles, vertices, null, null, null, null, null, null, colors, null, null, flags)
@@ -185,15 +188,16 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Returns meshes for point clouds of type <see cref="PosD3LblB"/>.
         /// </summary>
-        /// <param name="pointAccessor">The point accessor allows access to the point data without casting to explicit a explicit point type."/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="octantId">The id of the octant.</param>
-        public static InstanceData CreateInstanceDataPosD3ColF3LblB<TPoint>(PointAccessor<TPoint> pointAccessor, TPoint[] points, OctantId octantId)
+        public static InstanceData CreateInstanceDataPosD3ColF3LblB<TPoint>(MemoryOwner<TPoint> points, OctantId octantId) where TPoint : struct
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = (float3)pointAccessor.GetPositionFloat3_64(ref points[0]);
+            var pointsCasted = MemoryMarshal.Cast<TPoint, PosD3ColF3LblB>(points.Span);
+
+            var firstPos = (float3)pointsCasted[0].Position;
             var vertices = new float3[numberOfPointsInMesh];
             var triangles = new ushort[numberOfPointsInMesh];
             var colors = new float4[numberOfPointsInMesh];
@@ -201,16 +205,16 @@ namespace Fusee.PointCloud.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = (float3)pointAccessor.GetPositionFloat3_64(ref points[i]);
+                var pos = (float3)pointsCasted[i].Position;
 
                 vertices[i] = pos;
                 boundingBox |= vertices[i];
 
                 triangles[i] = (ushort)i;
-                colors[i] = new float4(pointAccessor.GetColorFloat3_32(ref points[i]) / 256, 1.0f);
+                colors[i] = new float4(pointsCasted[i].Color / 256, 1.0f);
 
                 //TODO: add labels correctly
-                var label = pointAccessor.GetLabelUInt_8(ref points[i]);//points[i].Label;
+                var label = pointsCasted[i].Label;
             }
 
             return new InstanceData(points.Length, vertices, null, null, colors)

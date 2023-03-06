@@ -1,3 +1,4 @@
+using CommunityToolkit.Diagnostics;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
@@ -47,7 +48,7 @@ namespace Fusee.Engine.Core
             }
 
             // try to cast, if this fails the content is empty or null
-            if (!(fus.Contents is FusScene))
+            if (fus.Contents is not FusScene)
             {
                 Diagnostics.Error($"Could not read content of scene from {fus.Header.CreationDate} created by {fus.Header.CreatedBy} with {fus.Header.Generator}");
                 return new SceneContainer();
@@ -60,7 +61,12 @@ namespace Fusee.Engine.Core
                 fus.Header.LoadPath = Path.GetDirectoryName(id);
             }
 
-            var instance = new FusFileToSceneConvertV1();
+            var instance = fus.Header.FileVersion switch
+            {
+                2 => new FusFileToSceneConvertV2(),
+                _ => new FusFileToSceneConvertV1(),
+            };
+
             var payload = (FusScene)fus.Contents;
 
 
@@ -116,7 +122,8 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high low level graph <see cref="FusFile"/> by converting and/or splitting its components into the low level equivalents.
         /// </summary>
         /// <param name="sc">The Scene to convert.</param>
-        public static FusFile ConvertTo(SceneContainer sc)
+        /// <param name="fileVersion">The scene version, default = 2, currently there are V1 and V2 implemented</param>
+        public static FusFile ConvertTo(SceneContainer sc, int fileVersion = 2)
         {
             if (sc == null)
             {
@@ -124,7 +131,15 @@ namespace Fusee.Engine.Core
                 return new FusFile();
             }
 
-            var instance = new SceneToFusFileConvertV1();
+            Guard.IsInRange(fileVersion, 1, 3);
+
+
+            var instance = fileVersion switch
+            {
+                2 => new SceneToFusFileConvertV2(),
+                _ => new SceneToFusFileConvertV1()
+            };
+
             var converted = instance.Convert(sc);
 
             converted.Header = new FusHeader
@@ -132,26 +147,88 @@ namespace Fusee.Engine.Core
                 CreatedBy = sc.Header.CreatedBy,
                 CreationDate = sc.Header.CreationDate,
                 Generator = sc.Header.Generator,
-                FileVersion = 1
+                FileVersion = fileVersion
             };
 
             return converted;
         }
     }
 
+    internal class FusFileToSceneConvertV2 : FusFileToSceneConvertV1
+    {
+        private readonly Dictionary<Serialization.V2.FusMesh, Mesh> _meshMap;
+
+        internal FusFileToSceneConvertV2()
+        {
+            _meshMap = new Dictionary<Serialization.V2.FusMesh, Mesh>();
+        }
+
+        /// <summary>
+        /// Converts the PickComponent.
+        /// </summary>
+        /// <param name="pc">The mesh to convert.</param>
+        [VisitMethod]
+        public void ConvPickComp(Serialization.V2.FusPickComponent pc)
+        {
+            _currentNode.Components.Add(new PickComponent
+            {
+                Active = pc.Active,
+                Name = pc.Name,
+                PickLayer = pc.PickLayer
+            });
+        }
+
+        /// <summary>
+        /// Converts the mesh.
+        /// </summary>
+        /// <param name="m">The mesh to convert.</param>
+        [VisitMethod]
+        public void ConvMesh(Serialization.V2.FusMesh m)
+        {
+            if (_currentNode.Components == null)
+            {
+                _currentNode.Components = new List<SceneComponent>();
+            }
+
+            if (_meshMap.TryGetValue(m, out var mesh))
+            {
+                _currentNode.Components.Add(mesh);
+                return;
+            }
+
+            // convert mesh
+            mesh = new Mesh(m.Triangles, m.Vertices, m.Normals, m.UVs, m.BoneWeights, m.BoneIndices, m.Tangents, m.BiTangents,
+                m.Colors)
+            {
+                MeshType = (PrimitiveType)m.MeshType,
+                Active = true,
+                Name = m.Name
+            };
+
+            if (_currentNode.Components == null)
+            {
+                _currentNode.Components = new List<SceneComponent>();
+            }
+
+            _currentNode.Components.Add(mesh);
+
+            _meshMap.Add(m, mesh);
+        }
+    }
+
     internal class FusFileToSceneConvertV1 : Visitor<FusNode, FusComponent>
     {
-        private FusScene _fusScene;
-        private readonly SceneContainer _convertedScene;
-        private readonly Stack<SceneNode> _predecessors;
-        private SceneNode _currentNode;
+        protected FusScene _fusScene;
+        protected readonly SceneContainer _convertedScene;
+        protected readonly Stack<SceneNode> _predecessors;
+        protected SceneNode _currentNode;
 
-        private readonly Dictionary<FusMaterialBase, Effect> _matMap;
+        protected readonly Dictionary<FusMaterialBase, Effect> _matMap;
         private readonly Dictionary<FusMesh, Mesh> _meshMap;
-        private readonly ConcurrentDictionary<string, Texture> _texMap;
-        private readonly Stack<SceneNode> _boneContainers;
+        protected readonly ConcurrentDictionary<string, Texture> _texMap;
+        protected readonly Stack<SceneNode> _boneContainers;
 
-        private readonly Dictionary<FusMaterialBase, List<SceneNode>> _allEffects;
+        protected readonly Dictionary<FusMaterialBase, List<SceneNode>> _allEffects;
 
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
@@ -551,12 +628,14 @@ namespace Fusee.Engine.Core
             }
 
             // convert mesh
-            mesh = new Mesh(m.Triangles, m.Vertices, m.Normals, m.UVs, m.BoneWeights, m.BoneIndices, m.Tangents, m.BiTangents,
-                m.Colors);
-
-            mesh.MeshType = (PrimitiveType)m.MeshType;
-            mesh.Active = true;
-            mesh.Name = m.Name;
+            var triangles = m.Triangles.Select(x => (uint)x).ToArray();
+            mesh = new Mesh(triangles, m.Vertices, m.Normals, m.UVs, m.BoneWeights, m.BoneIndices, m.Tangents, m.BiTangents,
+                m.Colors)
+            {
+                MeshType = (PrimitiveType)m.MeshType,
+                Active = true,
+                Name = m.Name
+            };
 
             if (_currentNode.Components == null)
             {
@@ -954,13 +1033,48 @@ namespace Fusee.Engine.Core
         #endregion
     }
 
+    internal class SceneToFusFileConvertV2 : SceneToFusFileConvertV1
+    {
+        internal SceneToFusFileConvertV2()
+        {
+
+        }
+
+        /// <summary>
+        /// Converts the mesh.
+        /// </summary>
+        /// <param name="m">The mesh to convert.</param>
+        [VisitMethod]
+        public void ConvMesh(Mesh m)
+        {
+            // convert mesh
+            var mesh = new Serialization.V2.FusMesh
+            {
+                MeshType = (int)m.MeshType,
+                BiTangents = m.BiTangents?.ToArray(),
+                BoneIndices = m.BoneIndices?.ToArray(),
+                BoundingBox = m.BoundingBox,
+                BoneWeights = m.BoneWeights?.ToArray(),
+                Colors = m.Colors0?.ToArray(),
+                Name = m.Name,
+                Normals = m.Normals?.ToArray(),
+                Tangents = m.Tangents?.ToArray(),
+                Triangles = m.Triangles?.ToArray(),
+                UVs = m.UVs?.ToArray(),
+                Vertices = m.Vertices?.ToArray()
+            };
+
+            _currentNode.AddComponent(mesh);
+        }
+    }
+
     internal class SceneToFusFileConvertV1 : Visitor<SceneNode, SceneComponent>
     {
-        private readonly FusFile _convertedScene;
-        private readonly Stack<FusNode> _predecessors;
-        private FusNode _currentNode;
+        protected readonly FusFile _convertedScene;
+        protected readonly Stack<FusNode> _predecessors;
+        protected FusNode _currentNode;
 
-        private readonly Stack<FusComponent> _boneContainers;
+        protected readonly Stack<FusComponent> _boneContainers;
 
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
@@ -1255,7 +1369,7 @@ namespace Fusee.Engine.Core
                 Name = m.Name,
                 Normals = m.Normals?.ToArray(),
                 Tangents = m.Tangents?.ToArray(),
-                Triangles = m.Triangles.ToArray(),
+                Triangles = m.Triangles?.ToArray().Select(x => (ushort)x).ToArray(),
                 UVs = m.UVs?.ToArray(),
                 Vertices = m.Vertices?.ToArray()
             };

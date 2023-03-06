@@ -5,10 +5,21 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
-    internal class PrePassVisitor : Visitor<SceneNode, SceneComponent>
+    /// <summary>
+    /// Visitor is inside <see cref="SceneRendererForward"/> before rendering the scene.
+    /// Collects <see cref="Light"/>s and <see cref="Camera"/>s for rendering, picking, etc.
+    /// </summary>
+    public class PrePassVisitor : Visitor<SceneNode, SceneComponent>
     {
-        public List<LightResult> LightPrepassResuls;
-        public List<CameraResult> CameraPrepassResults;
+        /// <summary>
+        /// Collection of <see cref="LightResult"/>s found while traversing the scene.
+        /// </summary>
+        public List<LightResult> LightPrepassResults { get; private set; }
+
+        /// <summary>
+        /// Collection of <see cref="CameraResult"/>s found while traversing the scene.
+        /// </summary>
+        public List<CameraResult> CameraPrepassResults { get; private set; }
 
         /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
@@ -16,18 +27,26 @@ namespace Fusee.Engine.Core
         private readonly RendererState _state;
         private int _currentLight;
 
+        /// <summary>
+        /// <see cref="Visitor{TNode, TComponent}"/> which traverses the scene and yields <see cref="CameraPrepassResults"/> and <see cref="LightPrepassResults"/>.
+        /// </summary>
         public PrePassVisitor()
         {
             _state = new RendererState();
             IgnoreInactiveComponents = true;
-            LightPrepassResuls = new List<LightResult>();
+            LightPrepassResults = new List<LightResult>();
             CameraPrepassResults = new List<CameraResult>();
         }
 
+        /// <summary>
+        /// Call this method to initialize the traversal process.
+        /// </summary>
+        /// <param name="sc">The <see cref="SceneContainer"/> to traverse.</param>
         public void PrePassTraverse(SceneContainer sc)
         {
             _currentLight = 0;
             CameraPrepassResults.Clear();
+            LightPrepassResults.Clear();
             Traverse(sc.Children);
         }
 
@@ -60,7 +79,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
         /// It additionally updates the view matrix of the RenderContext.
-        /// </summary> 
+        /// </summary>
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void RenderTransform(Transform transform)
@@ -71,7 +90,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnLight(Light lightComponent)
         {
-            if (LightPrepassResuls.Count - 1 < _currentLight)
+            if (LightPrepassResults.Count - 1 < _currentLight)
             {
                 var lightResult = new LightResult(lightComponent)
                 {
@@ -79,11 +98,11 @@ namespace Fusee.Engine.Core
                     WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34)
                 };
 
-                LightPrepassResuls.Add(lightResult);
+                LightPrepassResults.Add(lightResult);
             }
             else
             {
-                var currentRes = LightPrepassResuls[_currentLight];
+                var currentRes = LightPrepassResults[_currentLight];
                 currentRes.Rotation = _state.Model.RotationComponent();
                 currentRes.WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34);
             }

@@ -1,7 +1,7 @@
-﻿
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
+using System.Runtime.InteropServices;
 
-namespace Fusee.PointCloud.Common.Accessors
+namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Enum that contains all available point types.
@@ -62,12 +62,18 @@ namespace Fusee.PointCloud.Common.Accessors
         /// <summary>
         /// Position (double), Color (float), Classification (byte), Intensity (ushort)
         /// </summary>
-        PosD3ColF3InUsLblB
+        PosD3ColF3InUsLblB,
+
+        /// <summary>
+        /// Everything....
+        /// </summary>
+        Raw
     }
 
     /// <summary>
     /// Point type: Position double3.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3
     {
         /// <summary>
@@ -79,6 +85,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: Position, color, intensity.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3ColF3InUs
     {
         /// <summary>
@@ -98,6 +105,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: Position, intensity.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3InUs
     {
         /// <summary>
@@ -113,6 +121,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: Position, color.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3ColF3
     {
         /// <summary>
@@ -128,6 +137,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: Position and label color.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3LblB
     {
         /// <summary>
@@ -143,6 +153,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: Position, normal, color, intensity.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3NorF3ColF3InUs
     {
         /// <summary>
@@ -168,6 +179,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: Position, normal, intensity.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3NorF3InUs
     {
         /// <summary>
@@ -187,6 +199,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Normal"/>.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3NorF3ColF3
     {
         /// <summary>
@@ -207,6 +220,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Label"/>.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3ColF3LblB
     {
         /// <summary>
@@ -226,6 +240,7 @@ namespace Fusee.PointCloud.Common.Accessors
     /// <summary>
     /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Label"/> and <see cref="Intensity"/>.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PosD3ColF3InUsLblB
     {
         /// <summary>

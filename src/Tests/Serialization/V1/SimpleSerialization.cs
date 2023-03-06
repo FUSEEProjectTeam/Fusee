@@ -105,7 +105,7 @@ namespace Fusee.Tests.Serialization.V1
                     new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z}
                 },
 
-                Triangles = new uint[]
+                Triangles = new ushort[]
                 {
                     // front face
                     0, 2, 1, 0, 3, 2,

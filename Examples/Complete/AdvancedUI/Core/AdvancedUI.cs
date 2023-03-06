@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -156,15 +156,15 @@ namespace Fusee.Examples.AdvancedUI.Core
             _gui = CreateGui();
 
 
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
-
-            //Create a scene picker for performing visibility tests
-            _scenePicker = new ScenePicker(_scene);
-
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            //Create a scene picker for performing visibility tests
+            _scenePicker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults);
+
+            // Create the interaction handler
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override void Update()
@@ -235,6 +235,11 @@ namespace Fusee.Examples.AdvancedUI.Core
                     float4x4 mvpMonkey = projection * view * model;
 
                     float3 clipPos = float4x4.TransformPerspective(mvpMonkey, uiInput.Position);
+                    // go from clip pos to pixel coordinates
+                    var pixelPos = clipPos * 0.5f + 0.5f; // shift from [-1,1] to [0,1]
+                    pixelPos.y = 1f - pixelPos.y; // invert y
+                    pixelPos.x = pixelPos.x * Width;
+                    pixelPos.y = pixelPos.y * Height;
 
                     float2 canvasPosCircle = new float2(clipPos.x, clipPos.y) * 0.5f + 0.5f;
                     canvasPosCircle.x *= _canvasWidth;
@@ -247,7 +252,8 @@ namespace Fusee.Examples.AdvancedUI.Core
                     circle.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(AnchorPos.Middle, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-                    PickResult newPick = _scenePicker.Pick(RC, new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                    MeshPickResult newPick = (MeshPickResult)_scenePicker.Pick(pixelPos.xy, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+
 
                     if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
                     {
@@ -336,11 +342,11 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             // Constantly check for interactive objects.
             if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
             Present();
