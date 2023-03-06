@@ -93,7 +93,7 @@ namespace Fusee.PointCloud.Core.Scene
 
                     for (var i = 0; i < mesh.Vertices.Length; i++)
                     {
-                        var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], 0.01f);
+                        var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], 0.017f); // spacing * 0.1?
                         if (dist == float2.One * -1) continue;
 
                         if (dist.x <= currentMin.Distance.x && dist.y <= currentMin.Distance.y)
@@ -128,21 +128,20 @@ namespace Fusee.PointCloud.Core.Scene
 
             Diagnostics.Info($"Min element took: {sw.ElapsedTicks}");
             sw.Restart();
-            if (allHitBoxes != null && allHitBoxes.Any())
+
+            var mvp = proj * view * State.Model;
+            PickResult = new PointCloudPickResult
             {
-                var mvp = proj * view * State.Model;
-                PickResult = new PointCloudPickResult
-                {
-                    Node = null,
-                    Projection = proj,
-                    View = view,
-                    Model = State.Model,
-                    ClipPos = float4x4.TransformPerspective(mvp, minElement.Mesh.Vertices[minElement.VertIdx]),
-                    Mesh = minElement.Mesh,
-                    VertIdx = minElement.VertIdx,
-                    OctantId = minElement.OctantId
-                };
-            }
+                Node = null,
+                Projection = proj,
+                View = view,
+                Model = State.Model,
+                ClipPos = float4x4.TransformPerspective(mvp, minElement.Mesh.Vertices[minElement.VertIdx]),
+                Mesh = minElement.Mesh,
+                VertIdx = minElement.VertIdx,
+                OctantId = minElement.OctantId
+            };
+
         }
 
 

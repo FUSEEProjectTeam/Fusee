@@ -259,7 +259,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
 
-            if (!_keys && Input.Mouse.LeftButton)
+            if (!_keys && Input.Mouse.RightButton)
             {
                 _debugTransform.Translation = float3.Zero;
                 _debugTransform.Scale = float3.One * 0.05f;
@@ -271,6 +271,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 {
                     _debugTransform.Translation = (float3)ppr.Mesh.Vertices[ppr.VertIdx];
                     //_debugTransform.Scale = new float3((float)ppr.Octant.Size);
+
+                    //ppr.Mesh.Colors0[ppr.VertIdx] = (uint)ColorUint.Red;
                 }
 
             }
