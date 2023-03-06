@@ -166,7 +166,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                         {
                             _debugTransform,
                             MakeEffect.FromDiffuse(new float4(1,0,0,1)),
-                            new Cube()
+                            new Sphere(10, 10)
                         }
                     },
                     _pointCloudNode
@@ -264,15 +264,15 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             if (!_keys && Input.Mouse.LeftButton)
             {
                 _debugTransform.Translation = float3.Zero;
-                _debugTransform.Scale = float3.One * 0.001f;
+                _debugTransform.Scale = float3.One * 0.05f;
 
                 var width = _rc.ViewportWidth;
                 var height = _rc.ViewportHeight;
                 var result = _picker?.Pick(Input.Mouse.Position, width, height).ToList();
                 if (result != null && result.Count > 0 && result[0] is PointCloudPickResult ppr)
                 {
-                    _debugTransform.Translation = (float3)ppr.Octant.Center;
-                    _debugTransform.Scale = new float3((float)ppr.Octant.Size);
+                    _debugTransform.Translation = (float3)ppr.Mesh.Vertices[ppr.VertIdx];
+                    //_debugTransform.Scale = new float3((float)ppr.Octant.Size);
                 }
 
             }
