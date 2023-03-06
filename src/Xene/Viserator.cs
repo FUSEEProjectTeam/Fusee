@@ -248,7 +248,7 @@ namespace Fusee.Xene
         /// as the initialization and discovery of potential methods to visit is being done in <see cref="Init(IEnumerable{TNode})"/> </param>
         protected Viserator(IEnumerable<TNode> rootList, IEnumerable<IVisitorModule> customVisitorModules = null)
         {
-            if(customVisitorModules != null)
+            if (customVisitorModules != null)
                 VisitorModules.AddRange(customVisitorModules);
             Init(rootList);
         }
