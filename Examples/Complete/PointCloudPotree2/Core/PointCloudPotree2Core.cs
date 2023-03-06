@@ -254,7 +254,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 var height = _rc.ViewportHeight;
                 var pickPosClip = (Input.Mouse.Position * new float2(2.0f / width, -2.0f / height)) + new float2(-1, 1);
                 var result = _picker?.Pick(pickPosClip, width, height).ToList();
-                if (result != null) Diagnostics.Debug(((PointCloudPickResult)result[0]).OctandID);
+                if (result != null && result.Count != 0) Diagnostics.Debug(((PointCloudPickResult)result[0]).OctandID);
             }
         }
 
