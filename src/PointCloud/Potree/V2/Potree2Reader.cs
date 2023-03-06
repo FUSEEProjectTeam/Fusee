@@ -98,6 +98,22 @@ namespace Fusee.PointCloud.Potree.V2
             return LoadNodeData<PosD3ColF3LblB>(node, PointType.PosD3ColF3LblB);
         }
 
+        /// <summary>
+        /// Reads the points for a specific octant of type <see cref="PosD3ColF3LblB"/>.
+        /// </summary>
+        /// <param name="id">Id of the octant.</param>
+        /// <returns></returns>
+        public MemoryOwner<PotreePoint> LoadNodeDataPotreePoint(OctantId id)
+        {
+            Guard.IsNotNull(PotreeData);
+            var node = FindNode(ref PotreeData.Hierarchy, id);
+
+            // if node is null the hierarchy is broken and we look for an octant that isn't there...
+            Guard.IsNotNull(node);
+
+            return LoadNodeData<PotreePoint>(node, PointType.Raw);
+        }
+
         private MemoryOwner<TPoint> LoadNodeData<TPoint>(PotreeNode potreeNode, PointType type) where TPoint : struct
         {
             // if the potree node is null #nullable doesn't work!

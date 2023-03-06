@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Globalization;
@@ -11,6 +12,7 @@ namespace Fusee.Math.Core
     /// <remarks>
     /// The float3 structure is suitable for inter-operation with unmanaged code requiring three consecutive floats.
     /// </remarks>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct float3 : IEquatable<float3>
@@ -20,18 +22,21 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The x component of the float3.
         /// </summary>
+        [JsonProperty(PropertyName = "X")]
         [ProtoMember(1)]
         public float x;
 
         /// <summary>
         /// The y component of the float3.
         /// </summary>
+        [JsonProperty(PropertyName = "Y")]
         [ProtoMember(2)]
         public float y;
 
         /// <summary>
         /// The z component of the float3.
         /// </summary>
+        [JsonProperty(PropertyName = "Z")]
         [ProtoMember(3)]
         public float z;
 
