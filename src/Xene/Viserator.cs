@@ -241,14 +241,14 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Initializes a new instanc e of the <see cref="Viserator{TItem, TState,TNode,TComponent}"/> class.
+        /// Initializes a new instance of the <see cref="Viserator{TItem, TState,TNode,TComponent}"/> class.
         /// </summary>
         /// <param name="rootList">The root list.</param>
         /// <param name="customVisitorModules">Optional custom <see cref="IVisitorModule"/>. Needs to be passed to base.ctor,
         /// as the initialization and discovery of potential methods to visit is being done in <see cref="Init(IEnumerable{TNode})"/> </param>
         protected Viserator(IEnumerable<TNode> rootList, IEnumerable<IVisitorModule> customVisitorModules = null)
         {
-            if(customVisitorModules != null)
+            if (customVisitorModules != null)
                 VisitorModules.AddRange(customVisitorModules);
             Init(rootList);
         }

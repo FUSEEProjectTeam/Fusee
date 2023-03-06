@@ -1,7 +1,6 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
@@ -64,8 +63,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             if (path == null || path == string.Empty)
                 return;
 
-            _potreeData = new PotreeData(path);
-            _potreeReader = new Potree2Reader();
+            _potreeReader.ReadNewFile(path, out _potreeData);
 
             _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(RenderMode.DynamicMesh);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
@@ -215,8 +213,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _sceneRenderer.Render(_rc);
         }
-
-        private Transform _debugTransform = new();
 
         public void Update(bool allowInput)
         {

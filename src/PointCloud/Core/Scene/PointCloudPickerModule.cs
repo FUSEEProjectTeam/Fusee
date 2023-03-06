@@ -1,12 +1,16 @@
-﻿using Fusee.Engine.Common;
+using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Core;
 using Fusee.Xene;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Fusee.PointCloud.Core;
 using static Fusee.Engine.Core.ScenePicker;
 using System.Linq;
 using Microsoft.Extensions.Options;
@@ -158,11 +162,7 @@ namespace Fusee.PointCloud.Core.Scene
 
         private List<PointCloudOctant> PickOctantRecursively(PointCloudOctant node, RayD ray, List<PointCloudOctant> list)
         {
-            if (node?.IsVisible == true && node.IntersectRay(ray))
-            {
-                list.Add(node);
-            }
-
+            list.Add(node);
             if (node.Children[0] != null)
             {
                 foreach (var child in node.Children.Cast<PointCloudOctant>())

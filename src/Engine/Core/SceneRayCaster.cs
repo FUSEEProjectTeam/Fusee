@@ -83,7 +83,7 @@ namespace Fusee.Engine.Core
         {
             CullMode = cullMode;
             _prePassResults = prePassCameraResults;
-           _sc = scene;
+            _sc = scene;
         }
 
         /// <summary>

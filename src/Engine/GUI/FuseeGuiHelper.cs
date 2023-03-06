@@ -115,51 +115,6 @@ namespace Fusee.Engine.Gui
                             }
                         }
                     },
-                    //new SceneNode()
-                    //{
-                    //    Components = new List<SceneComponent>
-                    //    {
-                    //        new PickComponent()
-                    //        {
-                    //            CustomPickMethod = (mesh, currentNode, model, view, projection, pickPosClip) =>
-                    //            {
-                    //                  var mvp = projection * view * model;
-
-                    //                for (var i = 0; i < mesh.Triangles.Length; i += 3)
-                    //                {
-                    //                    // a, b c: current triangle's vertices in clip coordinates
-                    //                    var a = new float4(mesh.Vertices[(int)mesh.Triangles[i + 0]], 1);
-                    //                    a = float4x4.TransformPerspective(mvp, a);
-
-                    //                    var b = new float4(mesh.Vertices[(int)mesh.Triangles[i + 1]], 1);
-                    //                    b = float4x4.TransformPerspective(mvp, b);
-
-                    //                    var c = new float4(mesh.Vertices[(int)mesh.Triangles[i + 2]], 1);
-                    //                    c = float4x4.TransformPerspective(mvp, c);
-
-                    //                    // Point-in-Triangle-Test
-                    //                    if (float2.PointInTriangle(a.xy, b.xy, c.xy, pickPosClip, out var u, out var v))
-                    //                    {
-                    //                        var pickPos = float3.Barycentric(a.xyz, b.xyz, c.xyz, u, v);
-
-                    //                        if (pickPos.z >= -1 && pickPos.z <= 1)
-                    //                        {
-                    //                                return new PickResult
-                    //                                {
-                    //                                    Mesh = mesh,
-                    //                                    Node = currentNode,
-                    //                                    Model = model,
-                    //                                    View = view,
-                    //                                    Projection = projection
-                    //                                };
-                    //                        }
-                    //                    }
-                    //                }
-                    //                return null;
-                    //            }
-                    //        }
-                    //    }
-                    //},
                     canvas
                 }
             };
