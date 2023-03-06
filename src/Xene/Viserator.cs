@@ -241,7 +241,7 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Initializes a new instanc e of the <see cref="Viserator{TItem, TState,TNode,TComponent}"/> class.
+        /// Initializes a new instance of the <see cref="Viserator{TItem, TState,TNode,TComponent}"/> class.
         /// </summary>
         /// <param name="rootList">The root list.</param>
         /// <param name="customVisitorModules">Optional custom <see cref="IVisitorModule"/>. Needs to be passed to base.ctor,
