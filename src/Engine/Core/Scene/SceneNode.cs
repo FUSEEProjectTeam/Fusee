@@ -39,16 +39,16 @@ namespace Fusee.Engine.Core.Scene
 
         /// <summary>
         /// The components this node is made of.
-        /// </summary>           
+        /// </summary>
         public List<SceneComponent> Components;
 
         /// <summary>
-        /// This SceneNodeContainer's snc. 
+        /// This SceneNodeContainer's snc.
         /// </summary>
         public SceneNode Parent;
 
         /// <summary>
-        /// Creates a new instance of this SceneNode class. 
+        /// Creates a new instance of this SceneNode class.
         /// </summary>
         public SceneNode()
         {
@@ -57,8 +57,8 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Possible children. 
-        /// </summary>         
+        /// Possible children.
+        /// </summary>
         public ChildList Children
         {
             get => _children;

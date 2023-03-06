@@ -2680,6 +2680,33 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         #region Picking related Members
 
         /// <summary>
+        /// Retrieve pixels from bound framebuffer
+        /// </summary>
+        /// <param name="x">x pixel position</param>
+        /// <param name="y">y pixel position</param>
+        /// <param name="pixelFormat">format to retrieve, this has to match the current bound FBO!</param>
+        /// <param name="width">how many pixel in x direction</param>
+        /// <param name="height">how many pixel in y direction</param>
+        /// <returns><see cref="ReadOnlySpan{T}"/> with pixel content</returns>
+        /// <remarks>Does usually not throw on error (e. g. wrong pixel format, out of bounds, etc), uses GL.GetError() to retrieve
+        /// potential error</remarks>
+        public ReadOnlySpan<byte> ReadPixels(int x, int y, ImagePixelFormat pixelFormat, int width, int height)
+        {
+            var format = GetTexturePixelInfo(pixelFormat);
+            var data = new byte[width * height * pixelFormat.BytesPerPixel];
+
+            gl2.ReadPixels(x, y, 1, 1, format.Format, format.PxType, data);
+
+            var err = gl2.GetError();
+            if (err != NO_ERROR)
+            {
+                throw new Exception($"ReadPixel failed with error code {err}!");
+            }
+
+            return data;
+        }
+
+        /// <summary>
         /// Retrieves a sub-image of the given region.
         /// </summary>
         /// <param name="x">The x value of the start of the region.</param>

@@ -91,7 +91,8 @@ namespace Fusee.Examples.ComputeFractal.Core
             RC.SetEffect(_computeShader);
             _rect.SetData(_rectData);
             _colors.SetData(_colorData);
-            _sih = new SceneInteractionHandler(_gui);
+
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         // RenderAFrame is called once a frame
@@ -115,11 +116,11 @@ namespace Fusee.Examples.ComputeFractal.Core
 
             if (!Mouse.Desc.Contains("Android"))
             {
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
             }
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
             Present();
         }

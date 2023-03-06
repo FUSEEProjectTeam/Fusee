@@ -4,6 +4,8 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
+using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 

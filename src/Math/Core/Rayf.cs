@@ -40,14 +40,13 @@
         /// <param name="projection">The Projection Matrix of the rendered scene.</param>
         public RayF(float2 pickPosClip, float4x4 view, float4x4 projection)
         {
-            Origin = float4x4.Invert(view).Translation();
-
             float4x4 invViewProjection = float4x4.Invert(projection * view);
 
-            var pickPosWorld4 = float4x4.Transform(invViewProjection, new float4(pickPosClip.x, pickPosClip.y, 1, 1));
-            var pickPosWorld = (pickPosWorld4 / pickPosWorld4.w).xyz;
+            var pickPosFarWorld = float4x4.TransformPerspective(invViewProjection, new float3(pickPosClip.x, pickPosClip.y, 1));
+            var pickPosNearWorld = float4x4.TransformPerspective(invViewProjection, new float3(pickPosClip.x, pickPosClip.y, -1));
 
-            Direction = (pickPosWorld - Origin).Normalize();
+            Direction = (pickPosFarWorld - pickPosNearWorld).Normalize();
+            Origin = pickPosNearWorld;
 
             Inverse = new float3(1 / Direction.x, 1 / Direction.y, 1 / Direction.z);
         }

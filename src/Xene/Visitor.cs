@@ -1,6 +1,7 @@
 using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace Fusee.Xene
@@ -105,7 +106,6 @@ namespace Fusee.Xene
             public Dictionary<Type, VisitNodeMethodOfModule<TNode, TComponent>> ModuleNodes = new();
             public Dictionary<Type, VisitComponentMethodOfModule<TNode, TComponent>> ModuleComponents = new();
         }
-
 
         // The list of visitor methods defined in a concrete child class of Visitor
         private VisitorSet _visitors;

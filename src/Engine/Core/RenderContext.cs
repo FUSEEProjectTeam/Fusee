@@ -1,3 +1,4 @@
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
@@ -1743,6 +1744,23 @@ namespace Fusee.Engine.Core
         public void DisableDepthClamp()
         {
             _rci.DisableDepthClamp();
+        }
+
+
+        /// <summary>
+        /// Retrieve pixels from bound framebuffer
+        /// </summary>
+        /// <param name="x">x pixel position</param>
+        /// <param name="y">y pixel position</param>
+        /// <param name="pixelFormat">format to retrieve, this has to match the current bound FBO!</param>
+        /// <param name="width">how many pixel in x direction</param>
+        /// <param name="height">how many pixel in y direction</param>
+        /// <returns><see cref="ReadOnlySpan{T}"/> with pixel content</returns>
+        /// <remarks>Does usually not throw on error (e. g. wrong pixel format, out of bounds, etc), uses GL.GetError() to retrieve
+        /// potential error</remarks>
+        public ReadOnlySpan<byte> ReadPixels(int x, int y, ImagePixelFormat pixelFormat, int width, int height)
+        {
+            return _rci.ReadPixels(x, y, pixelFormat, width, height);
         }
 
         /// <summary>
