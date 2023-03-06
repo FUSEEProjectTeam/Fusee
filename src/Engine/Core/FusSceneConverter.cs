@@ -1369,7 +1369,7 @@ namespace Fusee.Engine.Core
                 Name = m.Name,
                 Normals = m.Normals?.ToArray(),
                 Tangents = m.Tangents?.ToArray(),
-                Triangles = m.Triangles?.ToArray().Select(x => (int)x).ToArray(),
+                Triangles = m.Triangles?.ToArray().Select(x => (ushort)x).ToArray(),
                 UVs = m.UVs?.ToArray(),
                 Vertices = m.Vertices?.ToArray()
             };
