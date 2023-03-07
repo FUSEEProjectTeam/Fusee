@@ -1,4 +1,5 @@
 ﻿using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 

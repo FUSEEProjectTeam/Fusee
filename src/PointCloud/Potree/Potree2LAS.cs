@@ -1,8 +1,14 @@
+using CommunityToolkit.Diagnostics;
+using CommunityToolkit.HighPerformance;
+using Fusee.Base.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Potree
@@ -36,10 +42,10 @@ namespace Fusee.PointCloud.Potree
         internal ushort FileCreationDayOfYear = (ushort)DateTime.Now.Day;
         internal ushort FileCreationYear = (ushort)DateTime.Now.Year;
         internal ushort HeaderSize = 375;
-        internal uint OffsetToPointData = 375; // sizeof(LASHeader)
+        internal uint OffsetToPointData = 375;
         internal uint NumberOfVariableLengthRecords = 0;
         internal byte PointDataRecordFormat = 2;
-        internal ushort PointDataRecordLength = 26; // sizeof(LASPoint)
+        internal ushort PointDataRecordLength = 26;
         internal uint LegacyNbrOfPoints = 0;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
@@ -97,23 +103,156 @@ namespace Fusee.PointCloud.Potree
     }
 
     /// <summary>
-    /// This class provides methods to convert and save <see cref="PotreePoint"/> clouds to LAS 1.4
+    /// This class provides methods to convert and saves <typeparamref name="PotreePoint"/> clouds to LAS 1.4
     /// </summary>
-    public class Potree2LAS : IPointWriter
+    public class Potree2LAS<PotreePoint> : IPointWriter<PotreePoint>, IDisposable where PotreePoint : struct
     {
         /// <summary>
         /// Returns the point type.
         /// </summary>
-        public PointType PointType => PointType.PosD3ColF3InUsLblB;
+        public PointType PointType => PointType.Raw;
 
-        public void WritePointcloudPoints(FileInfo savePath, ReadOnlySpan<PointType> points, IPointWriterMetadata metadata)
+        /// <summary>
+        /// The path the file is being saved to
+        /// </summary>
+        public FileInfo SavePath => _savePath;
+
+        /// <summary>
+        /// The necessary metadata information
+        /// </summary>
+        public IPointWriterMetadata Metadata => _metadata;
+
+        private readonly FileInfo _savePath;
+        private readonly Stream _fileStream;
+        private readonly IPointWriterMetadata _metadata;
+
+        private bool disposedValue;
+
+        // these information are filled during the first write call
+        private LASHeader _header;
+
+        /// <summary>
+        /// Generate a writer instance.
+        /// Use the write methods to fill the file with points.
+        /// </summary>
+        /// <param name="savePath">Path to save the file (make sure the extension is .las!)</param>
+        /// <param name="metadata">The metadata needed for the header (offset, scale)</param>
+        public Potree2LAS(FileInfo savePath/*, IPointWriterMetadata metadata*/)
+        {
+            Guard.IsNotNull(savePath);
+            //Guard.IsNotNull(metadata);
+            Guard.IsTrue(savePath.Extension == ".las");
+            if (savePath.Exists)
+            {
+                Diagnostics.Warn($"{savePath.FullName} does already exists. Overwriting ...");
+            }
+
+            _savePath = savePath;
+            _fileStream = _savePath.OpenWrite();
+            //_metadata = metadata;
+            ParseAndFillHeader();
+        }
+
+        private void ParseAndFillHeader()
+        {
+            var doy = DateTime.Now.DayOfYear;
+            var year = DateTime.Now.Year;
+            var size = Marshal.SizeOf<PotreePoint>();
+
+            // make sure we can cast to <see cref="ushort"/> and do not lose information
+            Guard.IsLessThan(doy, ushort.MaxValue);
+            Guard.IsLessThan(year, ushort.MaxValue);
+            Guard.IsLessThan(size, ushort.MaxValue);
+
+            _header = new LASHeader
+            {
+                PointDataRecordLength = (ushort)size,
+                FileCreationDayOfYear = (ushort)doy,
+                FileCreationYear = (ushort)year,
+                //MaxX = _metadata.BoundingBox.max.x,
+                //MaxY = _metadata.BoundingBox.max.y,
+                //MaxZ = _metadata.BoundingBox.max.z,
+                //MinX = _metadata.BoundingBox.min.x,
+                //MinY = _metadata.BoundingBox.min.y,
+                //MinZ = _metadata.BoundingBox.min.z,
+                //OffsetX = _metadata.Offset.x,
+                //OffsetY = _metadata.Offset.y,
+                //OffsetZ = _metadata.Offset.z,
+                //ScaleFactorX = _metadata.Scale.x,
+                //ScaleFactorY = _metadata.Scale.y,
+                //ScaleFactorZ = _metadata.Scale.z
+            };
+
+            var generatingSoftware = Encoding.UTF8.GetBytes($"POLAR v.{Assembly.GetExecutingAssembly().GetName().Version}");
+            Guard.IsLessThan(generatingSoftware.Length, _header.GeneratingSoftware.Length);
+            Array.Copy(generatingSoftware, _header.GeneratingSoftware, generatingSoftware.Length);
+
+            // Initialize unmanged memory to hold the struct.
+            var ptr = Marshal.AllocHGlobal(Marshal.SizeOf<LASHeader>());
+            try
+            {
+                // Copy the struct to unmanaged memory.
+                Marshal.StructureToPtr(_header, ptr, false);
+                var dest = new byte[Marshal.SizeOf<LASHeader>()];
+                Marshal.Copy(ptr, dest, 0, Marshal.SizeOf<LASHeader>());
+                _fileStream.Write(dest);
+
+            }
+            finally
+            {
+                // Free the unmanaged memory.
+                Marshal.FreeHGlobal(ptr);
+            }
+        }
+
+        /// <summary>
+        /// This methods takes a list <see cref="PointType"/>s and converts it to the desired output format and appends it to the file
+        /// to disk at given <see cref="SavePath"/>
+        /// </summary>
+        /// <param name="points">The point data as <see cref="ReadOnlySpan{T}"/></param>
+        public void WritePointcloudPoints(ReadOnlySpan<PotreePoint> points)
+        {
+            Guard.IsNotEmpty(points);
+        }
+
+        /// <summary>
+        /// This methods takes a list <see cref="PointType"/>s and converts it to the desired output format and appends it to the file
+        /// to disk at given <see cref="SavePath"/> in an <see langword="async"/> manner.
+        /// </summary>
+        /// <param name="points">The point data as <see cref="ReadOnlySpan{T}"/></param>
+        public Task WritePointcloudPointsAsync(ReadOnlyMemory<PotreePoint> points)
         {
             throw new NotImplementedException();
         }
 
-        public Task WritePointcloudPointsAsync(FileInfo savePath, ReadOnlyMemory<PointType> points, IPointWriterMetadata metadata)
+        protected virtual void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // close the file stream
+                    _fileStream.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~Potree2LAS()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
         // old code, replace
