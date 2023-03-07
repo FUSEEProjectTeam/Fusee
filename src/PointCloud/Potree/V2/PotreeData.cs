@@ -37,7 +37,7 @@ namespace Fusee.PointCloud.Potree.V2
             var hierarchyFilePath = Path.Combine(folderPath, Potree2Consts.HierarchyFileName);
 
             Guard.IsTrue(File.Exists(metadataFilePath), metadataFilePath);
-            Guard.IsTrue(File.Exists(metadataFilePath), hierarchyFilePath);
+            Guard.IsTrue(File.Exists(hierarchyFilePath), hierarchyFilePath);
 
             Metadata = LoadPotreeMetadata(metadataFilePath);
             Hierarchy = new()
