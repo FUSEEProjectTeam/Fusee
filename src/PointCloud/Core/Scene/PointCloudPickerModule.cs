@@ -26,19 +26,38 @@ using System.Diagnostics;
 
 namespace Fusee.PointCloud.Core.Scene
 {
+    /// <summary>
+    /// Result of a point cloud pick operation
+    /// </summary>
     public class PointCloudPickResult : PickResult
     {
+        /// <summary>
+        /// The point mesh.
+        /// </summary>
         public Mesh Mesh;
+        /// <summary>
+        /// The index of the hit vertex, in this case the point index.
+        /// </summary>
         public int VertIdx;
+        /// <summary>
+        /// The <see cref="OctantId"/> of the <see cref="PointCloudOctant"/>in which the found point lies.
+        /// </summary>
         public OctantId OctantId;
     }
 
+    /// <summary>
+    /// Point cloud picker module. Inject to pick <see cref="PointCloudComponent"/>s
+    /// </summary>
     public class PointCloudPickerModule : IPickerModule
     {
-        private PickerState State;
-        private PointCloudOctree _octree;
-        private IPointCloudImp<Mesh> _pcImp;
+        private PickerState _state;
+        private readonly PointCloudOctree _octree;
+        private readonly IPointCloudImp<Mesh> _pcImp;
+        private readonly float _pointSpacing;
 
+        /// <summary>
+        /// The pick result after picking.
+        /// </summary>
         public PickResult PickResult { get; set; }
 
         internal struct MinPickValue
@@ -49,8 +68,6 @@ namespace Fusee.PointCloud.Core.Scene
             internal OctantId OctantId;
         }
 
-        private Stopwatch sw = new Stopwatch();
-
         /// <summary>
         /// Determines visible points of a point cloud (using the components <see cref="VisibilityTester"/>) and renders them.
         /// </summary>
@@ -58,22 +75,14 @@ namespace Fusee.PointCloud.Core.Scene
         [VisitMethod]
         public void RenderPointCloud(PointCloudComponent pointCloud)
         {
-            sw.Start();
             if (!pointCloud.Active) return;
 
-            var proj = State.CurrentCameraResult.Camera.GetProjectionMat(State.ScreenSize.x, State.ScreenSize.y, out _);
-            var view = State.CurrentCameraResult.View;
-            var rayD = new RayD(new double2(State.PickPosClip.x, State.PickPosClip.y), (double4x4)view, (double4x4)proj);
-
-            Diagnostics.Info($"Setup took: {sw.ElapsedTicks}");
-            sw.Restart();
+            var proj = _state.CurrentCameraResult.Camera.GetProjectionMat(_state.ScreenSize.x, _state.ScreenSize.y, out _);
+            var view = _state.CurrentCameraResult.View;
+            var rayD = new RayD(new double2(_state.PickPosClip.x, _state.PickPosClip.y), (double4x4)view, (double4x4)proj);
 
             var tmpList = new List<PointCloudOctant>();
             var allHitBoxes = PickOctantRecursively((PointCloudOctant)_octree.Root, rayD, tmpList).ToList();
-
-            Diagnostics.Info($"PickOctantRecursively took: {sw.ElapsedTicks}");
-            sw.Restart();
-
 
             if (allHitBoxes == null || allHitBoxes.Count == 0) return;
 
@@ -93,7 +102,7 @@ namespace Fusee.PointCloud.Core.Scene
 
                     for (var i = 0; i < mesh.Vertices.Length; i++)
                     {
-                        var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], 0.017f); // spacing * 0.1?
+                        var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], _pointSpacing);
                         if (dist == float2.One * -1) continue;
 
                         if (dist.x <= currentMin.Distance.x && dist.y <= currentMin.Distance.y)
@@ -111,9 +120,6 @@ namespace Fusee.PointCloud.Core.Scene
                 }
             });
 
-            Diagnostics.Info($"foreach took: {sw.ElapsedTicks}");
-            sw.Restart();
-
             if (currentRes == null || currentRes.Count == 0) return;
 
             var minElement = currentRes.First();
@@ -126,16 +132,13 @@ namespace Fusee.PointCloud.Core.Scene
                 }
             }
 
-            Diagnostics.Info($"Min element took: {sw.ElapsedTicks}");
-            sw.Restart();
-
-            var mvp = proj * view * State.Model;
+            var mvp = proj * view * _state.Model;
             PickResult = new PointCloudPickResult
             {
                 Node = null,
                 Projection = proj,
                 View = view,
-                Model = State.Model,
+                Model = _state.Model,
                 ClipPos = float4x4.TransformPerspective(mvp, minElement.Mesh.Vertices[minElement.VertIdx]),
                 Mesh = minElement.Mesh,
                 VertIdx = minElement.VertIdx,
@@ -144,21 +147,37 @@ namespace Fusee.PointCloud.Core.Scene
 
         }
 
-
-        // sphere of size ra centered at point ce
+        /// <summary>
+        /// Calculates the intersection distance between a ray and a sphere.
+        /// </summary>
+        /// <param name="ro"><see cref="RayF.Origin"/></param>
+        /// <param name="rd"><see cref="RayF.Direction"/></param>
+        /// <param name="ce">Center point of sphere/point</param>
+        /// <param name="ra">Radius of sphere with center point of <paramref name="ce"/></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         float2 SphereRayIntersection(float3 ro, float3 rd, float3 ce, float ra)
         {
             var oc = ro - ce;
-            float b = float3.Dot(oc, rd);
-            var qc = oc - b * rd;
-            float h = ra * ra - float3.Dot(qc, qc);
-            if (h < 0.0) new float2(-1.0f); // no intersection
+            var b = float3.Dot(oc, rd);
+            var c = float3.Dot(oc, oc) - ra * ra;
+            var h = b * b - c;
+            if (h < 0.0f) return new float2(-1.0f); // no intersection
             h = MathF.Sqrt(h);
-            if (float.IsNaN(h)) return new float2(-1.0f);
+            if (float.IsNaN(h) || float.IsInfinity(h)) return new float2(-1.0f);
             return new float2(-b - h, -b + h);
+
+            //var oc = ro - ce;
+            //float b = float3.Dot(oc, rd);
+            //var qc = oc - b * rd;
+            //float h = ra * ra - float3.Dot(qc, qc);
+            //if (h < 0.0) new float2(-1.0f); // no intersection
+            //h = MathF.Sqrt(h);
+            //if (float.IsNaN(h)) return new float2(-1.0f);
+            //return new float2(-b - h, -b + h);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private List<PointCloudOctant> PickOctantRecursively(PointCloudOctant node, RayD ray, List<PointCloudOctant> list)
         {
             list.Add(node);
@@ -175,18 +194,30 @@ namespace Fusee.PointCloud.Core.Scene
             return list;
         }
 
-        public PointCloudPickerModule(IPointCloudOctree octree, IPointCloudImp<Mesh> pcImp)
+        /// <summary>
+        /// Inject this to a <see cref="ScenePicker"/> to be able to pick <see cref="PointCloudComponent"/>s.
+        /// The actual point and <see cref="PointCloudOctree"/> data needs to be present a priori, however it's type is polymorph, therefore we need to inject those data, too.
+        /// </summary>
+        /// <param name="octree">The <see cref="PointCloudOctree"/> of the <see cref="IPointCloudImp{TGpuData}"/>.</param>
+        /// <param name="pcImp">The <see cref="IPointCloudImp{TGpuData}"/>, needs to be of type <see cref="Mesh"/></param>
+        /// <param name="pointSpacing">The spacing between points. For Potree use the metadata spacing component * 0.1f <br/> e. g. Spacing = 2.18f, pass 0.218f to this ctor.</param>
+        public PointCloudPickerModule(IPointCloudOctree octree, IPointCloudImp<Mesh> pcImp, float pointSpacing)
         {
             if (pcImp == null)
                 Diagnostics.Warn("No per point picking possible, no PointCloud<Mesh> type loaded");
 
             _octree = (PointCloudOctree)octree;
             _pcImp = pcImp;
+            _pointSpacing = pointSpacing;
         }
 
+        /// <summary>
+        /// Set the current <see cref="PickerState"/> from external (this is done automatically by the <see cref="Visitor{TNode, TComponent}.Traverse(TNode)"/> method.
+        /// </summary>
+        /// <param name="state"></param>
         public void SetState(PickerState state)
         {
-            State = state;
+            _state = state;
         }
     }
 }

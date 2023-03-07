@@ -111,7 +111,7 @@ namespace Fusee.Xene
 
         // The static list of all known sets of visitor methods
         // This is kept to avoid building the visitor map again and again different instances of the same visitor.
-        private static Dictionary<Type, VisitorSet> _visitorMap;
+        private /*static*/ Dictionary<Type, VisitorSet> _visitorMap;
         #endregion
 
         #region Public Traversal Methods
