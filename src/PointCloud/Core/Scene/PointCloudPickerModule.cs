@@ -1,28 +1,28 @@
 using Fusee.Base.Core;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
+using Fusee.Structures;
 using Fusee.Xene;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using static Fusee.Engine.Core.ScenePicker;
-using System.Linq;
 using Microsoft.Extensions.Options;
-using Fusee.PointCloud.Common;
-using Fusee.Base.Core;
-using Fusee.Structures;
-using System.Threading.Tasks;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
-using System.Diagnostics;
+using System.Threading.Tasks;
+using static Fusee.Engine.Core.ScenePicker;
 
 namespace Fusee.PointCloud.Core.Scene
 {
