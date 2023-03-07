@@ -103,7 +103,7 @@ namespace Fusee.PointCloud.Core.Scene
                     for (var i = 0; i < mesh.Vertices.Length; i++)
                     {
                         var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], _pointSpacing);
-                        if (dist == float2.One * -1) continue;
+                        if (dist.x < 0 || dist.y < 0) continue;
 
                         if (dist.x <= currentMin.Distance.x && dist.y <= currentMin.Distance.y)
                         {
@@ -128,6 +128,7 @@ namespace Fusee.PointCloud.Core.Scene
             {
                 if (r.Distance.x < minElement.Distance.x && r.Distance.y < minElement.Distance.y)
                 {
+                    // TODO: Test if a offset > e. g. 0.1 is necessary that we do not spawn a box inside the cull / near clipping plane :)
                     minElement = r;
                 }
             }
@@ -146,6 +147,7 @@ namespace Fusee.PointCloud.Core.Scene
             };
 
         }
+
 
         /// <summary>
         /// Calculates the intersection distance between a ray and a sphere.
