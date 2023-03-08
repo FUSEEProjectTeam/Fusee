@@ -9,6 +9,7 @@ using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -103,15 +104,13 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         /// <param name="id">Id of the octant.</param>
         /// <returns></returns>
-        public MemoryOwner<PotreePoint> LoadNodeDataPotreePoint(OctantId id)
+        public MemoryOwner<PotreePoint> LoadRawNodeData(OctantId id)
         {
             Guard.IsNotNull(PotreeData);
             var node = FindNode(ref PotreeData.Hierarchy, id);
-
             // if node is null the hierarchy is broken and we look for an octant that isn't there...
             Guard.IsNotNull(node);
-
-            return LoadNodeData<PotreePoint>(node, PointType.Raw);
+            return ReadNodeData(node);
         }
 
         private MemoryOwner<TPoint> LoadNodeData<TPoint>(PotreeNode potreeNode, PointType type) where TPoint : struct
@@ -125,6 +124,76 @@ namespace Fusee.PointCloud.Potree.V2
                 PointType.PosD3ColF3LblB => ReadNodeDataPosD3ColF3LblB<TPoint>(potreeNode),
                 _ => ThrowHelper.ThrowArgumentOutOfRangeException<MemoryOwner<TPoint>>(nameof(type)),
             };
+        }
+
+        private MemoryOwner<PotreePoint> ReadNodeData(PotreeNode node)
+        {
+            Guard.IsLessThanOrEqualTo(node.NumPoints, int.MaxValue);
+
+            var potreePointSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
+            var pointArray = new byte[potreePointSize];
+
+            var returnMemory = MemoryOwner<PotreePoint>.Allocate((int)node.NumPoints);
+
+            OctreeMappedViewAccessor.ReadArray(node.ByteOffset, pointArray, 0, potreePointSize);
+
+            var pointCount = 0;
+           
+            for (var i = 0; i < pointArray.Length; i += PotreeData.Metadata.PointSize)
+            {
+                var pt = pointArray.AsSpan(i, PotreeData.Metadata.PointSize);
+                var posSlice = pt.Slice(offsetPosition, Marshal.SizeOf<int>() * 3);
+                var pos = MemoryMarshal.Cast<byte, int>(posSlice);
+
+                double x = pos[0] * PotreeData.Metadata.Scale.x + PotreeData.Metadata.Offset.x;
+                double y = pos[1] * PotreeData.Metadata.Scale.y + PotreeData.Metadata.Offset.y;
+                double z = pos[2] * PotreeData.Metadata.Scale.z + PotreeData.Metadata.Offset.z;
+
+                double3 position = new(x, y, z);
+                position = Potree2Consts.YZflip * position;
+
+                /*  public short Intensity;
+                    public byte ReturnNumber;
+                    public byte NumberOfReturns;
+                    public byte Classification;
+                    public byte ScanAngleRank;
+                    public byte UserData;
+                    public byte PointSourceId;
+                    public float3 Color;
+                */
+
+                var intensity = MemoryMarshal.Cast<byte, short>(pt.Slice(offsetIntensity, Marshal.SizeOf<short>()))[0];
+                var returnNumber = pt.Slice(offsetReturnNumber, 1)[0];
+                var numberOfReturns = pt.Slice(offsetNumberOfReturns, 1)[0];
+                var classification = pt.Slice(offsetClassification, 1)[0];
+                var scanAngle = pt.Slice(offsetScanAngleRank, 1)[0];
+                var userData = pt.Slice(offsetUserData, 1)[0];
+                var ptSourceId = pt.Slice(offsetPointSourceId, 1)[0];
+                var r = MemoryMarshal.Cast<byte, ushort>(pt.Slice(offsetColor, Marshal.SizeOf<ushort>()))[0];
+                var g = MemoryMarshal.Cast<byte, ushort>(pt.Slice(offsetColor + Marshal.SizeOf<ushort>(), Marshal.SizeOf<ushort>()))[0];
+                var b = MemoryMarshal.Cast<byte, ushort>(pt.Slice(offsetColor + Marshal.SizeOf<ushort>() + Marshal.SizeOf<ushort>(), Marshal.SizeOf<ushort>()))[0];
+
+                var color = new float3
+                {
+                    x = ((float)r / ushort.MaxValue),
+                    y = ((float)g / ushort.MaxValue),
+                    z = ((float)b / ushort.MaxValue)
+                };
+
+                returnMemory.Span[pointCount].Position = position;
+                returnMemory.Span[pointCount].Intensity = intensity;
+                returnMemory.Span[pointCount].ReturnNumber = returnNumber;
+                returnMemory.Span[pointCount].NumberOfReturns = numberOfReturns;
+                returnMemory.Span[pointCount].Classification = classification;
+                returnMemory.Span[pointCount].ScanAngleRank = scanAngle;
+                returnMemory.Span[pointCount].UserData = userData;
+                returnMemory.Span[pointCount].PointSourceId = ptSourceId;
+                returnMemory.Span[pointCount].Color = color;
+
+                pointCount++;
+            }
+
+            return returnMemory;
         }
 
         private MemoryOwner<TPoint> ReadNodeDataPosD3ColF3LblB<TPoint>(PotreeNode node) where TPoint : struct

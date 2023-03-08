@@ -120,16 +120,15 @@ namespace Fusee.PointCloud.Common
         /// This methods takes a list <see cref="PointType"/>s and converts it to the desired output format and writes the file
         /// to disk at given <see cref="SavePath"/>
         /// </summary>
-        /// <param name="points">The point data as <see cref="ReadOnlySpan{T}"/></param>
-        public void WritePointcloudPoints(ReadOnlySpan<PointT> points);
+        /// <param name="points">The point data as <see cref="Memory{T}"/></param>
+        public void WritePointcloudPoints(Memory<PointT> points);
 
         /// <summary>
         /// This methods takes a list of <see cref="PointType"/>s and converts it to the desired output format and writes the file
         /// to disk at given <see cref="SavePath"/> in an async manner
         /// </summary>
-        /// <param name="points">The point data as <see cref="ReadOnlyMemory{T}"/>, no <see cref="ReadOnlySpan{T}"/> as ref types are not allowed
-        /// during async operations</param>
+        /// <param name="points">The point data as <see cref="Memory{T}"/></param>
 
-        public Task WritePointcloudPointsAsync(ReadOnlyMemory<PointT> points);
+        public Task WritePointcloudPointsAsync(Memory<PointT> points);
     }
 }

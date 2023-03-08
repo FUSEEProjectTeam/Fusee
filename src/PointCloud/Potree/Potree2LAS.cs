@@ -1,12 +1,14 @@
 using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance;
 using Fusee.Base.Core;
+using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using CommunityToolkit.HighPerformance;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -84,9 +86,9 @@ namespace Fusee.PointCloud.Potree
     {
         public LASPoint() { }
 
-        internal uint X = 0;
-        internal uint Y = 0;
-        internal uint Z = 0;
+        internal int X = 0;
+        internal int Y = 0;
+        internal int Z = 0;
 
         internal ushort Intensity = 0;
         internal byte ReturnNbrOfScanDirAndEdgeByte = 0;
@@ -102,10 +104,26 @@ namespace Fusee.PointCloud.Potree
         internal ushort B = 0;
     }
 
+    public class LASPointWriterMetadata : IPointWriterMetadata
+    {
+        public string Version { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int PointCount { get; set; }
+        public string Projection { get; set; }
+        public IPointWriterHierarchy Hierarchy { get; set; }
+        public double3 Offset { get; set; }
+        public double3 Scale { get; set; }
+        public double Spacing { get; set; }
+        public AABBd BoundingBox { get; set; }
+        public string Encoding { get; set; }
+        public int PointSize { get; set; }
+    }
+
     /// <summary>
     /// This class provides methods to convert and saves <typeparamref name="PotreePoint"/> clouds to LAS 1.4
     /// </summary>
-    public class Potree2LAS<PotreePoint> : IPointWriter<PotreePoint>, IDisposable where PotreePoint : struct
+    public class Potree2LAS : IPointWriter<V2.Data.PotreePoint>, IDisposable
     {
         /// <summary>
         /// Returns the point type.
@@ -124,7 +142,7 @@ namespace Fusee.PointCloud.Potree
 
         private readonly FileInfo _savePath;
         private readonly Stream _fileStream;
-        private readonly IPointWriterMetadata _metadata;
+        private readonly LASPointWriterMetadata _metadata;
 
         private bool disposedValue;
 
@@ -137,10 +155,11 @@ namespace Fusee.PointCloud.Potree
         /// </summary>
         /// <param name="savePath">Path to save the file (make sure the extension is .las!)</param>
         /// <param name="metadata">The metadata needed for the header (offset, scale)</param>
-        public Potree2LAS(FileInfo savePath/*, IPointWriterMetadata metadata*/)
+        public Potree2LAS(FileInfo savePath, LASPointWriterMetadata metadata)
         {
+            
             Guard.IsNotNull(savePath);
-            //Guard.IsNotNull(metadata);
+            Guard.IsNotNull(metadata);
             Guard.IsTrue(savePath.Extension == ".las");
             if (savePath.Exists)
             {
@@ -149,7 +168,7 @@ namespace Fusee.PointCloud.Potree
 
             _savePath = savePath;
             _fileStream = _savePath.OpenWrite();
-            //_metadata = metadata;
+            _metadata = metadata;
             ParseAndFillHeader();
         }
 
@@ -169,18 +188,18 @@ namespace Fusee.PointCloud.Potree
                 PointDataRecordLength = (ushort)size,
                 FileCreationDayOfYear = (ushort)doy,
                 FileCreationYear = (ushort)year,
-                //MaxX = _metadata.BoundingBox.max.x,
-                //MaxY = _metadata.BoundingBox.max.y,
-                //MaxZ = _metadata.BoundingBox.max.z,
-                //MinX = _metadata.BoundingBox.min.x,
-                //MinY = _metadata.BoundingBox.min.y,
-                //MinZ = _metadata.BoundingBox.min.z,
-                //OffsetX = _metadata.Offset.x,
-                //OffsetY = _metadata.Offset.y,
-                //OffsetZ = _metadata.Offset.z,
-                //ScaleFactorX = _metadata.Scale.x,
-                //ScaleFactorY = _metadata.Scale.y,
-                //ScaleFactorZ = _metadata.Scale.z
+                MaxX = _metadata.BoundingBox.max.x,
+                MaxY = _metadata.BoundingBox.max.y,
+                MaxZ = _metadata.BoundingBox.max.z,
+                MinX = _metadata.BoundingBox.min.x,
+                MinY = _metadata.BoundingBox.min.y,
+                MinZ = _metadata.BoundingBox.min.z,
+                OffsetX = _metadata.Offset.x,
+                OffsetY = _metadata.Offset.y,
+                OffsetZ = _metadata.Offset.z,
+                ScaleFactorX = _metadata.Scale.x,
+                ScaleFactorY = _metadata.Scale.y,
+                ScaleFactorZ = _metadata.Scale.z
             };
 
             var generatingSoftware = Encoding.UTF8.GetBytes($"POLAR v.{Assembly.GetExecutingAssembly().GetName().Version}");
@@ -210,9 +229,57 @@ namespace Fusee.PointCloud.Potree
         /// to disk at given <see cref="SavePath"/>
         /// </summary>
         /// <param name="points">The point data as <see cref="ReadOnlySpan{T}"/></param>
-        public void WritePointcloudPoints(ReadOnlySpan<PotreePoint> points)
+        public void WritePointcloudPoints(Memory<V2.Data.PotreePoint> points)
         {
             Guard.IsNotEmpty(points);
+            Parallel.For(0, points.Length, (i) =>
+            {
+                // restore int, TODO: provide the possibility to skip the offset application by user (always use scalefactor)
+                points.Span[i].Position.x = (points.Span[i].Position.x - _header.OffsetX) / _header.ScaleFactorX;
+                points.Span[i].Position.y = (points.Span[i].Position.y - _header.OffsetY) / _header.ScaleFactorY;
+                points.Span[i].Position.z = (points.Span[i].Position.z - _header.OffsetZ) / _header.ScaleFactorZ;
+            });
+
+            for(var i = 0;  i < points.Length; i++)
+            {
+                var pt = points.Span[i];
+                // re-interpret the first bytes as int
+                // we need to shorten the first 8 bytes to 4 bytes
+                //  internal int X = 0;
+                //  internal int Y = 0;
+                //  internal int Z = 0;
+                var intArr = new int[] { (int)pt.Position.x, (int)pt.Position.y, (int)pt.Position.z };
+                var posInt = MemoryMarshal.Cast<int, byte>(intArr);
+                _fileStream.Write(posInt);
+               
+
+                //internal ushort Intensity = 0;
+                _fileStream.Write((ushort)pt.Intensity);
+                //internal byte ReturnNbrOfScanDirAndEdgeByte = 0;
+                _fileStream.Write(pt.ReturnNumber);
+                //internal byte Classification = 0;
+                _fileStream.Write(pt.Classification);
+                //internal byte ScanAngleRank = 0;
+                _fileStream.Write(pt.ScanAngleRank);
+                //internal byte UserData = 0;
+                _fileStream.Write(pt.UserData);
+
+                //internal ushort PtSrcID = 0
+                _fileStream.Write(pt.PointSourceId);
+
+                //  internal ushort R = 0;
+                //  internal ushort G = 0;
+                //  internal ushort B = 0;
+                // scale from float range to ushort range
+                // reinterpret as ushort
+                pt.Color.x *= ushort.MaxValue;
+                pt.Color.y *= ushort.MaxValue;
+                pt.Color.z *= ushort.MaxValue;
+                var colorArr = new ushort[] { (ushort)pt.Color.x, (ushort)pt.Color.y, (ushort)pt.Color.z };
+                var colorBytes = MemoryMarshal.Cast<ushort, byte>(colorArr);
+                _fileStream.Write(colorBytes);
+            }
+
         }
 
         /// <summary>
@@ -220,7 +287,7 @@ namespace Fusee.PointCloud.Potree
         /// to disk at given <see cref="SavePath"/> in an <see langword="async"/> manner.
         /// </summary>
         /// <param name="points">The point data as <see cref="ReadOnlySpan{T}"/></param>
-        public Task WritePointcloudPointsAsync(ReadOnlyMemory<PotreePoint> points)
+        public Task WritePointcloudPointsAsync(Memory<V2.Data.PotreePoint> points)
         {
             throw new NotImplementedException();
         }
