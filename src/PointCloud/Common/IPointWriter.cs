@@ -102,18 +102,13 @@ namespace Fusee.PointCloud.Common
     public interface IPointWriter
     {
         /// <summary>
-        /// Returns the point type.
-        /// </summary>
-        public PointType PointType { get; }
-
-        /// <summary>
         /// This methods takes a list <see cref="PointType"/>s and converts it to the desired output format and writes the file 
         /// to disk at given <paramref name="savePath"/>
         /// </summary>
         /// <param name="savePath">Path to save to</param>
         /// <param name="points">The point data as <see cref="ReadOnlySpan{T}"/></param>
         /// <param name="metadata">Necessary metadata, e. g. global scale, etc.</param>
-        public void WritePointcloudPoints(FileInfo savePath, ReadOnlySpan<PointType> points, IPointWriterMetadata metadata);
+        public void WritePointcloudPoints(FileInfo savePath, ReadOnlySpan<byte[]> points, IPointWriterMetadata metadata);
 
         /// <summary>
         /// This methods takes a list of <see cref="PointType"/>s and converts it to the desired output format and writes the file 
@@ -123,6 +118,6 @@ namespace Fusee.PointCloud.Common
         /// <param name="points">The point data as <see cref="ReadOnlyMemory{T}"/>, no <see cref="ReadOnlySpan{T}"/> as ref types are not allowed  
         /// during async operations</param>
         /// <param name="metadata">Necessary metadata, e. g. global scale, etc.</param>
-        public Task WritePointcloudPointsAsync(FileInfo savePath, ReadOnlyMemory<PointType> points, IPointWriterMetadata metadata);
+        public Task WritePointcloudPointsAsync(FileInfo savePath, ReadOnlyMemory<byte[]> points, IPointWriterMetadata metadata);
     }
 }

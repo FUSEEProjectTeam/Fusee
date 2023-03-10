@@ -113,11 +113,6 @@ namespace Fusee.PointCloud.Potree.V2
         }
 
         /// <summary>
-        /// Returns the point type.
-        /// </summary>
-        public PointType PointType => PointType.PosD3ColF3LblB;
-
-        /// <summary>
         /// Reads a potree file.
         /// </summary>
         /// <param name="path">Path to the file.</param>

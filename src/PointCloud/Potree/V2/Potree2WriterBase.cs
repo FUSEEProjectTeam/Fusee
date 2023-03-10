@@ -123,12 +123,6 @@ namespace Fusee.PointCloud.Potree.V2
         }
 
         /// <summary>
-        /// Returns the point type.
-        /// </summary>
-        public PointType PointType => PointType.PosD3ColF3LblB;
-
-
-        /// <summary>
         /// Read and cache metadata from the metadata.json file
         /// </summary>
         protected void CacheMetadata()
