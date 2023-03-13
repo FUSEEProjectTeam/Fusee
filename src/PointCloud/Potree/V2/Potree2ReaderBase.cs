@@ -105,7 +105,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <returns>Meta and octree data of the potree file.</returns>
         public PotreeData ReadNewFile(string path)
         {
-            (var Metadata, var Hierarchy)= LoadHierarchy(path);
+            (var Metadata, var Hierarchy) = LoadHierarchy(path);
 
             PotreeData = new PotreeData(Hierarchy, Metadata);
 
