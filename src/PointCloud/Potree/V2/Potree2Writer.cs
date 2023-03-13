@@ -29,8 +29,8 @@ namespace Fusee.PointCloud.Potree.V2
             long octantCount = 0;
             long pointsCount = 0;
 
-            using (Stream readStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (Stream writeStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            using (Stream readStream = File.Open(Path.Combine(PotreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (Stream writeStream = File.Open(Path.Combine(PotreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName), FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
             {
                 BinaryReader binaryReader = new BinaryReader(readStream);
                 BinaryWriter binaryWriter = new BinaryWriter(writeStream);
@@ -216,8 +216,8 @@ namespace Fusee.PointCloud.Potree.V2
             long octantCount = 0;
             long pointsCount = 0;
 
-            using (Stream readStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (Stream writeStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            using (Stream readStream = File.Open(Path.Combine(PotreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (Stream writeStream = File.Open(Path.Combine(PotreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName), FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
             {
                 BinaryReader binaryReader = new BinaryReader(readStream);
                 BinaryWriter binaryWriter = new BinaryWriter(writeStream);
@@ -272,7 +272,7 @@ namespace Fusee.PointCloud.Potree.V2
                 throw new Exception();
             }
 
-            using (Stream writeStream = File.Open(OctreeFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            using (Stream writeStream = File.Open(Path.Combine(PotreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName), FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
             {
                 BinaryWriter binaryWriter = new BinaryWriter(writeStream);
 
