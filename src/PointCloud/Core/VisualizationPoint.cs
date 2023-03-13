@@ -4,12 +4,23 @@ namespace Fusee.PointCloud.Potree.V2.Data
 {
     /// <summary>
     /// This point is used for visualization purposes.
-    /// It is read by <see cref="Potree2Reader"/> and converted to mesh data.
+    /// It is read from a file and converted to mesh data.
     /// </summary>
     public struct VisualizationPoint
     {
+        /// <summary>
+        /// The position of a point.
+        /// </summary>
         public float3 Position;
+
+        /// <summary>
+        /// The color (r,g,b,a) of a point.
+        /// </summary>
         public float4 Color;
+
+        /// <summary>
+        /// Flags have to be interpreted manually or they will be ignored.
+        /// </summary>
         public uint Flags;
     }
 }

@@ -1,3 +1,4 @@
+using CommunityToolkit.Diagnostics;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
@@ -49,7 +50,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Current camera frustum - set by the SceneRenderer if a PointCloud Component is visited.
         /// </summary>
-        public FrustumF RenderFrustum { get; set; }
+        public FrustumF? RenderFrustum { get; set; }
 
         /// <summary>
         /// The octree structure of the point cloud.
@@ -178,6 +179,7 @@ namespace Fusee.PointCloud.Core
 
             //If node does not intersect the viewing frustum or is smaller than the minimal projected size:
             //Return -> will not be added to _visibleNodesOrderedByProjectionSize -> traversal of this branch stops.
+            Guard.IsNotNull(RenderFrustum);
             if (!node.InsideOrIntersectingFrustum(RenderFrustum, translation, scale) || node.ProjectedScreenSize < _minScreenProjectedSize)
             {
                 node.IsVisible = false;

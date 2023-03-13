@@ -1,4 +1,3 @@
-using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
@@ -7,7 +6,6 @@ using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Potree.V2.Data;
 using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,14 +50,14 @@ namespace Fusee.PointCloud.Core
     /// </summary>
     /// <typeparam name="TGpuData"></typeparam>
     /// <param name="points">The point cloud points as generic array.</param>
+    /// <param name="octantId"></param>
     /// <returns></returns>
     public delegate TGpuData CreateGpuData<TGpuData>(MemoryOwner<VisualizationPoint> points, OctantId octantId);
 
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
     /// </summary>
-    /// <typeparam name="TGpuData"></typeparam>
-    /// <typeparam name="TPoint"></typeparam>
+    /// <typeparam name="TGpuData">Generic for the point/mesh type.</typeparam>
     public class PointCloudDataHandler<TGpuData> : PointCloudDataHandlerBase<TGpuData>, IDisposable where TGpuData : IDisposable
     {
         /// <summary>
@@ -122,7 +120,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="octantId">The unique id of an octant.</param>
         /// <returns></returns>
-        public override IEnumerable<TGpuData> GetGpuData(OctantId octantId)
+        public override IEnumerable<TGpuData>? GetGpuData(OctantId octantId)
         {
             if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
                 return gpuData;
@@ -206,10 +204,11 @@ namespace Fusee.PointCloud.Core
             }
         }
 
-        private void OnItemEvictedFromCache(object guid, object meshes, EvictionReason reason, object state)
+        private void OnItemEvictedFromCache(object guid, object? meshes, EvictionReason reason, object? state)
         {
             lock (LockDisposeQueue)
             {
+                if (meshes == null) return;
                 DisposeQueue.Add((OctantId)guid, (IEnumerable<TGpuData>)meshes);
             }
         }
@@ -239,7 +238,6 @@ namespace Fusee.PointCloud.Core
                 // Call the appropriate methods to clean up
                 // unmanaged resources here.
                 _gpuDataCache.Dispose();
-                _gpuDataCache = null;
 
                 lock (LockDisposeQueue)
                 {
@@ -253,7 +251,6 @@ namespace Fusee.PointCloud.Core
                 }
 
                 _pointCache.Dispose();
-                _pointCache = null;
                 LoadingQueue.Clear();
 
                 // Note disposing has been done.

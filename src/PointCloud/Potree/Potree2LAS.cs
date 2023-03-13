@@ -1,5 +1,4 @@
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;

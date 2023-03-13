@@ -1,5 +1,4 @@
 using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
@@ -9,7 +8,6 @@ using Fusee.PointCloud.Potree.V2;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {
