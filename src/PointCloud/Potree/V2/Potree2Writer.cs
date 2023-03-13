@@ -271,9 +271,9 @@ namespace Fusee.PointCloud.Potree.V2
         //        throw new Exception();
         //    }
 
-            using (Stream writeStream = File.Open(Path.Combine(PotreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName), FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
-            {
-                BinaryWriter binaryWriter = new BinaryWriter(writeStream);
+        //    using (Stream writeStream = File.Open(Path.Combine(PotreeData.Metadata.FolderPath, Potree2Consts.OctreeFileName), FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+        //    {
+        //        BinaryWriter binaryWriter = new BinaryWriter(writeStream);
 
         //        for (int i = 0; i < points.Length; i++)
         //        {
