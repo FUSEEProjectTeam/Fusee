@@ -14,7 +14,7 @@ namespace Fusee.PointCloud.Potree.V2
     public abstract class Potree2WriterBase : IDisposable
     {
         /// <summary>
-        /// The <see cref="V2.PotreeData"/>
+        /// The <see cref="Data.PotreeData"/>
         /// </summary>
         public PotreeData? PotreeData
         {
@@ -68,8 +68,6 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         protected int offsetColor = -1;
 
-        private string? _octreeFilePath;
-        private MemoryMappedFile? _octreeMappedFile;
         private MemoryMappedViewAccessor? _octreeViewAccessor;
         private bool disposedValue;
 
@@ -81,36 +79,14 @@ namespace Fusee.PointCloud.Potree.V2
             get
             {
                 Guard.IsNotNull(_octreeViewAccessor, nameof(_octreeViewAccessor));
-                Guard.IsNotNull(_octreeMappedFile, nameof(_octreeMappedFile));
 
                 return _octreeViewAccessor;
-
             }
-        }
-
-        /// <summary>
-        /// The path to the octree.bin file
-        /// On assign the <see cref="MemoryMappedFile"/> and the <see cref="MemoryMappedViewAccessor"/> is being created.
-        /// </summary>
-        protected string OctreeFilePath
-        {
             set
             {
-                Guard.IsNotNullOrEmpty(value, nameof(value));
-                Guard.IsTrue(File.Exists(value));
-
-                _octreeFilePath = value;
-
-                _octreeMappedFile?.Dispose();
                 _octreeViewAccessor?.Dispose();
 
-                _octreeMappedFile = MemoryMappedFile.CreateFromFile(_octreeFilePath, FileMode.Open);
-                _octreeViewAccessor = _octreeMappedFile.CreateViewAccessor();
-            }
-            get
-            {
-                Guard.IsNotNullOrEmpty(_octreeFilePath);
-                return _octreeFilePath;
+                _octreeViewAccessor = value;
             }
         }
 
@@ -120,6 +96,8 @@ namespace Fusee.PointCloud.Potree.V2
         public Potree2WriterBase(PotreeData potreeData)
         {
             PotreeData = potreeData;
+
+            OctreeMappedViewAccessor = PotreeData.OctreeMappedFile.CreateViewAccessor();
         }
 
         /// <summary>
@@ -200,7 +178,6 @@ namespace Fusee.PointCloud.Potree.V2
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects)
-                    _octreeMappedFile?.Dispose();
                     _octreeViewAccessor?.Dispose();
                 }
 
