@@ -4,6 +4,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Potree.V2.Data;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Buffers;
@@ -23,7 +24,7 @@ namespace Fusee.PointCloud.Core
     /// Delegate that allows to inject the loading method of the PointReader - loads the points from file.
     /// </summary>
     /// <param name="guid">Unique ID of an octant.</param>
-    public delegate MemoryOwner<TPoint> LoadPointsHandler<TPoint>(OctantId guid);
+    public delegate MemoryOwner<VisualizationPoint> LoadPointsHandler(OctantId guid);
 
     /// <summary>
     /// Delegate for a method that tries to get the mesh(es) of an octant. If they are not cached yet, they should be created an added to the _gpuDataCache.
@@ -50,30 +51,29 @@ namespace Fusee.PointCloud.Core
     /// Generic delegate to inject a method that nows how to actually create a GpuMesh or InstanceData for the given point type.
     /// </summary>
     /// <typeparam name="TGpuData"></typeparam>
-    /// <typeparam name="TPoint">Generic that describes the point type.</typeparam>
     /// <param name="points">The point cloud points as generic array.</param>
     /// <returns></returns>
-    public delegate TGpuData CreateGpuData<TGpuData, TPoint>(MemoryOwner<TPoint> points, OctantId octantId);
+    public delegate TGpuData CreateGpuData<TGpuData>(MemoryOwner<VisualizationPoint> points, OctantId octantId);
 
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
     /// </summary>
     /// <typeparam name="TGpuData"></typeparam>
     /// <typeparam name="TPoint"></typeparam>
-    public class PointCloudDataHandler<TGpuData, TPoint> : PointCloudDataHandlerBase<TGpuData>, IDisposable where TPoint : new() where TGpuData : IDisposable
+    public class PointCloudDataHandler<TGpuData> : PointCloudDataHandlerBase<TGpuData>, IDisposable where TGpuData : IDisposable
     {
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private MemoryCache<OctantId, MemoryOwner<TPoint>> _pointCache;
+        private MemoryCache<OctantId, MemoryOwner<VisualizationPoint>> _pointCache;
 
         /// <summary>
         /// Caches loaded points.
         /// </summary>
         private MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
-        private readonly CreateGpuData<TGpuData, TPoint> _createGpuDataHandler;
-        private readonly LoadPointsHandler<TPoint> _loadPointsHandler;
+        private readonly CreateGpuData<TGpuData> _createGpuDataHandler;
+        private readonly LoadPointsHandler _loadPointsHandler;
         private const int _maxNumberOfDisposals = 1;
         private float _deltaTimeSinceLastDisposal;
         private readonly bool _doRenderInstanced;
@@ -86,7 +86,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="createMeshHandler">Method that knows how to create a mesh for the explicit point type (see <see cref="MeshMaker"/>).</param>
         /// <param name="loadPointsHandler">The method that is able to load the points from the hard drive/file.</param>
         /// <param name="doRenderInstanced"></param>
-        public PointCloudDataHandler(CreateGpuData<TGpuData, TPoint> createMeshHandler, LoadPointsHandler<TPoint> loadPointsHandler, bool doRenderInstanced = false)
+        public PointCloudDataHandler(CreateGpuData<TGpuData> createMeshHandler, LoadPointsHandler loadPointsHandler, bool doRenderInstanced = false)
         {
             _pointCache = new();
             _gpuDataCache = new()
@@ -107,7 +107,7 @@ namespace Fusee.PointCloud.Core
 
             _pointCache.HandleEvictedItem += (object key, object? value, EvictionReason reason, object? state) =>
             {
-                if (value != null && value is MemoryOwner<TPoint> mo)
+                if (value != null && value is MemoryOwner<VisualizationPoint> mo)
                 {
                     mo.Dispose();
                 }

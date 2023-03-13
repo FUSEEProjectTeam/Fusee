@@ -21,7 +21,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a GpuMesh from the point cloud points.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateMeshes<TGpuData, TPoint>(MemoryOwner<TPoint> points, CreateGpuData<TGpuData, TPoint> createGpuDataHandler, OctantId octantId)
+        public static IEnumerable<TGpuData> CreateMeshes<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler, OctantId octantId)
         {
             List<TGpuData> meshes;
 
@@ -40,11 +40,11 @@ namespace Fusee.PointCloud.Core
                 else
                     numberOfPointsInMesh = maxVertCount;
 
-                MemoryOwner<TPoint> pointsPerMesh;
+                MemoryOwner<VisualizationPoint> pointsPerMesh;
                 if (ptCnt > maxVertCount)
                 {
-                    pointsPerMesh = MemoryOwner<TPoint>.Allocate(numberOfPointsInMesh);
-                    points.Span.Slice(i, numberOfPointsInMesh).CopyTo(pointsPerMesh.Span.Slice(0));
+                    pointsPerMesh = MemoryOwner<VisualizationPoint>.Allocate(numberOfPointsInMesh);
+                    points.Span.Slice(i, numberOfPointsInMesh).CopyTo(pointsPerMesh.Span[..]);
                 }
                 else
                 {
@@ -61,11 +61,10 @@ namespace Fusee.PointCloud.Core
         /// Returns the instance Data for a given point type by using the provided delegate.
         /// </summary>
         /// <typeparam name="TGpuData">Can be of type <see cref="GpuMesh"/> or <see cref="InstanceData"/>. The latter is used when rendering instanced.</typeparam>
-        /// <typeparam name="TPoint">The generic point type.</typeparam>
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a InstanceData from the point cloud points.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData, TPoint>(MemoryOwner<TPoint> points, CreateGpuData<TGpuData, TPoint> createGpuDataHandler, OctantId octantId)
+        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler, OctantId octantId)
         {
             return new List<TGpuData>
             {

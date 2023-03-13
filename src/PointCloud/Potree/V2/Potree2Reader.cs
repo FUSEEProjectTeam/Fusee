@@ -18,9 +18,20 @@ namespace Fusee.PointCloud.Potree.V2
     /// </summary>
     public class Potree2Reader : Potree2ReaderBase, IPointReader
     {
+        /// <summary>
+        /// Specify the byte offset for one point until the extra byte data is reached
+        /// </summary>
         public readonly int OffsetToExtraBytes;
+
+        /// <summary>
+        /// Pass method how to handle the extra bytes, resulting uint will be passed into <see cref="Mesh.Flags"/>.
+        /// </summary>
         public Func<byte[], uint>? HandleExtraBytes { get; set; }
 
+        /// <summary>
+        /// Generate a new instance of <see cref="Potree2Reader"/>.
+        /// </summary>
+        /// <param name="offsetToExtraBytes"></param>
         public Potree2Reader(int offsetToExtraBytes = 0) : base() => (OffsetToExtraBytes) = (offsetToExtraBytes);
 
 
@@ -35,21 +46,21 @@ namespace Fusee.PointCloud.Potree.V2
                 default:
                 case RenderMode.StaticMesh:
                     {
-                        var dataHandler = new PointCloudDataHandler<GpuMesh, VisualizationPoint>(MeshMaker.CreateMeshVisualizationPoint,
+                        var dataHandler = new PointCloudDataHandler<GpuMesh>(MeshMaker.CreateMeshVisualizationPoint,
                             LoadVisualizationPointData);
                         var imp = new Potree2Cloud(dataHandler, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.Instanced:
                     {
-                        var dataHandlerInstanced = new PointCloudDataHandler<InstanceData, VisualizationPoint>(MeshMaker.CreateInstanceDataVisualizationPoint,
+                        var dataHandlerInstanced = new PointCloudDataHandler<InstanceData>(MeshMaker.CreateInstanceDataVisualizationPoint,
                             LoadVisualizationPointData, true);
                         var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.DynamicMesh:
                     {
-                        var dataHandlerDynamic = new PointCloudDataHandler<Mesh, VisualizationPoint>(MeshMaker.CreateDynamicMeshVisualizationPoint,
+                        var dataHandlerDynamic = new PointCloudDataHandler<Mesh>(MeshMaker.CreateDynamicMeshVisualizationPoint,
                             LoadVisualizationPointData);
                         var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
