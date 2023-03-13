@@ -169,7 +169,7 @@ namespace Fusee.PointCloud.Core
                 boundingBox |= vertices[i];
 
                 triangles[i] = (ushort)i;
-                colors[i] = points.Span[i].Color;
+                colors[i] = new float4(points.Span[i].Color.xyz / 265, points.Span[i].Color.w);
                 flags[i] = points.Span[i].Flags;
             }
 
