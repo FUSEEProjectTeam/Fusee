@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -48,12 +48,12 @@ namespace Fusee.Examples.Picking.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene);
+            _scenePicker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults);
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
             // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override async Task InitAsync()
@@ -121,9 +121,7 @@ namespace Fusee.Examples.Picking.Core
             //Picking
             if (_pick)
             {
-                float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
-
-                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z)
+                PickResult newPick = _scenePicker.Pick(Input.Mouse.Position, RC.ViewportWidth, RC.ViewportHeight).ToList().OrderBy(pr => pr.ClipPos.z)
                     .FirstOrDefault();
                 Diagnostics.Debug(newPick);
 
@@ -152,11 +150,11 @@ namespace Fusee.Examples.Picking.Core
 
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
 
             if (Input.Touch != null && Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
             // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.

@@ -4,7 +4,7 @@ using System;
 
 namespace Fusee.Engine.Core
 {
-    internal struct CameraResult : IEquatable<CameraResult>
+    public struct CameraResult : IEquatable<CameraResult>
     {
         public Camera Camera { get; private set; }
 

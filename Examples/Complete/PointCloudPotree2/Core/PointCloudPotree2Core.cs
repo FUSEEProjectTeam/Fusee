@@ -1,10 +1,11 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2;
+using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +25,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         }
         private bool _closingRequested;
 
-        public RenderMode PointRenderMode = RenderMode.StaticMesh;
+        public RenderMode PointRenderMode = RenderMode.Instanced;
         public string AssetsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
@@ -59,10 +60,9 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             if (path == null || path == string.Empty)
                 return;
 
-            _potreeData = new PotreeData(path);
-            _potreeReader = new Potree2Reader(ref _potreeData);
+            _potreeData = _potreeReader.ReadNewFile(path);
 
-            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(RenderMode.DynamicMesh);
+            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(PointRenderMode);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PointRenderingParams.Instance.PointThreshold;
 
@@ -73,8 +73,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public PointCloudPotree2Core(RenderContext rc)
         {
-            _potreeData = new PotreeData(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
-            _potreeReader = new Potree2Reader(ref _potreeData);
+            _potreeReader = new Potree2Reader();
+            var _potreedata = _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
             _rc = rc;
         }
 

@@ -1,6 +1,5 @@
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.PointCloud.Common;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {
@@ -12,8 +11,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         public bool IsInitialized { get; private set; }
         public bool IsAlive { get; private set; }
 
-        public RenderMode PointRenderMode = RenderMode.DynamicMesh;
-
         public bool ClosingRequested
         {
             get => _pointRenderingCore.ClosingRequested;
@@ -21,11 +18,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         }
 
         private PointCloudPotree2Core _pointRenderingCore;
-
-        public PointCloudPotree2()
-        {
-
-        }
 
         public override void Init()
         {

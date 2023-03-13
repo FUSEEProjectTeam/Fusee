@@ -45,9 +45,6 @@ namespace Fusee.Examples.Integrations.Core
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
 
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
-
             // Load the rocket model
             _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
             rocketTransform = _rocketScene.Children[0].GetTransform();
@@ -80,6 +77,9 @@ namespace Fusee.Examples.Integrations.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            // Create the interaction handler
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override async Task InitAsync()
@@ -140,10 +140,10 @@ namespace Fusee.Examples.Integrations.Core
 
             //Constantly check for interactive objects.
             if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
             if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
             Present();

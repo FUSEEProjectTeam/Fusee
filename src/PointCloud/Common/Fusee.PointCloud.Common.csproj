@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	
+
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;net7.0</TargetFrameworks>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
@@ -10,11 +10,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Assets\PointCloudInstanced.vert" />
-	  <None Remove="Assets\PointDepthInstanced.frag" />
+		<None Remove="Assets\PointCloudInstanced.vert" />
+		<None Remove="Assets\PointDepthInstanced.frag" />
 	</ItemGroup>
-	
+
+
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.HighPerformance" Version="8.1.0" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />

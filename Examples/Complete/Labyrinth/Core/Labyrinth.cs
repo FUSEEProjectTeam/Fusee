@@ -284,7 +284,6 @@ namespace Fusee.Examples.Labyrinth.Core
         public override void Init()
         {
             _gui = CreateGui();
-            _sih = new SceneInteractionHandler(_gui);
 
             // Find the ball and create AABB
             FindBall();
@@ -311,6 +310,8 @@ namespace Fusee.Examples.Labyrinth.Core
             _bodyPivotTransform = _scene.Children.FindNodes(node => node.Name == "Bodytrans").FirstOrDefault()?.GetTransform();
             _bodyNode = _scene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault();
             _bodyTransform = _bodyNode?.GetTransform();
+
+            _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
         }
 
         public override void Update()
@@ -369,11 +370,11 @@ namespace Fusee.Examples.Labyrinth.Core
 
             _guiRenderer.Render(RC);
             if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -843,7 +844,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 if (!_isGuiCreated)
                 {
                     _gui = CreateWinningGui();
-                    _sih = new SceneInteractionHandler(_gui);
+                    _sih = new SceneInteractionHandler(_gui, _guiRenderer.PrePassVisitor.CameraPrepassResults);
                     _guiRenderer = new SceneRendererForward(_gui);
                     _isGuiCreated = true;
                 }
