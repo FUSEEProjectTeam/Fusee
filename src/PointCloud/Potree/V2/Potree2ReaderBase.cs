@@ -12,7 +12,7 @@ using System.Linq;
 namespace Fusee.PointCloud.Potree.V2
 {
     /// <summary>
-    /// This is the base class for reading and writing <see cref="PotreePoint"/>s.
+    /// This is the base class for reading and writing <see cref="VisualizationPoint"/>s.
     /// </summary>
     public abstract class Potree2ReaderBase : IDisposable
     {
@@ -92,11 +92,6 @@ namespace Fusee.PointCloud.Potree.V2
                 _octreeViewAccessor = value;
             }
         }
-
-        /// <summary>
-        /// Returns the point type.
-        /// </summary>
-        public PointType PointType => PointType.PosD3ColF3LblB;
 
         /// <summary>
         /// Reads a potree file.
@@ -207,7 +202,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <param name="potreeHierarchy"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static PotreeNode FindNode(ref PotreeHierarchy potreeHierarchy, OctantId id)
+        public static PotreeNode? FindNode(ref PotreeHierarchy potreeHierarchy, OctantId id)
         {
             return potreeHierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdToPotreeName(id));
         }
