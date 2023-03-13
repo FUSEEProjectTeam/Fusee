@@ -2146,6 +2146,11 @@ namespace Fusee.Math.Core
             var scalevector = GetScale(mat);
             var rotationMtx = float4x4.Identity;
 
+            if (scalevector.x <= 0 || scalevector.y <= 0 || scalevector.z <= 0)
+            {
+                throw new ArgumentException("Scale vector <= 0!");
+            }
+
             rotationMtx.M11 = mat.M11 / scalevector.x;
             rotationMtx.M21 = mat.M21 / scalevector.x;
             rotationMtx.M31 = mat.M31 / scalevector.x;

@@ -479,7 +479,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private void PerCamRender(CameraResult cam, IWritableTexture renderTex = null)
+        private void PerCamRender(CameraResult cam, IWritableTexture? renderTex = null)
         {
             RenderLayer = cam.Camera.RenderLayer;
             _rc.View = cam.View;
@@ -507,7 +507,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private void RenderAllPasses(float4 lightingPassViewport, IWritableTexture renderTex = null)
+        private void RenderAllPasses(float4 lightingPassViewport, IWritableTexture? renderTex = null)
         {
             var preRenderStateSet = _rc.CurrentRenderState.Copy(); //"Snapshot" of the current render states as they came from the user code.
             var preRenderLockedStates = new Dictionary<RenderState, KeyValuePair<bool, uint>>(_rc.LockedStates);
@@ -570,7 +570,7 @@ namespace Fusee.Engine.Core
         /// Alternatively it would be possible to iterate the lights in the shader, but this would create a more complex shader. Additionally it would be more difficult to implement a dynamic number of lights.
         /// The iteration here should not prove critical, due to the scene only consisting of a single quad.
         /// </summary>
-        private void RenderLightPasses(IWritableTexture renderTex = null)
+        private void RenderLightPasses(IWritableTexture? renderTex = null)
         {
             _rc.SetRenderTarget(renderTex);
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -836,7 +836,7 @@ namespace Fusee.Engine.Core
             _gBufferRenderTarget.SetTexture(_blurRenderTex, RenderTargetTextureTypes.Ssao);
         }
 
-        private void RenderFXAA(IWritableTexture renderTex = null)
+        private void RenderFXAA(IWritableTexture? renderTex = null)
         {
             _currentPass = RenderPasses.Fxaa;
             if (_fxaaEffect == null)

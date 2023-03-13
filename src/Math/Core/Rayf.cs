@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace Fusee.Math.Core
 {
@@ -82,8 +82,8 @@ namespace Fusee.Math.Core
 
             float4x4 invViewProjection = float4x4.Invert(projection * view);
 
-            var pickPosWorld4 = float4x4.Transform(invViewProjection, new float4(pickPosClip.x, pickPosClip.y, 1, 1));
-            var pickPosWorld = (pickPosWorld4 / pickPosWorld4.w).xyz;
+            var pickPosFarWorld = float4x4.TransformPerspective(invViewProjection, new float3(pickPosClip.x, pickPosClip.y, 1));
+            var pickPosNearWorld = float4x4.TransformPerspective(invViewProjection, new float3(pickPosClip.x, pickPosClip.y, -1));
 
             _direction = (pickPosWorld - Origin).Normalize();
         }

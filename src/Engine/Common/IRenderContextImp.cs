@@ -60,6 +60,19 @@ namespace Fusee.Engine.Common
         void DisableDepthClamp();
 
         /// <summary>
+        /// Retrieve pixels from bound framebuffer
+        /// </summary>
+        /// <param name="x">x pixel position</param>
+        /// <param name="y">y pixel position</param>
+        /// <param name="pixelFormat">format to retrieve, this has to match the current bound FBO!</param>
+        /// <param name="width">how many pixel in x direction</param>
+        /// <param name="height">how many pixel in y direction</param>
+        /// <returns><see cref="ReadOnlySpan{T}"/> with pixel content</returns>
+        /// <remarks>Does usually not throw on error (e. g. wrong pixel format, out of bounds, etc), uses GL.GetError() to retrieve
+        /// potential error</remarks>
+        public ReadOnlySpan<byte> ReadPixels(int x, int y, ImagePixelFormat pixelFormat, int width, int height);
+
+        /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
         /// <param name="vs">A string containing the vertex shader source.</param>
@@ -890,6 +903,11 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Relates to OpenGl GL_PATCHES.
         /// </summary>
-        Patches
+        Patches,
+
+        /// <summary>
+        /// Relates to OpenGl GL_LINES_ADJACENCY.
+        /// </summary>
+        LineAdjacency
     }
 }

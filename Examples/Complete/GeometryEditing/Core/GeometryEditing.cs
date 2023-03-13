@@ -120,7 +120,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };
 
             _renderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene);
+            _scenePicker = new ScenePicker(_scene, _renderer.PrePassVisitor.CameraPrepassResults);
 
             _activeGeometrys = new Dictionary<int, Geometry>();
         }
@@ -141,7 +141,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             {
                 float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
-                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                PickResult newPick = _scenePicker.Pick(pickPosClip, Width, Height).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {

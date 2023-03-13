@@ -19,14 +19,16 @@ namespace Fusee.Engine.Gui
         private SceneNode _pickRes;
         private SceneNode _pickResCache;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.
         /// </summary>
         /// <param name="scene">The scene the interaction handler belongs to.</param>
-        public SceneInteractionHandler(SceneContainer scene)
+        /// <param name="prePassCameraResults">The <see cref="CameraResult"/> of the <see cref="PrePassVisitor.PrePassTraverse(SceneContainer)"/> operation.</param>
+        public SceneInteractionHandler(SceneContainer scene, IEnumerable<CameraResult> prePassCameraResults)
         {
             IgnoreInactiveComponents = true;
-            _scenePicker = new ScenePicker(scene);
+            _scenePicker = new ScenePicker(scene, prePassCameraResults);
         }
 
         private static SceneNode FindLeafNodeInPickRes(SceneNode firstPickRes, IList<SceneNode> pickResults)
@@ -60,12 +62,10 @@ namespace Fusee.Engine.Gui
         /// <param name="mousePos">The current mouse position.</param>
         /// <param name="canvasWidth">Canvas width - needed to determine the mouse position in clip space.</param>
         /// <param name="canvasHeight">Canvas height - needed to determine the mouse position in clip space.</param>
-        public void CheckForInteractiveObjects(RenderContext rc, float2 mousePos, int canvasWidth, int canvasHeight)
+        public void CheckForInteractiveObjects(float2 mousePos, int canvasWidth, int canvasHeight)
         {
-            var pickPosClip = mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight) + new float2(-1, 1);
-
-            var pickResults = _scenePicker.Pick(rc, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
-            var pickResNodes = pickResults.Select(x => x.Node).ToList();
+            var pickResults = _scenePicker.Pick(mousePos, canvasWidth, canvasHeight).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
+            var pickResNodes = pickResults.ConvertAll(x => x.Node);
             var firstPickRes = pickResults.FirstOrDefault();
 
             _pickRes = null;

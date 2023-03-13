@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,8 +10,8 @@ namespace Fusee.Xene
     /// </summary>
     public static class ViseratorExtensions
     {
-        // Unfortunate construct, but there seems no other way. What we really needed here is a MixIn to make 
-        // a INode or SceneContainer implement IEnumerable (afterwards). All C# offers us is to 
+        // Unfortunate construct, but there seems no other way. What we really needed here is a MixIn to make
+        // a INode or SceneContainer implement IEnumerable (afterwards). All C# offers us is to
         // define ExtensionMethods returning an IEnumerable<>.
         // Thus we need some class to implement that:
         internal class ViseratorEnumerable<TViserator, TResult, TNode, TComponent> : IEnumerable<TResult>
@@ -86,7 +87,7 @@ namespace Fusee.Xene
         {
         }
 
-        // Step2: initialize the instance        
+        // Step2: initialize the instance
         /// <summary>
         /// Initializes this instance with the specified tree.
         /// </summary>
@@ -202,8 +203,8 @@ namespace Fusee.Xene
     /// time during traversal and some additional information of the tree object currently visited.
     /// <para />
     /// To implement your own Viserator you should consider which state information the Viserator must keep track of.
-    /// Either you assemble your own State type by deriving from <see cref="VisitorState"/> or choose to use one of 
-    /// the standard state types like <see cref="StandardState"/>. Then you need to derive your own class from 
+    /// Either you assemble your own State type by deriving from <see cref="VisitorState"/> or choose to use one of
+    /// the standard state types like <see cref="StandardState"/>. Then you need to derive your own class from
     /// <see cref="Viserator{TItem,TState,TNode,TComponent}"/>
     /// with the TState replaced by your choice of State and TItem replaced by the type of the items you want your Viserator to yield
     /// during the traversal.
@@ -243,8 +244,12 @@ namespace Fusee.Xene
         /// Initializes a new instance of the <see cref="Viserator{TItem, TState,TNode,TComponent}"/> class.
         /// </summary>
         /// <param name="rootList">The root list.</param>
-        public Viserator(IEnumerable<TNode> rootList)
+        /// <param name="customVisitorModules">Optional custom <see cref="IVisitorModule"/>. Needs to be passed to base.ctor,
+        /// as the initialization and discovery of potential methods to visit is being done in <see cref="Init(IEnumerable{TNode})"/> </param>
+        protected Viserator(IEnumerable<TNode> rootList, IEnumerable<IVisitorModule> customVisitorModules = null)
         {
+            if (customVisitorModules != null)
+                VisitorModules.AddRange(customVisitorModules);
             Init(rootList);
         }
 

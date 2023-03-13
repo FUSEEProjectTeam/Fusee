@@ -96,7 +96,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="size">The size (in all three dimensions) of this octant.</param>
         /// <param name="octId"></param>
         /// <param name="children">The octants child octants.</param>
-        public PointCloudOctant(double3 center, double size, OctantId octId, PointCloudOctant[] children = null)
+        public PointCloudOctant(double3 center, double size, OctantId octId, PointCloudOctant[]? children = null)
         {
             Center = center;
             Size = size;
@@ -132,7 +132,7 @@ namespace Fusee.PointCloud.Core
             var distance = (translatedCenter - camPos).Length;
             if (translatedCenter == camPos)
                 distance = 0.0001f;
-            var slope = (float)System.Math.Tan(fov / 2d);
+            var slope = System.Math.Abs((float)System.Math.Tan(fov / 2d));
 
             var maxRad = System.Math.Max(System.Math.Max(scaledRad.x, scaledRad.y), scaledRad.z);
             ProjectedScreenSize = screenHeight / 2d * maxRad / (slope * distance);

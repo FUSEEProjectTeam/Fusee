@@ -106,7 +106,6 @@ namespace Fusee.Xene
             public Dictionary<Type, VisitComponentMethodOfModule<TNode, TComponent>> ModuleComponents = new();
         }
 
-
         // The list of visitor methods defined in a concrete child class of Visitor
         private VisitorSet _visitors;
 
