@@ -157,7 +157,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _sceneRenderer = new SceneRendererForward(_scene);
             _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
 
-            _pointCloud.Camera = _cam;          
+            _pointCloud.Camera = _cam;
         }
 
         // RenderAFrame is called once a frame

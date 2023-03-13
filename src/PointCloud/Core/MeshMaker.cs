@@ -238,4 +238,3 @@ namespace Fusee.PointCloud.Core
         #endregion
     }
 }
-    
