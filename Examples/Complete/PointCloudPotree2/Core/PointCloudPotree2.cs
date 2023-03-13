@@ -1,6 +1,5 @@
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.PointCloud.Common;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {

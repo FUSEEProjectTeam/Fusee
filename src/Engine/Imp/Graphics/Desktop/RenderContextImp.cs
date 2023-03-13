@@ -6,7 +6,6 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Imp.SharedAll;
 using Fusee.Math.Core;
 using OpenTK.Graphics.OpenGL;
-using SixLabors.ImageSharp.Formats;
 using System;
 using System.Collections.Generic;
 using System.Linq;

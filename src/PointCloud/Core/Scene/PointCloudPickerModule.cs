@@ -1,16 +1,11 @@
 ﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Core;
 using Fusee.Xene;
-using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using static Fusee.Engine.Core.ScenePicker;
 
 namespace Fusee.PointCloud.Core.Scene
