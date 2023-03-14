@@ -115,6 +115,7 @@ namespace Fusee.PointCloud.Potree
         private readonly Stream _fileStream;
         private bool disposedValue;
         private LASHeader _header;
+        private readonly PotreeData _potreeData;
 
         public Potree2LAS(FileInfo savePath, PotreeData potreeData)
         {
@@ -129,6 +130,7 @@ namespace Fusee.PointCloud.Potree
             SavePath = savePath;
             Metadata = potreeData.Metadata;
             _fileStream = SavePath.OpenWrite();
+            _potreeData = potreeData;
             ParseAndFillHeader();
         }
 
@@ -145,7 +147,7 @@ namespace Fusee.PointCloud.Potree
 
            _fileStream.Seek(0, SeekOrigin.Begin);
 
-            // TODO: Parse point type and extra bytes, etc...
+            // TODO: Parse / generate fitting point type and extra bytes, etc...
 
             _header = new LASHeader
             {
@@ -200,9 +202,12 @@ namespace Fusee.PointCloud.Potree
 
             Guard.IsNotNull(_header);
 
+            using var stream = _potreeData.OctreeMappedFile.CreateViewStream();
+            // we need to copy each point and shrink it back to 26 (from 27) due to PotreeConvert errors
 
-
+            stream.CopyTo(_fileStream);
         }
+
         /// <summary>
         /// Dispose the <see cref="FileStream"/> of this class.
         /// </summary>
