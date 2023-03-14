@@ -203,7 +203,13 @@ namespace Fusee.PointCloud.Potree
             Guard.IsNotNull(_header);
 
             using var stream = _potreeData.OctreeMappedFile.CreateViewStream();
-            // we need to copy each point and shrink it back to 26 (from 27) due to PotreeConvert errors
+            var fileLength = Metadata.PointCount * Metadata.PointSize;
+            // DO NOT USE stream.Length as the MemoryMappedStream aligns with the page size
+            for (var i = 0; i < fileLength; i += Metadata.PointSize)
+            {
+                // we need to copy each point and shrink it back to 26 (from 27) due to PotreeConvert errors
+
+            }
 
             stream.CopyTo(_fileStream);
         }
