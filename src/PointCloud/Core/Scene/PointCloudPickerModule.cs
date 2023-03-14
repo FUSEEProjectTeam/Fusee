@@ -4,9 +4,13 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.Xene;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.ScenePicker;
 
 namespace Fusee.PointCloud.Core.Scene
