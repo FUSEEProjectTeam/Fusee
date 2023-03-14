@@ -9,6 +9,7 @@ using Fusee.PointCloud.Potree.V2;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -20,6 +21,16 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         public bool RenderToTexture { get; set; }
 
         public WritableTexture RenderTexture { get; private set; }
+
+        /// <summary>
+        /// This value is used, when we use this class as a <see cref="RenderTexture"/>
+        /// </summary>
+        public float2 ExternalMousePosition { get; set; }
+
+        /// <summary>
+        /// This value is used, when we use this class as a <see cref="RenderTexture"/>
+        /// </summary>
+        public int2 ExternalCanvasSize { get; set; }
 
         public bool ClosingRequested
         {
@@ -55,11 +66,11 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private PotreeData _potreeData;
 
         private ScenePicker _picker;
-        private ScenePicker _picker2;
+        private readonly Transform _pickResultTransform = new();
 
         private readonly RenderContext _rc;
 
-        private Transform _debugTransform = new();
+
         public void OnLoadNewFile(object sender, EventArgs e)
         {
             var path = PointRenderingParams.Instance.PathToOocFile;
@@ -77,14 +88,16 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _pointCloudNode.Components[3] = _pointCloud;
 
-            // re-generate picker and octree
-            _picker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Engine.Common.Cull.None, new List<IPickerModule>()
+            // re-generate scene picker
+            if (PointRenderMode == RenderMode.DynamicMesh)
             {
-                new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree,
-                (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp,
-                (float)_potreeData.Metadata.Spacing)
-            });
-
+                _picker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Engine.Common.Cull.None, new List<IPickerModule>()
+                {
+                    new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree,
+                    (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp,
+                    (float)_potreeData.Metadata.Spacing)
+                });
+            }
         }
 
         public PointCloudPotree2Core(RenderContext rc)
@@ -165,15 +178,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 Children = new List<SceneNode>()
                 {
                     _camNode,
-                    new SceneNode
-                    {
-                        Components = new List<SceneComponent>()
-                        {
-                            _debugTransform,
-                            MakeEffect.FromDiffuse(new float4(1,0,0,1)),
-                            new Sphere(10, 10)
-                        }
-                    },
                     _pointCloudNode
                 }
             };
@@ -183,16 +187,32 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _pointCloud.Camera = _cam;
 
-            _picker2 = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults);
-
-            // re-generate picker and octree
-            _picker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Engine.Common.Cull.None, new List<IPickerModule>()
+            // Generate picker, pass camera prepass results and the picker module
+            // which needs the point cloud, the octree and the spacing
+            // does not work for instanced and static point cloud meshes
+            if (PointRenderMode == RenderMode.DynamicMesh)
             {
-                new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree,
-                (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp,
-                (float)_potreeData.Metadata.Spacing)
-            });
+                _picker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Engine.Common.Cull.None, new List<IPickerModule>()
+                {
+                    new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree,
+                    (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp,
+                    (float)_potreeData.Metadata.Spacing)
+                });
 
+                // Add sphere to visual identify the pick result
+                _scene.Children.Add(new SceneNode
+                {
+                    Components = new List<SceneComponent>()
+                        {
+                            _pickResultTransform,
+                            MakeEffect.FromDiffuse(new float4(1,0,0,1)),
+                            new Sphere(10, 10)
+                        }
+                });
+
+                _pickResultTransform.Translation = _pointCloud.PointCloudImp.Center;
+                _pickResultTransform.Scale = float3.One * 0.05f;
+            }
         }
 
         // RenderAFrame is called once a frame
@@ -265,20 +285,14 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
 
 
-            if (!_keys && Input.Mouse.RightButton)
+            if (!_keys && Input.Mouse.RightButton && PointRenderMode == RenderMode.DynamicMesh)
             {
-                _debugTransform.Translation = float3.Zero;
-                _debugTransform.Scale = float3.One * 0.05f;
-
-                var width = _rc.ViewportWidth;
-                var height = _rc.ViewportHeight;
-                var result = _picker?.Pick(Input.Mouse.Position, width, height).ToList();
+                var size = RenderToTexture ? ExternalCanvasSize : new int2(_rc.ViewportWidth, _rc.ViewportHeight);
+                var mousePos = RenderToTexture ? ExternalMousePosition : Input.Mouse.Position;
+                var result = _picker?.Pick(mousePos, size.x, size.y).ToList();
                 if (result != null && result.Count > 0 && result[0] is PointCloudPickResult ppr)
                 {
-                    _debugTransform.Translation = (float3)ppr.Mesh.Vertices[ppr.VertIdx];
-                    //_debugTransform.Scale = new float3((float)ppr.Octant.Size);
-
-                    //ppr.Mesh.Colors0[ppr.VertIdx] = (uint)ColorUint.Red;
+                    _pickResultTransform.Translation = ppr.Mesh.Vertices[ppr.VertIdx];
                 }
 
             }

@@ -411,6 +411,9 @@ namespace Fusee.Xene
 
         #endregion
 
+        /// <summary>
+        /// The list of visitor modules defined during <see cref="Visitor{TNode, TComponent}"/> generation.
+        /// </summary>
         public List<IVisitorModule> VisitorModules = new();
 
         /// <summary>
