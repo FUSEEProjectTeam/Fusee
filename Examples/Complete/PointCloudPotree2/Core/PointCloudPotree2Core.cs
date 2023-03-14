@@ -78,7 +78,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             var _potreedata = _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
 
 
-            var laswriter = new Potree2LAS(new FileInfo("test.las"), _potreedata);
+            using var laswriter = new Potree2LAS(new FileInfo("test.las"), _potreedata);
             laswriter.Write();
 
             _rc = rc;
