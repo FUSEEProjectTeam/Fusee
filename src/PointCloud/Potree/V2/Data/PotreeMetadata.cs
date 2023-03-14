@@ -58,6 +58,7 @@ namespace Fusee.PointCloud.Potree.V2.Data
         public string Version { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        [JsonProperty(PropertyName = "points")]
         public int PointCount { get; set; }
         public int OffsetToExtraBytes { get; set; } = -1;
         public string Projection { get; set; }
@@ -75,7 +76,7 @@ namespace Fusee.PointCloud.Potree.V2.Data
         public double3 Scale => new(ScaleList[0], ScaleList[1], ScaleList[2]);
 
         public double Spacing { get; set; }
-        public PotreeSettingsBoundingBox BoundingBox { get; }
+        public PotreeSettingsBoundingBox BoundingBox { get; set; }
 
         public AABBd AABB => new(BoundingBox.Min, BoundingBox.Max);
 
@@ -91,6 +92,7 @@ namespace Fusee.PointCloud.Potree.V2.Data
 
         [JsonIgnore]
         public string FolderPath { get; set; }
+
     }
 }
 

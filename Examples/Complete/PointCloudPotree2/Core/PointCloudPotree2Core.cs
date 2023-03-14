@@ -4,6 +4,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core.Scene;
+using Fusee.PointCloud.Potree;
 using Fusee.PointCloud.Potree.V2;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
@@ -75,6 +76,11 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         {
             _potreeReader = new Potree2Reader();
             var _potreedata = _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
+
+
+            var laswriter = new Potree2LAS(new FileInfo("test.las"), _potreedata);
+            laswriter.Write();
+
             _rc = rc;
         }
 

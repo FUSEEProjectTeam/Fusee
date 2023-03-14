@@ -207,6 +207,7 @@ namespace Fusee.PointCloud.Potree
             // DO NOT USE stream.Length as the MemoryMappedStream aligns with the page size
             for (var i = 0; i < fileLength; i += Metadata.PointSize)
             {
+                progressCallback?.Invoke((int)(fileLength / Metadata.PointSize / 100f * i));
                 // we need to copy each point and shrink it back to 26 (from 27) due to PotreeConvert errors
 
             }

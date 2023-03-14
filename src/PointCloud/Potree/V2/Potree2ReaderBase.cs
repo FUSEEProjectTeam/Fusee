@@ -262,11 +262,32 @@ namespace Fusee.PointCloud.Potree.V2
 
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)
         {
-            var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilepath));
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new ConvertIPointWriterHierarchy());
+            var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilepath), settings);
             Guard.IsNotNull(potreeData, nameof(potreeData));
 
             return potreeData;
         }
+
+        internal class ConvertIPointWriterHierarchy : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(IPointWriterHierarchy);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                return serializer.Deserialize(reader, typeof(PotreeSettingsHierarchy));
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                serializer.Serialize(writer, value);
+            }
+        }
+
 
         private static void LoadHierarchyRecursive(ref PotreeNode root, ref byte[] data, long offset, long size)
         {
