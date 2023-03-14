@@ -2,7 +2,9 @@
 using Fusee.Engine.Core;
 using Fusee.Examples.PointCloudPotree2.Core;
 using Fusee.ImGuiImp.Desktop.Templates;
+using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using ImGuiNET;
 using System;
 
 namespace Fusee.Examples.PointCloudPotree2.Gui
@@ -46,6 +48,13 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
         protected override ITextureHandle RenderAFrame()
         {
             _pointRenderingCore.RenderAFrame();
+
+            // set mouse position with offset to canvas
+            var iScreenPos = new float2(ImGui.GetCursorScreenPos().X, ImGui.GetCursorScreenPos().Y);
+            var fbScale = ImGui.GetIO().DisplayFramebufferScale;
+            var scaledInput = new float2(Input.Mouse.Position.x / fbScale.X, Input.Mouse.Position.y / fbScale.Y);
+            _pointRenderingCore.ExternalMousePosition = scaledInput - iScreenPos;
+
             return _pointRenderingCore.RenderTexture?.TextureHandle;
         }
 
@@ -62,6 +71,8 @@ namespace Fusee.Examples.PointCloudPotree2.Gui
         // Is called when the window was resized
         protected override void Resize(int width, int height)
         {
+            // set size from extern
+            _pointRenderingCore.ExternalCanvasSize = new Math.Core.int2(width, height);
             _pointRenderingCore.Resize(width, height);
         }
 
