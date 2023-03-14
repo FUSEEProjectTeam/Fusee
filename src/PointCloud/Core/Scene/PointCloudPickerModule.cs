@@ -1,3 +1,4 @@
+using CommunityToolkit.Diagnostics;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
@@ -7,7 +8,6 @@ using Fusee.Xene;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// The point mesh.
         /// </summary>
-        public Mesh Mesh;
+        public Mesh? Mesh;
         /// <summary>
         /// The index of the hit vertex, in this case the point index.
         /// </summary>
@@ -39,15 +39,17 @@ namespace Fusee.PointCloud.Core.Scene
     /// </summary>
     public class PointCloudPickerModule : IPickerModule
     {
-        private PickerState _state;
-        private readonly PointCloudOctree _octree;
-        private readonly IPointCloudImp<Mesh> _pcImp;
+        private PickerState? _state;
+        private readonly PointCloudOctree? _octree;
+        private readonly IPointCloudImp<Mesh>? _pcImp;
         private readonly float _pointSpacing;
 
         /// <summary>
         /// The pick result after picking.
         /// </summary>
-        public PickResult PickResult { get; set; }
+#pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
+        public PickResult? PickResult { get; set; }
+#pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 
         internal struct MinPickValue
         {
@@ -66,6 +68,10 @@ namespace Fusee.PointCloud.Core.Scene
         {
             if (!pointCloud.Active) return;
 
+            Guard.IsNotNull(_pcImp);
+            Guard.IsNotNull(_octree);
+            Guard.IsNotNull(_state);
+
             var proj = _state.CurrentCameraResult.Camera.GetProjectionMat(_state.ScreenSize.x, _state.ScreenSize.y, out _);
             var view = _state.CurrentCameraResult.View;
             var rayD = new RayD(new double2(_state.PickPosClip.x, _state.PickPosClip.y), (double4x4)view, (double4x4)proj);
@@ -78,7 +84,6 @@ namespace Fusee.PointCloud.Core.Scene
             var currentRes = new ConcurrentBag<MinPickValue>();
 
             Parallel.ForEach(_pcImp.GpuDataToRender, (mesh) =>
-            //foreach(var mesh in _pcImp.GpuDataToRender)
             {
                 foreach (var box in allHitBoxes)
                 {
@@ -88,6 +93,8 @@ namespace Fusee.PointCloud.Core.Scene
                     {
                         Distance = float2.One * float.MaxValue
                     };
+
+                    Guard.IsNotNull(mesh.Vertices);
 
                     for (var i = 0; i < mesh.Vertices.Length; i++)
                     {
@@ -121,6 +128,8 @@ namespace Fusee.PointCloud.Core.Scene
                     minElement = r;
                 }
             }
+
+            Guard.IsNotNull(minElement.Mesh.Vertices);
 
             var mvp = proj * view * _state.Model;
             PickResult = new PointCloudPickResult
@@ -157,15 +166,6 @@ namespace Fusee.PointCloud.Core.Scene
             h = MathF.Sqrt(h);
             if (float.IsNaN(h) || float.IsInfinity(h)) return new float2(-1.0f);
             return new float2(-b - h, -b + h);
-
-            //var oc = ro - ce;
-            //float b = float3.Dot(oc, rd);
-            //var qc = oc - b * rd;
-            //float h = ra * ra - float3.Dot(qc, qc);
-            //if (h < 0.0) new float2(-1.0f); // no intersection
-            //h = MathF.Sqrt(h);
-            //if (float.IsNaN(h)) return new float2(-1.0f);
-            //return new float2(-b - h, -b + h);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
