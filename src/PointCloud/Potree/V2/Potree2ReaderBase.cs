@@ -104,6 +104,15 @@ namespace Fusee.PointCloud.Potree.V2
 
             PotreeData = new PotreeData(Hierarchy, Metadata);
 
+            foreach (var item in PotreeData.Metadata.Attributes.Values)
+            {
+                PotreeData.Metadata.PointSize += item.Size;
+                if (PotreeData.Metadata.OffsetToExtraBytes > -1 && PotreeData.Metadata.PointSize > PotreeData.Metadata.OffsetToExtraBytes)
+                    item.IsExtraByte = true;
+                else
+                    item.IsExtraByte = false;
+            }
+
             CacheMetadata(true);
 
             OctreeMappedViewAccessor = PotreeData.OctreeMappedFile.CreateViewAccessor();
@@ -254,7 +263,6 @@ namespace Fusee.PointCloud.Potree.V2
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)
         {
             var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilepath));
-
             Guard.IsNotNull(potreeData, nameof(potreeData));
 
             return potreeData;

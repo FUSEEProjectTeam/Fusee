@@ -14,26 +14,21 @@ using System.Runtime.InteropServices;
 namespace Fusee.PointCloud.Potree.V2
 {
     /// <summary>
+    /// Delegate for a method that knows how to parse a slice of a point's extra bytes to a valid uint.
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <returns></returns>
+    public delegate uint HandleExtraBytes(Span<byte> bytes);
+
+    /// <summary>
     /// Reads Potree V2 files and is able to create a point cloud scene component, that can be rendered.
     /// </summary>
     public class Potree2Reader : Potree2ReaderBase, IPointReader
     {
         /// <summary>
-        /// Specify the byte offset for one point until the extra byte data is reached
-        /// </summary>
-        public readonly int OffsetToExtraBytes;
-
-        /// <summary>
         /// Pass method how to handle the extra bytes, resulting uint will be passed into <see cref="Mesh.Flags"/>.
         /// </summary>
-        public Func<byte[], uint>? HandleExtraBytes { get; set; }
-
-        /// <summary>
-        /// Generate a new instance of <see cref="Potree2Reader"/>.
-        /// </summary>
-        /// <param name="offsetToExtraBytes"></param>
-        public Potree2Reader(int offsetToExtraBytes = 0) : base() => OffsetToExtraBytes = offsetToExtraBytes;
-
+        public HandleExtraBytes? HandleExtraBytes { get; set; }
 
         /// <summary>
         /// Returns a renderable point cloud component.
@@ -77,15 +72,6 @@ namespace Fusee.PointCloud.Potree.V2
             Guard.IsNotNull(PotreeData);
             Guard.IsNotNull(PotreeData.Metadata);
 
-            int pointSize = 0;
-
-            foreach (var metaAttributeItem in PotreeData.Metadata.AttributesList)
-            {
-                pointSize += metaAttributeItem.Size;
-            }
-
-            PotreeData.Metadata.PointSize = pointSize;
-
             var center = PotreeData.Hierarchy.Root.Aabb.Center;
             var size = PotreeData.Hierarchy.Root.Aabb.Size.y;
             var maxLvl = PotreeData.Metadata.Hierarchy.Depth;
@@ -116,8 +102,8 @@ namespace Fusee.PointCloud.Potree.V2
         private MemoryOwner<VisualizationPoint> LoadVisualizationPoint(PotreeNode node)
         {
             Guard.IsLessThanOrEqualTo(node.NumPoints, int.MaxValue);
-            if (HandleExtraBytes != null)
-                Guard.IsGreaterThan(OffsetToExtraBytes, 0);
+            //if (HandleExtraBytes != null)
+            //    Guard.IsGreaterThan(OffsetToExtraBytes, 0);
             Guard.IsNotNull(PotreeData);
 
             var potreePointSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
@@ -155,13 +141,16 @@ namespace Fusee.PointCloud.Potree.V2
 
                 var colorSpan = MemoryMarshal.Cast<float, byte>(color.ToArray());
 
-                var extraByteSize = PotreeData.Metadata.PointSize - OffsetToExtraBytes;
-                var extraBytesSpan = pointArray.AsSpan().Slice(i + OffsetToExtraBytes, extraByteSize);
-
                 uint flags = 0;
-                if (HandleExtraBytes != null)
+                if (PotreeData.Metadata.OffsetToExtraBytes != -1 && PotreeData.Metadata.OffsetToExtraBytes != 0)
                 {
-                    flags = HandleExtraBytes(extraBytesSpan.ToArray());
+                    var extraByteSize = PotreeData.Metadata.PointSize - PotreeData.Metadata.OffsetToExtraBytes;
+                    var extraBytesSpan = pointArray.AsSpan().Slice(i + PotreeData.Metadata.OffsetToExtraBytes, extraByteSize);
+                    
+                    if (HandleExtraBytes != null)
+                    {
+                        flags = HandleExtraBytes(extraBytesSpan);
+                    }
                 }
                 var flagsSpan = MemoryMarshal.Cast<uint, byte>(new uint[] { flags });
 
