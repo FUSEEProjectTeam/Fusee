@@ -1,7 +1,4 @@
 ﻿using Fusee.Engine.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using static Fusee.Engine.Core.ScenePicker;
 
 namespace Fusee.Engine.Core

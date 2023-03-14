@@ -4,8 +4,8 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Potree.V2.Data;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace Fusee.PointCloud.Core
 {
@@ -19,8 +19,9 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a GpuMesh from the point cloud points.</param>
+        /// <param name="octantId">The octant identifier.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateMeshes<TGpuData, TPoint>(MemoryOwner<TPoint> points, CreateGpuData<TGpuData, TPoint> createGpuDataHandler, OctantId octantId)
+        public static IEnumerable<TGpuData> CreateMeshes<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler, OctantId octantId)
         {
             List<TGpuData> meshes;
 
@@ -39,11 +40,11 @@ namespace Fusee.PointCloud.Core
                 else
                     numberOfPointsInMesh = maxVertCount;
 
-                MemoryOwner<TPoint> pointsPerMesh;
+                MemoryOwner<VisualizationPoint> pointsPerMesh;
                 if (ptCnt > maxVertCount)
                 {
-                    pointsPerMesh = MemoryOwner<TPoint>.Allocate(numberOfPointsInMesh);
-                    points.Span.Slice(i, numberOfPointsInMesh).CopyTo(pointsPerMesh.Span.Slice(0));
+                    pointsPerMesh = MemoryOwner<VisualizationPoint>.Allocate(numberOfPointsInMesh);
+                    points.Span.Slice(i, numberOfPointsInMesh).CopyTo(pointsPerMesh.Span[..]);
                 }
                 else
                 {
@@ -60,11 +61,11 @@ namespace Fusee.PointCloud.Core
         /// Returns the instance Data for a given point type by using the provided delegate.
         /// </summary>
         /// <typeparam name="TGpuData">Can be of type <see cref="GpuMesh"/> or <see cref="InstanceData"/>. The latter is used when rendering instanced.</typeparam>
-        /// <typeparam name="TPoint">The generic point type.</typeparam>
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a InstanceData from the point cloud points.</param>
+        /// <param name="octantId">The octant identifier.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData, TPoint>(MemoryOwner<TPoint> points, CreateGpuData<TGpuData, TPoint> createGpuDataHandler, OctantId octantId)
+        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler, OctantId octantId)
         {
             return new List<TGpuData>
             {
@@ -73,49 +74,16 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="PosD3"/>.
-        /// </summary>
-        /// <param name="points">The lists of "raw" points.</param>
-        public static GpuMesh CreateMeshPosD3<TPoint>(MemoryOwner<TPoint> points) where TPoint : struct
-        {
-            int numberOfPointsInMesh;
-            numberOfPointsInMesh = points.Length;
-
-            var pointsCasted = MemoryMarshal.Cast<TPoint, PosD3>(points.Span);
-
-
-            var firstPos = (float3)pointsCasted[0].Position;
-            var vertices = new float3[numberOfPointsInMesh];
-            var triangles = new uint[numberOfPointsInMesh];
-            var boundingBox = new AABBf(firstPos, firstPos);
-
-            for (int i = 0; i < points.Length; i++)
-            {
-                var pos = (float3)pointsCasted[i].Position;
-
-                vertices[i] = pos;
-                boundingBox |= pos;
-                triangles[i] = (uint)i;
-            }
-            var mesh = ModuleExtensionPoint.CreateGpuMesh(PrimitiveType.Points, vertices, triangles);
-            mesh.BoundingBox = boundingBox;
-            return mesh;
-        }
-
-        /// <summary>
-        /// Returns meshes for point clouds of type <see cref="PosD3LblB"/>.
+        /// Returns meshes for point clouds of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="octantId">The id of the octant.</param>
-        public static GpuMesh CreateMeshPosD3ColF3LblB<TPoint>(MemoryOwner<TPoint> points, OctantId octantId) where TPoint : struct
+        public static GpuMesh CreateStaticMesh(MemoryOwner<VisualizationPoint> points, OctantId octantId)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            // we know that we have a MeshPosD3ColF3LblB
-            var pointsCasted = MemoryMarshal.Cast<TPoint, PosD3ColF3LblB>(points.Span);
-
-            var firstPos = (float3)pointsCasted[0].Position;
+            var firstPos = points.Span[0].Position;
             var vertices = new float3[numberOfPointsInMesh];
             var triangles = new uint[numberOfPointsInMesh];
             var colors = new uint[numberOfPointsInMesh];
@@ -124,38 +92,33 @@ namespace Fusee.PointCloud.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = (float3)pointsCasted[i].Position;
+                var pos = points.Span[i].Position;
 
                 vertices[i] = pos;
                 boundingBox |= vertices[i];
 
                 triangles[i] = (uint)i;
-                var col = pointsCasted[i].Color;
+                var col = points.Span[i].Color;
                 colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
-                flags[i] = 1 << 30;
-
-                //TODO: add labels correctly
-                var label = pointsCasted[i].Label;
+                flags[i] = points.Span[i].Flags;
             }
             var mesh = ModuleExtensionPoint.CreateGpuMesh(PrimitiveType.Points, vertices, triangles, null, colors, null, null, null, null, null, null, null, flags);
+            mesh.Name = octantId.ToString();
             mesh.BoundingBox = boundingBox;
             return mesh;
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="PosD3LblB"/>.
+        /// Returns meshes for point clouds of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="octantId">The id of the octant.</param>
-        public static Mesh CreateDynamicMeshPosD3ColF3LblB<TPoint>(MemoryOwner<TPoint> points, OctantId octantId) where TPoint : struct
+        public static Mesh CreateDynamicMesh(MemoryOwner<VisualizationPoint> points, OctantId octantId)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            // we know that we have a MeshPosD3ColF3LblB
-            var pointsCasted = MemoryMarshal.Cast<TPoint, PosD3ColF3LblB>(points.Span);
-
-            var firstPos = (float3)pointsCasted[0].Position;
+            var firstPos = points.Span[0].Position;
             var vertices = new float3[numberOfPointsInMesh];
             var triangles = new uint[numberOfPointsInMesh];
             var colors = new uint[numberOfPointsInMesh];
@@ -164,18 +127,15 @@ namespace Fusee.PointCloud.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = (float3)pointsCasted[i].Position;
+                var pos = points.Span[i].Position;
 
                 vertices[i] = pos;
                 boundingBox |= vertices[i];
 
                 triangles[i] = (uint)i;
-                var col = pointsCasted[i].Color;
+                var col = points.Span[i].Color;
                 colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
-                flags[i] = 1 << 30;
-
-                //TODO: add labels correctly
-                var label = pointsCasted[i].Label;
+                flags[i] = points.Span[i].Flags;
             }
 
             return new Mesh(triangles, vertices, null, null, null, null, null, null, colors, null, null, flags)
@@ -186,37 +146,35 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="PosD3LblB"/>.
+        /// Returns meshes for point clouds of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="octantId">The id of the octant.</param>
-        public static InstanceData CreateInstanceDataPosD3ColF3LblB<TPoint>(MemoryOwner<TPoint> points, OctantId octantId) where TPoint : struct
+        public static InstanceData CreateInstanceData(MemoryOwner<VisualizationPoint> points, OctantId octantId)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var pointsCasted = MemoryMarshal.Cast<TPoint, PosD3ColF3LblB>(points.Span);
-
-            var firstPos = (float3)pointsCasted[0].Position;
+            var firstPos = points.Span[0].Position;
             var vertices = new float3[numberOfPointsInMesh];
             var triangles = new ushort[numberOfPointsInMesh];
             var colors = new float4[numberOfPointsInMesh];
             var boundingBox = new AABBf(firstPos, firstPos);
+            var flags = new uint[numberOfPointsInMesh];
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = (float3)pointsCasted[i].Position;
+                var pos = points.Span[i].Position;
 
                 vertices[i] = pos;
                 boundingBox |= vertices[i];
 
                 triangles[i] = (ushort)i;
-                colors[i] = new float4(pointsCasted[i].Color / 256, 1.0f);
-
-                //TODO: add labels correctly
-                var label = pointsCasted[i].Label;
+                colors[i] = new float4(points.Span[i].Color.xyz / 265, points.Span[i].Color.w);
+                flags[i] = points.Span[i].Flags;
             }
 
+            // TODO: Add flags to InstanceData 
             return new InstanceData(points.Length, vertices, null, null, colors)
             {
                 Name = octantId.ToString()
@@ -235,48 +193,6 @@ namespace Fusee.PointCloud.Core
         private static uint ColorToUInt(int r, int g, int b, int a)
         {
             return (uint)((b << 16) | (g << 8) | (r << 0) | (a << 24));
-        }
-
-        /// <summary>
-        /// Converts a color, saved as an uint, to float4.
-        /// </summary>
-        /// <param name="col">The color.</param>
-        private static float4 UintToColor(uint col)
-        {
-            float4 c = new();
-            c.b = (byte)((col) & 0xFF);
-            c.g = (byte)((col >> 8) & 0xFF);
-            c.r = (byte)((col >> 16) & 0xFF);
-            c.a = (byte)((col >> 24) & 0xFF);
-
-            return c;
-        }
-
-        /// <summary>
-        /// Converts a color, saved as an uint, to float3.
-        /// </summary>
-        /// <param name="col">The color.</param>
-        private static uint ColorToUint(float3 col)
-        {
-            uint packedR = (uint)(col.r * 255);
-            uint packedG = (uint)(col.g * 255) << 8;
-            uint packedB = (uint)(col.b * 255) << 16;
-
-            return packedR + packedG + packedB;
-        }
-
-        /// <summary>
-        /// Converts a color, saved as float4, to uint.
-        /// </summary>
-        /// <param name="col">The color.</param>
-        private static uint ColorToUint(float4 col)
-        {
-            uint packedR = (uint)(col.r * 255);
-            uint packedG = (uint)(col.g * 255) << 8;
-            uint packedB = (uint)(col.b * 255) << 16;
-            uint packedA = (uint)(col.a * 255) << 24;
-
-            return packedR + packedG + packedB + packedA;
         }
 
         #endregion

@@ -50,7 +50,7 @@
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
 		
 		<!-- Always update the the python plugin in /ext and requirements.txt to the same version -->
-		<PackageReference Include="Google.Protobuf.Tools" Version="3.21.9" />
+		<PackageReference Include="Google.Protobuf.Tools" Version="3.22.0" />
 
 		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
 	</ItemGroup>

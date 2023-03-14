@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Common;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
@@ -20,10 +20,11 @@ namespace Fusee.Engine.Core
     /// <param name="bitangents">The bitangents of the mesh.</param>
     /// <param name="boneIndices">The boneIndices of the mesh.</param>
     /// <param name="boneWeights">The vertiboneWeightsces of the mesh.</param>
+    /// <param name="flags">The flags of the mesh.</param>
     /// <returns></returns>
-    public delegate GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, uint[] triangles = null,
-            float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null, float2[] uvs = null,
-            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null, uint[] flags = null);
+    public delegate GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, uint[]? triangles = null,
+            float3[]? normals = null, uint[]? colors = null, uint[]? colors1 = null, uint[]? colors2 = null, float2[]? uvs = null,
+            float4[]? tangents = null, float3[]? bitangents = null, float4[]? boneIndices = null, float4[]? boneWeights = null, uint[]? flags = null);
 
     /// <summary>
     /// This type of mesh doesn't create a copy of the mesh data in the RAM.
@@ -38,7 +39,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// MeshChanged event notifies observing MeshManager the Mesh's disposal.
         /// </summary>
-        public event EventHandler<MeshChangedEventArgs> DisposeData;
+        public event EventHandler<MeshChangedEventArgs>? DisposeData;
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.

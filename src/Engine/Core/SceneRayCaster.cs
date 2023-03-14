@@ -1,10 +1,8 @@
-﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core
 {

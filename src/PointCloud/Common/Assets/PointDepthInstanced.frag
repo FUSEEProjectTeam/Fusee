@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 
 uniform mat4 FUSEE_P;
 uniform int PointShape;

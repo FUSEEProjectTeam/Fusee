@@ -1,5 +1,4 @@
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -101,17 +100,12 @@ namespace Fusee.PointCloud.Potree
     /// </summary>
     public class Potree2LAS : IPointWriter
     {
-        /// <summary>
-        /// Returns the point type.
-        /// </summary>
-        public PointType PointType => PointType.PosD3ColF3InUsLblB;
-
-        public void WritePointcloudPoints(FileInfo savePath, ReadOnlySpan<PointType> points, IPointWriterMetadata metadata)
+        public void WritePointcloudPoints(FileInfo savePath, ReadOnlySpan<byte[]> points, IPointWriterMetadata metadata)
         {
             throw new NotImplementedException();
         }
 
-        public Task WritePointcloudPointsAsync(FileInfo savePath, ReadOnlyMemory<PointType> points, IPointWriterMetadata metadata)
+        public Task WritePointcloudPointsAsync(FileInfo savePath, ReadOnlyMemory<byte[]> points, IPointWriterMetadata metadata)
         {
             throw new NotImplementedException();
         }
