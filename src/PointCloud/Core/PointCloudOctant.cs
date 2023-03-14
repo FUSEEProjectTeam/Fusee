@@ -96,7 +96,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="size">The size (in all three dimensions) of this octant.</param>
         /// <param name="octId"></param>
         /// <param name="children">The octants child octants.</param>
-        public PointCloudOctant(double3 center, double size, OctantId octId, PointCloudOctant[] children = null)
+        public PointCloudOctant(double3 center, double size, OctantId octId, PointCloudOctant[]? children = null)
         {
             Center = center;
             Size = size;

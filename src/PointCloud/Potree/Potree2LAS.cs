@@ -3,7 +3,6 @@ using CommunityToolkit.HighPerformance;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.IO;
 using System.Reflection;
@@ -125,37 +124,7 @@ namespace Fusee.PointCloud.Potree
     /// </summary>
     public class Potree2LAS : IPointWriter<V2.Data.PotreePoint>, IDisposable
     {
-        /// <summary>
-        /// Returns the point type.
-        /// </summary>
-        public PointType PointType => PointType.Raw;
-
-        /// <summary>
-        /// The path the file is being saved to
-        /// </summary>
-        public FileInfo SavePath => _savePath;
-
-        /// <summary>
-        /// The necessary metadata information
-        /// </summary>
-        public IPointWriterMetadata Metadata => _metadata;
-
-        private readonly FileInfo _savePath;
-        private readonly Stream _fileStream;
-        private readonly LASPointWriterMetadata _metadata;
-
-        private bool disposedValue;
-
-        // these information are filled during the first write call
-        private LASHeader _header;
-
-        /// <summary>
-        /// Generate a writer instance.
-        /// Use the write methods to fill the file with points.
-        /// </summary>
-        /// <param name="savePath">Path to save the file (make sure the extension is .las!)</param>
-        /// <param name="metadata">The metadata needed for the header (offset, scale)</param>
-        public Potree2LAS(FileInfo savePath, LASPointWriterMetadata metadata)
+        public void WritePointcloudPoints(FileInfo savePath, ReadOnlySpan<byte[]> points, IPointWriterMetadata metadata)
         {
             
             Guard.IsNotNull(savePath);
@@ -172,7 +141,7 @@ namespace Fusee.PointCloud.Potree
             ParseAndFillHeader();
         }
 
-        private void ParseAndFillHeader()
+        public Task WritePointcloudPointsAsync(FileInfo savePath, ReadOnlyMemory<byte[]> points, IPointWriterMetadata metadata)
         {
             var doy = DateTime.Now.DayOfYear;
             var year = DateTime.Now.Year;

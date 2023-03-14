@@ -756,13 +756,13 @@ namespace Fusee.Engine.Core
 
             if (mesh.BoundingBox == default)
             {
-                Diagnostics.Warn($"Current bounding box of {mesh} is default while mesh is being picked. Generating box ...");
+                //Diagnostics.Warn($"Current bounding box of {mesh} is default while mesh is being picked. Generating box ...");
                 mesh.BoundingBox = new(mesh.Vertices.AsReadOnlySpan);
             }
 
             if (mesh.BoundingBox.Size.x <= 0 || mesh.BoundingBox.Size.y <= 0 || mesh.BoundingBox.Size.z <= 0)
             {
-                Diagnostics.Warn($"Current bounding box of {mesh} is smaller or equal to zero. Forcing a thickness in zero direction of >= float.Epsilon");
+                //Diagnostics.Warn($"Current bounding box of {mesh} is smaller or equal to zero. Forcing a thickness in zero direction of >= float.Epsilon");
                 var maxX = mesh.BoundingBox.Size.x <= 0 ? 0.1f : mesh.BoundingBox.max.x;
                 var maxY = mesh.BoundingBox.Size.y <= 0 ? 0.1f : mesh.BoundingBox.max.y;
                 var maxZ = mesh.BoundingBox.Size.z <= 0 ? 0.1f : mesh.BoundingBox.max.z;

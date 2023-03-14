@@ -66,8 +66,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public string ParentFolderTxt = "Parent";
         public string BackTxt = "Back";
 
-        public readonly bool OnlyAllowFolders;
-        public readonly List<string>? AllowedExtensions;
+        public bool OnlyAllowFolders;
+        public List<string>? AllowedExtensions;
 
         public string? SelectedFile { get; protected set; }
         public string RootFolder { get; protected set; }
@@ -344,7 +344,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                             if (ImGui.Selectable(name, SelectedFile == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
                             {
-                                SelectedFile = name;
+                                if (SelectedFile == name)
+                                    SelectedFile = "";
+                                else
+                                    SelectedFile = name;
+
                                 if (ImGui.IsMouseDoubleClicked(0) && (SelectedFile != null && SelectedFile != "") && ImGui.GetIO().WantCaptureMouse)
                                 {
                                     if (HandlePickedFile(SelectedFile))
@@ -391,7 +395,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 _sizeOfInputText = ImGui.GetItemRectSize();
 
             var sameLineOffset = WinSize.X - WindowPadding.X - (BottomButtonSize.X * 2 + ImGui.GetStyle().ItemSpacing.X * 4);
-            if (!string.IsNullOrWhiteSpace(SelectedFile))
+            if (!OnlyAllowFolders && !string.IsNullOrWhiteSpace(SelectedFile))
             {
                 var fi = new FileInfo(Path.Combine(CurrentOpenFolder, SelectedFile));
                 if (AllowedExtensions != null && AllowedExtensions.Contains(fi.Extension))
@@ -412,6 +416,15 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                     ImGui.BeginDisabled();
                     ImGui.Button(PickedFileTxt, BottomButtonSize);
                     ImGui.EndDisabled();
+                }
+            }
+            else if (OnlyAllowFolders && !string.IsNullOrWhiteSpace(CurrentlySelectedFolder) && string.IsNullOrWhiteSpace(SelectedFile))
+            {
+                ImGui.SameLine(sameLineOffset);
+                if (ImGui.Button($"{PickedFileTxt}##{_filePickerCount}", BottomButtonSize))
+                {
+                    OnPicked?.Invoke(this, Path.Combine(CurrentOpenFolder, selectedFile));
+                    filePickerOpen = false;
                 }
             }
             else
@@ -452,13 +465,20 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                     {
                         dirs.Add(fse);
                     }
-                    else if (!OnlyAllowFolders)
+                    else
                     {
-                        if (AllowedExtensions != null)
+                        if (!OnlyAllowFolders)
                         {
-                            var ext = Path.GetExtension(fse);
-                            if (AllowedExtensions.Contains(ext))
+                            if (AllowedExtensions != null)
+                            {
+                                var ext = Path.GetExtension(fse);
+                                if (AllowedExtensions.Contains(ext))
+                                    files.Add(fse);
+                            }
+                            else
+                            {
                                 files.Add(fse);
+                            }
                         }
                         else
                         {

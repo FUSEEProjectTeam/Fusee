@@ -1,4 +1,4 @@
-#version 300 es
+#version 460 core
 
 precision highp float;
 
@@ -16,7 +16,6 @@ out float vWorldSpacePointRad;
 out vec2 vPointCoord; //equivalent to gl_pointCoord
 
 in vec3 fuVertex;
-in vec3 fuColor;
 in mat4 fuInstanceModelMat;
 //in vec3 fuInstanceColor;
 

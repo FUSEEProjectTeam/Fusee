@@ -38,50 +38,50 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The rotation of each instance. This array needs to be as long as <see cref="Amount"/>.
         /// </summary>
-        public float3[] Rotations
+        public float3[]? Rotations
         {
             get => _rotations;
             set
             {
-                if (Amount != value.Length)
+                if (Amount != value?.Length)
                     throw new ArgumentOutOfRangeException();
                 _rotations = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
             }
         }
-        private float3[] _rotations;
+        private float3[]? _rotations;
 
         /// <summary>
         /// The scale of each instance. This array needs to be as long as <see cref="Amount"/>.
         /// </summary>
-        public float3[] Scales
+        public float3[]? Scales
         {
             get => _scales;
             set
             {
-                if (Amount != value.Length)
+                if (Amount != value?.Length)
                     throw new ArgumentOutOfRangeException();
                 _scales = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
             }
         }
-        private float3[] _scales;
+        private float3[]? _scales;
 
         /// <summary>
         /// The color of each instance. This array needs to be as long as <see cref="Amount"/>.
         /// </summary>
-        public float4[] Colors
+        public float4[]? Colors
         {
             get => _colors;
             set
             {
-                if (Amount != value.Length)
+                if (Amount != value?.Length)
                     throw new ArgumentOutOfRangeException();
                 _colors = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Colors));
             }
         }
-        private float4[] _colors;
+        private float4[]? _colors;
 
         /// <summary>
         /// The amount of instances that will be rendered.
@@ -102,7 +102,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="scales">The scale of each instance.</param>
         /// <param name="colors">The color of each instance.</param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public InstanceData(int amount, float3[] positions, float3[] rotations = null, float3[] scales = null, float4[] colors = null)
+        public InstanceData(int amount, float3[] positions, float3[]? rotations = null, float3[]? scales = null, float4[]? colors = null)
         {
             Amount = amount;
             if (Amount != positions.Length)

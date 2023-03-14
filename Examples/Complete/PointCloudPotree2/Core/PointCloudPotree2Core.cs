@@ -1,15 +1,14 @@
 using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core.Scene;
 using Fusee.PointCloud.Potree.V2;
+using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {
@@ -26,7 +25,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         }
         private bool _closingRequested;
 
-        public RenderMode PointRenderMode = RenderMode.DynamicMesh;
+        public RenderMode PointRenderMode = RenderMode.Instanced;
         public string AssetsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
@@ -52,8 +51,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private Potree2Reader _potreeReader;
         private PotreeData _potreeData;
 
-        private ScenePicker _picker;
-
         private readonly RenderContext _rc;
 
         public void OnLoadNewFile(object sender, EventArgs e)
@@ -63,27 +60,21 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             if (path == null || path == string.Empty)
                 return;
 
-            _potreeReader.ReadNewFile(path, out _potreeData);
+            _potreeData = _potreeReader.ReadNewFile(path);
 
-            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(RenderMode.DynamicMesh);
+            _pointCloud = (PointCloudComponent)_potreeReader.GetPointCloudComponent(PointRenderMode);
             _pointCloud.PointCloudImp.MinProjSizeModifier = PointRenderingParams.Instance.ProjectedSizeModifier;
             _pointCloud.PointCloudImp.PointThreshold = PointRenderingParams.Instance.PointThreshold;
 
             _pointCloud.Camera = _cam;
 
             _pointCloudNode.Components[3] = _pointCloud;
-
-            // re-generate picker and octree
-            _picker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Engine.Common.Cull.None, new List<IPickerModule>()
-            {
-                new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree, (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp)
-            });
         }
 
         public PointCloudPotree2Core(RenderContext rc)
         {
             _potreeReader = new Potree2Reader();
-            _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile), out _potreeData);
+            var _potreedata = _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
             _rc = rc;
         }
 
@@ -166,17 +157,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
 
             _pointCloud.Camera = _cam;
-
-            //_picker = new ScenePicker(_scene, Engine.Common.Cull.None, new List<IPickerModule>()
-            //{
-            //    new PointCloudPickerModule(((PointCloud.Potree.Potree2Cloud)_pointCloud.PointCloudImp).VisibilityTester.Octree, null)
-            //});
-
-            _picker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Engine.Common.Cull.None, new List<IPickerModule>()
-            {
-                new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree, (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp)
-            });
-
         }
 
         // RenderAFrame is called once a frame
@@ -247,15 +227,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _angleVelVert = 0;
 
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
-
-            if (!_keys && Input.Mouse.LeftButton)
-            {
-                var width = _rc.ViewportWidth;
-                var height = _rc.ViewportHeight;
-                var pickPosClip = (Input.Mouse.Position * new float2(2.0f / width, -2.0f / height)) + new float2(-1, 1);
-                var result = _picker?.Pick(pickPosClip, width, height).ToList();
-                if (result != null && result.Count != 0) Diagnostics.Debug(((PointCloudPickResult)result[0]).OctandID);
-            }
         }
 
         private void OnThresholdChanged(int newValue)

@@ -12,11 +12,6 @@
         public IPointCloud GetPointCloudComponent(RenderMode renderMode);
 
         /// <summary>
-        /// Returns the point type.
-        /// </summary>
-        public PointType PointType { get; }
-
-        /// <summary>
         /// Reads the Potree file and returns an octree.
         /// </summary>
         public IPointCloudOctree GetOctree();

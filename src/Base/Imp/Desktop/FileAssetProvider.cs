@@ -1,6 +1,5 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
-using SixLabors.ImageSharp.Drawing;
 using System;
 using System.Collections.Generic;
 using System.IO;
