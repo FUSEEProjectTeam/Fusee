@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Potree.V2.Data
 {
-    public class PotreeSettingsHierarchy
+    public class PotreeSettingsHierarchy : IPointWriterHierarchy
     {
         public int FirstChunkSize { get; set; }
         public int StepSize { get; set; }
@@ -53,15 +53,16 @@ namespace Fusee.PointCloud.Potree.V2.Data
         public bool IsExtraByte { get; set; } = false;
     }
 
-    public class PotreeMetadata
+    public class PotreeMetadata : IPointWriterMetadata
     {
         public string Version { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public int Points { get; set; }
+        public int PointCount { get; set; }
         public int OffsetToExtraBytes { get; set; } = -1;
         public string Projection { get; set; }
-        public PotreeSettingsHierarchy Hierarchy { get; set; }
+
+        public IPointWriterHierarchy Hierarchy { get; set; }
 
         [JsonProperty(PropertyName = "offset")]
         public List<double> OffsetList { get; set; }
@@ -74,7 +75,10 @@ namespace Fusee.PointCloud.Potree.V2.Data
         public double3 Scale => new(ScaleList[0], ScaleList[1], ScaleList[2]);
 
         public double Spacing { get; set; }
-        public PotreeSettingsBoundingBox BoundingBox { get; set; }
+        public PotreeSettingsBoundingBox BoundingBox { get; }
+
+        public AABBd AABB => new(BoundingBox.Min, BoundingBox.Max);
+
         public string Encoding { get; set; }
 
         [JsonProperty(PropertyName = "attributes")]
