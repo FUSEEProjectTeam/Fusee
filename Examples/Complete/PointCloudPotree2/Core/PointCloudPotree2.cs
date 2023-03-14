@@ -57,13 +57,13 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 return;
             }
 
-            _pointRenderingCore.Update(true);
+            _pointRenderingCore?.Update(true);
         }
 
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            _pointRenderingCore.Resize(e.Width, e.Height);
+            _pointRenderingCore?.Resize(e.Width, e.Height);
         }
 
         public override void DeInit()

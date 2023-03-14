@@ -111,7 +111,17 @@ namespace Fusee.Engine.Core
             /// <summary>
             /// The current pick position in clip coordinate space.
             /// </summary>
-            public static float2 PickPosClip { get; internal set; }
+            public float2 PickPosClip { get; internal set; }
+
+            /// <summary>
+            /// The current camera used for picking
+            /// </summary>
+            public CameraResult CurrentCameraResult { get; internal set; }
+
+            /// <summary>
+            /// The current canvas screen size
+            /// </summary>
+            public int2 ScreenSize { get; internal set; }
 
             /// <summary>
             /// The registered model.
@@ -272,7 +282,9 @@ namespace Fusee.Engine.Core
 
             pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
             PickPosClip = pickPosClip;
-            PickerState.PickPosClip = pickPosClip;
+            State.PickPosClip = pickPosClip;
+            State.CurrentCameraResult = pickCam;
+            State.ScreenSize = new int2(pickCamRect.Width, pickCamRect.Height);
 
             SetState();
             var res = Viserate().ToList();
