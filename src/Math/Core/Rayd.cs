@@ -75,17 +75,17 @@ namespace Fusee.Math.Core
         /// <param name="projection">The Projection Matrix of the rendered scene.</param>
         public RayD(double2 pickPosClip, double4x4 view, double4x4 projection)
         {
-            Origin = double4x4.Invert(view).Translation();
-
-            _inverse = default;
-            _inverseDirty = true;
-
             double4x4 invViewProjection = double4x4.Invert(projection * view);
 
-            var pickPosWorld4 = double4x4.Transform(invViewProjection, new double4(pickPosClip.x, pickPosClip.y, 1, 1));
-            var pickPosWorld = (pickPosWorld4 / pickPosWorld4.w).xyz;
+            var pickPosFarWorld = double4x4.TransformPerspective(invViewProjection, new double3(pickPosClip.x, pickPosClip.y, 1));
+            var pickPosNearWorld = double4x4.TransformPerspective(invViewProjection, new double3(pickPosClip.x, pickPosClip.y, -1));
 
-            _direction = (pickPosWorld - Origin).Normalize();
+            Origin = pickPosNearWorld;
+
+            _direction = (pickPosFarWorld - pickPosNearWorld).Normalize();
+
+            _inverse = new double3(1 / _direction.x, 1 / _direction.y, 1 / _direction.z);
+            _inverseDirty = false;
         }
     }
 }
