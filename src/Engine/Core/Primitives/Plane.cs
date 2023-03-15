@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core.Primitives
@@ -47,6 +48,9 @@ namespace Fusee.Engine.Core.Primitives
                 new float2(1, 0),
 
             });
+
+            Guard.IsNotNull(Vertices);
+            BoundingBox = new AABBf(Vertices.AsReadOnlySpan);
             #endregion
         }
 
