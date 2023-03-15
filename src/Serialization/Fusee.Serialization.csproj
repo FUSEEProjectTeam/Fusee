@@ -19,7 +19,7 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 
-		<PackageReference Include="protobuf-net" Version="3.2.8" />
+		<PackageReference Include="protobuf-net" Version="3.2.12" />
 	</ItemGroup>
 
 </Project>
