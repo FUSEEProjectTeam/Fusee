@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Runtime.InteropServices;
@@ -7,6 +8,7 @@ namespace Fusee.Math.Core
     /// <summary>
     ///     Represents an axis aligned bounding box.
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct AABBd
@@ -14,11 +16,13 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The minimum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
+        [JsonProperty(PropertyName = "Min")]
         [ProtoMember(1)] public double3 min;
 
         /// <summary>
         /// The maximum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
+        [JsonProperty(PropertyName = "Max")]
         [ProtoMember(2)] public double3 max;
 
         /// <summary>

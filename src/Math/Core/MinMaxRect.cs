@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Globalization;
 
 namespace Fusee.Math.Core
@@ -7,16 +8,19 @@ namespace Fusee.Math.Core
     /// Class containing an axis aligned (two-dimensional) rectangle specified by its minimum (lower-left) and maximum (upper-right)
     /// points in 2d space.
     /// </summary>    
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public struct MinMaxRect
     {
         /// <summary>
         /// Returns the minimum (lower-left corner) as a float2 vector.
-        /// </summary>       
+        /// </summary>      
+        [JsonProperty(PropertyName = "Min")]
         public float2 Min;
 
         /// <summary>
         /// Returns the maximum (upper-right corner) as a float2 vector.
         /// </summary>        
+        [JsonProperty(PropertyName = "Max")]
         public float2 Max;
 
         /// <summary>
