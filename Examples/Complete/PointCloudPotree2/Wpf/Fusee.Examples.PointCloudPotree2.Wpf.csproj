@@ -32,7 +32,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
 		<ProjectReference Include="..\Core\Fusee.Examples.PointCloudPotree2.Core.csproj" />
 
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 </Project>
