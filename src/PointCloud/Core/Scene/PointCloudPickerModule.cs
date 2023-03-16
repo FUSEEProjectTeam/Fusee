@@ -66,6 +66,7 @@ namespace Fusee.PointCloud.Core.Scene
         [VisitMethod]
         public void RenderPointCloud(PointCloudComponent pointCloud)
         {
+            PickResult = null;
             if (!pointCloud.Active) return;
 
             Guard.IsNotNull(_pcImp);
