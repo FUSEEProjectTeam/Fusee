@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using Newtonsoft.Json;
+using ProtoBuf;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -7,6 +8,7 @@ namespace Fusee.Math.Core
     /// <summary>
     ///     Represents an oriented bounding box.
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct OBBd
@@ -14,27 +16,37 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     The minimum values of the oriented bounding box in x, y and z direction
         /// </summary>
-        [ProtoMember(1)] public double3 Min;
+        [JsonProperty(PropertyName = "Min")]
+        [ProtoMember(1)]
+        public double3 Min;
 
         /// <summary>
         ///     The maximum values of the oriented bounding box in x, y and z direction
         /// </summary>
-        [ProtoMember(2)] public double3 Max;
+        [JsonProperty(PropertyName = "Max")]
+        [ProtoMember(2)]
+        public double3 Max;
 
         /// <summary>
         ///     The rotation of the oriented bounding box
         /// </summary>
-        [ProtoMember(3)] public double4x4 Rotation;
+        [JsonProperty(PropertyName = "Rotation")]
+        [ProtoMember(3)]
+        public double4x4 Rotation;
 
         /// <summary>
         ///     The translation of the oriented bounding box
         /// </summary>
-        [ProtoMember(4)] public double3 Translation;
+        [JsonProperty(PropertyName = "Translation")]
+        [ProtoMember(4)]
+        public double3 Translation;
 
         /// <summary>
         ///     Returns the with, height and depth of the box in x, y and z
         /// </summary>
-        [ProtoMember(5)] public double3 Size;
+        [JsonProperty(PropertyName = "Size")]
+        [ProtoMember(5)]
+        public double3 Size;
 
         /// <summary>
         ///     Returns the center of the bounding box

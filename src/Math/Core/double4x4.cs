@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Globalization;
@@ -44,6 +45,7 @@ namespace Fusee.Math.Core
     /// of methods are postfixed with "RH".
     /// </para>
     /// </remarks>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct double4x4 : IEquatable<double4x4>
@@ -53,24 +55,28 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Top row of the matrix
         /// </summary>
+        [JsonProperty(PropertyName = "Row1")]
         [ProtoMember(1)]
         public double4 Row1;
 
         /// <summary>
         /// 2nd row of the matrix
         /// </summary>
+        [JsonProperty(PropertyName = "Row2")]
         [ProtoMember(2)]
         public double4 Row2;
 
         /// <summary>
         /// 3rd row of the matrix
         /// </summary>
+        [JsonProperty(PropertyName = "Row3")]
         [ProtoMember(3)]
         public double4 Row3;
 
         /// <summary>
         /// Bottom row of the matrix
         /// </summary>
+        [JsonProperty(PropertyName = "Row4")]
         [ProtoMember(4)]
         public double4 Row4;
 

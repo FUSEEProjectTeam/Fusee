@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -7,12 +8,16 @@ namespace Fusee.Math.Core
     /// <summary>
     ///     Represents a Quaternion (single precision).
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [StructLayout(LayoutKind.Sequential)]
     public struct QuaternionF : IEquatable<QuaternionF>
     {
         #region Fields
 
+        [JsonProperty(PropertyName = "XYZ")]
         private float3 _xyz;
+
+        [JsonProperty(PropertyName = "W")]
         private float _w;
 
         #endregion Fields

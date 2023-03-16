@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,11 +8,13 @@ namespace Fusee.Math.Core
     /// <summary>
     /// Represents a curve, using a list of CurveParts.
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class Curve
     {
         /// <summary>
         /// The parts forming the curve.
         /// </summary>
+        [JsonProperty(PropertyName = "CurveParts")]
         public IList<CurvePart> CurveParts = new List<CurvePart>();
 
         /// <summary>
@@ -97,21 +100,25 @@ namespace Fusee.Math.Core
     /// <summary>
     /// Represents a open or closed part of a curve, using a list of CurveSegments and its starting point.
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class CurvePart
     {
         /// <summary>
         /// A CurvePart can be closed or open.
         /// </summary>
+        [JsonProperty(PropertyName = "IsClosed")]
         public bool IsClosed;
 
         /// <summary>
         /// The starting point of the CurvePart.
         /// </summary>
+        [JsonProperty(PropertyName = "StartPoint")]
         public float3 StartPoint;
 
         /// <summary>
         /// The segments making up the CurvePart.
         /// </summary>
+        [JsonProperty(PropertyName = "CurveSegments")]
         public IList<CurveSegment> CurveSegments = new List<CurveSegment>();
 
         /// <summary>
@@ -225,11 +232,13 @@ namespace Fusee.Math.Core
     /// A CurveSgment does not know its own start point. For the first CurveSegment in a sequence the start point is saved in the CurvePart belonging to the segment.
     /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]'s list of vertices.
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public abstract class CurveSegment
     {
         /// <summary>
         ///The vertices of a CurveSegment represented by float3s.
         /// </summary>
+        [JsonProperty(PropertyName = "Vertices")]
         public IList<float3> Vertices = new List<float3>();
 
         /// <summary>
