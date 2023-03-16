@@ -304,6 +304,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public event EventHandler<RenderEventArgs> Render;
 
         /// <summary>
+        /// Occurs when [postrender].
+        /// </summary>
+        public event EventHandler<PostRenderEventArgs> PostRender;
+
+        /// <summary>
         /// Occurs when [resize].
         /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
@@ -342,6 +347,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             Render?.Invoke(this, new RenderEventArgs());
         }
 
+        public void DoPostRender()
+        {
+            PostRender?.Invoke(this, new PostRenderEventArgs());
+        }
+
         /// <summary>
         /// Does the resize on this instance.
         /// </summary>
@@ -349,6 +359,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             Resize?.Invoke(this, new ResizeEventArgs(width, height));
         }
+
 
     }
 

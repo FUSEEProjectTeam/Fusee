@@ -232,6 +232,15 @@ namespace Fusee.Engine.Core
                 EndOfFrame?.Invoke(this, EventArgs.Empty);
             };
 
+            //Wäre meine Idee gewesen. Dann müssten die Methoden "GetFrameBuffer" und "GetDepthBuffer" 
+            //im Interface und damit für alle Implementierungen erstellt werden. Weiß nicht, ob das so gewollt ist.
+            //CanvasImplementor.PostRender += delegate
+            //{
+                //var frameBuffer = CanvasImplementor.GetFrameBuffer(Width,Heigth);
+                //var depthBuffer = CanvasImplementor.GetDepthBuffer(Width,Heigth);
+            //};
+
+
             CanvasImplementor.Resize += (s, e) =>
             {
                 if (IsShuttingDown) return;
@@ -242,6 +251,7 @@ namespace Fusee.Engine.Core
                 Resize(e);
             };
         }
+
 
         /// <summary>
         ///     Callback method to invoke user code for updating a frame.

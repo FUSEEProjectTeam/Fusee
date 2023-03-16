@@ -136,6 +136,11 @@ namespace Fusee.Engine.Common
         public void DoRender();
 
         /// <summary>
+        /// Does the postrender of this instance.
+        /// </summary>
+        public void DoPostRender();
+
+        /// <summary>
         /// Does the resize on this instance.
         /// </summary>
         public void DoResize(int width, int height);
@@ -162,6 +167,10 @@ namespace Fusee.Engine.Common
         /// Occurs when [Render] is called.
         /// </summary>
         event EventHandler<RenderEventArgs> Render;
+        /// <summary>
+        /// Occurs when [PostRender] is called.
+        /// </summary>
+        event EventHandler<PostRenderEventArgs> PostRender;
         /// <summary>
         /// Occurs when [Resize] is called.
         /// </summary>

@@ -309,6 +309,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public event EventHandler<RenderEventArgs> Render;
         /// <summary>
+        /// Occurs when [postrender].
+        /// </summary>
+        public event EventHandler<PostRenderEventArgs> PostRender;
+        /// <summary>
         /// Occurs when [resize].
         /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
@@ -364,6 +368,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public virtual void DoRender()
         {
             Render?.Invoke(this, new RenderEventArgs());
+        }
+
+        /// <summary>
+        /// Does the postrender of this instance.
+        /// </summary>
+        public virtual void DoPostRender()
+        {
+            PostRender?.Invoke(this, new PostRenderEventArgs());
         }
 
         /// <summary>
@@ -516,6 +528,75 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             img.Mutate(x => x.AutoOrient());
             img.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
             return img;
+        }
+
+        /// <summary>
+        /// Return the framebuffer.
+        /// </summary>
+        /// <param name="width">Width of the frame.</param>
+        /// <param name="height">Heigth of the frame.</param>
+        /// <param name="x">First pixel to start with on the x axis.</param>
+        /// <param name="y">First pixel to start with on the x axis.</param>
+        /// <returns>Can return an empty array if the width or height are smaller than x or y.</returns>
+        public byte[] GetFrameBuffer(int width, int height, int x = 0, int y = 0)
+        {
+            if (width <= x || height <= y)
+                return new byte[0];
+
+            var mem = new byte[(width-x) * (height-y) * 4];
+
+            GL.Flush();
+
+            GL.ReadPixels(x, y, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, mem);
+
+            return mem;
+        }
+
+        /// <summary>
+        /// Return the depthbuffer.
+        /// </summary>
+        /// <param name="width">Width of the frame.</param>
+        /// <param name="height">Heigth of the frame.</param>
+        /// <param name="x">First pixel to start with on the x axis.</param>
+        /// <param name="y">First pixel to start with on the x axis.</param>
+        /// <returns>Can return an empty array if the width or height are smaller than x or y.</returns>
+        public byte[] GetDepthBuffer(int width, int height, int x = 0, int y = 0)
+        {
+            if (width <= x || height <= y)
+                return new byte[0];
+
+            //
+            GL.Enable(EnableCap.DepthTest);
+
+            var mem = new byte[width * height * 4];
+
+            GL.Flush();
+
+            GL.ReadPixels(x, y, width, height, PixelFormat.DepthComponent, PixelType.UnsignedInt, mem);
+
+            return mem;
+        }
+
+        /// <summary>
+        /// Return the stencilbuffer.
+        /// </summary>
+        /// <param name="width">Width of the frame.</param>
+        /// <param name="height">Heigth of the frame.</param>
+        /// <param name="x">First pixel to start with on the x axis.</param>
+        /// <param name="y">First pixel to start with on the x axis.</param>
+        /// <returns>Can return an empty array if the width or height are smaller than x or y.</returns>
+        public byte[] GetStencilBuffer(int width, int height, int x = 0, int y = 0)
+        {
+            //
+            GL.Enable(EnableCap.StencilTest);
+
+            var mem = new byte[width * height * 4];
+
+            GL.Flush();
+
+            GL.ReadPixels(0, 0, width, height, PixelFormat.StencilIndex, PixelType.UnsignedInt, mem);
+
+            return mem;
         }
 
         #endregion

@@ -94,6 +94,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public event EventHandler<RenderEventArgs> Render;
 
         /// <summary>
+        /// Occurs when [postrender].
+        /// </summary>
+        public event EventHandler<PostRenderEventArgs> PostRender;
+
+        /// <summary>
         /// Occurs when resizing.
         /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
@@ -188,6 +193,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
+        /// Does the postrender of this instance.
+        /// </summary>
+        public void DoPostRender()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Does initialize this instance.
         /// </summary>
         public void DoInit()
@@ -223,5 +236,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             Resize?.Invoke(this, new ResizeEventArgs(w, h));
         }
+
+
     }
 }
