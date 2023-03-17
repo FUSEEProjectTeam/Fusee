@@ -774,14 +774,8 @@ namespace Fusee.Engine.Core
 
             if (mesh.GetType() != typeof(Primitives.Plane) && (mesh.BoundingBox.Size.x <= 0f || mesh.BoundingBox.Size.y <= 0f || mesh.BoundingBox.Size.z <= 0f))
             {
-                var sizeX = mesh.BoundingBox.Size.x <= 0 ? 0.001f : mesh.BoundingBox.Size.x;
-                var sizeY = mesh.BoundingBox.Size.y <= 0 ? 0.001f : mesh.BoundingBox.Size.y;
-                var sizeZ = mesh.BoundingBox.Size.z <= 0 ? 0.001f : mesh.BoundingBox.Size.z;
-                var size = new float3(sizeX, sizeY, sizeZ);
-                var min = mesh.BoundingBox.Center - size / 2;
-                var max = mesh.BoundingBox.Center + size / 2;
-
-                mesh.BoundingBox = new AABBf(min, max);
+                Diagnostics.Warn($"Size of current bounding box is 0 for one or more dimensions. Picking not possible.");
+                return;
             }
 
             var ray = new RayF(PickPosClip, _view, _projection);
