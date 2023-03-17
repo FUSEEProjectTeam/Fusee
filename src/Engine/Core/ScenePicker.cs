@@ -772,18 +772,16 @@ namespace Fusee.Engine.Core
                 mesh.BoundingBox = new(mesh.Vertices.AsReadOnlySpan);
             }
 
-            if (mesh.BoundingBox.Size.x <= 0 || mesh.BoundingBox.Size.y <= 0 || mesh.BoundingBox.Size.z <= 0)
+            if (mesh.GetType() != typeof(Primitives.Plane) && (mesh.BoundingBox.Size.x <= 0f || mesh.BoundingBox.Size.y <= 0f || mesh.BoundingBox.Size.z <= 0f))
             {
-                //Diagnostics.Warn($"Current bounding box of {mesh} is smaller or equal to zero. Forcing a thickness in zero direction of >= float.Epsilon");
-                var maxX = mesh.BoundingBox.Size.x <= 0 ? 0.1f : mesh.BoundingBox.max.x;
-                var maxY = mesh.BoundingBox.Size.y <= 0 ? 0.1f : mesh.BoundingBox.max.y;
-                var maxZ = mesh.BoundingBox.Size.z <= 0 ? 0.1f : mesh.BoundingBox.max.z;
+                var sizeX = mesh.BoundingBox.Size.x <= 0 ? 0.001f : mesh.BoundingBox.Size.x;
+                var sizeY = mesh.BoundingBox.Size.y <= 0 ? 0.001f : mesh.BoundingBox.Size.y;
+                var sizeZ = mesh.BoundingBox.Size.z <= 0 ? 0.001f : mesh.BoundingBox.Size.z;
+                var size = new float3(sizeX, sizeY, sizeZ);
+                var min = mesh.BoundingBox.Center - size / 2;
+                var max = mesh.BoundingBox.Center + size / 2;
 
-                var minX = mesh.BoundingBox.Size.x <= 0 ? 0 : mesh.BoundingBox.min.x;
-                var minY = mesh.BoundingBox.Size.y <= 0 ? 0 : mesh.BoundingBox.min.y;
-                var minZ = mesh.BoundingBox.Size.z <= 0 ? 0 : mesh.BoundingBox.min.z;
-
-                mesh.BoundingBox = new AABBf(new float3(minX, minY, minZ), new float3(maxX, maxY, maxZ));
+                mesh.BoundingBox = new AABBf(min, max);
             }
 
             var ray = new RayF(PickPosClip, _view, _projection);
