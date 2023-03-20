@@ -104,6 +104,13 @@ namespace Fusee.PointCloud.Potree
         internal ushort B = 0;
     }
 
+    public enum LASPointType : byte
+    {
+        Zero = 0x0,
+        Two = 0x2,
+        Seven = 0x7
+    }
+
     /// <summary>
     /// This class provides methods to convert and saves <see cref="LASPoint"/> clouds to LAS 1.4
     /// </summary>
@@ -116,15 +123,26 @@ namespace Fusee.PointCloud.Potree
         private bool disposedValue;
         private LASHeader _header;
         private readonly PotreeData _potreeData;
+        private readonly LASPointType _type;
 
-        public Potree2LAS(FileInfo savePath, PotreeData potreeData)
+        /// <summary>
+        /// Generate a writer instance, pass save path, Potree data and optional the point type to write
+        /// </summary>
+        /// <param name="savePath"></param>
+        /// <param name="potreeData"></param>
+        /// <param name="ptType"></param>
+        public Potree2LAS(FileInfo savePath, PotreeData potreeData, LASPointType ptType = LASPointType.Two)
         {
             Guard.IsNotNull(savePath);
             Guard.IsNotNull(potreeData);
             Guard.IsTrue(savePath.Extension == ".las");
+
+            _type = ptType;
+
             if (savePath.Exists)
             {
                 Diagnostics.Warn($"{savePath.FullName} does already exists. Overwriting ...");
+                savePath.Delete();
             }
 
             SavePath = savePath;
@@ -145,7 +163,7 @@ namespace Fusee.PointCloud.Potree
             Guard.IsLessThan(year, ushort.MaxValue);
             Guard.IsLessThan(size, ushort.MaxValue);
 
-           _fileStream.Seek(0, SeekOrigin.Begin);
+            _fileStream.Seek(0, SeekOrigin.Begin);
 
             // TODO: Parse / generate fitting point type and extra bytes, etc...
 
@@ -166,7 +184,9 @@ namespace Fusee.PointCloud.Potree
                 ScaleFactorX = Metadata.Scale.x,
                 ScaleFactorY = Metadata.Scale.y,
                 ScaleFactorZ = Metadata.Scale.z,
-                NumberOfPtRecords = (ulong)Metadata.PointCount
+                NumberOfPtRecords = (ulong)Metadata.PointCount,
+                PointDataRecordFormat = (byte)_type
+
             };
 
             var generatingSoftware = Encoding.UTF8.GetBytes($"Fusee v.{Assembly.GetExecutingAssembly().GetName().Version}");
@@ -191,6 +211,8 @@ namespace Fusee.PointCloud.Potree
             }
         }
 
+        delegate void ConvertPointMethod(Span<byte> data, Stream s);
+
         /// <summary>
         /// This methods starts the LASfile write progress.
         /// </summary>
@@ -204,15 +226,49 @@ namespace Fusee.PointCloud.Potree
 
             using var stream = _potreeData.OctreeMappedFile.CreateViewStream();
             var fileLength = Metadata.PointCount * Metadata.PointSize;
+
+            Span<byte> tmpArry = (int)_type switch
+            {
+                0 => stackalloc byte[666], // TODO
+                2 => stackalloc byte[26 + 1], // + 1 due to wrong potree bytes
+                7 => stackalloc byte[36 + 1],
+                _ => throw new NotImplementedException(),
+            }; ;
+
+            ConvertPointMethod convertPtMethod = (int)_type switch
+            {
+                0 => static (Span<byte> pt, Stream s) =>
+                {
+                }
+                ,
+                2 => static (Span<byte> pt, Stream s) =>
+                {
+                    s.Write(pt[..12]); // position
+                    s.Write(pt.Slice(12, 3)); // intensity, and mixed returns according to las 1.4
+                    // skip number of returns! [15,16]
+                    s.Write(pt.Slice(16, 11)); // rest
+                }
+                ,
+                7 => static (Span<byte> pt, Stream s) =>
+                {
+                    s.Write(pt[..12]); // position
+                    s.Write(pt.Slice(12, 3)); // intensity, and mixed returns according to las 1.4
+                    // skip number of returns! [15,16]
+                    s.Write(pt.Slice(16, 21)); // rest
+                }
+                ,
+                _ => throw new NotImplementedException(),
+            };
+
             // DO NOT USE stream.Length as the MemoryMappedStream aligns with the page size
             for (var i = 0; i < fileLength; i += Metadata.PointSize)
             {
-                progressCallback?.Invoke((int)(fileLength / Metadata.PointSize / 100f * i));
+                float progress = (100f / Metadata.PointCount) * (i / Metadata.PointSize);
+                progressCallback?.Invoke((int)progress);
                 // we need to copy each point and shrink it back to 26 (from 27) due to PotreeConvert errors
-
+                stream.Read(tmpArry);
+                convertPtMethod(tmpArry, _fileStream);
             }
-
-            stream.CopyTo(_fileStream);
         }
 
         /// <summary>
