@@ -226,8 +226,8 @@ namespace Fusee.PointCloud.Potree.V2
             Guard.IsTrue(File.Exists(metadataFilePath), metadataFilePath);
             Guard.IsTrue(File.Exists(metadataFilePath), hierarchyFilePath);
 
-            var Metadata = LoadPotreeMetadata(metadataFilePath);
-            var Hierarchy = new PotreeHierarchy()
+            var metadata = LoadPotreeMetadata(metadataFilePath);
+            var hierarchy = new PotreeHierarchy()
             {
                 Root = new()
                 {
@@ -235,29 +235,29 @@ namespace Fusee.PointCloud.Potree.V2
                 }
             };
 
-            Metadata.Attributes = GetAttributesDict(Metadata.AttributesList);
+            metadata.Attributes = GetAttributesDict(metadata.AttributesList);
 
-            Metadata.FolderPath = folderPath;
+            metadata.FolderPath = folderPath;
 
-            CalculateAttributeOffsets(ref Metadata);
+            CalculateAttributeOffsets(ref metadata);
 
-            Hierarchy.Root.Aabb = new AABBd(Metadata.BoundingBox.Min, Metadata.BoundingBox.Max);
+            hierarchy.Root.Aabb = new AABBd(metadata.BoundingBox.Min, metadata.BoundingBox.Max);
 
             var data = File.ReadAllBytes(hierarchyFilePath);
 
             Guard.IsNotNull(data, nameof(data));
 
-            LoadHierarchyRecursive(ref Hierarchy.Root, ref data, 0, Metadata.Hierarchy.FirstChunkSize);
+            LoadHierarchyRecursive(ref hierarchy.Root, ref data, 0, metadata.Hierarchy.FirstChunkSize);
 
-            Hierarchy.Nodes = new();
-            Hierarchy.Root.Traverse(n => Hierarchy.Nodes.Add(n));
+            hierarchy.Nodes = new();
+            hierarchy.Root.Traverse(n => hierarchy.Nodes.Add(n));
 
-            FlipYZAxis(Metadata, Hierarchy);
+            FlipYZAxis(metadata, hierarchy);
 
-            Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x, Hierarchy.Root.Aabb.min.y, Hierarchy.Root.Aabb.min.z };
-            Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x, Hierarchy.Root.Aabb.max.y, Hierarchy.Root.Aabb.max.z };
+            //metadata.BoundingBox.MinList = new List<double>(3) { hierarchy.Root.Aabb.min.x, hierarchy.Root.Aabb.min.y, hierarchy.Root.Aabb.min.z };
+            //metadata.BoundingBox.MaxList = new List<double>(3) { hierarchy.Root.Aabb.max.x, hierarchy.Root.Aabb.max.y, hierarchy.Root.Aabb.max.z };
 
-            return (Metadata, Hierarchy);
+            return (metadata, hierarchy);
         }
 
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)

@@ -1,17 +1,13 @@
 using CommunityToolkit.Diagnostics;
-using CommunityToolkit.HighPerformance;
 using Fusee.Base.Core;
-using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using CommunityToolkit.HighPerformance;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using Fusee.PointCloud.Potree.V2.Data;
+using System.IO.MemoryMappedFiles;
 
 namespace Fusee.PointCloud.Potree
 {
@@ -166,18 +162,17 @@ namespace Fusee.PointCloud.Potree
             _fileStream.Seek(0, SeekOrigin.Begin);
 
             // TODO: Parse / generate fitting point type and extra bytes, etc...
-
             _header = new LASHeader
             {
                 PointDataRecordLength = (ushort)size,
                 FileCreationDayOfYear = (ushort)doy,
                 FileCreationYear = (ushort)year,
                 MaxX = Metadata.AABB.max.x,
-                MaxY = Metadata.AABB.max.y,
-                MaxZ = Metadata.AABB.max.z,
+                MaxY = Metadata.AABB.max.z,
+                MaxZ = Metadata.AABB.max.y,
                 MinX = Metadata.AABB.min.x,
-                MinY = Metadata.AABB.min.y,
-                MinZ = Metadata.AABB.min.z,
+                MinY = Metadata.AABB.min.z,
+                MinZ = Metadata.AABB.min.y,
                 OffsetX = Metadata.Offset.x,
                 OffsetY = Metadata.Offset.y,
                 OffsetZ = Metadata.Offset.z,
@@ -185,9 +180,12 @@ namespace Fusee.PointCloud.Potree
                 ScaleFactorY = Metadata.Scale.y,
                 ScaleFactorZ = Metadata.Scale.z,
                 NumberOfPtRecords = (ulong)Metadata.PointCount,
+                LegacyNbrOfPoints = (uint)Metadata.PointCount,
                 PointDataRecordFormat = (byte)_type
-
             };
+
+            //_header.LeacyNbrOfPointsByRtn[0] = (uint)Metadata.PointCount;
+            //_header.NbrOfPointsByReturn[0] = (ulong)Metadata.PointCount;
 
             var generatingSoftware = Encoding.UTF8.GetBytes($"Fusee v.{Assembly.GetExecutingAssembly().GetName().Version}");
             Guard.IsLessThan(generatingSoftware.Length, _header.GeneratingSoftware.Length);
@@ -212,6 +210,7 @@ namespace Fusee.PointCloud.Potree
         }
 
         delegate void ConvertPointMethod(Span<byte> data, Stream s);
+        delegate void WriteStreamChunk(MemoryMappedFile file, long start, long end);
 
         /// <summary>
         /// This methods starts the LASfile write progress.
@@ -229,7 +228,7 @@ namespace Fusee.PointCloud.Potree
 
             Span<byte> tmpArry = (int)_type switch
             {
-                0 => stackalloc byte[666], // TODO
+                //0 => stackalloc byte[666], // TODO
                 2 => stackalloc byte[26 + 1], // + 1 due to wrong potree bytes
                 7 => stackalloc byte[36 + 1],
                 _ => throw new NotImplementedException(),
@@ -239,11 +238,12 @@ namespace Fusee.PointCloud.Potree
             {
                 0 => static (Span<byte> pt, Stream s) =>
                 {
+                    throw new NotImplementedException();
                 }
                 ,
                 2 => static (Span<byte> pt, Stream s) =>
                 {
-                    s.Write(pt[..12]); // position
+                    s.Write(pt[..15]); // position
                     s.Write(pt.Slice(12, 3)); // intensity, and mixed returns according to las 1.4
                     // skip number of returns! [15,16]
                     s.Write(pt.Slice(16, 11)); // rest
