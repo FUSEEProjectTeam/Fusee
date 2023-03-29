@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.PointCloud.Potree.V2.Data;
+using System;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -16,7 +17,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <summary>
         /// Pass method how to handle the extra bytes, resulting uint will be passed into <see cref="Mesh.Flags"/>.
         /// </summary>
-        public HandleExtraBytes? HandleExtraBytes { get; set; }
+        public Func<byte[], uint>? HandleExtraBytes { get; set; }
 
         /// <summary>
         /// Constructs a new instance of Potree2AccessBase
