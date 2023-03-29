@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fusee.PointCloud.Common;
+using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 
@@ -25,6 +26,17 @@ namespace Fusee.PointCloud.Potree.V2.Data
         internal MemoryMappedFile OctreeMappedFile { get; }
 
         /// <summary>
+        /// Returns a reference to the memory mapped file view accessor for reading.
+        /// </summary>
+        internal MemoryMappedViewAccessor ReadViewAccessor { get; }
+
+        /// <summary>
+        /// Returns a reference to the memory mapped file view accessor for writing.
+        /// </summary>
+        internal MemoryMappedViewAccessor WriteViewAccessor { get; }
+
+
+        /// <summary>
         /// Creats a new instance of PotreeData
         /// </summary>
         /// <param name="potreeHierarchy"></param>
@@ -37,7 +49,21 @@ namespace Fusee.PointCloud.Potree.V2.Data
             var path = Path.Combine(Metadata.FolderPath, Potree2Consts.OctreeFileName);
 
             OctreeMappedFile = MemoryMappedFile.CreateFromFile(path, FileMode.Open);
+            ReadViewAccessor = OctreeMappedFile.CreateViewAccessor();
+            WriteViewAccessor = OctreeMappedFile.CreateViewAccessor();
         }
+
+        /// <summary>
+        /// Returns the node for the given <see cref="OctantId"/>.
+        /// </summary>
+        /// <param name="octantId"></param>
+        /// <returns></returns>
+        public PotreeNode? GetNode(OctantId octantId)
+        {
+            return Hierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdToPotreeName(octantId));
+        }
+
+        #region IDisposable
 
         private bool disposedValue;
 
@@ -48,12 +74,11 @@ namespace Fusee.PointCloud.Potree.V2.Data
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)
+                    ReadViewAccessor.Dispose();
+                    WriteViewAccessor.Dispose();
                     OctreeMappedFile.Dispose();
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
@@ -61,9 +86,10 @@ namespace Fusee.PointCloud.Potree.V2.Data
         /// <inheritdoc/>
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        #endregion IDisposable
     }
 }

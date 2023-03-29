@@ -8,7 +8,7 @@ namespace Fusee.PointCloud.Potree.V2
     /// <summary>
     /// Writes Potree data 
     /// </summary>
-    public class Potree2Writer : Potree2WriterBase
+    public class Potree2Writer : Potree2AccessBase
     {
         /// <summary>
         /// Generate a <see cref="Potree2Writer"/> instance.
