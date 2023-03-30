@@ -10,10 +10,9 @@ using Fusee.PointCloud.Potree.V2;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {
@@ -103,11 +102,11 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public PointCloudPotree2Core(RenderContext rc)
         {
-            _potreeReader = new Potree2Reader();
-            _potreeData = _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
+            _potreeReader = new Potree2Reader(Path.Combine("D:\\Halle2__AG_08\\"));
+            _potreeData = _potreeReader.PotreeData;
             var sw = new Stopwatch();
             sw.Start();
-            using var laswriter = new Potree2LAS(new FileInfo("test.las"), _potreedata);
+            using var laswriter = new Potree2LAS(new FileInfo("D:\\test\\test.las"), _potreeData);
             laswriter.Write();
             Console.WriteLine($"{sw.Elapsed} ready");
             _rc = rc;

@@ -53,6 +53,7 @@ namespace Fusee.PointCloud.Potree.V2.Data
         public bool IsExtraByte { get; set; } = false;
     }
 
+
     public class PotreeMetadata : IPointWriterMetadata
     {
         public string Version { get; set; }
