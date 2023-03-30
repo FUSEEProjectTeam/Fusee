@@ -86,15 +86,6 @@ namespace Fusee.PointCloud.Potree.V2
             Guard.IsNotNull(PotreeData);
             Guard.IsNotNull(PotreeData.Metadata);
 
-            int pointSize = 0;
-
-            foreach (var metaAttributeItem in PotreeData.Metadata.AttributesList)
-            {
-                pointSize += metaAttributeItem.Size;
-            }
-
-            PotreeData.Metadata.PointSize = pointSize;
-
             var center = PotreeData.Hierarchy.Root.Aabb.Center;
             var size = PotreeData.Hierarchy.Root.Aabb.Size.y;
             var maxLvl = PotreeData.Metadata.Hierarchy.Depth;

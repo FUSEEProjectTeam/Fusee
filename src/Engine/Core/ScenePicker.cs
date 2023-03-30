@@ -772,18 +772,10 @@ namespace Fusee.Engine.Core
                 mesh.BoundingBox = new(mesh.Vertices.AsReadOnlySpan);
             }
 
-            if (mesh.BoundingBox.Size.x <= 0 || mesh.BoundingBox.Size.y <= 0 || mesh.BoundingBox.Size.z <= 0)
+            if (mesh.GetType() != typeof(Primitives.Plane) && (mesh.BoundingBox.Size.x <= 0f || mesh.BoundingBox.Size.y <= 0f || mesh.BoundingBox.Size.z <= 0f))
             {
-                //Diagnostics.Warn($"Current bounding box of {mesh} is smaller or equal to zero. Forcing a thickness in zero direction of >= float.Epsilon");
-                var maxX = mesh.BoundingBox.Size.x <= 0 ? 0.1f : mesh.BoundingBox.max.x;
-                var maxY = mesh.BoundingBox.Size.y <= 0 ? 0.1f : mesh.BoundingBox.max.y;
-                var maxZ = mesh.BoundingBox.Size.z <= 0 ? 0.1f : mesh.BoundingBox.max.z;
-
-                var minX = mesh.BoundingBox.Size.x <= 0 ? 0 : mesh.BoundingBox.min.x;
-                var minY = mesh.BoundingBox.Size.y <= 0 ? 0 : mesh.BoundingBox.min.y;
-                var minZ = mesh.BoundingBox.Size.z <= 0 ? 0 : mesh.BoundingBox.min.z;
-
-                mesh.BoundingBox = new AABBf(new float3(minX, minY, minZ), new float3(maxX, maxY, maxZ));
+                Diagnostics.Warn($"Size of current bounding box is 0 for one or more dimensions. Picking not possible.");
+                return;
             }
 
             var ray = new RayF(PickPosClip, _view, _projection);
