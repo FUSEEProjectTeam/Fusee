@@ -111,7 +111,17 @@ namespace Fusee.Engine.Core
             /// <summary>
             /// The current pick position in clip coordinate space.
             /// </summary>
-            public static float2 PickPosClip { get; internal set; }
+            public float2 PickPosClip { get; internal set; }
+
+            /// <summary>
+            /// The current camera used for picking
+            /// </summary>
+            public CameraResult CurrentCameraResult { get; internal set; }
+
+            /// <summary>
+            /// The current canvas screen size
+            /// </summary>
+            public int2 ScreenSize { get; internal set; }
 
             /// <summary>
             /// The registered model.
@@ -272,7 +282,9 @@ namespace Fusee.Engine.Core
 
             pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
             PickPosClip = pickPosClip;
-            PickerState.PickPosClip = pickPosClip;
+            State.PickPosClip = pickPosClip;
+            State.CurrentCameraResult = pickCam;
+            State.ScreenSize = new int2(pickCamRect.Width, pickCamRect.Height);
 
             SetState();
             var res = Viserate().ToList();
@@ -760,18 +772,10 @@ namespace Fusee.Engine.Core
                 mesh.BoundingBox = new(mesh.Vertices.AsReadOnlySpan);
             }
 
-            if (mesh.BoundingBox.Size.x <= 0 || mesh.BoundingBox.Size.y <= 0 || mesh.BoundingBox.Size.z <= 0)
+            if (mesh.GetType() != typeof(Primitives.Plane) && (mesh.BoundingBox.Size.x <= 0f || mesh.BoundingBox.Size.y <= 0f || mesh.BoundingBox.Size.z <= 0f))
             {
-                //Diagnostics.Warn($"Current bounding box of {mesh} is smaller or equal to zero. Forcing a thickness in zero direction of >= float.Epsilon");
-                var maxX = mesh.BoundingBox.Size.x <= 0 ? 0.1f : mesh.BoundingBox.max.x;
-                var maxY = mesh.BoundingBox.Size.y <= 0 ? 0.1f : mesh.BoundingBox.max.y;
-                var maxZ = mesh.BoundingBox.Size.z <= 0 ? 0.1f : mesh.BoundingBox.max.z;
-
-                var minX = mesh.BoundingBox.Size.x <= 0 ? 0 : mesh.BoundingBox.min.x;
-                var minY = mesh.BoundingBox.Size.y <= 0 ? 0 : mesh.BoundingBox.min.y;
-                var minZ = mesh.BoundingBox.Size.z <= 0 ? 0 : mesh.BoundingBox.min.z;
-
-                mesh.BoundingBox = new AABBf(new float3(minX, minY, minZ), new float3(maxX, maxY, maxZ));
+                Diagnostics.Warn($"Size of current bounding box is 0 for one or more dimensions. Picking not possible.");
+                return;
             }
 
             var ray = new RayF(PickPosClip, _view, _projection);

@@ -1,20 +1,24 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json;
+using System.Linq;
 
 namespace Fusee.Math.Core
 {
     /// <summary>
     /// Eigen data structure with values and vectors in double precision.
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public struct Eigen
     {
         /// <summary>
         /// Eigen values.
         /// </summary>
+        [JsonProperty(PropertyName = "Values")]
         public double[] Values;
 
         /// <summary>
         /// Eigen vectors.
         /// </summary>
+        [JsonProperty(PropertyName = "Vectors")]
         public double3[] Vectors;
 
         /// <summary>

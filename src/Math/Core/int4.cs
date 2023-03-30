@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Globalization;
@@ -9,6 +10,7 @@ namespace Fusee.Math.Core
     /// <remarks>
     /// The int4 structure is suitable for interoperation with unmanaged code requiring four consecutive ints.
     /// </remarks>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [StructLayout(LayoutKind.Sequential)]
     [ProtoContract]
     public struct int4 : IEquatable<int4>
@@ -18,24 +20,28 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The x component of the int4.
         /// </summary>
+        [JsonProperty(PropertyName = "X")]
         [ProtoMember(1)]
         public int x;
 
         /// <summary>
         /// The y component of the int4.
         /// </summary>
+        [JsonProperty(PropertyName = "Y")]
         [ProtoMember(2)]
         public int y;
 
         /// <summary>
         /// The z component of the int4.
         /// </summary>
+        [JsonProperty(PropertyName = "Z")]
         [ProtoMember(3)]
         public int z;
 
         /// <summary>
         /// The w component of the int4.
         /// </summary>
+        [JsonProperty(PropertyName = "W")]
         [ProtoMember(4)]
         public int w;
 

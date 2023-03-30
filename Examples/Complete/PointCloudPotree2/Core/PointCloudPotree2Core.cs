@@ -1,5 +1,6 @@
 using Fusee.Base.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
@@ -9,8 +10,10 @@ using Fusee.PointCloud.Potree.V2;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
 {
@@ -20,6 +23,16 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public WritableTexture RenderTexture { get; private set; }
 
+        /// <summary>
+        /// This value is used, when we use this class as a <see cref="RenderTexture"/>
+        /// </summary>
+        public float2 ExternalMousePosition { get; set; }
+
+        /// <summary>
+        /// This value is used, when we use this class as a <see cref="RenderTexture"/>
+        /// </summary>
+        public int2 ExternalCanvasSize { get; set; }
+
         public bool ClosingRequested
         {
             get { return _closingRequested; }
@@ -27,7 +40,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         }
         private bool _closingRequested;
 
-        public RenderMode PointRenderMode = RenderMode.Instanced;
+        public RenderMode PointRenderMode = RenderMode.DynamicMesh;
         public string AssetsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
@@ -53,7 +66,11 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private Potree2Reader _potreeReader;
         private PotreeData _potreeData;
 
+        private ScenePicker _picker;
+        private readonly Transform _pickResultTransform = new();
+
         private readonly RenderContext _rc;
+
 
         public void OnLoadNewFile(object sender, EventArgs e)
         {
@@ -71,13 +88,23 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _pointCloud.Camera = _cam;
 
             _pointCloudNode.Components[3] = _pointCloud;
+
+            // re-generate scene picker
+            if (PointRenderMode == RenderMode.DynamicMesh)
+            {
+                _picker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Engine.Common.Cull.None, new List<IPickerModule>()
+                {
+                    new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree,
+                    (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp,
+                    (float)_potreeData.Metadata.Spacing)
+                });
+            }
         }
 
         public PointCloudPotree2Core(RenderContext rc)
         {
             _potreeReader = new Potree2Reader();
-            var _potreedata = _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
-
+            _potreeData = _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
             var sw = new Stopwatch();
             sw.Start();
             using var laswriter = new Potree2LAS(new FileInfo("test.las"), _potreedata);
@@ -165,6 +192,33 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule(_sceneRenderer.GetType() == typeof(SceneRendererForward)));
 
             _pointCloud.Camera = _cam;
+
+            // Generate picker, pass camera prepass results and the picker module
+            // which needs the point cloud, the octree and the spacing
+            // does not work for instanced and static point cloud meshes
+            if (PointRenderMode == RenderMode.DynamicMesh)
+            {
+                _picker = new ScenePicker(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Engine.Common.Cull.None, new List<IPickerModule>()
+                {
+                    new PointCloudPickerModule(((PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp).VisibilityTester.Octree,
+                    (PointCloud.Potree.Potree2CloudDynamic)_pointCloud.PointCloudImp,
+                    (float)_potreeData.Metadata.Spacing)
+                });
+
+                // Add sphere to visual identify the pick result
+                _scene.Children.Add(new SceneNode
+                {
+                    Components = new List<SceneComponent>()
+                        {
+                            _pickResultTransform,
+                            MakeEffect.FromDiffuse(new float4(1,0,0,1)),
+                            new Sphere(10, 10)
+                        }
+                });
+
+                _pickResultTransform.Translation = _pointCloud.PointCloudImp.Center;
+                _pickResultTransform.Scale = float3.One * 0.05f;
+            }
         }
 
         // RenderAFrame is called once a frame
@@ -235,6 +289,20 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _angleVelVert = 0;
 
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
+
+
+            if (!_keys && Input.Mouse.RightButton && PointRenderMode == RenderMode.DynamicMesh)
+            {
+                var size = RenderToTexture ? ExternalCanvasSize : new int2(_rc.ViewportWidth, _rc.ViewportHeight);
+                var mousePos = RenderToTexture ? ExternalMousePosition : Input.Mouse.Position;
+                var result = _picker?.Pick(mousePos, size.x, size.y).ToList();
+                if (result != null && result.Count > 0 && result[0] is PointCloudPickResult ppr)
+                {
+                    _pickResultTransform.Translation = ppr.Mesh.Vertices[ppr.VertIdx];
+                }
+
+            }
+
         }
 
         private void OnThresholdChanged(int newValue)

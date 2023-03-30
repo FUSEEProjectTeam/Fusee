@@ -8,7 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.1.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />
         <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
         <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />

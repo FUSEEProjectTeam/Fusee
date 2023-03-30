@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace Fusee.Math.Core
 {
@@ -8,11 +9,13 @@ namespace Fusee.Math.Core
     /// The plane divides a space into two half-spaces.The direction plane's normal vector defines the "outer" or negative half-space.
     /// Points that lie in the positive half space of the plane do have a negative signed distance to the plane.
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public struct PlaneF
     {
         /// <summary>
         /// The A plane coefficient.
         /// </summary>
+        [JsonProperty(PropertyName = "A")]
         public float A
         {
             get => _a;
@@ -27,6 +30,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The B plane coefficient.
         /// </summary>
+        [JsonProperty(PropertyName = "B")]
         public float B
         {
             get => _b;
@@ -41,6 +45,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The C plane coefficient.
         /// </summary>
+        [JsonProperty(PropertyName = "C")]
         public float C
         {
             get => _c;
@@ -55,6 +60,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The D plane coefficient.
         /// </summary>
+        [JsonProperty(PropertyName = "D")]
         public float D;
 
         /// <summary>
