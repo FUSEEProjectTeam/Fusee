@@ -191,6 +191,14 @@ namespace Fusee.PointCloud.Potree
             Guard.IsLessThan(generatingSoftware.Length, _header.GeneratingSoftware.Length);
             Array.Copy(generatingSoftware, _header.GeneratingSoftware, generatingSoftware.Length);
 
+            if(_potreeData.Metadata.OffsetToExtraBytes != -1)
+            {
+                // we have extra bytes to append to each point
+                // check how many and which
+                // parse them and add them to the header
+                // set something for the write method
+            }
+
             // Initialize unmanged memory to hold the struct.
             var ptr = Marshal.AllocHGlobal(Marshal.SizeOf<LASHeader>());
             try
