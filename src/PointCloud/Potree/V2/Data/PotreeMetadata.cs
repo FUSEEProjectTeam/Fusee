@@ -47,6 +47,9 @@ namespace Fusee.PointCloud.Potree.V2.Data
 
         [JsonIgnore]
         public int AttributeOffset { get; set; }
+
+        [JsonIgnore]
+        public bool IsExtraByte { get; set; } = false;
     }
 
     public class PotreeMetadata
@@ -55,6 +58,7 @@ namespace Fusee.PointCloud.Potree.V2.Data
         public string Name { get; set; }
         public string Description { get; set; }
         public int Points { get; set; }
+        public int OffsetToExtraBytes { get; set; } = -1;
         public string Projection { get; set; }
         public PotreeSettingsHierarchy Hierarchy { get; set; }
 

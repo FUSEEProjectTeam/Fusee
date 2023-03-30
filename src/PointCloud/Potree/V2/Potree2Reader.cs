@@ -125,8 +125,8 @@ namespace Fusee.PointCloud.Potree.V2
         private MemoryOwner<VisualizationPoint> LoadVisualizationPoint(PotreeNode node)
         {
             Guard.IsLessThanOrEqualTo(node.NumPoints, int.MaxValue);
-            if (HandleExtraBytes != null)
-                Guard.IsGreaterThan(OffsetToExtraBytes, 0);
+            //if (HandleExtraBytes != null)
+            //    Guard.IsGreaterThan(OffsetToExtraBytes, 0);
             Guard.IsNotNull(PotreeData);
 
             var potreePointSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
@@ -164,13 +164,16 @@ namespace Fusee.PointCloud.Potree.V2
 
                 var colorSpan = MemoryMarshal.Cast<float, byte>(color.ToArray());
 
-                var extraByteSize = PotreeData.Metadata.PointSize - OffsetToExtraBytes;
-                var extraBytesSpan = pointArray.AsSpan().Slice(i + OffsetToExtraBytes, extraByteSize);
-
                 uint flags = 0;
-                if (HandleExtraBytes != null)
+                if (PotreeData.Metadata.OffsetToExtraBytes != -1 && PotreeData.Metadata.OffsetToExtraBytes != 0)
                 {
-                    flags = HandleExtraBytes(extraBytesSpan.ToArray());
+                    var extraByteSize = PotreeData.Metadata.PointSize - PotreeData.Metadata.OffsetToExtraBytes;
+                    var extraBytesSpan = pointArray.AsSpan().Slice(i + PotreeData.Metadata.OffsetToExtraBytes, extraByteSize);
+
+                    if (HandleExtraBytes != null)
+                    {
+                        flags = HandleExtraBytes(extraBytesSpan);
+                    }
                 }
                 var flagsSpan = MemoryMarshal.Cast<uint, byte>(new uint[] { flags });
 
@@ -219,6 +222,15 @@ namespace Fusee.PointCloud.Potree.V2
             (var Metadata, var Hierarchy) = LoadHierarchy(path);
 
             PotreeData = new PotreeData(Hierarchy, Metadata);
+
+            foreach (var item in PotreeData.Metadata.Attributes.Values)
+            {
+                PotreeData.Metadata.PointSize += item.Size;
+                if (PotreeData.Metadata.OffsetToExtraBytes > -1 && PotreeData.Metadata.PointSize > PotreeData.Metadata.OffsetToExtraBytes)
+                    item.IsExtraByte = true;
+                else
+                    item.IsExtraByte = false;
+            }
 
             CacheMetadata(true);
 
