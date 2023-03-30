@@ -40,6 +40,23 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         protected Potree2AccessBase() { }
 
+        /// <summary>
+        /// Returns the raw data of a <see cref="PotreeNode"/>
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        internal byte[] ReadRawNodeData(PotreeNode node)
+        {
+            Guard.IsLessThanOrEqualTo(node.NumPoints, int.MaxValue);
+            Guard.IsNotNull(PotreeData);
+
+            var potreePointSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
+            var pointArray = new byte[potreePointSize];
+            PotreeData.ReadViewAccessor.ReadArray(node.ByteOffset, pointArray, 0, potreePointSize);
+
+            return pointArray;
+        }
+
         #region Metadata caching
 
         /// <summary>

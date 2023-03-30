@@ -120,12 +120,9 @@ namespace Fusee.PointCloud.Potree.V2
             //    Guard.IsGreaterThan(OffsetToExtraBytes, 0);
             Guard.IsNotNull(PotreeData);
 
-            var potreePointSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
-            var pointArray = new byte[potreePointSize];
+            var pointArray = ReadRawNodeData(node);
 
             var returnMemory = MemoryOwner<VisualizationPoint>.Allocate((int)node.NumPoints);
-
-            PotreeData.ReadViewAccessor.ReadArray(node.ByteOffset, pointArray, 0, potreePointSize);
 
             var pointCount = 0;
 
