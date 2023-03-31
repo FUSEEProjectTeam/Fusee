@@ -154,8 +154,9 @@ namespace Fusee.PointCloud.Potree.V2
                 float4 color;
                 if (offsetColor != -1)
                 {
-                    colorSlice = new Span<byte>(pointArray).Slice(i + offsetColor, Marshal.SizeOf<ushort>() * 3);
+                    colorSlice = new Span<byte>(pointArray).Slice(currentPointOffset + offsetColor, Marshal.SizeOf<ushort>() * 3);
                     rgb = MemoryMarshal.Cast<byte, ushort>(colorSlice);
+
                     color = float4.Zero;
 
                     color.r = ((byte)(rgb[0] > 255 ? rgb[0] / 256 : rgb[0]));
@@ -166,7 +167,7 @@ namespace Fusee.PointCloud.Potree.V2
                 else if(offsetIntensity != -1)
                 {
                     var attrib = PotreeData.Metadata.Attributes["intensity"];
-                    colorSlice = new Span<byte>(pointArray).Slice(i + offsetIntensity, Marshal.SizeOf<ushort>());
+                    colorSlice = new Span<byte>(pointArray).Slice(currentPointOffset + offsetIntensity, Marshal.SizeOf<ushort>());
                     rgb = MemoryMarshal.Cast<byte, ushort>(colorSlice);
                     color = float4.Zero;
 
