@@ -8,6 +8,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Fusee.PointCloud.Potree.V2.Data;
 using System.IO.MemoryMappedFiles;
+using System.Diagnostics;
+using SixLabors.ImageSharp.PixelFormats;
+using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Potree
 {
@@ -40,10 +43,10 @@ namespace Fusee.PointCloud.Potree
         internal ushort FileCreationDayOfYear = (ushort)DateTime.Now.Day;
         internal ushort FileCreationYear = (ushort)DateTime.Now.Year;
         internal ushort HeaderSize = 375;
-        internal uint OffsetToPointData = 375;
+        internal uint OffsetToPointData = 0;
         internal uint NumberOfVariableLengthRecords = 0;
         internal byte PointDataRecordFormat = 2;
-        internal ushort PointDataRecordLength = 26;
+        internal ushort PointDataRecordLength = 0;
         internal uint LegacyNbrOfPoints = 0;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
@@ -76,35 +79,28 @@ namespace Fusee.PointCloud.Potree
         internal ulong[] NbrOfPointsByReturn = new ulong[15];
     }
 
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct LASPoint
-    {
-        public LASPoint() { }
-
-        internal int X = 0;
-        internal int Y = 0;
-        internal int Z = 0;
-
-        internal ushort Intensity = 0;
-        internal byte ReturnNbrOfScanDirAndEdgeByte = 0;
-
-        internal byte Classification = 0;
-        internal byte ScanAngleRank = 0;
-        internal byte UserData = 0;
-
-        internal ushort PtSrcID = 0;
-
-        internal ushort R = 0;
-        internal ushort G = 0;
-        internal ushort B = 0;
-    }
-
     public enum LASPointType : byte
     {
         Zero = 0x0,
         Two = 0x2,
         Seven = 0x7
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct VariableLengthRecordHeader
+    {
+        public VariableLengthRecordHeader() { }
+
+        public ushort Reserved = 0;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] UserId = new byte[16];
+
+        public ushort RecordId = 0;
+        public ushort RecordLengthAfterHeader = 0;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] Description = new byte[32];
     }
 
     /// <summary>
@@ -120,6 +116,8 @@ namespace Fusee.PointCloud.Potree
         private LASHeader _header;
         private readonly PotreeData _potreeData;
         private readonly LASPointType _type;
+
+        private readonly List<VariableLengthRecordHeader> _vlrh = new();
 
         /// <summary>
         /// Generate a writer instance, pass save path, Potree data and optional the point type to write
@@ -152,7 +150,7 @@ namespace Fusee.PointCloud.Potree
         {
             var doy = DateTime.Now.DayOfYear;
             var year = DateTime.Now.Year;
-            var size = Marshal.SizeOf<LASPoint>();
+            var size = Metadata.PointSize - 1;
 
             // make sure we can cast to <see cref="ushort"/> and do not lose information
             Guard.IsLessThan(doy, ushort.MaxValue);
@@ -197,6 +195,26 @@ namespace Fusee.PointCloud.Potree
                 // check how many and which
                 // parse them and add them to the header
                 // set something for the write method
+                foreach(var attribute in _potreeData.Metadata.AttributesList)
+                {
+                    if(attribute.IsExtraByte)
+                    {
+                        _header.NumberOfVariableLengthRecords++;
+                        _header.OffsetToPointData += 54; // LAS 1.4 Spec: Each Variable Length Record Header is 54 bytes in length.
+
+                        var currentEntry = new VariableLengthRecordHeader
+                        {
+                            RecordLengthAfterHeader = (ushort)_header.OffsetToPointData,
+                            RecordId = 4 
+                        };
+
+                        var desc = Encoding.UTF8.GetBytes(attribute.Description);
+                        Guard.IsLessThan(desc.Length, currentEntry.Description.Length);
+                        Array.Copy(desc, currentEntry.Description, desc.Length);
+
+                        _vlrh.Add(currentEntry);
+                    }
+                }
             }
 
             // Initialize unmanged memory to hold the struct.
@@ -215,10 +233,28 @@ namespace Fusee.PointCloud.Potree
                 // Free the unmanaged memory.
                 Marshal.FreeHGlobal(ptr);
             }
-        }
 
-        delegate void ConvertPointMethod(Span<byte> data, Stream s);
-        delegate void WriteStreamChunk(MemoryMappedFile file, long start, long end);
+            // append all variable length record header
+
+            foreach (var vlr in _vlrh)
+            {
+                var mem = Marshal.AllocHGlobal(Marshal.SizeOf<VariableLengthRecordHeader>());
+                try
+                {
+                    // Copy the struct to unmanaged memory.
+                    Marshal.StructureToPtr(vlr, mem, false);
+                    var dest = new byte[Marshal.SizeOf<VariableLengthRecordHeader>()];
+                    Marshal.Copy(mem, dest, 0, Marshal.SizeOf<VariableLengthRecordHeader>());
+                    _fileStream.Write(dest);
+
+                }
+                finally
+                {
+                    // Free the unmanaged memory.
+                    Marshal.FreeHGlobal(mem);
+                }
+            }
+        }
 
         /// <summary>
         /// This methods starts the LASfile write progress.
@@ -232,50 +268,24 @@ namespace Fusee.PointCloud.Potree
             Guard.IsNotNull(_header);
 
             using var stream = _potreeData.OctreeMappedFile.CreateViewStream();
-            var fileLength = Metadata.PointCount * Metadata.PointSize;
+            ulong fileLength = (ulong)Metadata.PointCount * (ulong)Metadata.PointSize;
 
-            Span<byte> tmpArry = (int)_type switch
-            {
-                //0 => stackalloc byte[666], // TODO
-                2 => stackalloc byte[26 + 1], // + 1 due to wrong potree bytes
-                7 => stackalloc byte[36 + 1],
-                _ => throw new NotImplementedException(),
-            }; ;
-
-            ConvertPointMethod convertPtMethod = (int)_type switch
-            {
-                0 => static (Span<byte> pt, Stream s) =>
-                {
-                    throw new NotImplementedException();
-                }
-                ,
-                2 => static (Span<byte> pt, Stream s) =>
-                {
-                    s.Write(pt[..15]); // position
-                    s.Write(pt.Slice(12, 3)); // intensity, and mixed returns according to las 1.4
-                    // skip number of returns! [15,16]
-                    s.Write(pt.Slice(16, 11)); // rest
-                }
-                ,
-                7 => static (Span<byte> pt, Stream s) =>
-                {
-                    s.Write(pt[..12]); // position
-                    s.Write(pt.Slice(12, 3)); // intensity, and mixed returns according to las 1.4
-                    // skip number of returns! [15,16]
-                    s.Write(pt.Slice(16, 21)); // rest
-                }
-                ,
-                _ => throw new NotImplementedException(),
-            };
+            Span<byte> tmpArray = stackalloc byte[_potreeData.Metadata.PointSize];
 
             // DO NOT USE stream.Length as the MemoryMappedStream aligns with the page size
-            for (var i = 0; i < fileLength; i += Metadata.PointSize)
+            for (ulong i = 0U; i < fileLength; i += (ulong)Metadata.PointSize)
             {
-                float progress = (100f / Metadata.PointCount) * (i / Metadata.PointSize);
+                var strSize = _fileStream.Length;
+                float progress = (100f / Metadata.PointCount) * (i / (ulong)Metadata.PointSize);
                 progressCallback?.Invoke((int)progress);
-                // we need to copy each point and shrink it back to 26 (from 27) due to PotreeConvert errors
-                stream.Read(tmpArry);
-                convertPtMethod(tmpArry, _fileStream);
+
+                // we need to shrink each point back (skip byte 16)
+                // extra bytes and everything is already included
+                // TODO: check if extra bytes are already aligned correctely with LAS spec
+                stream.Read(tmpArray);
+                _fileStream.Write(tmpArray[..15]); // pos(12) + intensity (2) + returnStuff (1)
+                _fileStream.Write(tmpArray[16..Metadata.PointSize]); // skip array pos [15], byte 16
+                Debug.Assert(strSize + 36 == _fileStream.Length);
             }
         }
 

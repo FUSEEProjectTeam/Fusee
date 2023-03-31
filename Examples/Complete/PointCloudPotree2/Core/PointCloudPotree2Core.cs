@@ -106,7 +106,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _potreeData = _potreeReader.PotreeData;
             var sw = new Stopwatch();
             sw.Start();
-            using var laswriter = new Potree2LAS(new FileInfo("D:\\test\\test.las"), _potreeData);
+            using var laswriter = new Potree2LAS(new FileInfo("D:\\test\\test.las"), _potreeData, LASPointType.Seven);
             laswriter.Write();
             Console.WriteLine($"{sw.Elapsed} ready");
             _rc = rc;

@@ -336,8 +336,9 @@ namespace Fusee.PointCloud.Potree.V2
 
             FlipYZAxis(Metadata, Hierarchy);
 
-            Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x, Hierarchy.Root.Aabb.min.y, Hierarchy.Root.Aabb.min.z };
-            Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x, Hierarchy.Root.Aabb.max.y, Hierarchy.Root.Aabb.max.z };
+            // do not adapt the global AABB after conversion, keep for writing
+            //Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x, Hierarchy.Root.Aabb.min.y, Hierarchy.Root.Aabb.min.z };
+            //Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x, Hierarchy.Root.Aabb.max.y, Hierarchy.Root.Aabb.max.z };
 
             return (Metadata, Hierarchy);
         }
