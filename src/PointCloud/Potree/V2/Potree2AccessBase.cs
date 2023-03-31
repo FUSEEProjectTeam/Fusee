@@ -3,7 +3,7 @@ using Fusee.PointCloud.Potree.V2.Data;
 using System;
 
 namespace Fusee.PointCloud.Potree.V2
-{   
+{
     /// <summary>
     /// This is the base class for accessing Potree files
     /// </summary>

@@ -27,7 +27,7 @@ namespace Fusee.PointCloud.Potree.V2.Data
         /// <summary>
         /// Flags have to be interpreted manually or they will be ignored.
         /// </summary>
-        
+
         public uint Flags;
 
         /// <inheritdoc/>
