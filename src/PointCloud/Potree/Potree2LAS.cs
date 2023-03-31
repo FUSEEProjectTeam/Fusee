@@ -11,6 +11,7 @@ using System.IO.MemoryMappedFiles;
 using System.Diagnostics;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.PointCloud.Potree
 {
@@ -43,7 +44,7 @@ namespace Fusee.PointCloud.Potree
         internal ushort FileCreationDayOfYear = (ushort)DateTime.Now.Day;
         internal ushort FileCreationYear = (ushort)DateTime.Now.Year;
         internal ushort HeaderSize = 375;
-        internal uint OffsetToPointData = 0;
+        internal uint OffsetToPointData = 375;
         internal uint NumberOfVariableLengthRecords = 0;
         internal byte PointDataRecordFormat = 2;
         internal ushort PointDataRecordLength = 0;
@@ -103,6 +104,69 @@ namespace Fusee.PointCloud.Potree
         public byte[] Description = new byte[32];
     }
 
+    internal struct InternalVariableLengthRecord
+    {
+        public int Type;
+        public double[] Max;
+        public double[] Min;
+        public string Name;
+        public string Description;
+
+    }
+
+    /// <summary>
+    /// Struct for the Specification Defined VLR "Extra Bytes". This has always 192 bytes.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct LasExtraBytes
+    {
+        public LasExtraBytes() { }
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public byte[] reserved = new byte[2];      // 2 bytes
+
+        public byte data_type = 0;                     // 1 byte
+
+        public byte options = 0;                       // 1 byte
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] name = new byte[32];         // 32 bytes
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public byte[] unused = new byte[4];        // 4 bytes
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public byte[] no_data = new byte[8];                     // 8 bytes anytype
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] deprecated1 = new byte[16];  // 16 bytes
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public byte[] min = new byte[8];                         // 8 bytes anytype
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] deprecated2 = new byte[16];  // 16 bytes
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public byte[] max = new byte[8];                         // 8 bytes anytype
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] deprecated3 = new byte[16];  // 16 bytes
+
+        public double scale = 0;                       // 8 bytes
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] deprecated4 = new byte[16];  // 16 bytes
+
+        public double offset = 0;                      // 8 bytes
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] deprecated5 = new byte[16];  // 16 bytes
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] description = new byte[32];  // 32 bytes
+    }
+
     /// <summary>
     /// This class provides methods to convert and saves <see cref="LASPoint"/> clouds to LAS 1.4
     /// </summary>
@@ -118,6 +182,7 @@ namespace Fusee.PointCloud.Potree
         private readonly LASPointType _type;
 
         private readonly List<VariableLengthRecordHeader> _vlrh = new();
+        private readonly List<LasExtraBytes> _extraByteDesc = new();
 
         /// <summary>
         /// Generate a writer instance, pass save path, Potree data and optional the point type to write
@@ -182,38 +247,122 @@ namespace Fusee.PointCloud.Potree
                 PointDataRecordFormat = (byte)_type
             };
 
-            //_header.LeacyNbrOfPointsByRtn[0] = (uint)Metadata.PointCount;
-            //_header.NbrOfPointsByReturn[0] = (ulong)Metadata.PointCount;
+            _header.LeacyNbrOfPointsByRtn[0] = (uint)Metadata.PointCount;
+            _header.NbrOfPointsByReturn[0] = (ulong)Metadata.PointCount;
 
             var generatingSoftware = Encoding.UTF8.GetBytes($"Fusee v.{Assembly.GetExecutingAssembly().GetName().Version}");
             Guard.IsLessThan(generatingSoftware.Length, _header.GeneratingSoftware.Length);
             Array.Copy(generatingSoftware, _header.GeneratingSoftware, generatingSoftware.Length);
 
-            if(_potreeData.Metadata.OffsetToExtraBytes != -1)
+            if (_potreeData.Metadata.OffsetToExtraBytes != -1)
             {
+                var offset = 0;
                 // we have extra bytes to append to each point
                 // check how many and which
                 // parse them and add them to the header
                 // set something for the write method
-                foreach(var attribute in _potreeData.Metadata.AttributesList)
+                foreach (var attribute in _potreeData.Metadata.AttributesList)
                 {
-                    if(attribute.IsExtraByte)
+                    if (attribute == null) continue;
+                    if (offset >= _potreeData.Metadata.OffsetToExtraBytes)
                     {
                         _header.NumberOfVariableLengthRecords++;
-                        _header.OffsetToPointData += 54; // LAS 1.4 Spec: Each Variable Length Record Header is 54 bytes in length.
+                        _header.OffsetToPointData += 54; 
+                        // LAS 1.4 Spec: Each Variable Length Record Header is 54 bytes in length.
+                      
+                        var desc = Encoding.ASCII.GetBytes(attribute.Description.Append('\0').ToArray());
+                        var name = Encoding.ASCII.GetBytes(attribute.Name.Append('\0').ToArray());
 
                         var currentEntry = new VariableLengthRecordHeader
                         {
-                            RecordLengthAfterHeader = (ushort)_header.OffsetToPointData,
-                            RecordId = 4 
+                            RecordLengthAfterHeader = (ushort)_header.OffsetToPointData, // current offset
+                            RecordId = 4
                         };
 
-                        var desc = Encoding.UTF8.GetBytes(attribute.Description);
                         Guard.IsLessThan(desc.Length, currentEntry.Description.Length);
                         Array.Copy(desc, currentEntry.Description, desc.Length);
 
+                        // this is just for the LAS header, we should check if we can already 
+                        // build an internal list to update later when writing the actual extra bytes
                         _vlrh.Add(currentEntry);
+
+
+                        var extraByteType = attribute.Type switch
+                        {
+                            //see Las Specification
+                            "uint8" => 1, // uchar
+                            "int8" => 2, // char
+                            "uint16" => 3, // ushort
+                            "int16" => 4, // short
+                            "uint32" => 5, // ulong
+                            "int32" => 6, // long
+                            "int64" => 7, // longlong
+                            "uint64" => 8, // ulonglong,
+                            "float" => 9, // float
+                            "double" => 10 // double
+,
+                            _ => throw new ArgumentException("Invalid data type!")
+                        };
+
+
+                        var currentExtra = new LasExtraBytes
+                        {
+                            data_type = (byte)extraByteType
+                        };
+
+                        Guard.IsLessThan(desc.Length, currentExtra.description.Length);
+                        Guard.IsLessThan(name.Length, currentExtra.name.Length);
+
+                        Array.Copy(desc, currentExtra.description, desc.Length);
+                        Array.Copy(name, currentExtra.name, name.Length);
+
+                        var extraByteMarshalMin = attribute.Type switch
+                        {
+                            //see Las Specification
+                            "uint8" => MemoryMarshal.AsBytes<sbyte>(attribute.MinList.Select(x => (sbyte)x).ToArray()),
+                            "int8" => MemoryMarshal.AsBytes<byte>(attribute.MinList.Select(x => (byte)x).ToArray()),
+                            "uint16" => MemoryMarshal.AsBytes<ushort>(attribute.MinList.Select(x => (ushort)x).ToArray()),
+                            "int16" => MemoryMarshal.AsBytes<short>(attribute.MinList.Select(x => (short)x).ToArray()),
+                            "uint32" => MemoryMarshal.AsBytes<ulong>(attribute.MinList.Select(x => (ulong)x).ToArray()),
+                            "int32" => MemoryMarshal.AsBytes<long>(attribute.MinList.Select(x => (long)x).ToArray()),
+                            "int64" => MemoryMarshal.AsBytes<Int64>(attribute.MinList.Select(x => (Int64)x).ToArray()),
+                            "uint64" => MemoryMarshal.AsBytes<UInt64>(attribute.MinList.Select(x => (UInt64)x).ToArray()),
+                            "float" => MemoryMarshal.AsBytes<float>(attribute.MinList.Select(x => (float)x).ToArray()),
+                            "double" => MemoryMarshal.AsBytes<double>(attribute.MinList.ToArray()),
+                            _ => throw new ArgumentException("Invalid data type!")
+                        };
+
+                        var extraByteMarshalMax = attribute.Type switch
+                        {
+                            //see Las Specification
+                            "uint8" => MemoryMarshal.AsBytes<sbyte>(attribute.MaxList.Select(x => (sbyte)x).ToArray()),
+                            "int8" => MemoryMarshal.AsBytes<byte>(attribute.MaxList.Select(x => (byte)x).ToArray()),
+                            "uint16" => MemoryMarshal.AsBytes<ushort>(attribute.MaxList.Select(x => (ushort)x).ToArray()),
+                            "int16" => MemoryMarshal.AsBytes<short>(attribute.MaxList.Select(x => (short)x).ToArray()),
+                            "uint32" => MemoryMarshal.AsBytes<ulong>(attribute.MaxList.Select(x => (ulong)x).ToArray()),
+                            "int32" => MemoryMarshal.AsBytes<long>(attribute.MaxList.Select(x => (long)x).ToArray()),
+                            "int64" => MemoryMarshal.AsBytes<Int64>(attribute.MaxList.Select(x => (Int64)x).ToArray()),
+                            "uint64" => MemoryMarshal.AsBytes<UInt64>(attribute.MaxList.Select(x => (UInt64)x).ToArray()),
+                            "float" => MemoryMarshal.AsBytes<float>(attribute.MaxList.Select(x => (float)x).ToArray()),
+                            "double" => MemoryMarshal.AsBytes<double>(attribute.MaxList.ToArray()),
+                            _ => throw new ArgumentException("Invalid data type!")
+                        };
+
+
+                        var min = extraByteMarshalMin.ToArray();
+                        var max = extraByteMarshalMax.ToArray();
+                        Array.Copy(min, currentExtra.min, min.Length);
+                        Array.Copy(max, currentExtra.max, max.Length);
+
+
+                        _extraByteDesc.Add(currentExtra);
+
+                        _header.OffsetToPointData += 192;
+                        // each description is 192 bytes
+
                     }
+
+                    offset += attribute.Size;
                 }
             }
 
@@ -254,6 +403,25 @@ namespace Fusee.PointCloud.Potree
                     Marshal.FreeHGlobal(mem);
                 }
             }
+
+            foreach (var extraByte in _extraByteDesc)
+            {
+                var memExtra = Marshal.AllocHGlobal(Marshal.SizeOf<LasExtraBytes>());
+                try
+                {
+                    // Copy the struct to unmanaged memory.
+                    Marshal.StructureToPtr(extraByte, memExtra, false);
+                    var dest = new byte[Marshal.SizeOf<LasExtraBytes>()];
+                    Marshal.Copy(memExtra, dest, 0, Marshal.SizeOf<LasExtraBytes>());
+                    _fileStream.Write(dest);
+
+                }
+                finally
+                {
+                    // Free the unmanaged memory.
+                    Marshal.FreeHGlobal(memExtra);
+                }
+            }
         }
 
         /// <summary>
@@ -282,10 +450,16 @@ namespace Fusee.PointCloud.Potree
                 // we need to shrink each point back (skip byte 16)
                 // extra bytes and everything is already included
                 // TODO: check if extra bytes are already aligned correctely with LAS spec
+                // probably not, after conversion
+                // TODO: Convert bytes to extra bytes, offset to bytes should be given or inside the VRL
                 stream.Read(tmpArray);
-                _fileStream.Write(tmpArray[..15]); // pos(12) + intensity (2) + returnStuff (1)
+
+
+                _fileStream.Write(tmpArray[..15]); // pos(12) + intensity (2) + returnStuff (1)               
                 _fileStream.Write(tmpArray[16..Metadata.PointSize]); // skip array pos [15], byte 16
-                Debug.Assert(strSize + 36 == _fileStream.Length);
+                                                                     //Debug.Assert(strSize + 36 == _fileStream.Length);
+
+
             }
         }
 
