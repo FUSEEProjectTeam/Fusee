@@ -153,15 +153,37 @@ namespace Fusee.PointCloud.Potree.V2
 
                 var posSpan = MemoryMarshal.Cast<float, byte>(position.ToArray());
 
-                var colorSlice = new Span<byte>(pointArray).Slice(i + offsetColor, Marshal.SizeOf<ushort>() * 3);
-                var rgb = MemoryMarshal.Cast<byte, ushort>(colorSlice);
+                Span<byte> colorSlice;
+                Span<ushort> rgb;
+                float4 color;
+                if (offsetColor != -1)
+                {
+                    colorSlice = new Span<byte>(pointArray).Slice(currentPointOffset + offsetColor, Marshal.SizeOf<ushort>() * 3);
+                    rgb = MemoryMarshal.Cast<byte, ushort>(colorSlice);
 
-                var color = float4.Zero;
+                    color = float4.Zero;
 
-                color.r = ((byte)(rgb[0] > 255 ? rgb[0] / 256 : rgb[0]));
-                color.g = ((byte)(rgb[1] > 255 ? rgb[1] / 256 : rgb[1]));
-                color.b = ((byte)(rgb[2] > 255 ? rgb[2] / 256 : rgb[2]));
-                color.a = 1;
+                    color.r = ((byte)(rgb[0] > 255 ? rgb[0] / 256 : rgb[0]));
+                    color.g = ((byte)(rgb[1] > 255 ? rgb[1] / 256 : rgb[1]));
+                    color.b = ((byte)(rgb[2] > 255 ? rgb[2] / 256 : rgb[2]));
+                    color.a = 1;
+                }
+                else if(offsetIntensity != -1)
+                {
+                    var attrib = PotreeData.Metadata.Attributes["intensity"];
+                    colorSlice = new Span<byte>(pointArray).Slice(currentPointOffset + offsetIntensity, Marshal.SizeOf<ushort>());
+                    rgb = MemoryMarshal.Cast<byte, ushort>(colorSlice);
+                    color = float4.Zero;
+
+                    color.r = (float)((rgb[0] - attrib.MinList[0]) / (attrib.MaxList[0] - attrib.MinList[0]) * 1f);
+                    color.g = color.r;
+                    color.b = color.r;
+                    color.a = 1;
+                }
+                else
+                {
+                    color = float4.UnitW;
+                }
 
                 var colorSpan = MemoryMarshal.Cast<float, byte>(color.ToArray());
 
