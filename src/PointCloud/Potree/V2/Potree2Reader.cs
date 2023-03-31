@@ -18,10 +18,22 @@ using System.Runtime.InteropServices;
 namespace Fusee.PointCloud.Potree.V2
 {
     /// <summary>
+    /// Delegate for a method that knows how to parse a slice of a point's extra bytes to a valid uint.
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <returns></returns>
+    public delegate uint HandleReadExtraBytes(Span<byte> bytes);
+
+    /// <summary>
     /// Reads Potree V2 files and is able to create a point cloud scene component, that can be rendered.
     /// </summary>
     public class Potree2Reader : Potree2AccessBase, IPointReader
     {
+        /// <summary>
+        /// Pass method how to handle the extra bytes, resulting uint will be passed into <see cref="Mesh.Flags"/>.
+        /// </summary>
+        public HandleReadExtraBytes? HandleReadExtraBytes { get; set; }
+
         /// <summary>
         /// Specify the byte offset for one point until the extra byte data is reached
         /// </summary>
@@ -42,6 +54,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <param name="potreeData"></param>
         public Potree2Reader(PotreeData potreeData) : base(potreeData)
         {
+            ReadFile(potreeData);
         }
 
         /// <summary>
@@ -158,9 +171,9 @@ namespace Fusee.PointCloud.Potree.V2
                     var extraByteSize = PotreeData.Metadata.PointSize - PotreeData.Metadata.OffsetToExtraBytes;
                     var extraBytesSpan = pointArray.AsSpan().Slice(i + PotreeData.Metadata.OffsetToExtraBytes, extraByteSize);
 
-                    if (HandleExtraBytes != null)
+                    if (HandleReadExtraBytes != null)
                     {
-                        flags = HandleExtraBytes(extraBytesSpan);
+                        flags = HandleReadExtraBytes(extraBytesSpan);
                     }
                 }
                 var flagsSpan = MemoryMarshal.Cast<uint, byte>(new uint[] { flags });
