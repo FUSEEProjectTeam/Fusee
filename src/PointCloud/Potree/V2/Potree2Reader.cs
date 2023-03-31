@@ -168,7 +168,7 @@ namespace Fusee.PointCloud.Potree.V2
                     color.b = ((byte)(rgb[2] > 255 ? rgb[2] / 256 : rgb[2]));
                     color.a = 1;
                 }
-                else if(offsetIntensity != -1)
+                else if (offsetIntensity != -1)
                 {
                     var attrib = PotreeData.Metadata.Attributes["intensity"];
                     colorSlice = new Span<byte>(pointArray).Slice(i + offsetIntensity, Marshal.SizeOf<ushort>());
