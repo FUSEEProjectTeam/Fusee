@@ -102,11 +102,11 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public PointCloudPotree2Core(RenderContext rc)
         {
-            _potreeReader = new Potree2Reader(Path.Combine("D:\\Halle2\\plp_tmp_IPM_A-E-97"));
+            _potreeReader = new Potree2Reader(Path.Combine("D:\\Halle2__AG_08\\plp_tmp_Halle2__AG_08"));
             _potreeData = _potreeReader.PotreeData;
             var sw = new Stopwatch();
             sw.Start();
-            using var laswriter = new Potree2LAS(new FileInfo("D:\\test\\test.las"), _potreeData, LASPointType.Two);
+            using var laswriter = new Potree2LAS(new FileInfo("D:\\test\\test.las"), _potreeData, LASPointType.Seven);
             laswriter.Write();
             Console.WriteLine($"{sw.Elapsed} ready");
             _rc = rc;

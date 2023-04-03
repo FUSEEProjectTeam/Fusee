@@ -12,6 +12,8 @@ using System.Diagnostics;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
 using System.Linq;
+using CommunityToolkit.HighPerformance;
+using System.Runtime.CompilerServices;
 
 namespace Fusee.PointCloud.Potree
 {
@@ -130,7 +132,7 @@ namespace Fusee.PointCloud.Potree
     /// Struct for the Specification Defined VLR "Extra Bytes". This has always 192 bytes.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct LasExtraBytes
+    internal struct LasExtraBytes
     {
         public LasExtraBytes() { }
 
@@ -184,7 +186,14 @@ namespace Fusee.PointCloud.Potree
     /// </summary>
     public class Potree2LAS : IPointWriter, IDisposable
     {
+        /// <summary>
+        /// Path to save the las file to
+        /// </summary>
         public FileInfo SavePath { get; private set; }
+
+        /// <summary>
+        /// Metadata (scale, offset)
+        /// </summary>
         public IPointWriterMetadata Metadata { get; private set; }
 
         private readonly Stream _fileStream;
@@ -234,9 +243,16 @@ namespace Fusee.PointCloud.Potree
             Guard.IsLessThan(year, ushort.MaxValue);
             Guard.IsLessThan(size, ushort.MaxValue);
 
-            _fileStream.Seek(0, SeekOrigin.Begin);
+            // check if the point type selected by the user is correct(ish)
+            Guard.IsGreaterThanOrEqualTo(Metadata.PointSize, _type switch
+            {
+                LASPointType.Zero => 21,
+                LASPointType.Two => 27,
+                LASPointType.Seven => 37,
+                _ => throw new NotImplementedException(),
+            });
 
-            // TODO: Parse / generate fitting point type and extra bytes, etc...
+
             _header = new LASHeader
             {
                 PointDataRecordLength = (ushort)size,
@@ -379,7 +395,7 @@ namespace Fusee.PointCloud.Potree
                 Array.Copy(description, vlr.Description, description.Length);
                 Array.Copy(userId, vlr.UserId, userId.Length);
 
-                // this is just for the LAS header, we should check if we can already 
+                // this is just for the LAS header, we should check if we can already
                 // build an internal list to update later when writing the actual extra bytes
                 _vlrh.Add(vlr);
 
@@ -445,30 +461,28 @@ namespace Fusee.PointCloud.Potree
         /// <summary>
         /// This methods starts the LASfile write progress.
         /// </summary>
-        /// <param name="progressCallback">This methods returns the current progress [0-100] (per-cent)</param>
-        public void Write(Action<int>? progressCallback = null)
+        public void Write()
         {
-            // advance to end of stream
-            _fileStream.Seek(0, SeekOrigin.End);
-
             Guard.IsNotNull(_header);
 
-            using var stream = _potreeData.OctreeMappedFile.CreateViewStream();
-            ulong fileLength = (ulong)Metadata.PointCount * (ulong)Metadata.PointSize;
+            // advance to end of stream
+            _fileStream.Seek(0, SeekOrigin.End);
+            var fileLength = (long)Metadata.PointCount * (long)Metadata.PointSize;
+
+            // set complete length before writing, this generates the full file
+            // writing operations are much faster afterwards
+            _fileStream.SetLength(fileLength);
+
+            using var inputStream = _potreeData.OctreeMappedFile.CreateViewStream();
 
             Span<byte> tmpArray = stackalloc byte[_potreeData.Metadata.PointSize];
 
             // DO NOT USE stream.Length as the MemoryMappedStream aligns with the page size
-            for (ulong i = 0U; i < fileLength; i += (ulong)Metadata.PointSize)
+            for (long i = 0U; i < fileLength; i += Metadata.PointSize)
             {
-                var strSize = _fileStream.Length;
-                float progress = (100f / Metadata.PointCount) * (i / (ulong)Metadata.PointSize);
-                progressCallback?.Invoke((int)progress);
-
                 // we need to shrink each point back (skip byte 16)
                 // extra bytes and everything is already included
-                stream.Read(tmpArray);
-
+                inputStream.Read(tmpArray);
                 _fileStream.Write(tmpArray[..15]); // pos(12) + intensity (2) + returnStuff (1)
                 _fileStream.Write(tmpArray[16..Metadata.PointSize]); // skip array pos [15], byte 16
             }
