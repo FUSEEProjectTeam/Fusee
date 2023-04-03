@@ -80,15 +80,27 @@ namespace Fusee.PointCloud.Potree
         internal ulong[] NbrOfPointsByReturn = new ulong[15];
     }
 
+    /// <summary>
+    /// LAS point type
+    /// </summary>
     public enum LASPointType : byte
     {
+        /// <summary>
+        /// 0
+        /// </summary>
         Zero = 0x0,
+        /// <summary>
+        /// 2
+        /// </summary>
         Two = 0x2,
+        /// <summary>
+        /// 7
+        /// </summary>
         Seven = 0x7
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct VariableLengthRecordHeader
+    internal struct VariableLengthRecordHeader
     {
         public VariableLengthRecordHeader() { }
 
@@ -312,8 +324,8 @@ namespace Fusee.PointCloud.Potree
                             "int16" => MemoryMarshal.AsBytes<short>(attribute.MinList.Select(x => (short)x).ToArray()),
                             "uint32" => MemoryMarshal.AsBytes<ulong>(attribute.MinList.Select(x => (ulong)x).ToArray()),
                             "int32" => MemoryMarshal.AsBytes<long>(attribute.MinList.Select(x => (long)x).ToArray()),
-                            "int64" => MemoryMarshal.AsBytes<Int64>(attribute.MinList.Select(x => (Int64)x).ToArray()),
-                            "uint64" => MemoryMarshal.AsBytes<UInt64>(attribute.MinList.Select(x => (UInt64)x).ToArray()),
+                            "int64" => MemoryMarshal.AsBytes<long>(attribute.MinList.Select(x => (long)x).ToArray()),
+                            "uint64" => MemoryMarshal.AsBytes<ulong>(attribute.MinList.Select(x => (UInt64)x).ToArray()),
                             "float" => MemoryMarshal.AsBytes<float>(attribute.MinList.Select(x => (float)x).ToArray()),
                             "double" => MemoryMarshal.AsBytes<double>(attribute.MinList.ToArray()),
                             _ => throw new ArgumentException("Invalid data type!")
@@ -328,8 +340,8 @@ namespace Fusee.PointCloud.Potree
                             "int16" => MemoryMarshal.AsBytes<short>(attribute.MaxList.Select(x => (short)x).ToArray()),
                             "uint32" => MemoryMarshal.AsBytes<ulong>(attribute.MaxList.Select(x => (ulong)x).ToArray()),
                             "int32" => MemoryMarshal.AsBytes<long>(attribute.MaxList.Select(x => (long)x).ToArray()),
-                            "int64" => MemoryMarshal.AsBytes<Int64>(attribute.MaxList.Select(x => (Int64)x).ToArray()),
-                            "uint64" => MemoryMarshal.AsBytes<UInt64>(attribute.MaxList.Select(x => (UInt64)x).ToArray()),
+                            "int64" => MemoryMarshal.AsBytes<long>(attribute.MaxList.Select(x => (long)x).ToArray()),
+                            "uint64" => MemoryMarshal.AsBytes<ulong>(attribute.MaxList.Select(x => (ulong)x).ToArray()),
                             "float" => MemoryMarshal.AsBytes<float>(attribute.MaxList.Select(x => (float)x).ToArray()),
                             "double" => MemoryMarshal.AsBytes<double>(attribute.MaxList.ToArray()),
                             _ => throw new ArgumentException("Invalid data type!")
@@ -373,62 +385,59 @@ namespace Fusee.PointCloud.Potree
 
                 _header.OffsetToPointData += 54;
                 // LAS 1.4 Spec: Each Variable Length Record Header is 54 bytes in length.
-                // add, too. Complete: header + variableLengthRecord + n * extraBytes (192bytes)
+                // add, too. Complete size: header + variableLengthRecord + n * extraBytes (192bytes)
             }
 
             // Initialize unmanged memory to hold the struct.
-            var ptr = Marshal.AllocHGlobal(Marshal.SizeOf<LASHeader>());
+            var headerPtr = Marshal.AllocHGlobal(Marshal.SizeOf<LASHeader>());
             try
             {
                 // Copy the struct to unmanaged memory.
-                Marshal.StructureToPtr(_header, ptr, false);
+                Marshal.StructureToPtr(_header, headerPtr, false);
                 var dest = new byte[Marshal.SizeOf<LASHeader>()];
-                Marshal.Copy(ptr, dest, 0, Marshal.SizeOf<LASHeader>());
+                Marshal.Copy(headerPtr, dest, 0, Marshal.SizeOf<LASHeader>());
                 _fileStream.Write(dest);
-
             }
             finally
             {
                 // Free the unmanaged memory.
-                Marshal.FreeHGlobal(ptr);
+                Marshal.FreeHGlobal(headerPtr);
             }
 
             // append all variable length record header
             foreach (var vlr in _vlrh)
             {
-                var mem = Marshal.AllocHGlobal(Marshal.SizeOf<VariableLengthRecordHeader>());
+                var vlrPtr = Marshal.AllocHGlobal(Marshal.SizeOf<VariableLengthRecordHeader>());
                 try
                 {
                     // Copy the struct to unmanaged memory.
-                    Marshal.StructureToPtr(vlr, mem, false);
+                    Marshal.StructureToPtr(vlr, vlrPtr, false);
                     var dest = new byte[Marshal.SizeOf<VariableLengthRecordHeader>()];
-                    Marshal.Copy(mem, dest, 0, Marshal.SizeOf<VariableLengthRecordHeader>());
+                    Marshal.Copy(vlrPtr, dest, 0, Marshal.SizeOf<VariableLengthRecordHeader>());
                     _fileStream.Write(dest);
-
                 }
                 finally
                 {
                     // Free the unmanaged memory.
-                    Marshal.FreeHGlobal(mem);
+                    Marshal.FreeHGlobal(vlrPtr);
                 }
             }
 
             foreach (var extraByte in _extraByteDesc)
             {
-                var memExtra = Marshal.AllocHGlobal(Marshal.SizeOf<LasExtraBytes>());
+                var extraBytePtr = Marshal.AllocHGlobal(Marshal.SizeOf<LasExtraBytes>());
                 try
                 {
                     // Copy the struct to unmanaged memory.
-                    Marshal.StructureToPtr(extraByte, memExtra, false);
+                    Marshal.StructureToPtr(extraByte, extraBytePtr, false);
                     var dest = new byte[Marshal.SizeOf<LasExtraBytes>()];
-                    Marshal.Copy(memExtra, dest, 0, Marshal.SizeOf<LasExtraBytes>());
+                    Marshal.Copy(extraBytePtr, dest, 0, Marshal.SizeOf<LasExtraBytes>());
                     _fileStream.Write(dest);
-
                 }
                 finally
                 {
                     // Free the unmanaged memory.
-                    Marshal.FreeHGlobal(memExtra);
+                    Marshal.FreeHGlobal(extraBytePtr);
                 }
             }
         }
@@ -458,17 +467,10 @@ namespace Fusee.PointCloud.Potree
 
                 // we need to shrink each point back (skip byte 16)
                 // extra bytes and everything is already included
-                // TODO: check if extra bytes are already aligned correctely with LAS spec
-                // probably not, after conversion
-                // TODO: Convert bytes to extra bytes, offset to bytes should be given or inside the VRL
                 stream.Read(tmpArray);
 
-
-                _fileStream.Write(tmpArray[..15]); // pos(12) + intensity (2) + returnStuff (1)               
+                _fileStream.Write(tmpArray[..15]); // pos(12) + intensity (2) + returnStuff (1)
                 _fileStream.Write(tmpArray[16..Metadata.PointSize]); // skip array pos [15], byte 16
-                                                                     //Debug.Assert(strSize + 36 == _fileStream.Length);
-
-
             }
         }
 
@@ -486,18 +488,9 @@ namespace Fusee.PointCloud.Potree
                     _fileStream.Dispose();
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~Potree2LAS()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         /// <summary>
         /// Dispose
@@ -508,92 +501,5 @@ namespace Fusee.PointCloud.Potree
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-        // old code, replace
-        //private static void WritePotree2LAS(IEnumerable<PotreePoint> points, PotreeMetadata metadata, FileInfo savePath)
-        //{
-        //    Guard.IsNotNull(savePath);
-        //    Guard.IsNotNull(points);
-        //    Guard.IsTrue(savePath.Extension == ".las");
-
-        //    Guard.IsEqualTo(Marshal.SizeOf<LASPoint>(), 26);
-        //    Guard.IsEqualTo(Marshal.SizeOf<LASHeader>(), 375);
-
-        //    if (savePath.Exists)
-        //        Diagnostics.Warn($"File {savePath.FullName} does exist, overwriting ...");
-
-        //    var scaleFactor = metadata.Scale;
-
-        //    const float maxColorValuePotree = byte.MaxValue;
-        //    const short maxIntensityValuePotree = short.MaxValue;
-        //    const ushort maxColorAndIntensityValueLAS = ushort.MaxValue;
-
-        //    var invFlipMatrix = Potree2Consts.YZflip.Invert();
-
-        //    convertedData.Add(new LASPoint
-        //    {
-        //        X = (uint)((ptFlipped.x) / scaleFactor.x),
-        //        Y = (uint)((ptFlipped.y) / scaleFactor.y),
-        //        Z = (uint)((ptFlipped.z) / scaleFactor.z),
-        //        Classification = p.Classification,
-        //        //Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
-        //        R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
-        //        G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
-        //        B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
-        //    });
-        //}
-
-        //    foreach (var p in points)
-        //    {
-        //        // flipped y/z
-        //        var ptFlipped = invFlipMatrix * p.Position;
-
-        //        convertedData.Add(new LASPoint
-        //        {
-        //            X = (uint)((ptFlipped.x) / scaleFactor.x),
-        //            Y = (uint)((ptFlipped.y) / scaleFactor.y),
-        //            Z = (uint)((ptFlipped.z) / scaleFactor.z),
-        //            Classification = p.Classification,
-        //            Intensity = (ushort)((p.Intensity / maxIntensityValuePotree) * maxColorAndIntensityValueLAS),
-        //            R = (ushort)(p.Color.r / maxColorValuePotree * maxColorAndIntensityValueLAS),
-        //            G = (ushort)(p.Color.g / maxColorValuePotree * maxColorAndIntensityValueLAS),
-        //            B = (ushort)(p.Color.b / maxColorValuePotree * maxColorAndIntensityValueLAS),
-        //        });
-        //    }
-
-        //    var min = metadata.Attributes["position"].Min;
-        //    var max = metadata.Attributes["position"].Max;
-
-        //    var header = new LASHeader
-        //    {
-        //        // flipped y/z
-        //        OffsetX = metadata.Offset.x,
-        //        OffsetY = metadata.Offset.y,
-        //        OffsetZ = metadata.Offset.z,
-        //        ScaleFactorX = metadata.Scale.x,
-        //        ScaleFactorY = metadata.Scale.y,
-        //        ScaleFactorZ = metadata.Scale.z,
-        //        NumberOfPtRecords = (ulong)convertedData.Count,
-        //        MinX = min.x,
-        //        MaxX = max.x,
-        //        MinY = min.y,
-        //        MaxY = max.y,
-        //        MinZ = min.z,
-        //        MaxZ = max.z
-        //    };
-
-        //    using var fs = savePath.Create();
-        //    using var bw = new BinaryWriter(fs);
-
-        //    bw.Write(ToByteArray(header));
-
-        //    foreach (var p in convertedData)
-        //    {
-        //        bw.Write(ToByteArray(p));
-        //    }
-
-        //    bw.Close();
-        //    fs.Close();
-        //}
     }
 }

@@ -323,6 +323,8 @@ namespace Fusee.PointCloud.Potree.V2
 
             CalculateAttributeOffsets(ref Metadata);
 
+            // TODO(mr): Add isExtraBytes, adapt in LASReader
+
             Hierarchy.Root.Aabb = new AABBd(Metadata.BoundingBox.Min, Metadata.BoundingBox.Max);
 
             var data = File.ReadAllBytes(hierarchyFilePath);
@@ -336,7 +338,7 @@ namespace Fusee.PointCloud.Potree.V2
 
             FlipYZAxis(Metadata, Hierarchy);
 
-            // do not adapt the global AABB after conversion, keep for writing
+            // do not adapt the global AABB after conversion, keep original for LAS writing
             //Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x, Hierarchy.Root.Aabb.min.y, Hierarchy.Root.Aabb.min.z };
             //Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x, Hierarchy.Root.Aabb.max.y, Hierarchy.Root.Aabb.max.z };
 
