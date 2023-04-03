@@ -257,6 +257,10 @@ namespace Fusee.PointCloud.Potree
             if (_potreeData.Metadata.OffsetToExtraBytes != -1)
             {
                 var offset = 0;
+                var sizeofExtraBytesAfterHeader = 0; // extra variable for vlr entries
+                _header.NumberOfVariableLengthRecords++;
+
+
                 // we have extra bytes to append to each point
                 // check how many and which
                 // parse them and add them to the header
@@ -266,26 +270,9 @@ namespace Fusee.PointCloud.Potree
                     if (attribute == null) continue;
                     if (offset >= _potreeData.Metadata.OffsetToExtraBytes)
                     {
-                        _header.NumberOfVariableLengthRecords++;
-                        _header.OffsetToPointData += 54; 
-                        // LAS 1.4 Spec: Each Variable Length Record Header is 54 bytes in length.
-                      
+
                         var desc = Encoding.ASCII.GetBytes(attribute.Description.Append('\0').ToArray());
                         var name = Encoding.ASCII.GetBytes(attribute.Name.Append('\0').ToArray());
-
-                        var currentEntry = new VariableLengthRecordHeader
-                        {
-                            RecordLengthAfterHeader = (ushort)_header.OffsetToPointData, // current offset
-                            RecordId = 4
-                        };
-
-                        Guard.IsLessThan(desc.Length, currentEntry.Description.Length);
-                        Array.Copy(desc, currentEntry.Description, desc.Length);
-
-                        // this is just for the LAS header, we should check if we can already 
-                        // build an internal list to update later when writing the actual extra bytes
-                        _vlrh.Add(currentEntry);
-
 
                         var extraByteType = attribute.Type switch
                         {
@@ -359,11 +346,34 @@ namespace Fusee.PointCloud.Potree
 
                         _header.OffsetToPointData += 192;
                         // each description is 192 bytes
-
+                        sizeofExtraBytesAfterHeader += 192;
                     }
 
                     offset += attribute.Size;
                 }
+
+                // add the actual variable record header
+                var vlr = new VariableLengthRecordHeader
+                {
+                    RecordLengthAfterHeader = (ushort)sizeofExtraBytesAfterHeader, // offset with all extraBytes
+                    RecordId = 4
+                };
+
+                var description = Encoding.UTF8.GetBytes("Extra Bytes Record\0");
+                var userId = Encoding.UTF8.GetBytes("LASF_Spec\0");
+
+                Guard.IsLessThan(description.Length, vlr.Description.Length);
+                Guard.IsLessThan(userId.Length, vlr.UserId.Length);
+                Array.Copy(description, vlr.Description, description.Length);
+                Array.Copy(userId, vlr.UserId, userId.Length);
+
+                // this is just for the LAS header, we should check if we can already 
+                // build an internal list to update later when writing the actual extra bytes
+                _vlrh.Add(vlr);
+
+                _header.OffsetToPointData += 54;
+                // LAS 1.4 Spec: Each Variable Length Record Header is 54 bytes in length.
+                // add, too. Complete: header + variableLengthRecord + n * extraBytes (192bytes)
             }
 
             // Initialize unmanged memory to hold the struct.
@@ -384,7 +394,6 @@ namespace Fusee.PointCloud.Potree
             }
 
             // append all variable length record header
-
             foreach (var vlr in _vlrh)
             {
                 var mem = Marshal.AllocHGlobal(Marshal.SizeOf<VariableLengthRecordHeader>());
