@@ -1,4 +1,5 @@
 ﻿using Fusee.Math.Core;
+using System;
 
 namespace Fusee.PointCloud.Potree.V2.Data
 {
@@ -8,6 +9,11 @@ namespace Fusee.PointCloud.Potree.V2.Data
     /// </summary>
     public struct VisualizationPoint
     {
+        /// <summary>
+        /// How Flags should be converted by ToString.
+        /// </summary>
+        public static Func<uint, string> FlagsParser = (flags) => flags.ToString();
+
         /// <summary>
         /// The position of a point.
         /// </summary>
@@ -21,7 +27,14 @@ namespace Fusee.PointCloud.Potree.V2.Data
         /// <summary>
         /// Flags have to be interpreted manually or they will be ignored.
         /// </summary>
+
         public uint Flags;
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"Position: {Position} - Color: {Color} - Flags: {FlagsParser(Flags)}";
+        }
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.PointCloud.Potree.V2.Data;
+using System;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -14,11 +15,6 @@ namespace Fusee.PointCloud.Potree.V2
         public PotreeData? PotreeData { get; set; }
 
         /// <summary>
-        /// Pass method how to handle the extra bytes, resulting uint will be passed into <see cref="Mesh.Flags"/>.
-        /// </summary>
-        public HandleExtraBytes? HandleExtraBytes { get; set; }
-
-        /// <summary>
         /// Constructs a new instance of Potree2AccessBase
         /// </summary>
         /// <param name="potreeData"></param>
@@ -31,6 +27,23 @@ namespace Fusee.PointCloud.Potree.V2
         /// Constructs a new instance of Potree2AccessBase
         /// </summary>
         protected Potree2AccessBase() { }
+
+        /// <summary>
+        /// Returns the raw data of a <see cref="PotreeNode"/>
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        internal byte[] ReadRawNodeData(PotreeNode node)
+        {
+            Guard.IsLessThanOrEqualTo(node.NumPoints, int.MaxValue);
+            Guard.IsNotNull(PotreeData);
+
+            var potreePointSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
+            var pointArray = new byte[potreePointSize];
+            PotreeData.ReadViewAccessor.ReadArray(node.ByteOffset, pointArray, 0, potreePointSize);
+
+            return pointArray;
+        }
 
         #region Metadata caching
 
