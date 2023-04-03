@@ -150,29 +150,29 @@ namespace Fusee.PointCloud.Potree
         public byte[] unused = new byte[4];        // 4 bytes
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public byte[] no_data = new byte[8];                     // 8 bytes anytype
+        public byte[] no_data = new byte[8];        // 8 bytes anytype
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] deprecated1 = new byte[16];  // 16 bytes
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public byte[] min = new byte[8];                         // 8 bytes anytype
+        public byte[] min = new byte[8];            // 8 bytes anytype
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] deprecated2 = new byte[16];  // 16 bytes
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public byte[] max = new byte[8];                         // 8 bytes anytype
+        public byte[] max = new byte[8];            // 8 bytes anytype
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] deprecated3 = new byte[16];  // 16 bytes
 
-        public double scale = 0;                       // 8 bytes
+        public double scale = 0;                    // 8 bytes
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] deprecated4 = new byte[16];  // 16 bytes
 
-        public double offset = 0;                      // 8 bytes
+        public double offset = 0;                   // 8 bytes
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] deprecated5 = new byte[16];  // 16 bytes
@@ -182,7 +182,7 @@ namespace Fusee.PointCloud.Potree
     }
 
     /// <summary>
-    /// This class provides methods to convert and saves <see cref="LASPoint"/> clouds to LAS 1.4
+    /// This class provides methods to convert and saves to LAS 1.4 specification
     /// </summary>
     public class Potree2LAS : IPointWriter, IDisposable
     {
@@ -252,7 +252,6 @@ namespace Fusee.PointCloud.Potree
                 _ => throw new NotImplementedException(),
             });
 
-
             _header = new LASHeader
             {
                 PointDataRecordLength = (ushort)size,
@@ -278,16 +277,15 @@ namespace Fusee.PointCloud.Potree
             _header.LeacyNbrOfPointsByRtn[0] = (uint)Metadata.PointCount;
             _header.NbrOfPointsByReturn[0] = (ulong)Metadata.PointCount;
 
-            var generatingSoftware = Encoding.UTF8.GetBytes($"Fusee v.{Assembly.GetExecutingAssembly().GetName().Version}");
+            var generatingSoftware = Encoding.UTF8.GetBytes($"Fusee v.{Assembly.GetExecutingAssembly().GetName().Version}\0");
             Guard.IsLessThan(generatingSoftware.Length, _header.GeneratingSoftware.Length);
             Array.Copy(generatingSoftware, _header.GeneratingSoftware, generatingSoftware.Length);
 
             if (_potreeData.Metadata.OffsetToExtraBytes != -1)
             {
                 var offset = 0;
-                var sizeofExtraBytesAfterHeader = 0; // extra variable for vlr entries
+                var sizeOfExtraBytesAfterHeader = 0; // extra variable for vlr entries
                 _header.NumberOfVariableLengthRecords++;
-
 
                 // we have extra bytes to append to each point
                 // check how many and which
@@ -318,7 +316,6 @@ namespace Fusee.PointCloud.Potree
 ,
                             _ => throw new ArgumentException("Invalid data type!")
                         };
-
 
                         var currentExtra = new LasExtraBytes
                         {
@@ -363,18 +360,16 @@ namespace Fusee.PointCloud.Potree
                             _ => throw new ArgumentException("Invalid data type!")
                         };
 
-
                         var min = extraByteMarshalMin.ToArray();
                         var max = extraByteMarshalMax.ToArray();
                         Array.Copy(min, currentExtra.min, min.Length);
                         Array.Copy(max, currentExtra.max, max.Length);
 
-
                         _extraByteDesc.Add(currentExtra);
 
                         _header.OffsetToPointData += 192;
                         // each description is 192 bytes
-                        sizeofExtraBytesAfterHeader += 192;
+                        sizeOfExtraBytesAfterHeader += 192;
                     }
 
                     offset += attribute.Size;
@@ -383,7 +378,7 @@ namespace Fusee.PointCloud.Potree
                 // add the actual variable record header
                 var vlr = new VariableLengthRecordHeader
                 {
-                    RecordLengthAfterHeader = (ushort)sizeofExtraBytesAfterHeader, // offset with all extraBytes
+                    RecordLengthAfterHeader = (ushort)sizeOfExtraBytesAfterHeader, // offset with all extraBytes
                     RecordId = 4
                 };
 
