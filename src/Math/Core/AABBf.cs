@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Runtime.InteropServices;
@@ -7,6 +8,7 @@ namespace Fusee.Math.Core
     /// <summary>
     ///     Represents an axis aligned bounding box.
     /// </summary>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct AABBf
@@ -14,11 +16,13 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The minimum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
+        [JsonProperty(PropertyName = "Min")]
         [ProtoMember(1)] public float3 min;
 
         /// <summary>
         /// The maximum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
+        [JsonProperty(PropertyName = "Max")]
         [ProtoMember(2)] public float3 max;
 
         /// <summary>
@@ -229,8 +233,8 @@ namespace Fusee.Math.Core
             if (this.Intersects(ray.Origin))
                 return true;
 
-            float t1 = (min[0] - ray.Origin[0]) * ray.Inverse[0];
-            float t2 = (max[0] - ray.Origin[0]) * ray.Inverse[0];
+            float t1 = (min.x - ray.Origin.x) * ray.Inverse.x;
+            float t2 = (max.x - ray.Origin.x) * ray.Inverse.x;
 
             float tmin = M.Min(t1, t2);
             float tmax = M.Max(t1, t2);
@@ -299,7 +303,7 @@ namespace Fusee.Math.Core
         /// <returns></returns>
         public override bool Equals(object? obj)
         {
-            if (obj?.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'AABBf'.");
+            if (obj?.GetType() != typeof(AABBf)) return false;
 
             var other = (AABBf)obj;
             return max.Equals(other.max) && min.Equals(other.min);

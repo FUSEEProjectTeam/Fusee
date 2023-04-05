@@ -32,7 +32,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// Reference to the Camera whose properties are used to control the visibility of point cloud chunks (octants).
         /// </summary>
-        public Camera Camera;
+        public Camera? Camera;
 
         /// <summary>
         /// Instantiates the <see cref="IPointCloudImp{TGpuData}"/>.

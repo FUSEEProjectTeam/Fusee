@@ -9,83 +9,12 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// This class contains information about the scene of the picked point.
     /// </summary>
-    public class RayCastResult
+    public class RayCastResult : PickResult
     {
         /// <summary>
-        /// The scene node container of the result.
+        /// The mesh.
         /// </summary>
-        public SceneNode Node;
-
-        /// <summary>
-        /// The picked mesh.
-        /// </summary>
-        public Mesh Mesh;
-
-        /// <summary>
-        /// The index of the triangle in which the intersection of ray and mesh happened.
-        /// </summary>
-        public int Triangle;
-
-        /// <summary>
-        /// The barycentric u, v coordinates within the picked triangle.
-        /// </summary>
-        public float U, V;
-
-        /// <summary>
-        /// The (texture-) UV coordinates of the picked point.
-        /// </summary>
-        public float2 UV
-        {
-            get
-            {
-                float2 uva = Mesh.UVs[(int)Mesh.Triangles[Triangle]];
-                float2 uvb = Mesh.UVs[(int)Mesh.Triangles[Triangle + 1]];
-                float2 uvc = Mesh.UVs[(int)Mesh.Triangles[Triangle + 2]];
-
-                return float2.Barycentric(uva, uvb, uvc, U, V);
-            }
-        }
-
-        /// <summary>
-        /// The model matrix.
-        /// </summary>
-        public float4x4 Model;
-
-        /// <summary>
-        /// Gets the triangles of the picked mesh.
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="c"></param>
-        public void GetTriangle(out float3 a, out float3 b, out float3 c)
-        {
-            a = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 0]];
-            b = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 1]];
-            c = Mesh.Vertices[(int)Mesh.Triangles[Triangle + 2]];
-        }
-
-        /// <summary>
-        /// Returns the barycentric triangle coordinates.
-        /// </summary>
-        public float3 TriangleBarycentric
-        {
-            get
-            {
-                GetTriangle(out var a, out var b, out var c);
-                return float3.Barycentric(a, b, c, U, V);
-            }
-        }
-
-        /// <summary>
-        /// Returns the model position.
-        /// </summary>
-        public float3 ModelPos => TriangleBarycentric;
-
-        /// <summary>
-        /// Returns the world position of the intersection.
-        /// </summary>
-        public float3 WorldPos => float4x4.TransformPerspective(Model, ModelPos);
-
+        public Mesh? Mesh;
         /// <summary>
         /// Returns the distance between ray origin and the intersection.
         /// </summary>
@@ -112,7 +41,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected SceneContainer _sc;
 
-        internal PrePassVisitor PrePassVisitor { get; private set; }
+        private readonly IEnumerable<CameraResult> _prePassResults;
 
         #region State
         /// <summary>
@@ -145,13 +74,13 @@ namespace Fusee.Engine.Core
         /// The constructor to initialize a new SceneRayCaster.
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to use.</param>
+        /// <param name="prePassCameraResults">The collected <see cref="IEnumerable{CameraResult}"/> from the <see cref="PrePassVisitor.PrePassTraverse(SceneContainer)"/> functionality.</param>
         /// <param name="cullMode">The <see cref="Cull"/> mode to use.</param>
-        public SceneRayCaster(SceneContainer scene, Cull cullMode = Cull.None)
+        public SceneRayCaster(SceneContainer scene, IEnumerable<CameraResult> prePassCameraResults, Cull cullMode = Cull.None)
             : base(scene.Children)
         {
             CullMode = cullMode;
-
-            PrePassVisitor = new PrePassVisitor();
+            _prePassResults = prePassCameraResults;
             _sc = scene;
         }
 
@@ -178,47 +107,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns a collection of objects that are hit by the ray and that can be iterated over.
         /// </summary>
-        /// <param name="rc"></param>
-        /// <param name="pickPos"></param>
+        /// <param name="ray">The <see cref="RayF"/> which should travel through the scene</param>
         /// <returns></returns>
-        public IEnumerable<RayCastResult> RayPick(RenderContext rc, float2 pickPos)
+        public IEnumerable<RayCastResult>? Traverse(RayF ray)
         {
-            PrePassVisitor.PrePassTraverse(_sc);
-            var cams = PrePassVisitor.CameraPrepassResults;
-
-            float2 pickPosClip;
-
-            if (cams.Count == 0)
-            {
-                pickPosClip = (pickPos * new float2(2.0f / rc.ViewportWidth, -2.0f / rc.ViewportHeight)) + new float2(-1, 1);
-                Ray = new RayF(pickPosClip, rc.View, rc.Projection);
-                return Viserate();
-            }
-
-            CameraResult pickCam = default;
-            Rectangle pickCamRect = new();
-
-            foreach (var camRes in cams)
-            {
-                Rectangle camRect = new();
-                camRect.Left = (int)(camRes.Camera.Viewport.x * rc.ViewportWidth / 100);
-                camRect.Top = (int)(camRes.Camera.Viewport.y * rc.ViewportHeight / 100);
-                camRect.Right = (int)(camRes.Camera.Viewport.z * rc.ViewportWidth) / 100 + camRect.Left;
-                camRect.Bottom = (int)(camRes.Camera.Viewport.w * rc.ViewportHeight) / 100 + camRect.Top;
-
-                if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos)) continue;
-
-                if (pickCam == default || camRes.Camera.Layer > pickCam.Camera.Layer)
-                {
-                    pickCam = camRes;
-                    pickCamRect = camRect;
-                }
-            }
-
-            // Calculate pickPosClip
-            pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
-            Ray = new RayF(pickPosClip, pickCam.View, pickCam.Camera.GetProjectionMat(rc.ViewportWidth, rc.ViewportHeight, out _));
-
+            Ray = ray;
             return Viserate();
         }
 
@@ -241,7 +134,10 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void HitMesh(Mesh mesh)
         {
+            if (mesh == null) return;
             if (!mesh.Active) return;
+            if (mesh.Vertices == null) return;
+            if (mesh.Triangles == null) return;
 
             AABBf box = State.Model * mesh.BoundingBox;
             if (!box.IntersectRay(Ray)) return;
@@ -278,10 +174,7 @@ namespace Fusee.Engine.Core
                         {
                             Mesh = mesh,
                             Node = CurrentNode,
-                            Triangle = i,
                             Model = State.Model,
-                            U = u,
-                            V = v,
                             DistanceFromOrigin = distance
                         });
                     }

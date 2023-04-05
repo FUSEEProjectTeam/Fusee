@@ -83,7 +83,7 @@ namespace Fusee.Examples.PickingRayCast.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _sceneRayCaster = new SceneRayCaster(_scene, Cull.Clockwise);
+            _sceneRayCaster = new SceneRayCaster(_scene, _sceneRenderer.PrePassVisitor.CameraPrepassResults, Cull.Clockwise);
 
             // Create the interaction handler
             _guiRenderer = new SceneRendererForward(_gui);
@@ -147,7 +147,38 @@ namespace Fusee.Examples.PickingRayCast.Core
             // Check for hits
             if (_pick)
             {
-                var castHit = _sceneRayCaster.RayPick(RC, _pickPos).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
+                // prepare mouse coordinates; for each camera calculate clip space mouse position and create a new ray which travels through the scene and collects meshes
+                CameraResult pickCam = default;
+                Rectangle pickCamRect = new();
+
+                // check in which camera our mouse is currently positioned (left or right)
+                foreach (var camRes in _sceneRenderer.PrePassVisitor.CameraPrepassResults)
+                {
+                    Rectangle camRect = new()
+                    {
+                        Left = (int)(camRes.Camera.Viewport.x * RC.ViewportWidth / 100),
+                        Top = (int)(camRes.Camera.Viewport.y * RC.ViewportHeight / 100)
+                    };
+                    camRect.Right = ((int)(camRes.Camera.Viewport.z * RC.ViewportWidth) / 100) + camRect.Left;
+                    camRect.Bottom = ((int)(camRes.Camera.Viewport.w * RC.ViewportHeight) / 100) + camRect.Top;
+
+                    if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), Input.Mouse.Position))
+                        continue;
+
+                    if (pickCam == default || camRes.Camera.Layer > pickCam.Camera.Layer)
+                    {
+                        pickCam = camRes;
+                        pickCamRect = camRect;
+                    }
+                }
+
+                // generate fitting clip position with the currently used camera rectangle
+                var pickPosClip = ((Input.Mouse.Position - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
+
+                // generate ray at mouse position and...
+                var ray = new RayF(pickPosClip, pickCam.View, pickCam.Camera.GetProjectionMat(RC.ViewportWidth, RC.ViewportHeight, out var _));
+                // ... send it through the scene
+                var castHit = _sceneRayCaster.Traverse(ray).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
 
                 if (castHit != null)
                     castHit.Node.GetComponent<SurfaceEffect>().SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;

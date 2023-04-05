@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using Newtonsoft.Json;
+using ProtoBuf;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -11,6 +12,7 @@ namespace Fusee.Math.Core
     /// <remarks>
     /// The int3 structure is suitable for inter-operation with unmanaged code requiring three consecutive ints.
     /// </remarks>
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct int3 : IEquatable<int3>
@@ -20,18 +22,21 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The x component of the int3.
         /// </summary>
+        [JsonProperty(PropertyName = "X")]
         [ProtoMember(1)]
         public int x;
 
         /// <summary>
         /// The y component of the int3.
         /// </summary>
+        [JsonProperty(PropertyName = "Y")]
         [ProtoMember(2)]
         public int y;
 
         /// <summary>
         /// The z component of the int3.
         /// </summary>
+        [JsonProperty(PropertyName = "Z")]
         [ProtoMember(3)]
         public int z;
 
