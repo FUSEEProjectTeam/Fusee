@@ -54,13 +54,25 @@ namespace Fusee.PointCloud.Potree.V2.Data
         }
 
         /// <summary>
-        /// Returns the node for the given <see cref="OctantId"/>.
+        /// Returns the node for a given <see cref="OctantId"/>.
         /// </summary>
         /// <param name="octantId"></param>
         /// <returns></returns>
         public PotreeNode? GetNode(OctantId octantId)
         {
-            return Hierarchy.Nodes.Find(n => n.Name == OctantId.OctantIdToPotreeName(octantId));
+            return Hierarchy.Nodes.Find(n => n.OctantId == octantId);
+        }
+
+        /// <summary>
+        /// Returns the node for a given name of a <see cref="PotreeNode"/>.
+        /// </summary>
+        /// <param name="nodeName"></param>
+        /// <returns></returns>
+        public PotreeNode? GetNode(string nodeName)
+        {
+            var octantId = new OctantId(nodeName);
+
+            return GetNode(octantId);
         }
 
         #region IDisposable
