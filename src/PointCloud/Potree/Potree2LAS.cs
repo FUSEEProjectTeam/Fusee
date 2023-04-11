@@ -7,13 +7,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Fusee.PointCloud.Potree.V2.Data;
-using System.IO.MemoryMappedFiles;
-using System.Diagnostics;
-using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
 using System.Linq;
-using CommunityToolkit.HighPerformance;
-using System.Runtime.CompilerServices;
 
 namespace Fusee.PointCloud.Potree
 {
@@ -139,9 +134,9 @@ namespace Fusee.PointCloud.Potree
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public byte[] reserved = new byte[2];      // 2 bytes
 
-        public byte data_type = 0;                     // 1 byte
+        public byte data_type = 0;                  // 1 byte
 
-        public byte options = 0;                       // 1 byte
+        public byte options = 0;                    // 1 byte
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public byte[] name = new byte[32];         // 32 bytes
