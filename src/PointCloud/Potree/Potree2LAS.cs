@@ -1,14 +1,14 @@
 using CommunityToolkit.Diagnostics;
 using Fusee.Base.Core;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Potree.V2.Data;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using Fusee.PointCloud.Potree.V2.Data;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.PointCloud.Potree
 {

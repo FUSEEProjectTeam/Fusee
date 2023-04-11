@@ -81,7 +81,7 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Global <see cref="AABBd"/> of the point cloud
         /// </summary>
-        public AABBd AABB { get;  }
+        public AABBd AABB { get; }
 
         /// <summary>
         /// The encoding of every point, as we save the point cloud as <see cref="sbyte"/> elements
