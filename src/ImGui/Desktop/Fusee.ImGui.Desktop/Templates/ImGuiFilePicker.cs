@@ -327,10 +327,13 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                             {
                                 SelectedFile = "";
                                 CurrentlySelectedFolder = fse;
-                                if (ImGui.IsMouseDoubleClicked(0) && (SelectedFile == null || SelectedFile == "") && ImGui.GetIO().WantCaptureMouse)
+                                if (ImGui.IsMouseDoubleClicked(0))
                                 {
-                                    LastOpenendFolders.Push(CurrentOpenFolder);
-                                    CurrentOpenFolder = fse;
+                                    if ((SelectedFile == null || SelectedFile == "") && ImGui.GetIO().WantCaptureMouse)
+                                    {
+                                        LastOpenendFolders.Push(CurrentOpenFolder);
+                                        CurrentOpenFolder = fse;
+                                    }
                                 }
                             }
 
@@ -340,22 +343,28 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                         {
                             var name = Path.GetFileName(fse);
 
+
                             ImGui.PushStyleColor(ImGuiCol.Header, SelectedColor.ToUintColor());
 
                             if (ImGui.Selectable(name, SelectedFile == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
                             {
-                                if (SelectedFile == name)
-                                    SelectedFile = "";
-                                else
-                                    SelectedFile = name;
-
-                                if (ImGui.IsMouseDoubleClicked(0) && (SelectedFile != null && SelectedFile != "") && ImGui.GetIO().WantCaptureMouse)
+                                if (ImGui.IsMouseDoubleClicked(0))
                                 {
-                                    if (HandlePickedFile(SelectedFile))
+                                    if ((SelectedFile != null && SelectedFile != "") && ImGui.GetIO().WantCaptureMouse)
                                     {
-                                        filePickerOpen = false;
-                                        OnPicked?.Invoke(this, Path.Combine(CurrentOpenFolder, SelectedFile));
+                                        if (HandlePickedFile(SelectedFile))
+                                        {
+                                            filePickerOpen = false;
+                                            OnPicked?.Invoke(this, Path.Combine(CurrentOpenFolder, SelectedFile));
+                                        }
                                     }
+                                }
+                                else
+                                {
+                                    if (SelectedFile == name)
+                                        SelectedFile = "";
+                                    else
+                                        SelectedFile = name;
                                 }
                             }
 

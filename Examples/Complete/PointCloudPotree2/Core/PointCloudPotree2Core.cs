@@ -102,8 +102,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         public PointCloudPotree2Core(RenderContext rc)
         {
-            _potreeReader = new Potree2Reader();
-            _potreeData = _potreeReader.ReadNewFile(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
+            _potreeReader = new Potree2Reader(Path.Combine(AssetsPath, PointRenderingParams.Instance.PathToOocFile));
+            _potreeData = _potreeReader.PotreeData;
             _rc = rc;
         }
 
