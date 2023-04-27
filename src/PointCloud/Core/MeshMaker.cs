@@ -4,7 +4,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Potree.V2.Data;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Core

@@ -1,7 +1,9 @@
-﻿using Fusee.Engine.Core;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Potree
@@ -9,8 +11,10 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2Cloud : IPointCloudImp<GpuMesh>
+    public class Potree2Cloud : IPointCloudImp<GpuMesh, VisualizationPoint>
     {
+        public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
+
         /// <summary>
         /// The complete list of meshes that can be rendered.
         /// </summary>
@@ -92,8 +96,15 @@ namespace Fusee.PointCloud.Potree
         {
             GpuDataToRender = new List<GpuMesh>();
             DataHandler = dataHandler;
+            DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
+            DataHandler.InvalidateCacheToken = InvalidateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
             _getMeshes = dataHandler.GetGpuData;
+        }
+
+        public void UpdateGpuDataCache(IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> points)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

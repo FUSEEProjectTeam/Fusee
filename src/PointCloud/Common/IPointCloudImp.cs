@@ -1,4 +1,6 @@
-﻿using Fusee.Engine.Core;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
@@ -9,6 +11,8 @@ namespace Fusee.PointCloud.Common
     /// </summary>
     public interface IPointCloudImpBase
     {
+        public InvalidateGpuDataCache InvalidateGpuDataCache { get; }
+
         /// <summary>
         /// Center of the PointCloud's AABB
         /// </summary>
@@ -63,15 +67,19 @@ namespace Fusee.PointCloud.Common
         public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos, float4x4 modelMat);
     }
 
+    public delegate void UpdateGpuData<IEnumerable, MemoryOwner>(IEnumerable gpuData, MemoryOwner points);
+
     /// <summary>
     /// Smallest common set of properties that are needed to render point clouds out of core.
     /// </summary>
-    public interface IPointCloudImp<TGpuData> : IPointCloudImpBase
+    public interface IPointCloudImp<TGpuData, TPoint> : IPointCloudImpBase
     {
         /// <summary>
         /// The <see cref="GpuMesh"/>, created from visible octants/point chunks, that are ready to be rendered.
         /// </summary>
         public List<TGpuData> GpuDataToRender { get; set; }
+
+        public void UpdateGpuDataCache(IEnumerable<TGpuData> meshes, MemoryOwner<TPoint> points);
 
     }
 }

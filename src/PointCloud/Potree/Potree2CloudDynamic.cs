@@ -1,18 +1,24 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
+using Fusee.PointCloud.Potree.V2.Data;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Fusee.PointCloud.Potree
 {
+
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2CloudDynamic : IPointCloudImp<Mesh>
+    public class Potree2CloudDynamic : IPointCloudImp<Mesh, VisualizationPoint>
     {
+        public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
+
         /// <summary>
         /// The complete list of meshes that can be rendered.
         /// </summary>
@@ -85,7 +91,7 @@ namespace Fusee.PointCloud.Potree
         public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
 
         private readonly GetDynamicMeshes _getMeshes;
-        private bool _doUpdate = true;
+        private bool _doUpdate = true;        
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
@@ -94,6 +100,8 @@ namespace Fusee.PointCloud.Potree
         {
             GpuDataToRender = new List<Mesh>();
             DataHandler = dataHandler;
+            DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
+            DataHandler.InvalidateCacheToken = InvalidateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
             _getMeshes = dataHandler.GetGpuData;
         }
@@ -102,6 +110,24 @@ namespace Fusee.PointCloud.Potree
         /// Action that is run on every mesh that is loaded to be visible.
         /// </summary>
         public Action<Mesh> NewMeshAction;
+
+
+        public void UpdateGpuDataCache(IEnumerable<Mesh> meshes, MemoryOwner<VisualizationPoint> points)
+        {
+            var countStartSlice = 0;
+            
+            foreach (var mesh in meshes)
+            {
+                var slice = points.Span.Slice(countStartSlice, mesh.Flags.Length);
+
+                for (int i = 0; i < slice.Length; i++)
+                {
+                    var pt = slice[i];
+                    mesh.Flags[i] = pt.Flags;
+                }
+                countStartSlice += mesh.Flags.Length;
+            }
+        }
 
         /// <summary>
         /// Determins if new Meshes should be loaded.
@@ -163,6 +189,8 @@ namespace Fusee.PointCloud.Potree
                     }
                 }
             }
+
+            InvalidateGpuDataCache.IsDirty = false;
 
             GpuDataToRender.Clear();
             GpuDataToRender.AddRange(meshes);
