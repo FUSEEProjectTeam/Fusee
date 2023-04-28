@@ -125,32 +125,28 @@ namespace Fusee.PointCloud.Core
             if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
             {
                 Guard.IsNotNull(InvalidateCacheToken);
+
                 if (InvalidateCacheToken.IsDirty)
                 {
                     if (_pointCache.TryGetValue(octantId, out var points))
                     {
                         if (UpdateGpuDataCache != null) 
                         {
-                            UpdateGpuDataCache.Invoke(gpuData, points);
+                            UpdateGpuDataCache.Invoke(ref gpuData, points);
                         }
                         else
                         {
                             if (!_doRenderInstanced)
                                 gpuData = MeshMaker.CreateMeshes(points, _createGpuDataHandler, octantId);
                             else
-                                gpuData = MeshMaker.CreateInstanceData(points, _createGpuDataHandler, octantId);                            
+                                gpuData = MeshMaker.CreateInstanceData(points, _createGpuDataHandler, octantId);
                         }
                         _gpuDataCache.AddOrUpdate(octantId, gpuData);
-                    }
-                    else
-                    {
-                        throw new Exception("Load points!");
                     }
                 }
 
                 return gpuData;
             }
-
             else if (DisposeQueue.TryGetValue(octantId, out gpuData))
             {
                 lock (LockDisposeQueue)
@@ -168,6 +164,7 @@ namespace Fusee.PointCloud.Core
                     gpuData = MeshMaker.CreateInstanceData(points, _createGpuDataHandler, octantId);
                 _gpuDataCache.Add(octantId, gpuData);
             }
+
             //no points yet, probably in loading queue
             return null;
         }

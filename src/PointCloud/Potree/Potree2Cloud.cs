@@ -102,7 +102,7 @@ namespace Fusee.PointCloud.Potree
             _getMeshes = dataHandler.GetGpuData;
         }
 
-        public void UpdateGpuDataCache(IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> points)
+        public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> points)
         {
             throw new NotImplementedException();
         }

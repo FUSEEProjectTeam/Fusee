@@ -112,7 +112,7 @@ namespace Fusee.PointCloud.Potree
         public Action<Mesh> NewMeshAction;
 
 
-        public void UpdateGpuDataCache(IEnumerable<Mesh> meshes, MemoryOwner<VisualizationPoint> points)
+        public void UpdateGpuDataCache(ref IEnumerable<Mesh> meshes, MemoryOwner<VisualizationPoint> points)
         {
             var countStartSlice = 0;
             

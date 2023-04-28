@@ -67,7 +67,7 @@ namespace Fusee.PointCloud.Common
         public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos, float4x4 modelMat);
     }
 
-    public delegate void UpdateGpuData<IEnumerable, MemoryOwner>(IEnumerable gpuData, MemoryOwner points);
+    public delegate void UpdateGpuData<IEnumerable, MemoryOwner>(ref IEnumerable gpuData, MemoryOwner points);
 
     /// <summary>
     /// Smallest common set of properties that are needed to render point clouds out of core.
@@ -79,7 +79,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         public List<TGpuData> GpuDataToRender { get; set; }
 
-        public void UpdateGpuDataCache(IEnumerable<TGpuData> meshes, MemoryOwner<TPoint> points);
+        public void UpdateGpuDataCache(ref IEnumerable<TGpuData> meshes, MemoryOwner<TPoint> points);
 
     }
 }
