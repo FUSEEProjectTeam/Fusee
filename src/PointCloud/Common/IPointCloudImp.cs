@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.HighPerformance.Buffers;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using System.Collections.Generic;
@@ -67,6 +66,13 @@ namespace Fusee.PointCloud.Common
         public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos, float4x4 modelMat);
     }
 
+    /// <summary>
+    /// Delegate that allows to inject a method that knows how to update gpu/mesh data with data from points.
+    /// </summary>
+    /// <typeparam name="IEnumerable"></typeparam>
+    /// <typeparam name="MemoryOwner"></typeparam>
+    /// <param name="gpuData">The gpu/mesh data.</param>
+    /// <param name="points">The points with the desired values.</param>
     public delegate void UpdateGpuData<IEnumerable, MemoryOwner>(ref IEnumerable gpuData, MemoryOwner points);
 
     /// <summary>
@@ -79,6 +85,11 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         public List<TGpuData> GpuDataToRender { get; set; }
 
+        /// <summary>
+        /// Allows to update meshes with data from the points.
+        /// </summary>
+        /// <param name="meshes">The meshes that have to be updated.</param>
+        /// <param name="points">The points with the desired values.</param>
         public void UpdateGpuDataCache(ref IEnumerable<TGpuData> meshes, MemoryOwner<TPoint> points);
 
     }

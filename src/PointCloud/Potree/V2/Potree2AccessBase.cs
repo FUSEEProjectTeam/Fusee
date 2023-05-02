@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.PointCloud.Potree.V2.Data;
-using System;
 
 namespace Fusee.PointCloud.Potree.V2
 {

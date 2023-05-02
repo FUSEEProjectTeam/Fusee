@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
-using System;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Potree
@@ -102,9 +102,14 @@ namespace Fusee.PointCloud.Potree
             _getMeshes = dataHandler.GetGpuData;
         }
 
+        /// <summary>
+        /// Allows to update meshes with data from the points.
+        /// </summary>
+        /// <param name="meshes">The meshes that have to be updated.</param>
+        /// <param name="points">The points with the desired values.</param>
         public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> points)
         {
-            throw new NotImplementedException();
+            Diagnostics.Warn("Not implemented. Cache will not be updated.");
         }
 
         /// <summary>

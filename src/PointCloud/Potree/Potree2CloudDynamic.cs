@@ -3,8 +3,6 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
-using Fusee.PointCloud.Potree.V2.Data;
-using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,8 +88,13 @@ namespace Fusee.PointCloud.Potree
         /// </summary>
         public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
 
+        /// <summary>
+        /// Action that is run on every mesh that is determined as newly visible.
+        /// </summary>
+        public Action<Mesh>? NewMeshAction;
+
         private readonly GetDynamicMeshes _getMeshes;
-        private bool _doUpdate = true;        
+        private bool _doUpdate = true;
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
@@ -107,17 +110,17 @@ namespace Fusee.PointCloud.Potree
         }
 
         /// <summary>
-        /// Action that is run on every mesh that is loaded to be visible.
+        /// Allows to update meshes with data from the points.
         /// </summary>
-        public Action<Mesh> NewMeshAction;
-
-
+        /// <param name="meshes">The meshes that have to be updated.</param>
+        /// <param name="points">The points with the desired values.</param>
         public void UpdateGpuDataCache(ref IEnumerable<Mesh> meshes, MemoryOwner<VisualizationPoint> points)
         {
             var countStartSlice = 0;
-            
+
             foreach (var mesh in meshes)
             {
+                if (mesh.Flags == null) continue;
                 var slice = points.Span.Slice(countStartSlice, mesh.Flags.Length);
 
                 for (int i = 0; i < slice.Length; i++)
@@ -130,12 +133,12 @@ namespace Fusee.PointCloud.Potree
         }
 
         /// <summary>
-        /// Determins if new Meshes should be loaded.
+        /// Determines if new Meshes should be loaded.
         /// </summary>
         public bool LoadNewMeshes { get; set; } = true;
 
         /// <summary>
-        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData, TPoint}"/> to update the visible meshes.
+        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData}"/> to update the visible meshes.
         /// Called every frame.
         /// </summary>
         /// <param name="fov">The camera's field of view.</param>

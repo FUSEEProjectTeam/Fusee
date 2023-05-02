@@ -120,7 +120,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="octantId">The unique id of an octant.</param>
         /// <returns></returns>
-        public override IEnumerable<TGpuData>? GetGpuData(OctantId octantId)
+        public override IEnumerable<TGpuData> GetGpuData(OctantId octantId)
         {
             if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
             {
@@ -130,7 +130,7 @@ namespace Fusee.PointCloud.Core
                 {
                     if (_pointCache.TryGetValue(octantId, out var points))
                     {
-                        if (UpdateGpuDataCache != null) 
+                        if (UpdateGpuDataCache != null)
                         {
                             UpdateGpuDataCache.Invoke(ref gpuData, points);
                         }

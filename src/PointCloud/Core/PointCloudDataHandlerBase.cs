@@ -61,6 +61,9 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public abstract void ProcessDisposeQueue();
 
+        /// <summary>
+        /// Allows to update meshes with data from the points.
+        /// </summary>
         public UpdateGpuData<IEnumerable<TGpuData>, MemoryOwner<VisualizationPoint>>? UpdateGpuDataCache;
 
         private bool _disposed = false;
