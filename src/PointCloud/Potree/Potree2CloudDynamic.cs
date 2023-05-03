@@ -9,12 +9,14 @@ using System.Linq;
 
 namespace Fusee.PointCloud.Potree
 {
-
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
     public class Potree2CloudDynamic : IPointCloudImp<Mesh, VisualizationPoint>
     {
+        /// <summary>
+        /// Object for handling the invalidation of the gpu data cache.
+        /// </summary>
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
 
         /// <summary>
@@ -120,6 +122,7 @@ namespace Fusee.PointCloud.Potree
 
             foreach (var mesh in meshes)
             {
+                mesh.Name = string.Empty;
                 if (mesh.Flags == null) continue;
                 var slice = points.Span.Slice(countStartSlice, mesh.Flags.Length);
 
