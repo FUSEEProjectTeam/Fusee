@@ -1,9 +1,9 @@
+using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Potree.V2.Data;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -120,10 +120,33 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="octantId">The unique id of an octant.</param>
         /// <returns></returns>
-        public override IEnumerable<TGpuData>? GetGpuData(OctantId octantId)
+        public override IEnumerable<TGpuData> GetGpuData(OctantId octantId)
         {
             if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
+            {
+                Guard.IsNotNull(InvalidateCacheToken);
+
+                if (InvalidateCacheToken.IsDirty)
+                {
+                    if (_pointCache.TryGetValue(octantId, out var points))
+                    {
+                        if (UpdateGpuDataCache != null)
+                        {
+                            UpdateGpuDataCache.Invoke(ref gpuData, points);
+                        }
+                        else
+                        {
+                            if (!_doRenderInstanced)
+                                gpuData = MeshMaker.CreateMeshes(points, _createGpuDataHandler, octantId);
+                            else
+                                gpuData = MeshMaker.CreateInstanceData(points, _createGpuDataHandler, octantId);
+                        }
+                        _gpuDataCache.AddOrUpdate(octantId, gpuData);
+                    }
+                }
+
                 return gpuData;
+            }
             else if (DisposeQueue.TryGetValue(octantId, out gpuData))
             {
                 lock (LockDisposeQueue)
@@ -141,6 +164,7 @@ namespace Fusee.PointCloud.Core
                     gpuData = MeshMaker.CreateInstanceData(points, _createGpuDataHandler, octantId);
                 _gpuDataCache.Add(octantId, gpuData);
             }
+
             //no points yet, probably in loading queue
             return null;
         }
@@ -183,6 +207,8 @@ namespace Fusee.PointCloud.Core
         {
             if (!LoadingQueue.Contains(guid) && LoadingQueue.Count <= MaxNumberOfNodesToLoad)
             {
+                if (_pointCache.TryGetValue(guid, out var points)) return;
+
                 lock (LockLoadingQueue)
                 {
                     LoadingQueue.Add(guid);
@@ -190,11 +216,8 @@ namespace Fusee.PointCloud.Core
 
                 _ = Task.Run(() =>
                 {
-                    if (!_pointCache.TryGetValue(guid, out var points))
-                    {
-                        points = _loadPointsHandler.Invoke(guid);
-                        _pointCache.Add(guid, points);
-                    }
+                    points = _loadPointsHandler.Invoke(guid);
+                    _pointCache.Add(guid, points);
 
                     lock (LockLoadingQueue)
                     {

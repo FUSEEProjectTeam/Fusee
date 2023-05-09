@@ -1,13 +1,17 @@
-﻿using System;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.PointCloud.Common;
+using System;
 using System.Collections.Generic;
 
-namespace Fusee.PointCloud.Common
+namespace Fusee.PointCloud.Core
 {
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
     /// </summary>
     public abstract class PointCloudDataHandlerBase<TGpuData> : IDisposable where TGpuData : IDisposable
     {
+        public InvalidateGpuDataCache InvalidateCacheToken;
+
         /// <summary>
         /// Used to manage gpu pressure when disposing of a large quantity of meshes.
         /// </summary>
@@ -56,6 +60,11 @@ namespace Fusee.PointCloud.Common
         /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the MeshCache.
         /// </summary>
         public abstract void ProcessDisposeQueue();
+
+        /// <summary>
+        /// Allows to update meshes with data from the points.
+        /// </summary>
+        public UpdateGpuData<IEnumerable<TGpuData>, MemoryOwner<VisualizationPoint>>? UpdateGpuDataCache;
 
         private bool _disposed = false;
 

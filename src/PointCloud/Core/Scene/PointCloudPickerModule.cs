@@ -41,7 +41,7 @@ namespace Fusee.PointCloud.Core.Scene
     {
         private PickerState? _state;
         private readonly PointCloudOctree? _octree;
-        private readonly IPointCloudImp<Mesh>? _pcImp;
+        private readonly IPointCloudImp<Mesh, VisualizationPoint>? _pcImp;
         private readonly float _pointSpacing;
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <param name="octree">The <see cref="PointCloudOctree"/> of the <see cref="IPointCloudImp{TGpuData}"/>.</param>
         /// <param name="pcImp">The <see cref="IPointCloudImp{TGpuData}"/>, needs to be of type <see cref="Mesh"/></param>
         /// <param name="pointSpacing">The spacing between points. For Potree use the metadata spacing component * 0.1f <br/> e. g. Spacing = 2.18f, pass 0.218f to this ctor.</param>
-        public PointCloudPickerModule(IPointCloudOctree octree, IPointCloudImp<Mesh> pcImp, float pointSpacing)
+        public PointCloudPickerModule(IPointCloudOctree octree, IPointCloudImp<Mesh, VisualizationPoint> pcImp, float pointSpacing)
         {
             if (pcImp == null)
                 Diagnostics.Warn("No per point picking possible, no PointCloud<Mesh> type loaded");

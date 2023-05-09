@@ -205,6 +205,8 @@ namespace Fusee.Engine.Core.Scene
                 Colors1.DirtyIndex = false;
             if (Colors2Set)
                 Colors2.DirtyIndex = false;
+            if (FlagsSet)
+                Flags.DirtyIndex = false;
 
 
 
