@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -230,7 +230,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             if (Directory.Exists(currentFolder))
             {
                 CurrentOpenFolder = new DirectoryInfo(currentFolder);
-                CurrentlySelectedFolder = new DirectoryInfo(currentFolder);
             }
             else
             {
@@ -271,7 +270,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 var fileSystemEntries = GetFileSystemEntries(CurrentOpenFolder.FullName);
                 foreach (var fse in fileSystemEntries)
                 {
-
                     var name = fse.Name;
 
                     ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());

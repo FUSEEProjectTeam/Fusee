@@ -331,12 +331,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                         }
                         else
                         {
-                            var name = new FileInfo(fse.FullName);
-
+                            var name = fse.Name;
 
                             ImGui.PushStyleColor(ImGuiCol.Header, SelectedColor.ToUintColor());
 
-                            if (ImGui.Selectable(name.Name, SelectedFile == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
+                            if (ImGui.Selectable(name, SelectedFile?.Name == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
                             {
                                 if (ImGui.IsMouseDoubleClicked(0))
                                 {
@@ -351,10 +350,10 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                                 }
                                 else
                                 {
-                                    if (SelectedFile == name)
+                                    if (SelectedFile == fse)
                                         SelectedFile = null;
                                     else
-                                        SelectedFile = name;
+                                        SelectedFile = new FileInfo(fse.FullName);
                                 }
                             }
 
