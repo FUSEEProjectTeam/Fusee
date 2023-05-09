@@ -272,26 +272,26 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 foreach (var fse in fileSystemEntries)
                 {
 
-                        var name = fse.Name;
+                    var name = fse.Name;
 
-                        ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
-                        ImGui.PushStyleColor(ImGuiCol.Header, SelectedColor.ToUintColor());
+                    ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
+                    ImGui.PushStyleColor(ImGuiCol.Header, SelectedColor.ToUintColor());
 
-                        if (ImGui.Selectable(name + "/", CurrentlySelectedFolder?.Name == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
+                    if (ImGui.Selectable(name + "/", CurrentlySelectedFolder?.Name == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
+                    {
+                        CurrentlySelectedFolder = fse;
+                        if (ImGui.IsMouseDoubleClicked(0))
                         {
-                            CurrentlySelectedFolder = fse;
-                            if (ImGui.IsMouseDoubleClicked(0))
+                            if (ImGui.GetIO().WantCaptureMouse)
                             {
-                                if (ImGui.GetIO().WantCaptureMouse)
-                                {
-                                    LastOpenendFolders.Push(CurrentOpenFolder);
-                                    CurrentOpenFolder = fse;
-                                }
+                                LastOpenendFolders.Push(CurrentOpenFolder);
+                                CurrentOpenFolder = fse;
                             }
                         }
+                    }
 
-                        ImGui.PopStyleColor();
-                        ImGui.PopStyleColor();
+                    ImGui.PopStyleColor();
+                    ImGui.PopStyleColor();
                 }
 
 

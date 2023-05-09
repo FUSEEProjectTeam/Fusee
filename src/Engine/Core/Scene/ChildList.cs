@@ -75,7 +75,7 @@ namespace Fusee.Engine.Core.Scene
             else
             {
                 //remove from old parent's child list
-                if(this != snc.Parent.Children)
+                if (this != snc.Parent.Children)
                     snc.Parent.Children.Remove(snc);
                 OnAdd?.Invoke(this, new AddChildEventArgs(snc));
             }
