@@ -367,42 +367,36 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// </summary>
         /// <param name="fullName"></param>
         /// <returns></returns>
-        private List<FileSystemInfo> GetFileSystemEntries(string fullName)
+        private static List<FileSystemInfo> GetFileSystemEntries(string fullName)
         {
-            try
-            {
-                var folders = new List<DirectoryInfo>();
-                var files = new List<FileInfo>();
+            var folders = new List<DirectoryInfo>();
+            var files = new List<FileInfo>();
 
-                foreach (var f in Directory.GetFileSystemEntries(fullName, ""))
+            foreach (var f in Directory.GetFileSystemEntries(fullName, ""))
+            {
+                var attr = File.GetAttributes(f);
+                // skip unaccessible files and folders
+                if (attr.HasFlag(FileAttributes.Encrypted)
+                    || attr.HasFlag(FileAttributes.Hidden)
+                    || attr.HasFlag(FileAttributes.System)
+                    || attr.HasFlag(FileAttributes.Temporary))
+                    continue;
+
+                if (attr.HasFlag(FileAttributes.Directory))
                 {
-                    var attr = File.GetAttributes(f);
-                    // skip unaccessible files and folders
-                    if (attr.HasFlag(FileAttributes.Encrypted)
-                        || attr.HasFlag(FileAttributes.Hidden)
-                        || attr.HasFlag(FileAttributes.System)
-                        || attr.HasFlag(FileAttributes.Temporary))
-                        continue;
-
-                    if (attr.HasFlag(FileAttributes.Directory))
-                    {
-                        folders.Add(new DirectoryInfo(f));
-                    }
-                    else
-                    {
-                        var fse = new FileInfo(f);
-                        files.Add(fse);
-                    }
+                    folders.Add(new DirectoryInfo(f));
                 }
+                else
+                {
+                    var fse = new FileInfo(f);
+                    files.Add(fse);
+                }
+            }
 
-                var ret = new List<FileSystemInfo>(folders);
-                ret.AddRange(files);
-                return ret;
-            }
-            catch (Exception)
-            {
-                return new List<FileSystemInfo>();
-            }
+            var ret = new List<FileSystemInfo>(folders);
+            ret.AddRange(files);
+            return ret;
+
         }
     }
 }

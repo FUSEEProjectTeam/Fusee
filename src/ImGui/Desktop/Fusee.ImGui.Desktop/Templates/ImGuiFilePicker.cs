@@ -435,49 +435,42 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// <returns></returns>
         private List<FileSystemInfo> GetFileSystemEntries(string fullName)
         {
-            try
+            var folders = new List<DirectoryInfo>();
+            var files = new List<FileInfo>();
+
+            foreach (var f in Directory.GetFileSystemEntries(fullName, ""))
             {
-                var folders = new List<DirectoryInfo>();
-                var files = new List<FileInfo>();
+                var attr = File.GetAttributes(f);
+                // skip unaccessible files and folders
+                if (attr.HasFlag(FileAttributes.Encrypted)
+                    || attr.HasFlag(FileAttributes.Hidden)
+                    || attr.HasFlag(FileAttributes.System)
+                    || attr.HasFlag(FileAttributes.Temporary))
+                    continue;
 
-                foreach (var f in Directory.GetFileSystemEntries(fullName, ""))
+                if (attr.HasFlag(FileAttributes.Directory))
                 {
-                    var attr = File.GetAttributes(f);
-                    // skip unaccessible files and folders
-                    if (attr.HasFlag(FileAttributes.Encrypted)
-                        || attr.HasFlag(FileAttributes.Hidden)
-                        || attr.HasFlag(FileAttributes.System)
-                        || attr.HasFlag(FileAttributes.Temporary))
-                        continue;
-
-                    if (attr.HasFlag(FileAttributes.Directory))
+                    folders.Add(new DirectoryInfo(f));
+                }
+                else
+                {
+                    var fse = new FileInfo(f);
+                    if (AllowedExtensions != null)
                     {
-                        folders.Add(new DirectoryInfo(f));
+                        var ext = fse.Extension;
+                        if (AllowedExtensions.Contains(ext))
+                            files.Add(fse);
                     }
                     else
                     {
-                        var fse = new FileInfo(f);
-                        if (AllowedExtensions != null)
-                        {
-                            var ext = fse.Extension;
-                            if (AllowedExtensions.Contains(ext))
-                                files.Add(fse);
-                        }
-                        else
-                        {
-                            files.Add(fse);
-                        }
+                        files.Add(fse);
                     }
                 }
+            }
 
-                var ret = new List<FileSystemInfo>(folders);
-                ret.AddRange(files);
-                return ret;
-            }
-            catch (Exception)
-            {
-                return new List<FileSystemInfo>();
-            }
+            var ret = new List<FileSystemInfo>(folders);
+            ret.AddRange(files);
+            return ret;
         }
 
         protected virtual bool HandlePickedFile(FileInfo selectedFile)
