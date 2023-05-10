@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
@@ -11,8 +12,13 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2CloudDynamic : IPointCloudImp<Mesh>
+    public class Potree2CloudDynamic : IPointCloudImp<Mesh, VisualizationPoint>
     {
+        /// <summary>
+        /// Object for handling the invalidation of the gpu data cache.
+        /// </summary>
+        public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
+
         /// <summary>
         /// The complete list of meshes that can be rendered.
         /// </summary>
@@ -84,6 +90,11 @@ namespace Fusee.PointCloud.Potree
         /// </summary>
         public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
 
+        /// <summary>
+        /// Action that is run on every mesh that is determined as newly visible.
+        /// </summary>
+        public Action<Mesh>? NewMeshAction;
+
         private readonly GetDynamicMeshes _getMeshes;
         private bool _doUpdate = true;
 
@@ -94,22 +105,43 @@ namespace Fusee.PointCloud.Potree
         {
             GpuDataToRender = new List<Mesh>();
             DataHandler = dataHandler;
+            DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
+            DataHandler.InvalidateCacheToken = InvalidateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
             _getMeshes = dataHandler.GetGpuData;
         }
 
         /// <summary>
-        /// Action that is run on every mesh that is loaded to be visible.
+        /// Allows to update meshes with data from the points.
         /// </summary>
-        public Action<Mesh> NewMeshAction;
+        /// <param name="meshes">The meshes that have to be updated.</param>
+        /// <param name="points">The points with the desired values.</param>
+        public void UpdateGpuDataCache(ref IEnumerable<Mesh> meshes, MemoryOwner<VisualizationPoint> points)
+        {
+            var countStartSlice = 0;
+
+            foreach (var mesh in meshes)
+            {
+                mesh.Name = string.Empty;
+                if (mesh.Flags == null) continue;
+                var slice = points.Span.Slice(countStartSlice, mesh.Flags.Length);
+
+                for (int i = 0; i < slice.Length; i++)
+                {
+                    var pt = slice[i];
+                    mesh.Flags[i] = pt.Flags;
+                }
+                countStartSlice += mesh.Flags.Length;
+            }
+        }
 
         /// <summary>
-        /// Determins if new Meshes should be loaded.
+        /// Determines if new Meshes should be loaded.
         /// </summary>
         public bool LoadNewMeshes { get; set; } = true;
 
         /// <summary>
-        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData, TPoint}"/> to update the visible meshes.
+        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData}"/> to update the visible meshes.
         /// Called every frame.
         /// </summary>
         /// <param name="fov">The camera's field of view.</param>
@@ -163,6 +195,8 @@ namespace Fusee.PointCloud.Potree
                     }
                 }
             }
+
+            InvalidateGpuDataCache.IsDirty = false;
 
             GpuDataToRender.Clear();
             GpuDataToRender.AddRange(meshes);

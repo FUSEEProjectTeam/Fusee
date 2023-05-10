@@ -190,16 +190,17 @@ namespace Fusee.PointCloud.Potree.V2
                 var colorSpan = MemoryMarshal.Cast<float, byte>(color.ToArray());
 
                 uint flags = 0;
+                Span<byte> extraBytesSpan = null;
                 if (PotreeData.Metadata.OffsetToExtraBytes != -1 && PotreeData.Metadata.OffsetToExtraBytes != 0)
                 {
                     var extraByteSize = PotreeData.Metadata.PointSize - PotreeData.Metadata.OffsetToExtraBytes;
-                    var extraBytesSpan = pointArray.AsSpan().Slice(i + PotreeData.Metadata.OffsetToExtraBytes, extraByteSize);
-
-                    if (HandleReadExtraBytes != null)
-                    {
-                        flags = HandleReadExtraBytes(extraBytesSpan);
-                    }
+                    extraBytesSpan = pointArray.AsSpan().Slice(i + PotreeData.Metadata.OffsetToExtraBytes, extraByteSize);
                 }
+                if (HandleReadExtraBytes != null)
+                {
+                    flags = HandleReadExtraBytes(extraBytesSpan);
+                }
+
                 var flagsSpan = MemoryMarshal.Cast<uint, byte>(new uint[] { flags });
 
                 var currentMemoryPt = MemoryMarshal.Cast<VisualizationPoint, byte>(returnMemory.Span.Slice(pointCount, 1));

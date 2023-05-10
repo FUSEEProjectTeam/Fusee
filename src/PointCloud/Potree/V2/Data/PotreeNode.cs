@@ -1,4 +1,7 @@
-﻿using Fusee.Math.Core;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
+using Newtonsoft.Json;
 using System;
 
 #pragma warning disable CS1591
@@ -11,7 +14,22 @@ namespace Fusee.PointCloud.Potree.V2.Data
         {
         }
 
-        public string Name = "";
+        [JsonIgnore]
+        private string _name;
+
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                Guard.IsNotNull(value);
+                _name = value;
+                OctantId = new OctantId(value);
+            }
+        }
+
+        [JsonIgnore]
+        public OctantId OctantId;
 
         public AABBd Aabb { get; set; }
         public PotreeNode Parent { get; set; }
