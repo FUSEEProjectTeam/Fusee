@@ -253,20 +253,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                 return 0;
             });
-            if (Directory.Exists(currentFolder))
-            {
-                CurrentOpenFolder = new DirectoryInfo(currentFolder);
-            }
-            else if (File.Exists(currentFolder))
-            {
-                var fi = new FileInfo(currentFolder);
-                if (fi.Directory != null)
-                {
-                    CurrentOpenFolder = fi.Directory;
-                    SelectedFile = fi;
-                }
-            }
-            else
+            if (!Directory.Exists(currentFolder))
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
                 ImGui.BeginTooltip();
@@ -307,7 +294,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                     var fileSystemEntries = GetFileSystemEntries(CurrentOpenFolder.FullName);
                     foreach (var fse in fileSystemEntries)
                     {
-                        if (Directory.Exists(fse.FullName))
+                        if (fse.Attributes.HasFlag(FileAttributes.Directory))
                         {
                             var directory = new DirectoryInfo(fse.FullName);
 
@@ -440,16 +427,30 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             return;
         }
 
+        /// <summary>
+        /// We differentiate between files and folders, as we want to print the folders first
+        /// If we collect everything in one list all files and folders are being sorted alphabetically
+        /// </summary>
+        /// <param name="fullName"></param>
+        /// <returns></returns>
         private List<FileSystemInfo> GetFileSystemEntries(string fullName)
         {
             try
             {
                 var folders = new List<DirectoryInfo>();
-                var files = new List<FileSystemInfo>();
+                var files = new List<FileInfo>();
 
                 foreach (var f in Directory.GetFileSystemEntries(fullName, ""))
                 {
-                    if (Directory.Exists(f))
+                    var attr = File.GetAttributes(f);
+                    // skip unaccessible files and folders
+                    if (attr.HasFlag(FileAttributes.Encrypted)
+                        || attr.HasFlag(FileAttributes.Hidden)
+                        || attr.HasFlag(FileAttributes.System)
+                        || attr.HasFlag(FileAttributes.Temporary))
+                        continue;
+
+                    if (attr.HasFlag(FileAttributes.Directory))
                     {
                         folders.Add(new DirectoryInfo(f));
                     }

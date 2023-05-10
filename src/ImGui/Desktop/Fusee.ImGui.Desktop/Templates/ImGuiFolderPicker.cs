@@ -137,6 +137,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public Vector4 SelectedColor = new(125, 75, 75, 255);
 
         /// <summary>
+        /// Color of one <see cref="ImGui.Selectable(string)"/> file object
+        /// This should be a lighter color, as these elements are being printed, but are not selectable
+        /// </summary>
+        public Vector4 LightFileColor = new(125, 125, 125, 255);
+
+        /// <summary>
         /// Generate a new ImGuiFolderPicker instance
         /// </summary>
         /// <param name="startingPath">Starting path, defaults to <see cref="AppContext.BaseDirectory"/></param>
@@ -266,30 +272,40 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             if (ImGui.BeginChild($"#FolderBrowser##{_folderPickerCount}", new Vector2(FolderTextInputWidth, BrowserHeight), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.HorizontalScrollbar))
             {
-
                 var fileSystemEntries = GetFileSystemEntries(CurrentOpenFolder.FullName);
                 foreach (var fse in fileSystemEntries)
                 {
                     var name = fse.Name;
 
-                    ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
-                    ImGui.PushStyleColor(ImGuiCol.Header, SelectedColor.ToUintColor());
 
-                    if (ImGui.Selectable(name + "/", CurrentlySelectedFolder?.Name == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
+                    if (fse.Attributes.HasFlag(FileAttributes.Directory))
                     {
-                        CurrentlySelectedFolder = fse;
-                        if (ImGui.IsMouseDoubleClicked(0))
+                        ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
+                        ImGui.PushStyleColor(ImGuiCol.Header, SelectedColor.ToUintColor());
+                        if (ImGui.Selectable(name + "/", CurrentlySelectedFolder?.Name == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
                         {
-                            if (ImGui.GetIO().WantCaptureMouse)
+                            CurrentlySelectedFolder = new DirectoryInfo(fse.FullName);
+                            if (ImGui.IsMouseDoubleClicked(0))
                             {
-                                LastOpenendFolders.Push(CurrentOpenFolder);
-                                CurrentOpenFolder = fse;
+                                if (ImGui.GetIO().WantCaptureMouse)
+                                {
+                                    LastOpenendFolders.Push(CurrentOpenFolder);
+                                    CurrentOpenFolder = new DirectoryInfo(fse.FullName);
+                                }
                             }
                         }
+                        ImGui.PopStyleColor();
+                        ImGui.PopStyleColor();
+                    }
+                    else
+                    {
+                        // just print the files, but with lighter color
+                        ImGui.PushStyleColor(ImGuiCol.Text, LightFileColor.ToUintColor());
+                        ImGui.Selectable(name, false, ImGuiSelectableFlags.DontClosePopups);
+                        ImGui.PopStyleColor();
                     }
 
-                    ImGui.PopStyleColor();
-                    ImGui.PopStyleColor();
+
                 }
 
 
@@ -300,7 +316,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             //// Folder Selector
             ImGui.NewLine();
-            ImGui.BeginChild($"FileSelector##{_folderPickerCount}", new Vector2(-1, -1), false, ImGuiWindowFlags.AlwaysAutoResize);
+            ImGui.BeginChild($"FolderSelector##{_folderPickerCount}", new Vector2(-1, -1), false, ImGuiWindowFlags.AlwaysAutoResize);
 
             var selectedFile = CurrentlySelectedFolder?.Name;
             ImGui.SetNextItemWidth(FileTextInputWidth - ImGui.CalcTextSize(FileLabelTxt).X - ImGui.GetStyle().ItemSpacing.X);
@@ -345,27 +361,47 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             return;
         }
 
-        private static List<DirectoryInfo> GetFileSystemEntries(string fullName)
+        /// <summary>
+        /// We differentiate between files and folders, as we want to print the folders first
+        /// If we collect everything in one list all files and folders are being sorted alphabetically
+        /// </summary>
+        /// <param name="fullName"></param>
+        /// <returns></returns>
+        private List<FileSystemInfo> GetFileSystemEntries(string fullName)
         {
             try
             {
-                var dirs = new List<DirectoryInfo>();
+                var folders = new List<DirectoryInfo>();
+                var files = new List<FileInfo>();
 
                 foreach (var f in Directory.GetFileSystemEntries(fullName, ""))
                 {
-                    var fse = new DirectoryInfo(f);
-                    if (fse.Exists)
+                    var attr = File.GetAttributes(f);
+                    // skip unaccessible files and folders
+                    if (attr.HasFlag(FileAttributes.Encrypted)
+                        || attr.HasFlag(FileAttributes.Hidden)
+                        || attr.HasFlag(FileAttributes.System)
+                        || attr.HasFlag(FileAttributes.Temporary))
+                        continue;
+
+                    if (attr.HasFlag(FileAttributes.Directory))
                     {
-                        dirs.Add(fse);
+                        folders.Add(new DirectoryInfo(f));
+                    }
+                    else
+                    {
+                        var fse = new FileInfo(f);
+                        files.Add(fse);
                     }
                 }
 
-
-                return dirs;
+                var ret = new List<FileSystemInfo>(folders);
+                ret.AddRange(files);
+                return ret;
             }
             catch (Exception)
             {
-                return new List<DirectoryInfo>();
+                return new List<FileSystemInfo>();
             }
         }
     }
