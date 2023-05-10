@@ -317,8 +317,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             //// Folder Selector
             ImGui.NewLine();
             ImGui.BeginChild($"FolderSelector##{_folderPickerCount}", new Vector2(-1, -1), false, ImGuiWindowFlags.AlwaysAutoResize);
-
-            var selectedFile = CurrentlySelectedFolder?.Name;
             ImGui.SetNextItemWidth(FileTextInputWidth - ImGui.CalcTextSize(FileLabelTxt).X - ImGui.GetStyle().ItemSpacing.X);
             ImGui.Dummy(new Vector2(-1, -1));
 
