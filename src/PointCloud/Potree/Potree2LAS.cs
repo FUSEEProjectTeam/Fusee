@@ -333,7 +333,7 @@ namespace Fusee.PointCloud.Potree
                             "uint32" => MemoryMarshal.AsBytes<ulong>(attribute.MinList.Select(x => (ulong)x).ToArray()),
                             "int32" => MemoryMarshal.AsBytes<long>(attribute.MinList.Select(x => (long)x).ToArray()),
                             "int64" => MemoryMarshal.AsBytes<long>(attribute.MinList.Select(x => (long)x).ToArray()),
-                            "uint64" => MemoryMarshal.AsBytes<ulong>(attribute.MinList.Select(x => (UInt64)x).ToArray()),
+                            "uint64" => MemoryMarshal.AsBytes<ulong>(attribute.MinList.Select(x => (ulong)x).ToArray()),
                             "float" => MemoryMarshal.AsBytes<float>(attribute.MinList.Select(x => (float)x).ToArray()),
                             "double" => MemoryMarshal.AsBytes<double>(attribute.MinList.ToArray()),
                             _ => throw new ArgumentException("Invalid data type!")
