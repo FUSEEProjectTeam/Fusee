@@ -1,6 +1,7 @@
 using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Core;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 
