@@ -1,3 +1,5 @@
+// Ignore Spelling: fov
+
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Primitives;

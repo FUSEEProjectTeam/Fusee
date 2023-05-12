@@ -35,7 +35,7 @@ namespace Fusee.PointCloud.Core.Scene
         public Camera? Camera;
 
         /// <summary>
-        /// Instantiates the <see cref="IPointCloudImp{TGpuData}"/>.
+        /// Instantiates the <see cref="IPointCloudImpBase"/>.
         /// </summary>
         public PointCloudComponent(IPointCloudImpBase imp, RenderMode renderMode = RenderMode.StaticMesh)
         {

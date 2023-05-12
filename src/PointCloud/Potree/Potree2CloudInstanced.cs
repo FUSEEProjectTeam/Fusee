@@ -86,7 +86,6 @@ namespace Fusee.PointCloud.Potree
         /// </summary>
         public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
 
-        private readonly GetInstanceData _getInstanceData;
         private bool _doUpdate = true;
 
         /// <summary>
@@ -97,9 +96,7 @@ namespace Fusee.PointCloud.Potree
             GpuDataToRender = new List<InstanceData>();
             DataHandler = dataHandler;
             DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
-            DataHandler.InvalidateCacheToken = InvalidateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
-            _getInstanceData = dataHandler.GetGpuData;
         }
 
         /// <summary>
@@ -113,7 +110,7 @@ namespace Fusee.PointCloud.Potree
         }
 
         /// <summary>
-        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData, TPoint}"/> to update the visible meshes.
+        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData}"/> to update the visible meshes.
         /// Called every frame.
         /// </summary>
         /// <param name="fov">The camera's field of view.</param>
@@ -145,7 +142,7 @@ namespace Fusee.PointCloud.Potree
             {
                 if (!guid.Valid) continue;
 
-                var instanceData = _getInstanceData(guid);
+                var instanceData = DataHandler.GetGpuData(guid, null, out _);
 
                 if (instanceData == null) continue; //points for this octant aren't loaded yet.
 

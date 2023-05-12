@@ -190,8 +190,8 @@ namespace Fusee.PointCloud.Core.Scene
         /// Inject this to a <see cref="ScenePicker"/> to be able to pick <see cref="PointCloudComponent"/>s.
         /// The actual point and <see cref="PointCloudOctree"/> data needs to be present a priori, however it's type is polymorph, therefore we need to inject those data, too.
         /// </summary>
-        /// <param name="octree">The <see cref="PointCloudOctree"/> of the <see cref="IPointCloudImp{TGpuData}"/>.</param>
-        /// <param name="pcImp">The <see cref="IPointCloudImp{TGpuData}"/>, needs to be of type <see cref="Mesh"/></param>
+        /// <param name="octree">The <see cref="PointCloudOctree"/> of the <see cref="IPointCloudImp{TGpuData, TPoint}"/>.</param>
+        /// <param name="pcImp">The <see cref="IPointCloudImp{TGpuData, TPoint}"/>, needs to be of type <see cref="Mesh"/></param>
         /// <param name="pointSpacing">The spacing between points. For Potree use the metadata spacing component * 0.1f <br/> e. g. Spacing = 2.18f, pass 0.218f to this ctor.</param>
         public PointCloudPickerModule(IPointCloudOctree octree, IPointCloudImp<Mesh, VisualizationPoint> pcImp, float pointSpacing)
         {
