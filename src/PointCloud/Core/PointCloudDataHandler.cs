@@ -263,7 +263,7 @@ namespace Fusee.PointCloud.Core
             lock (LockDisposeQueue)
             {
                 if (meshes == null) return;
-                DisposeQueue.Add((OctantId)guid, (IEnumerable<TGpuData>)meshes);
+                DisposeQueue.TryAdd((OctantId)guid, (IEnumerable<TGpuData>)meshes);
             }
         }
 

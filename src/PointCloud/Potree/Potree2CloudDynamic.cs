@@ -131,7 +131,8 @@ namespace Fusee.PointCloud.Potree
                 for (int i = 0; i < slice.Length; i++)
                 {
                     var pt = slice[i];
-                    mesh.Flags[i] = pt.Flags;
+                    if(mesh.Flags[i] != pt.Flags)
+                        mesh.Flags[i] = pt.Flags;
                 }
                 countStartSlice += mesh.Flags.Length;
             }
