@@ -312,9 +312,9 @@ namespace Fusee.PointCloud.Potree.V2
 
             FlipYZAxis(Metadata, Hierarchy);
 
-            // do not adapt the global AABB after conversion, keep original for LAS writing
-            //Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x, Hierarchy.Root.Aabb.min.y, Hierarchy.Root.Aabb.min.z };
-            //Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x, Hierarchy.Root.Aabb.max.y, Hierarchy.Root.Aabb.max.z };
+            // adapt the global AABB after conversion, this works with the current LAS writer
+            Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x + Metadata.Offset.x, Hierarchy.Root.Aabb.min.z + Metadata.Offset.z, Hierarchy.Root.Aabb.min.y + Metadata.Offset.y };
+            Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x + Metadata.Offset.x, Hierarchy.Root.Aabb.max.z + Metadata.Offset.z, Hierarchy.Root.Aabb.max.y + Metadata.Offset.y };
 
             return (Metadata, Hierarchy);
         }
