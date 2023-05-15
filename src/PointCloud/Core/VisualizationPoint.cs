@@ -36,23 +36,4 @@ namespace Fusee.PointCloud.Core
             return $"Position: {Position} - Color: {Color} - Flags: {FlagsParser(Flags)}";
         }
     }
-
-    /// <summary>
-    /// This point is used for data handling purposes.
-    /// It's read from a file and converted to either LAS or changed and updated in the original file.
-    /// </summary>
-    public struct PotreePoint
-    {
-        /// <summary>
-        /// The position of a point.
-        /// </summary>
-        public float3 Position;
-
-        /// <summary>
-        /// The color (r,g,b,a) of a point.
-        /// </summary>
-        public float4 Color;
-
-
-    }
 }

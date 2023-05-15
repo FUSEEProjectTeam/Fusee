@@ -476,6 +476,8 @@ namespace Fusee.PointCloud.Potree
                 _fileStream.Write(tmpArray[..15]); // pos(12) + intensity (2) + returnStuff (1)
                 _fileStream.Write(tmpArray[16..Metadata.PointSize]); // skip array pos [15], byte 16
             }
+
+            inputStream.Close();
         }
 
         /// <summary>
