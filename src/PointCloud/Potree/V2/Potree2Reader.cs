@@ -299,8 +299,6 @@ namespace Fusee.PointCloud.Potree.V2
 
             CalculateAttributeOffsets(ref Metadata);
 
-            // TODO(mr): Add isExtraBytes, adapt in LASReader
-
             Hierarchy.Root.Aabb = new AABBd(Metadata.BoundingBox.Min, Metadata.BoundingBox.Max);
 
             var data = File.ReadAllBytes(hierarchyFilePath);
@@ -326,7 +324,8 @@ namespace Fusee.PointCloud.Potree.V2
         {
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new ConvertIPointWriterHierarchy());
-            var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilepath), settings);
+            var metaData = File.ReadAllText(metadataFilepath);
+            var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(metaData, settings);
             Guard.IsNotNull(potreeData, nameof(potreeData));
 
             return potreeData;
