@@ -378,7 +378,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 return 0;
             }))
             {
-                SelectedFile = new FileInfo(selectedFile);
+                if(!string.IsNullOrEmpty(selectedFile) && !char.IsWhiteSpace(selectedFile[0]))
+                    SelectedFile = new FileInfo(selectedFile);
             }
 
             if (_sizeOfInputText == Vector2.Zero)
