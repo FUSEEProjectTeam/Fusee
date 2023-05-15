@@ -12,8 +12,10 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -297,6 +299,8 @@ namespace Fusee.PointCloud.Potree.V2
 
             CalculateAttributeOffsets(ref Metadata);
 
+            // TODO(mr): Add isExtraBytes, adapt in LASReader
+
             Hierarchy.Root.Aabb = new AABBd(Metadata.BoundingBox.Min, Metadata.BoundingBox.Max);
 
             var data = File.ReadAllBytes(hierarchyFilePath);
@@ -310,20 +314,45 @@ namespace Fusee.PointCloud.Potree.V2
 
             FlipYZAxis(Metadata, Hierarchy);
 
-            Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x, Hierarchy.Root.Aabb.min.y, Hierarchy.Root.Aabb.min.z };
-            Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x, Hierarchy.Root.Aabb.max.y, Hierarchy.Root.Aabb.max.z };
+            // do not adapt the global AABB after conversion, keep original for LAS writing
+            //Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x, Hierarchy.Root.Aabb.min.y, Hierarchy.Root.Aabb.min.z };
+            //Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x, Hierarchy.Root.Aabb.max.y, Hierarchy.Root.Aabb.max.z };
 
             return (Metadata, Hierarchy);
         }
 
+
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)
         {
-            var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilepath));
-
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new ConvertIPointWriterHierarchy());
+            var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilepath), settings);
             Guard.IsNotNull(potreeData, nameof(potreeData));
 
             return potreeData;
         }
+
+
+        internal class ConvertIPointWriterHierarchy : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(IPointWriterHierarchy);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                return serializer.Deserialize(reader, typeof(PotreeSettingsHierarchy));
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                serializer.Serialize(writer, value);
+            }
+        }
+
+
+
 
         private static void LoadHierarchyRecursive(ref PotreeNode root, ref byte[] data, long offset, long size)
         {

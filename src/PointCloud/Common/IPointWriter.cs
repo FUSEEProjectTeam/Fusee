@@ -1,4 +1,4 @@
-﻿using Fusee.Math.Core;
+using Fusee.Math.Core;
 using System;
 using System.IO;
 using System.Text;
@@ -28,72 +28,71 @@ namespace Fusee.PointCloud.Common
     }
 
     /// <summary>
-    /// Metadata about the point cloud
-    /// the "attributes" which are needed for e. g. the Potree export can be reconstructed via the <see cref="IPointAccessor" />
+    /// Metadata about the point cloud the "attributes" which are needed for e. g. the LAS export.
     /// </summary>
     public interface IPointWriterMetadata
     {
         /// <summary>
         /// Version flag
         /// </summary>
-        public string Version { get; set; }
+        public string Version { get; }
 
         /// <summary>
         /// Point cloud name
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
 
         /// <summary>
         /// Description of point cloud
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; }
 
         /// <summary>
         /// How many points does this point cloud contain
         /// </summary>
-        public int PointCount { get; set; }
+        public int PointCount { get; }
 
         /// <summary>
         /// A possible projection method
         /// </summary>
-        public string Projection { get; set; }
+        public string Projection { get; }
 
         /// <summary>
-        /// The point cloud hierarchy information 
+        /// The point cloud hierarchy information
         /// </summary>
-        public IPointWriterHierarchy Hierarchy { get; set; }
+        public IPointWriterHierarchy Hierarchy { get; }
 
         /// <summary>
         /// Global offset of each point
         /// </summary>
-        public double3 Offset { get; set; }
+        public double3 Offset { get; }
 
         /// <summary>
-        /// Global scale value. Points are being converted to int 
+        /// Global scale value. Points are being converted to int
         /// During load this scale factor is being applied to convert int to double
         /// </summary>
-        public double3 Scale { get; set; }
+        public double3 Scale { get; }
 
         /// <summary>
         /// The spacing between points (set during the sampling process)
         /// </summary>
-        public double Spacing { get; set; }
+        public double Spacing { get; }
 
         /// <summary>
         /// Global <see cref="AABBd"/> of the point cloud
         /// </summary>
-        public AABBd BoundingBox { get; set; }
+        public AABBd AABB { get; }
 
         /// <summary>
         /// The encoding of every point, as we save the point cloud as <see cref="sbyte"/> elements
         /// Default is <see cref="Encoding.Default"/>
         /// </summary>
-        public string Encoding { get; set; }
+        public string Encoding { get; }
 
         /// <summary>
-        /// The size of one point in bytes (for sanity checks later on, compare with <see cref="IPointAccessor"/> data)
+        /// The size of one point in bytes (for sanity checks later on, compare with e. g. LASPoint type data)
         /// </summary>
-        public int PointSize { get; set; }
+        public int PointSize { get; }
     }
 
     /// <summary>
@@ -102,22 +101,13 @@ namespace Fusee.PointCloud.Common
     public interface IPointWriter
     {
         /// <summary>
-        /// This methods takes a list <see cref="PointType"/>s and converts it to the desired output format and writes the file 
-        /// to disk at given <paramref name="savePath"/>
+        /// The necessary metadata
         /// </summary>
-        /// <param name="savePath">Path to save to</param>
-        /// <param name="points">The point data as <see cref="ReadOnlySpan{T}"/></param>
-        /// <param name="metadata">Necessary metadata, e. g. global scale, etc.</param>
-        public void WritePointcloudPoints(FileInfo savePath, ReadOnlySpan<byte[]> points, IPointWriterMetadata metadata);
+        IPointWriterMetadata Metadata { get; }
 
         /// <summary>
-        /// This methods takes a list of <see cref="PointType"/>s and converts it to the desired output format and writes the file 
-        /// to disk at given <paramref name="savePath"/> in an async manner
+        /// The file to write to
         /// </summary>
-        /// <param name="savePath">Path to save to</param>
-        /// <param name="points">The point data as <see cref="ReadOnlyMemory{T}"/>, no <see cref="ReadOnlySpan{T}"/> as ref types are not allowed  
-        /// during async operations</param>
-        /// <param name="metadata">Necessary metadata, e. g. global scale, etc.</param>
-        public Task WritePointcloudPointsAsync(FileInfo savePath, ReadOnlyMemory<byte[]> points, IPointWriterMetadata metadata);
+        FileInfo SavePath { get; }
     }
 }
