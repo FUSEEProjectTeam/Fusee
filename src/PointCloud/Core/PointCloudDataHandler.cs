@@ -138,14 +138,6 @@ namespace Fusee.PointCloud.Core
                     else
                         gpuData = MeshMaker.CreateInstanceData(points, _createGpuDataHandler, octantId);
                 }
-                _gpuDataCache.AddOrUpdate(octantId, gpuData);
-                _meshesToUpdate.Remove(octantId);
-
-                if (_meshesToUpdate.Count == 0)
-                {
-                    InvalidateCacheToken.IsDirty = false;
-                }
-
                 return GpuDataState.Changed;
             }
 
@@ -171,8 +163,20 @@ namespace Fusee.PointCloud.Core
                 if (_meshesToUpdate.Contains(octantId) || doUpdate)
                 {
                     gpuDataState = DoUpdateGpuData(octantId, ref gpuData);
+
                     if (gpuDataState != GpuDataState.None)
+                    {
+                        _gpuDataCache.AddOrUpdate(octantId, gpuData);
+                        _meshesToUpdate.Remove(octantId);
+                        if (_meshesToUpdate.Count == 0)
+                        {
+                            InvalidateCacheToken.IsDirty = false;
+                        }
                         return gpuData;
+                    }
+
+                    //Mesh remains in the _meshesToUpdate list but couldn't be updated because the points were missing.
+                    _gpuDataCache.Remove(octantId);
                     return null;
                 }
                 else
@@ -186,10 +190,20 @@ namespace Fusee.PointCloud.Core
                 {
                     DisposeQueue.Remove(octantId);
                 }
+
                 gpuDataState = DoUpdateGpuData(octantId, ref gpuData);
                 if (gpuDataState != GpuDataState.None)
+                {
+                    _gpuDataCache.AddOrUpdate(octantId, gpuData);
+                    _meshesToUpdate.Remove(octantId);
+                    if (_meshesToUpdate.Count == 0)
+                    {
+                        InvalidateCacheToken.IsDirty = false;
+                    }
                     return gpuData;
-                return null;
+                }
+
+                _gpuDataCache.Remove(octantId);
             }
             else if (_pointCache.TryGetValue(octantId, out var points))
             {

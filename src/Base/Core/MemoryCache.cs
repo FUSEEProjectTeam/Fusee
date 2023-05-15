@@ -152,6 +152,15 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
+        /// Removes the object associated with the given key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        public void Remove(TKey key)
+        {
+            _cache.Remove(key);
+        }
+
+        /// <summary>
         /// Implement IDisposable.
         /// Do not make this method virtual.
         /// A derived class should not be able to override this method.
