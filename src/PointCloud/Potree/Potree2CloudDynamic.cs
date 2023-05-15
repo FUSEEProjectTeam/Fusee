@@ -1,9 +1,9 @@
-﻿using CommunityToolkit.HighPerformance.Buffers;
+﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
-using SixLabors.ImageSharp.ColorSpaces;
 using System;
 using System.Collections.Generic;
 
@@ -194,7 +194,7 @@ namespace Fusee.PointCloud.Potree
                     //Octants that are now visible and the meshes are newly created.
                     //They we have to call "NewMeshAction" when they are loaded.
                     case GpuDataState.New:
-                        if (guidMeshes == null) continue;
+                        Guard.IsNotNull(guidMeshes); //If this is null we have an internal error in DataHandler.GetMeshes/DoUpdate
                         foreach (var mesh in guidMeshes)
                         {
                             NewMeshAction?.Invoke(mesh);
@@ -202,14 +202,14 @@ namespace Fusee.PointCloud.Potree
                         break;
                     //Octants that are now visible and the existing meshes where updated.
                     case GpuDataState.Changed:
-                        if (guidMeshes == null) continue;
+                        Guard.IsNotNull(guidMeshes); //If this is null we have an internal error in DataHandler.GetMeshes/DoUpdate
                         foreach (var mesh in guidMeshes)
                         {
                             UpdatedMeshAction?.Invoke(mesh);
                         }
                         break;
                     case GpuDataState.Unchanged:
-                        if (guidMeshes == null) continue;
+                        Guard.IsNotNull(guidMeshes); //If this is null we have an internal error in DataHandler.GetMeshes/DoUpdate
                         break;
                     default:
                         throw new ArgumentException($"Invalid mesh status {meshStatus}.");

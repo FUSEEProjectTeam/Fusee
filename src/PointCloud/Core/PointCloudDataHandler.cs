@@ -123,7 +123,7 @@ namespace Fusee.PointCloud.Core
 
         }
 
-        private void DoUpdateGpuData(OctantId octantId, ref IEnumerable<TGpuData> gpuData)
+        private GpuDataState DoUpdateGpuData(OctantId octantId, ref IEnumerable<TGpuData> gpuData)
         {
             if (_pointCache.TryGetValue(octantId, out var points))
             {
@@ -145,7 +145,13 @@ namespace Fusee.PointCloud.Core
                 {
                     InvalidateCacheToken.IsDirty = false;
                 }
+
+                return GpuDataState.Changed;
             }
+
+            //No points in cache - cannot update (point loading is triggered in VisibilityTester)
+            return GpuDataState.None;
+
         }
 
         /// <summary>
@@ -164,8 +170,10 @@ namespace Fusee.PointCloud.Core
                 var doUpdate = doUpdateIf != null ? doUpdateIf.Invoke() : false;
                 if (_meshesToUpdate.Contains(octantId) || doUpdate)
                 {
-                    DoUpdateGpuData(octantId, ref gpuData);
-                    gpuDataState = GpuDataState.Changed;
+                    gpuDataState = DoUpdateGpuData(octantId, ref gpuData);
+                    if (gpuDataState != GpuDataState.None)
+                        return gpuData;
+                    return null;
                 }
                 else
                     gpuDataState = GpuDataState.Unchanged;
@@ -178,9 +186,10 @@ namespace Fusee.PointCloud.Core
                 {
                     DisposeQueue.Remove(octantId);
                 }
-                DoUpdateGpuData(octantId, ref gpuData);
-                gpuDataState = GpuDataState.Changed;
-                return gpuData;
+                gpuDataState = DoUpdateGpuData(octantId, ref gpuData);
+                if (gpuDataState != GpuDataState.None)
+                    return gpuData;
+                return null;
             }
             else if (_pointCache.TryGetValue(octantId, out var points))
             {

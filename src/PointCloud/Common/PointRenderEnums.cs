@@ -7,7 +7,7 @@
     public enum GpuDataState
     {
         /// <summary>
-        /// Default, gpu data wasn't created yet.
+        /// Default, gpu data wasn't created yet and or points havent been loaded yet.
         /// </summary>
         None = -1,
 
