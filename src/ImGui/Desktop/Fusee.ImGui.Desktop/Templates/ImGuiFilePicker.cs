@@ -113,6 +113,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         protected Vector2 _sizeOfInputText;
 
         /// <summary>
+        /// Checks input before returning if file exists.
+        /// Disable this check for file saving.
+        /// </summary>
+        public bool NonExistingFilesAllowed = false;
+
+        /// <summary>
         /// Text color of folder
         /// </summary>
         public Vector4 FolderColor = new(255, 0, 255, 255);
@@ -475,25 +481,27 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
         protected virtual bool HandlePickedFile(FileInfo selectedFile)
         {
-            if (selectedFile.Exists)
+
+            if (selectedFile.Directory != null)
             {
-                if (selectedFile.Directory != null)
+                if (NonExistingFilesAllowed || selectedFile.Exists)
                 {
                     CurrentOpenFolder = selectedFile.Directory;
                     SelectedFile = selectedFile;
                     return true;
                 }
-            }
-            else if (selectedFile != null)
-            {
-                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
-                ImGui.BeginTooltip();
-                ImGui.TextColored(WarningTextColor, FileNotFoundTxt);
-                ImGui.EndTooltip();
-                ImGui.PopStyleVar();
+                else if (selectedFile != null)
+                {
+                    ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
+                    ImGui.BeginTooltip();
+                    ImGui.TextColored(WarningTextColor, FileNotFoundTxt);
+                    ImGui.EndTooltip();
+                    ImGui.PopStyleVar();
 
-                return false;
+                    return false;
+                }
             }
+
 
             return false;
         }
