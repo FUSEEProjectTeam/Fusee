@@ -48,7 +48,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// The pick result after picking.
         /// </summary>
 #pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
-        public PickResult? PickResult { get; set; }
+        public List<PickResult>? PickResults { get; set; }
 #pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 
         internal struct MinPickValue
@@ -66,7 +66,7 @@ namespace Fusee.PointCloud.Core.Scene
         [VisitMethod]
         public void RenderPointCloud(PointCloudComponent pointCloud)
         {
-            PickResult = null;
+            PickResults = new List<PickResult>();
             if (!pointCloud.Active) return;
 
             Guard.IsNotNull(_pcImp);
@@ -118,33 +118,26 @@ namespace Fusee.PointCloud.Core.Scene
             });
 
             if (currentRes == null || currentRes.Count == 0) return;
+                        
 
-            var minElement = currentRes.First();
+            var mvp = proj * view * _state.Model;
 
             foreach (var r in currentRes)
             {
-                if (r.Distance.x < minElement.Distance.x && r.Distance.y < minElement.Distance.y)
+                var pickRes = new PointCloudPickResult
                 {
-                    // TODO: Test if a offset > e. g. 0.1 is necessary that we do not spawn a box inside the cull / near clipping plane :)
-                    minElement = r;
-                }
+                    Node = null,
+                    Projection = proj,
+                    View = view,
+                    Model = _state.Model,
+                    ClipPos = float4x4.TransformPerspective(mvp, r.Mesh.Vertices[r.VertIdx]),
+                    Mesh = r.Mesh,
+                    VertIdx = r.VertIdx,
+                    OctantId = r.OctantId
+                };
+                
+                PickResults.Add(pickRes);
             }
-
-            Guard.IsNotNull(minElement.Mesh.Vertices);
-
-            var mvp = proj * view * _state.Model;
-            PickResult = new PointCloudPickResult
-            {
-                Node = null,
-                Projection = proj,
-                View = view,
-                Model = _state.Model,
-                ClipPos = float4x4.TransformPerspective(mvp, minElement.Mesh.Vertices[minElement.VertIdx]),
-                Mesh = minElement.Mesh,
-                VertIdx = minElement.VertIdx,
-                OctantId = minElement.OctantId
-            };
-
         }
 
 
