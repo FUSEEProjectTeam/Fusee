@@ -247,6 +247,7 @@ namespace Fusee.PointCloud.Potree
                 _ => throw new NotImplementedException(),
             });
 
+            // Note: AABB is not y/z flipped, offset and scale is.
             _header = new LASHeader
             {
                 PointDataRecordLength = (ushort)size,
@@ -259,8 +260,8 @@ namespace Fusee.PointCloud.Potree
                 MinY = Metadata.AABB.min.y,
                 MinZ = Metadata.AABB.min.z,
                 OffsetX = Metadata.Offset.x,
-                OffsetY = Metadata.Offset.y,
-                OffsetZ = Metadata.Offset.z,
+                OffsetY = Metadata.Offset.z,
+                OffsetZ = Metadata.Offset.y,
                 ScaleFactorX = Metadata.Scale.x,
                 ScaleFactorY = Metadata.Scale.z,
                 ScaleFactorZ = Metadata.Scale.y,
