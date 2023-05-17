@@ -80,6 +80,7 @@ namespace Fusee.PointCloud.Common
 
         /// <summary>
         /// Global <see cref="AABBd"/> of the point cloud
+        /// These values are not yet y/z flipped
         /// </summary>
         public AABBd AABB { get; }
 
