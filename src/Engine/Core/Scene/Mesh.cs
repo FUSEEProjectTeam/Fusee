@@ -175,7 +175,7 @@ namespace Fusee.Engine.Core.Scene
         public Suid SessionUniqueIdentifier { get; } = Suid.GenerateSuid();
 
         /// <summary>
-        /// Update all changed <see cref="MeshAttributes{T}"/> data after each frame?
+        /// Update all changed <see cref="MeshAttributes{T}"/> data before each frame?
         /// </summary>
         public bool UpdatePerFrame { set; get; } = true;
 

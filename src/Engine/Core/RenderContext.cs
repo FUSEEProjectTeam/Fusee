@@ -2021,6 +2021,14 @@ namespace Fusee.Engine.Core
             UpdateAllActiveFxParams(cFx);
 
             var meshImp = _meshManager.GetImpFromMesh(mesh);
+
+            // The dirty index functionality works after the initial call to the MeshManager
+            // This is therefore the first possible place to catch und discard (pointcloud)-meshes with a dirty index
+            if (mesh != null && mesh.Flags != null && mesh.Flags.DirtyIndex)
+            {
+                return;
+            }
+
             if (instanceData != null)
             {
                 var instanceDataImp = _meshManager.GetImpFromInstanceData(mesh, instanceData);
