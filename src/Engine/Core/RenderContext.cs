@@ -771,6 +771,15 @@ namespace Fusee.Engine.Core
         public LightResult[] ForwardLights = new LightResult[ModuleExtensionPoint.NumberOfLightsForward];
 
         /// <summary>
+        /// Render meshes even if <see cref="Mesh.HasDirtyIndices"/> is <see langword="true"/>.
+        /// If <see langword="false"/> all meshes are guaranted to have valid and up-to-date values each frame.
+        /// Usually this is not necessary, however if there is caching and/or visibility testing on a mesh level involved
+        /// we want to ensure the data validity of each frame.
+        /// </summary>
+        public bool AllowDirtyMeshs { get; set; } = true;
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
         /// </summary>
         /// <param name="rci">The <see cref="IRenderContextImp"/>.</param>
@@ -2024,7 +2033,7 @@ namespace Fusee.Engine.Core
 
             // The dirty index functionality works after the initial call to the MeshManager
             // This is therefore the first possible place to catch und discard (pointcloud)-meshes with a dirty index
-            if (mesh != null && mesh.Flags != null && mesh.Flags.DirtyIndex)
+            if (!AllowDirtyMeshs && mesh != null && mesh.HasDirtyIndices)
             {
                 return;
             }

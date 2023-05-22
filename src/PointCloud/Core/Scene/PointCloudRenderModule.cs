@@ -44,6 +44,9 @@ namespace Fusee.PointCloud.Core.Scene
                 throw new ArgumentNullException(nameof(rc));
 
             _rc = rc;
+
+            // prevent rendering with <see cref="Mesh.HasDirtyIndices"/>
+            _rc.AllowDirtyMeshs = false;
         }
 
         /// <summary>
