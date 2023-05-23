@@ -259,7 +259,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                 return 0;
             });
-            if (!Directory.Exists(currentFolder))
+            if (Directory.Exists(currentFolder))
+            {
+                CurrentOpenFolder = new DirectoryInfo(currentFolder);
+            }
+            else
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
                 ImGui.BeginTooltip();
