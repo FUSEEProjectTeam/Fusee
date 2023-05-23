@@ -1,8 +1,6 @@
 using Fusee.Math.Core;
-using System;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Common
 {

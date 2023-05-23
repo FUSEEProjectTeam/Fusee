@@ -118,7 +118,7 @@ namespace Fusee.PointCloud.Core.Scene
             });
 
             if (currentRes == null || currentRes.Count == 0) return;
-                        
+
 
             var mvp = proj * view * _state.Model;
 
@@ -135,7 +135,7 @@ namespace Fusee.PointCloud.Core.Scene
                     VertIdx = r.VertIdx,
                     OctantId = r.OctantId
                 };
-                
+
                 PickResults.Add(pickRes);
             }
         }

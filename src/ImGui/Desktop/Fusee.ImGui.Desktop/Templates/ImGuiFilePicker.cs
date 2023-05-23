@@ -378,7 +378,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 return 0;
             }))
             {
-                if(!string.IsNullOrEmpty(selectedFile) && !char.IsWhiteSpace(selectedFile[0]) && CurrentOpenFolder != null)
+                if (!string.IsNullOrEmpty(selectedFile) && !char.IsWhiteSpace(selectedFile[0]) && CurrentOpenFolder != null)
                     SelectedFile = new FileInfo(Path.Combine(CurrentOpenFolder.FullName, selectedFile));
             }
 

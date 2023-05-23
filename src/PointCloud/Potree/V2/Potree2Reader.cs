@@ -12,10 +12,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Potree.V2
 {
