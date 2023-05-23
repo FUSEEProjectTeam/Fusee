@@ -27,7 +27,7 @@ jobs:
     - name: dotnet restore solution
       run: dotnet restore Fusee.sln
     - name: dotnet format solution
-      run: dotnet format Fusee.sln
+      run: dotnet format style Fusee.sln
     - name: Commiting changes
       uses: stefanzweifel/git-auto-commit-action@v4
       with:

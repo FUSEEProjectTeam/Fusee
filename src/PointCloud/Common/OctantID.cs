@@ -64,7 +64,7 @@ namespace Fusee.PointCloud.Common
     //  
 
 
-    public struct OctantId : IEnumerable<(int, OctantOrientation)>
+    public struct OctantId : IEnumerable<(int, OctantOrientation)>, IEquatable<OctantId>
     {
         private long _id = -1;
 
@@ -227,9 +227,28 @@ namespace Fusee.PointCloud.Common
         public static bool IsDown(OctantOrientation oo) => (oo & OctantOrientation.DownUpMask) == 0;
         public static bool IsUp(OctantOrientation oo) => (oo & OctantOrientation.DownUpMask) != 0;
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return Convert.ToString(this, 2);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return _id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            return Equals((OctantId)obj);
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(OctantId other)
+        {
+            return _id == other._id;
         }
     }
 }
