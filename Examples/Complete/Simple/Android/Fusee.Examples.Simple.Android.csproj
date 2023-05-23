@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Simple.Android</RootNamespace>
     <AssemblyName>Fusee.Examples.Simple.Android</AssemblyName>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <BaseOutputPath>..\..\..\..\bin\$(Configuration)</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)\Examples\Simple\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -14,42 +14,41 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
+	<Deterministic>True</Deterministic>
+	<AndroidApplication>True</AndroidApplication>
+	<AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+	<AndroidResgenClass>Resource</AndroidResgenClass>
+	<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+	<AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
+	<TargetFrameworkVersion>v13.0</TargetFrameworkVersion>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-    <AndroidApplication>true</AndroidApplication>
-    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
+	<MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+	<MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+	<AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
+	<AndroidUseAapt2>true</AndroidUseAapt2>
+	<AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>	  
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>portable</DebugType>
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <MonoDroidLinkMode>None</MonoDroidLinkMode>
-    <AndroidLinkMode>None</AndroidLinkMode>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
-    <AndroidLinkSkip />
-    <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
-    <BundleAssemblies>False</BundleAssemblies>
-    <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <AndroidSupportedAbis>armeabi-v7a;x86_64</AndroidSupportedAbis>
-    <AndroidStoreUncompressedFileExtensions />
-    <MandroidI18n />
-    <Debugger>Xamarin</Debugger>
-    <AndroidEnableMultiDex>False</AndroidEnableMultiDex>
-    <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<AndroidLinkMode>None</AndroidLinkMode>
+	<EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
+	<DebugSymbols>True</DebugSymbols>
+	<DebugType>portable</DebugType>
+	<Optimize>True</Optimize>
     <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <MonoDroidLinkMode>Full</MonoDroidLinkMode>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<AndroidPackageFormat>aab</AndroidPackageFormat>
+	<AndroidManagedSymbols>true</AndroidManagedSymbols>
+	<AndroidLinkMode>SdkOnly</AndroidLinkMode>
+	<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <!-- External References -->
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -16,6 +16,6 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
-		<PackageReference Include="Microsoft.JSInterop" Version="7.0.4" />
+		<PackageReference Include="Microsoft.JSInterop" Version="7.0.5" />
 	</ItemGroup>
 </Project>
