@@ -32,6 +32,11 @@ namespace Fusee.PointCloud.Core.Scene
         /// The <see cref="OctantId"/> of the <see cref="PointCloudOctant"/>in which the found point lies.
         /// </summary>
         public OctantId OctantId;
+
+        /// <summary>
+        /// The distance between ray (origin: mouse position) and hit result (point)
+        /// </summary>
+        public float2 DistanceToRay;
     }
 
     /// <summary>
@@ -99,7 +104,7 @@ namespace Fusee.PointCloud.Core.Scene
 
                     for (var i = 0; i < mesh.Vertices.Length; i++)
                     {
-                        var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], _pointSpacing);
+                        var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], _pointSpacing * 0.5f);
                         if (dist.x < 0 || dist.y < 0) continue;
 
                         if (dist.x <= currentMin.Distance.x && dist.y <= currentMin.Distance.y)
@@ -131,6 +136,7 @@ namespace Fusee.PointCloud.Core.Scene
                     View = view,
                     Model = _state.Model,
                     ClipPos = float4x4.TransformPerspective(mvp, r.Mesh.Vertices[r.VertIdx]),
+                    DistanceToRay = r.Distance,
                     Mesh = r.Mesh,
                     VertIdx = r.VertIdx,
                     OctantId = r.OctantId

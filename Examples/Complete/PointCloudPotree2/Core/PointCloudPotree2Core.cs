@@ -287,10 +287,20 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             {
                 var size = RenderToTexture ? ExternalCanvasSize : new int2(_rc.ViewportWidth, _rc.ViewportHeight);
                 var mousePos = RenderToTexture ? ExternalMousePosition : Input.Mouse.Position;
-                var result = _picker?.Pick(mousePos, size.x, size.y).ToList();
-                if (result != null && result.Count > 0 && result[0] is PointCloudPickResult ppr)
+                var result = _picker?.Pick(mousePos, size.x, size.y).Where(x => x is PointCloudPickResult).Cast<PointCloudPickResult>();
+                if (result != null && result.Any())
                 {
-                    _pickResultTransform.Translation = ppr.Mesh.Vertices[ppr.VertIdx];
+                    var minElement = result.FirstOrDefault();
+
+                    // get min x/y distance point
+                    foreach (var r in result)
+                    {
+                        if (r.DistanceToRay.x < minElement.DistanceToRay.x && r.DistanceToRay.y < minElement.DistanceToRay.y)
+                        {
+                            minElement = r;
+                        }
+                    }
+                    _pickResultTransform.Translation = minElement.Mesh.Vertices[minElement.VertIdx];
                 }
 
             }
