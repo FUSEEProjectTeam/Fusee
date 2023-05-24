@@ -461,7 +461,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="cursorType">The type of the cursor to set.</param>
         public void SetCursor(CursorType cursorType)
         {
-            // Currently not supported by OpenTK... Too bad.
+            switch (cursorType)
+            {
+                case CursorType.Standard:
+                    _gameWindow.Cursor = MouseCursor.Default;
+                    break;
+                case CursorType.Hand:
+                    _gameWindow.Cursor = MouseCursor.Hand;
+                    break;
+                case CursorType.HResize:
+                    _gameWindow.Cursor = MouseCursor.HResize;
+                    break;
+                case CursorType.VResize:
+                    _gameWindow.Cursor = MouseCursor.VResize;
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>
