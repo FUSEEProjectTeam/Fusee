@@ -222,11 +222,13 @@ namespace Fusee.Engine.Core
                 // pre-rendering
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
 
+                // update all meshes (changed values like position, normals, etc.) before rendering them
+                RC.UpdateAllMeshes();
+
                 // rendering
                 if (Width != 0 || Height != 0)
                     RenderAFrame();
 
-                RC.UpdateAllMeshes();
                 RC.CleanupResourceManagers();
 
                 EndOfFrame?.Invoke(this, EventArgs.Empty);

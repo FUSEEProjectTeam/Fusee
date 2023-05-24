@@ -1,4 +1,5 @@
 ﻿using Fusee.Engine.Common;
+using System.Collections.Generic;
 using static Fusee.Engine.Core.ScenePicker;
 
 namespace Fusee.Engine.Core
@@ -11,6 +12,6 @@ namespace Fusee.Engine.Core
         /// <param name="state">The state to set.</param>
         public void SetState(PickerState state);
 
-        public PickResult PickResult { get; set; }
+        public List<PickResult> PickResults { get; set; }
     }
 }

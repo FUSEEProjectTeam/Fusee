@@ -32,6 +32,11 @@ namespace Fusee.PointCloud.Core.Scene
         /// The <see cref="OctantId"/> of the <see cref="PointCloudOctant"/>in which the found point lies.
         /// </summary>
         public OctantId OctantId;
+
+        /// <summary>
+        /// The distance between ray (origin: mouse position) and hit result (point)
+        /// </summary>
+        public float2 DistanceToRay;
     }
 
     /// <summary>
@@ -41,14 +46,14 @@ namespace Fusee.PointCloud.Core.Scene
     {
         private PickerState? _state;
         private readonly PointCloudOctree? _octree;
-        private readonly IPointCloudImp<Mesh>? _pcImp;
+        private readonly IPointCloudImp<Mesh, VisualizationPoint>? _pcImp;
         private readonly float _pointSpacing;
 
         /// <summary>
         /// The pick result after picking.
         /// </summary>
 #pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
-        public PickResult? PickResult { get; set; }
+        public List<PickResult>? PickResults { get; set; }
 #pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 
         internal struct MinPickValue
@@ -66,7 +71,7 @@ namespace Fusee.PointCloud.Core.Scene
         [VisitMethod]
         public void RenderPointCloud(PointCloudComponent pointCloud)
         {
-            PickResult = null;
+            PickResults = new List<PickResult>();
             if (!pointCloud.Active) return;
 
             Guard.IsNotNull(_pcImp);
@@ -99,7 +104,7 @@ namespace Fusee.PointCloud.Core.Scene
 
                     for (var i = 0; i < mesh.Vertices.Length; i++)
                     {
-                        var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], _pointSpacing);
+                        var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], _pointSpacing * 0.5f);
                         if (dist.x < 0 || dist.y < 0) continue;
 
                         if (dist.x <= currentMin.Distance.x && dist.y <= currentMin.Distance.y)
@@ -119,32 +124,26 @@ namespace Fusee.PointCloud.Core.Scene
 
             if (currentRes == null || currentRes.Count == 0) return;
 
-            var minElement = currentRes.First();
+
+            var mvp = proj * view * _state.Model;
 
             foreach (var r in currentRes)
             {
-                if (r.Distance.x < minElement.Distance.x && r.Distance.y < minElement.Distance.y)
+                var pickRes = new PointCloudPickResult
                 {
-                    // TODO: Test if a offset > e. g. 0.1 is necessary that we do not spawn a box inside the cull / near clipping plane :)
-                    minElement = r;
-                }
+                    Node = null,
+                    Projection = proj,
+                    View = view,
+                    Model = _state.Model,
+                    ClipPos = float4x4.TransformPerspective(mvp, r.Mesh.Vertices[r.VertIdx]),
+                    DistanceToRay = r.Distance,
+                    Mesh = r.Mesh,
+                    VertIdx = r.VertIdx,
+                    OctantId = r.OctantId
+                };
+
+                PickResults.Add(pickRes);
             }
-
-            Guard.IsNotNull(minElement.Mesh.Vertices);
-
-            var mvp = proj * view * _state.Model;
-            PickResult = new PointCloudPickResult
-            {
-                Node = null,
-                Projection = proj,
-                View = view,
-                Model = _state.Model,
-                ClipPos = float4x4.TransformPerspective(mvp, minElement.Mesh.Vertices[minElement.VertIdx]),
-                Mesh = minElement.Mesh,
-                VertIdx = minElement.VertIdx,
-                OctantId = minElement.OctantId
-            };
-
         }
 
 
@@ -190,10 +189,10 @@ namespace Fusee.PointCloud.Core.Scene
         /// Inject this to a <see cref="ScenePicker"/> to be able to pick <see cref="PointCloudComponent"/>s.
         /// The actual point and <see cref="PointCloudOctree"/> data needs to be present a priori, however it's type is polymorph, therefore we need to inject those data, too.
         /// </summary>
-        /// <param name="octree">The <see cref="PointCloudOctree"/> of the <see cref="IPointCloudImp{TGpuData}"/>.</param>
-        /// <param name="pcImp">The <see cref="IPointCloudImp{TGpuData}"/>, needs to be of type <see cref="Mesh"/></param>
+        /// <param name="octree">The <see cref="PointCloudOctree"/> of the <see cref="IPointCloudImp{TGpuData, TPoint}"/>.</param>
+        /// <param name="pcImp">The <see cref="IPointCloudImp{TGpuData, TPoint}"/>, needs to be of type <see cref="Mesh"/></param>
         /// <param name="pointSpacing">The spacing between points. For Potree use the metadata spacing component * 0.1f <br/> e. g. Spacing = 2.18f, pass 0.218f to this ctor.</param>
-        public PointCloudPickerModule(IPointCloudOctree octree, IPointCloudImp<Mesh> pcImp, float pointSpacing)
+        public PointCloudPickerModule(IPointCloudOctree octree, IPointCloudImp<Mesh, VisualizationPoint> pcImp, float pointSpacing)
         {
             if (pcImp == null)
                 Diagnostics.Warn("No per point picking possible, no PointCloud<Mesh> type loaded");

@@ -175,15 +175,55 @@ namespace Fusee.Engine.Core.Scene
         public Suid SessionUniqueIdentifier { get; } = Suid.GenerateSuid();
 
         /// <summary>
-        /// Update all changed <see cref="MeshAttributes{T}"/> data after each frame?
+        /// Update all changed <see cref="MeshAttributes{T}"/> data before each frame?
         /// </summary>
         public bool UpdatePerFrame { set; get; } = true;
+
+        /// <summary>
+        /// Gather all <see cref="MeshAttributes{T}.DirtyIndex"/> values in one property.
+        /// </summary>
+        /// <returns><see langword="true"/> if any of the <see cref="MeshAttributes{T}.DirtyIndex"/> is true.</returns>
+        public bool HasDirtyIndices
+        {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            get
+            {
+                var returnVal = Vertices.DirtyIndex && Triangles.DirtyIndex;
+
+                if (NormalsSet)
+                    returnVal &= Normals.DirtyIndex;
+                if (UVsSet)
+                    returnVal &= UVs.DirtyIndex;
+                if (TangentsSet)
+                    returnVal &= Tangents.DirtyIndex;
+                if (BiTangentsSet)
+                    returnVal &= BiTangents.DirtyIndex;
+                if (BoneIndicesSet)
+                    returnVal &= BoneIndices.DirtyIndex;
+                if (BoneWeightsSet)
+                    returnVal &= BoneWeights.DirtyIndex;
+                if (Colors0Set)
+                    returnVal &= Colors0.DirtyIndex;
+                if (Colors1Set)
+                    returnVal &= Colors1.DirtyIndex;
+                if (Colors2Set)
+                    returnVal &= Colors2.DirtyIndex;
+                if (FlagsSet)
+                    returnVal &= Flags.DirtyIndex;
+
+                return returnVal;
+            }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+        }
 
         /// <summary>
         /// Reset all dirty flags
         /// </summary>
         public void ResetIndexLists()
         {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
             Vertices.DirtyIndex = false;
             Triangles.DirtyIndex = false;
 
@@ -205,6 +245,8 @@ namespace Fusee.Engine.Core.Scene
                 Colors1.DirtyIndex = false;
             if (Colors2Set)
                 Colors2.DirtyIndex = false;
+            if (FlagsSet)
+                Flags.DirtyIndex = false;
 
 
 
@@ -221,6 +263,8 @@ namespace Fusee.Engine.Core.Scene
             //Colors0?.DirtyIndices.ResetList();
             //Colors1?.DirtyIndices.ResetList();
             //Colors2?.DirtyIndices.ResetList();
+
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
         #endregion

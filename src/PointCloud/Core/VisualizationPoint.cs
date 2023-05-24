@@ -1,7 +1,7 @@
 ﻿using Fusee.Math.Core;
 using System;
 
-namespace Fusee.PointCloud.Potree.V2.Data
+namespace Fusee.PointCloud.Core
 {
     /// <summary>
     /// This point is used for visualization purposes.
