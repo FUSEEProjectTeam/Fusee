@@ -38,13 +38,9 @@ namespace Fusee.PointCloud.Potree.V2.Data
 
         [JsonProperty(PropertyName = "min")]
         public List<double> MinList { get; set; }
-        [JsonIgnore]
-        public double3 Min => new(MinList[0], MinList[1], MinList[2]);
 
         [JsonProperty(PropertyName = "max")]
         public List<double> MaxList { get; set; }
-        [JsonIgnore]
-        public double3 Max => new(MaxList[0], MaxList[1], MaxList[2]);
 
         [JsonIgnore]
         public int AttributeOffset { get; set; }
