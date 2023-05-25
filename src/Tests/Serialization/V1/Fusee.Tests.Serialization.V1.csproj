@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Tests\Serialization\V1\</OutputPath>
@@ -8,7 +8,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
 		<PackageReference Include="xunit" Version="2.4.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
 			<PrivateAssets>all</PrivateAssets>
