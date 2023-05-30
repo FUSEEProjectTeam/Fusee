@@ -235,8 +235,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             CurrentOpenFolder = startingPath;
             StartingFolder = startingPath;
             SelectedFolder = startingPath;
-
-            ShowNewFolderButton = true;
         }
 
         public virtual unsafe void Draw(ref bool filePickerOpen)
