@@ -188,16 +188,17 @@ namespace Fusee.PointCloud.Potree.V2
                 var colorSpan = MemoryMarshal.Cast<float, byte>(color.ToArray());
 
                 uint flags = 0;
+                Span<byte> extraBytesSpan = null;
                 if (PotreeData.Metadata.OffsetToExtraBytes != -1 && PotreeData.Metadata.OffsetToExtraBytes != 0)
                 {
                     var extraByteSize = PotreeData.Metadata.PointSize - PotreeData.Metadata.OffsetToExtraBytes;
-                    var extraBytesSpan = pointArray.AsSpan().Slice(i + PotreeData.Metadata.OffsetToExtraBytes, extraByteSize);
-
-                    if (HandleReadExtraBytes != null)
-                    {
-                        flags = HandleReadExtraBytes(extraBytesSpan);
-                    }
+                    extraBytesSpan = pointArray.AsSpan().Slice(i + PotreeData.Metadata.OffsetToExtraBytes, extraByteSize);
                 }
+                if (HandleReadExtraBytes != null)
+                {
+                    flags = HandleReadExtraBytes(extraBytesSpan);
+                }
+
                 var flagsSpan = MemoryMarshal.Cast<uint, byte>(new uint[] { flags });
 
                 var currentMemoryPt = MemoryMarshal.Cast<VisualizationPoint, byte>(returnMemory.Span.Slice(pointCount, 1));
@@ -309,20 +310,46 @@ namespace Fusee.PointCloud.Potree.V2
 
             FlipYZAxis(Metadata, Hierarchy);
 
-            Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x, Hierarchy.Root.Aabb.min.y, Hierarchy.Root.Aabb.min.z };
-            Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x, Hierarchy.Root.Aabb.max.y, Hierarchy.Root.Aabb.max.z };
+            // adapt the global AABB after conversion, this works with the current LAS writer
+            Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x + Metadata.Offset.x, Hierarchy.Root.Aabb.min.z + Metadata.Offset.z, Hierarchy.Root.Aabb.min.y + Metadata.Offset.y };
+            Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x + Metadata.Offset.x, Hierarchy.Root.Aabb.max.z + Metadata.Offset.z, Hierarchy.Root.Aabb.max.y + Metadata.Offset.y };
 
             return (Metadata, Hierarchy);
         }
 
+
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)
         {
-            var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilepath));
-
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new ConvertIPointWriterHierarchy());
+            var metaData = File.ReadAllText(metadataFilepath);
+            var potreeData = JsonConvert.DeserializeObject<PotreeMetadata>(metaData, settings);
             Guard.IsNotNull(potreeData, nameof(potreeData));
 
             return potreeData;
         }
+
+
+        internal class ConvertIPointWriterHierarchy : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(IPointWriterHierarchy);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                return serializer.Deserialize(reader, typeof(PotreeSettingsHierarchy));
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                serializer.Serialize(writer, value);
+            }
+        }
+
+
+
 
         private static void LoadHierarchyRecursive(ref PotreeNode root, ref byte[] data, long offset, long size)
         {

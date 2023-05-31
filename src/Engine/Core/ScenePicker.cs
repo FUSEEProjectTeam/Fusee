@@ -294,12 +294,15 @@ namespace Fusee.Engine.Core
 
         private IEnumerable<PickResult> CheckVisitorModuleResults()
         {
+            var res = new List<PickResult>();
             foreach (var module in VisitorModules)
             {
                 var m = (IPickerModule)module;
-                if (m.PickResult != null)
-                    yield return m.PickResult;
+                if (m.PickResults != null)
+                    res.AddRange(m.PickResults);
             }
+
+            return res;
         }
 
         /// <summary>

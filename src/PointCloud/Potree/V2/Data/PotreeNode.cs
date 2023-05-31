@@ -3,7 +3,6 @@ using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Newtonsoft.Json;
 using System;
-using System.Threading.Tasks.Sources;
 
 #pragma warning disable CS1591
 

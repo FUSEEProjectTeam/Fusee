@@ -1,13 +1,22 @@
-﻿using System;
+﻿// Ignore Spelling: kvp
+
+using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.PointCloud.Common;
+using System;
 using System.Collections.Generic;
 
-namespace Fusee.PointCloud.Common
+namespace Fusee.PointCloud.Core
 {
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
     /// </summary>
     public abstract class PointCloudDataHandlerBase<TGpuData> : IDisposable where TGpuData : IDisposable
     {
+        /// <summary>
+        /// Token, that allows to invalidate the complete GpuData cache.
+        /// </summary>
+        public InvalidateGpuDataCache InvalidateCacheToken { get; } = new();
+
         /// <summary>
         /// Used to manage gpu pressure when disposing of a large quantity of meshes.
         /// </summary>
@@ -22,12 +31,12 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Contains nodes that are queued for loading in the background.
         /// </summary>
-        protected List<OctantId> LoadingQueue;
+        protected List<OctantId> LoadingQueue = new();
 
         /// <summary>
         /// Contains meshes that are marked for disposal.
         /// </summary>
-        protected Dictionary<OctantId, IEnumerable<TGpuData>> DisposeQueue;
+        protected Dictionary<OctantId, IEnumerable<TGpuData>> DisposeQueue = new();
 
         /// <summary>
         /// Locking object for the loading queue.
@@ -44,7 +53,9 @@ namespace Fusee.PointCloud.Common
         /// else look in the point cache, if there are points create a mesh and add to the MeshCache.
         /// </summary>
         /// <param name="guid">The unique id of an octant.</param>
-        public abstract IEnumerable<TGpuData> GetGpuData(OctantId guid);
+        /// <param name="doUpdateIf">Allows inserting a condition, if true the mesh will be updated.</param>
+        /// <param name="gpuDataState">State of the gpu data in it's life cycle.</param>
+        public abstract IEnumerable<TGpuData>? GetGpuData(OctantId guid, Func<bool>? doUpdateIf, out GpuDataState gpuDataState);
 
         /// <summary>
         /// Loads points from the hard drive if they are neither in the loading queue nor in the PointCahce.
@@ -56,6 +67,11 @@ namespace Fusee.PointCloud.Common
         /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the MeshCache.
         /// </summary>
         public abstract void ProcessDisposeQueue();
+
+        /// <summary>
+        /// Allows to update meshes with data from the points.
+        /// </summary>
+        public UpdateGpuData<IEnumerable<TGpuData>, MemoryOwner<VisualizationPoint>>? UpdateGpuDataCache;
 
         private bool _disposed = false;
 

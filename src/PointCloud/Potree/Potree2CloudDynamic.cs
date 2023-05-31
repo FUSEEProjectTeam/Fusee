@@ -1,18 +1,24 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.PointCloud.Potree
 {
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2CloudDynamic : IPointCloudImp<Mesh>
+    public class Potree2CloudDynamic : IPointCloudImp<Mesh, VisualizationPoint>
     {
+        /// <summary>
+        /// Object for handling the invalidation of the gpu data cache.
+        /// </summary>
+        public InvalidateGpuDataCache InvalidateGpuDataCache { get => DataHandler.InvalidateCacheToken; }
+
         /// <summary>
         /// The complete list of meshes that can be rendered.
         /// </summary>
@@ -84,7 +90,16 @@ namespace Fusee.PointCloud.Potree
         /// </summary>
         public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
 
-        private readonly GetDynamicMeshes _getMeshes;
+        /// <summary>
+        /// Action that is run on every mesh that is determined as newly visible.
+        /// </summary>
+        public Action<Mesh>? NewMeshAction;
+
+        /// <summary>
+        /// Action that is run on every mesh that was updated.
+        /// </summary>
+        public Action<Mesh>? UpdatedMeshAction;
+
         private bool _doUpdate = true;
 
         /// <summary>
@@ -94,22 +109,45 @@ namespace Fusee.PointCloud.Potree
         {
             GpuDataToRender = new List<Mesh>();
             DataHandler = dataHandler;
+            DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
-            _getMeshes = dataHandler.GetGpuData;
         }
 
         /// <summary>
-        /// Action that is run on every mesh that is loaded to be visible.
+        /// Allows to update meshes with data from the points.
         /// </summary>
-        public Action<Mesh> NewMeshAction;
+        /// <param name="meshes">The meshes that have to be updated.</param>
+        /// <param name="points">The points with the desired values.</param>
+        public void UpdateGpuDataCache(ref IEnumerable<Mesh> meshes, MemoryOwner<VisualizationPoint> points)
+        {
+            var countStartSlice = 0;
+
+            foreach (var mesh in meshes)
+            {
+                mesh.Name = string.Empty;
+                if (mesh.Flags == null) continue;
+                var slice = points.Span.Slice(countStartSlice, mesh.Flags.Length);
+
+                for (int i = 0; i < slice.Length; i++)
+                {
+                    var pt = slice[i];
+                    if (mesh.Flags[i] != pt.Flags)
+                        mesh.Flags[i] = pt.Flags;
+                }
+                countStartSlice += mesh.Flags.Length;
+            }
+        }
 
         /// <summary>
-        /// Determins if new Meshes should be loaded.
+        /// Determines if new Meshes should be loaded.
         /// </summary>
         public bool LoadNewMeshes { get; set; } = true;
 
+
+        private List<OctantId> _visibleOctantsCache = new();
+
         /// <summary>
-        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData, TPoint}"/> to update the visible meshes.
+        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData}"/> to update the visible meshes.
         /// Called every frame.
         /// </summary>
         /// <param name="fov">The camera's field of view.</param>
@@ -137,35 +175,51 @@ namespace Fusee.PointCloud.Potree
             VisibilityTester.Model = modelMat;
 
             VisibilityTester.Update();
+            GpuDataToRender.Clear();
 
-            var meshes = new List<Mesh>();
+            var currentOctants = new List<OctantId>();
 
             foreach (var guid in VisibilityTester.VisibleNodes)
             {
                 if (!guid.Valid) continue;
 
-                var guidMeshes = _getMeshes(guid);
+                var guidMeshes = DataHandler.GetGpuData(guid, () => !_visibleOctantsCache.Contains(guid), out GpuDataState meshStatus);
 
-                if (guidMeshes == null) continue; //points for this octant aren't loaded yet.
-
-                meshes.AddRange(guidMeshes);
-            }
-
-            if (NewMeshAction != null)
-            {
-                var newMeshes = meshes.Except(GpuDataToRender);
-
-                if (newMeshes.Any())
+                switch (meshStatus)
                 {
-                    foreach (var mesh in newMeshes)
-                    {
-                        NewMeshAction(mesh);
-                    }
+                    //Octants that are now visible but the points for this octant aren't loaded yet.
+                    //Nothing to do here.
+                    case GpuDataState.None:
+                        continue;
+                    //Octants that are now visible and the meshes are newly created.
+                    //They we have to call "NewMeshAction" when they are loaded.
+                    case GpuDataState.New:
+                        Guard.IsNotNull(guidMeshes); //If this is null we have an internal error in DataHandler.GetMeshes/DoUpdate
+                        foreach (var mesh in guidMeshes)
+                        {
+                            NewMeshAction?.Invoke(mesh);
+                        }
+                        break;
+                    //Octants that are now visible and the existing meshes where updated.
+                    case GpuDataState.Changed:
+                        Guard.IsNotNull(guidMeshes); //If this is null we have an internal error in DataHandler.GetMeshes/DoUpdate
+                        foreach (var mesh in guidMeshes)
+                        {
+                            UpdatedMeshAction?.Invoke(mesh);
+                        }
+                        break;
+                    case GpuDataState.Unchanged:
+                        Guard.IsNotNull(guidMeshes); //If this is null we have an internal error in DataHandler.GetMeshes/DoUpdate
+                        break;
+                    default:
+                        throw new ArgumentException($"Invalid mesh status {meshStatus}.");
                 }
+
+                GpuDataToRender.AddRange(guidMeshes);
+                currentOctants.Add(guid);
             }
 
-            GpuDataToRender.Clear();
-            GpuDataToRender.AddRange(meshes);
+            _visibleOctantsCache = new(currentOctants);
         }
     }
 }

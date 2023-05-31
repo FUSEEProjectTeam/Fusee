@@ -1,4 +1,6 @@
-﻿using Fusee.Engine.Core;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Base.Core;
+using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
@@ -9,8 +11,10 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2Cloud : IPointCloudImp<GpuMesh>
+    public class Potree2Cloud : IPointCloudImp<GpuMesh, VisualizationPoint>
     {
+        public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
+
         /// <summary>
         /// The complete list of meshes that can be rendered.
         /// </summary>
@@ -82,7 +86,6 @@ namespace Fusee.PointCloud.Potree
         /// </summary>
         public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
 
-        private readonly GetMeshes _getMeshes;
         private bool _doUpdate = true;
 
         /// <summary>
@@ -92,12 +95,22 @@ namespace Fusee.PointCloud.Potree
         {
             GpuDataToRender = new List<GpuMesh>();
             DataHandler = dataHandler;
+            DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
-            _getMeshes = dataHandler.GetGpuData;
         }
 
         /// <summary>
-        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData, TPoint}"/> to update the visible meshes.
+        /// Allows to update meshes with data from the points.
+        /// </summary>
+        /// <param name="meshes">The meshes that have to be updated.</param>
+        /// <param name="points">The points with the desired values.</param>
+        public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> points)
+        {
+            Diagnostics.Warn("Not implemented. Cache will not be updated.");
+        }
+
+        /// <summary>
+        /// Uses the <see cref="VisibilityTester"/> and <see cref="PointCloudDataHandler{TGpuData}"/> to update the visible meshes.
         /// Called every frame.
         /// </summary>
         /// <param name="fov">The camera's field of view.</param>
@@ -129,7 +142,7 @@ namespace Fusee.PointCloud.Potree
             {
                 if (!guid.Valid) continue;
 
-                var meshes = _getMeshes(guid);
+                var meshes = DataHandler.GetGpuData(guid, null, out _);
 
                 if (meshes == null) continue; //points for this octant aren't loaded yet.
 
