@@ -33,6 +33,8 @@
 
 		<PackageOutputPath>$(FuseeEngineRoot)\bin\Release\nuget</PackageOutputPath>
 
+		<CodeAnalysisRuleSet>$(FuseeEngineRoot)\Fusee.ruleset</CodeAnalysisRuleSet>
+
 		<!--
 		Suppress warnings
 		1701 and 1702 is standard.
