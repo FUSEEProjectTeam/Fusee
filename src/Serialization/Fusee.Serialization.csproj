@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;net7.0</TargetFrameworks>
@@ -19,7 +19,7 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 
-		<PackageReference Include="protobuf-net" Version="3.2.16" />
+		<PackageReference Include="protobuf-net" Version="3.2.26" />
 	</ItemGroup>
 
 </Project>
