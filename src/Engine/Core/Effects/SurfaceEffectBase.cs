@@ -43,7 +43,7 @@ namespace Fusee.Engine.Core.Effects
 
         //================== Surface Shard IN ==========================//
         /// <summary>
-        /// User-defined input struct. Must derive from <see cref="DiffuseInput"/>. 
+        /// User-defined input struct. Must derive from <see cref="DiffuseInput"/>.
         /// Used in the <see cref="SurfOutFragMethod"/> to modify the parameters of the chosen <see cref="SurfaceOutput"/>.
         /// </summary>
         public SurfaceEffectInput SurfaceInput { get; set; }
@@ -196,7 +196,7 @@ namespace Fusee.Engine.Core.Effects
             VertIn = ShaderShards.Vertex.VertProperties.InParams(surfaceInput.TextureSetup);
 
             SurfaceInput = surfaceInput;
-            SurfaceInput.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));
+            SurfaceInput.PropertyChanged += (object? sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));
 
             var surfInType = surfaceInput.GetType();
             var surfInName = nameof(SurfaceInput);
@@ -371,12 +371,12 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList, List<KeyValuePair<ShardCategory, string>> renderMathodDependentShards = null)
+        internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList, List<KeyValuePair<ShardCategory, string>>? renderMethodDependentShards = null)
         {
             List<KeyValuePair<ShardCategory, string>> completeList;
-            if (renderMathodDependentShards != null)
+            if (renderMethodDependentShards != null)
             {
-                completeList = shardList.Concat(renderMathodDependentShards).ToList();
+                completeList = shardList.Concat(renderMethodDependentShards).ToList();
                 completeList.Sort((x, y) => x.Key.CompareTo(y.Key));
             }
             else
@@ -534,7 +534,7 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        private IFxParamDeclaration BuildFxParamDecl(PropertyInfo prop, PropertyInfo parent = null)
+        private IFxParamDeclaration BuildFxParamDecl(PropertyInfo prop, PropertyInfo? parent = null)
         {
             // Perform `new FxParamDeclaration<ParamType>{Name = paramName};`
             // Since we do not know ParamType at compile time we need to use reflection.
@@ -657,10 +657,9 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Event Handler that is called on <see cref="INotifyValueChange{T}.PropertyChanged"/>.
         /// </summary>
-        /// <param name="sender">The sender object.</param>
         /// <param name="args">The event arguments.</param>
         /// <param name="memberName">The name of the member which this event originated from.</param>
-        protected void PropertyChangedHandler(object sender, SurfaceEffectEventArgs args, string memberName)
+        protected void PropertyChangedHandler(object? _, SurfaceEffectEventArgs args, string memberName)
         {
             SetFxParam(memberName + "." + args.Name, args.Value);
         }

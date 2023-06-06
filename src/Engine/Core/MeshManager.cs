@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
             _renderContextImp.RemoveInstanceData(instanceData);
         }
 
-        private void DisposeMesh(object sender, MeshChangedEventArgs meshDataEventArgs)
+        private void DisposeMesh(object? sender, MeshChangedEventArgs meshDataEventArgs)
         {
             if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out var toBeUpdatedMeshImp))
                 throw new KeyNotFoundException("Mesh is not registered.");
@@ -89,7 +89,7 @@ namespace Fusee.Engine.Core
                                        let mesh = kv.Value.Mesh
                                        select (kv, mesh))
             {
-                if (mesh == null) continue;
+                if (mesh == null || mesh.Vertices == null) continue;
                 if (!mesh.UpdatePerFrame) continue;
 
                 var meshImp = kv.Value.IMeshImp;
@@ -101,7 +101,7 @@ namespace Fusee.Engine.Core
                     mesh.BoundingBox = new AABBf(mesh.Vertices.AsReadOnlySpan);
                 }
 
-                if (mesh.Triangles.DirtyIndex)
+                if (mesh.Triangles != null && mesh.Triangles.DirtyIndex)
                 {
                     _renderContextImp.SetTriangles(meshImp, mesh.Triangles.AsReadOnlySpan);
                 }
@@ -111,47 +111,47 @@ namespace Fusee.Engine.Core
                     _renderContextImp.SetNormals(meshImp, mesh.Normals.AsReadOnlySpan);
                 }
 
-                if (mesh.UVsSet && mesh.UVs.DirtyIndex)
+                if (mesh.UVs != null && mesh.UVsSet && mesh.UVs.DirtyIndex)
                 {
                     _renderContextImp.SetUVs(meshImp, mesh.UVs.AsReadOnlySpan);
                 }
 
-                if (mesh.TangentsSet && mesh.Tangents.DirtyIndex)
+                if (mesh.Tangents != null && mesh.TangentsSet && mesh.Tangents.DirtyIndex)
                 {
                     _renderContextImp.SetTangents(meshImp, mesh.Tangents.AsReadOnlySpan);
                 }
 
-                if (mesh.BiTangentsSet && mesh.BiTangents.DirtyIndex)
+                if (mesh.BiTangents != null && mesh.BiTangentsSet && mesh.BiTangents.DirtyIndex)
                 {
                     _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents.AsReadOnlySpan);
                 }
 
-                if (mesh.BoneWeightsSet && mesh.BoneWeights.DirtyIndex)
+                if (mesh.BoneWeights != null && mesh.BoneWeightsSet && mesh.BoneWeights.DirtyIndex)
                 {
                     _renderContextImp.SetBoneWeights(meshImp, mesh.BoneWeights.AsReadOnlySpan);
                 }
 
-                if (mesh.BoneIndicesSet && mesh.BoneIndices.DirtyIndex)
+                if (mesh.BoneIndices != null && mesh.BoneIndicesSet && mesh.BoneIndices.DirtyIndex)
                 {
                     _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices.AsReadOnlySpan);
                 }
 
-                if (mesh.Colors0Set && mesh.Colors0.DirtyIndex)
+                if (mesh.Colors0 != null && mesh.Colors0Set && mesh.Colors0.DirtyIndex)
                 {
                     _renderContextImp.SetColors(meshImp, mesh.Colors0.AsReadOnlySpan);
                 }
 
-                if (mesh.Colors1Set && mesh.Colors1.DirtyIndex)
+                if (mesh.Colors1 != null && mesh.Colors1Set && mesh.Colors1.DirtyIndex)
                 {
                     _renderContextImp.SetColors1(meshImp, mesh.Colors1.AsReadOnlySpan);
                 }
 
-                if (mesh.Colors2Set && mesh.Colors2.DirtyIndex)
+                if (mesh.Colors2 != null && mesh.Colors2Set && mesh.Colors2.DirtyIndex)
                 {
                     _renderContextImp.SetColors2(meshImp, mesh.Colors2.AsReadOnlySpan);
                 }
 
-                if (mesh.FlagsSet && mesh.Flags.DirtyIndex)
+                if (mesh.Flags != null && mesh.FlagsSet && mesh.Flags.DirtyIndex)
                 {
                     _renderContextImp.SetFlags(meshImp, mesh.Flags.AsReadOnlySpan);
                 }
@@ -208,9 +208,9 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private void DisposeInstanceData(object sender, InstanceDataChangedEventArgs instanceDataEventArgs)
+        private void DisposeInstanceData(object? sender, InstanceDataChangedEventArgs instanceDataEventArgs)
         {
-            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceDataEventArgs.InstanceData.SessionUniqueId, out IInstanceDataImp instanceDataImp))
+            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceDataEventArgs.InstanceData.SessionUniqueId, out IInstanceDataImp? instanceDataImp))
                 throw new KeyNotFoundException("InstanceData is not registered.");
 
             // Add the meshImp to the toBeDeleted Stack...
@@ -220,7 +220,7 @@ namespace Fusee.Engine.Core
             _ = _identifierToInstanceDataImpDictionary.Remove(instanceDataEventArgs.InstanceData.SessionUniqueId);
         }
 
-        private void InstanceDataChanged(object sender, InstanceDataChangedEventArgs instanceDataEventArgs)
+        private void InstanceDataChanged(object? sender, InstanceDataChangedEventArgs instanceDataEventArgs)
         {
             if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceDataEventArgs.InstanceData.SessionUniqueId, out var instanceImp))
             {
@@ -292,6 +292,8 @@ namespace Fusee.Engine.Core
         // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
         private IMeshImp RegisterNewMesh(Mesh mesh)
         {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
             var meshImp = _renderContextImp.CreateMeshImp();
 
             _renderContextImp.SetVertexArrayObject(meshImp);
@@ -341,6 +343,9 @@ namespace Fusee.Engine.Core
             _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, (meshImp, mesh));
 
             return meshImp;
+
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
         }
 
         private IInstanceDataImp RegisterNewInstanceData(Mesh mesh, InstanceData instanceData)
@@ -383,7 +388,7 @@ namespace Fusee.Engine.Core
 
         public IInstanceDataImp GetImpFromInstanceData(Mesh m, InstanceData instanceData)
         {
-            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceData.SessionUniqueId, out IInstanceDataImp imp))
+            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceData.SessionUniqueId, out IInstanceDataImp? imp))
             {
                 return RegisterNewInstanceData(m, instanceData);
             }

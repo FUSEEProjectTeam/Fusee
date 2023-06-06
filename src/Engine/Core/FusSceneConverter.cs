@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Use <see cref="ConvertFrom(FusFile, string)"/> and <see cref="ConvertTo(SceneContainer)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
+    /// Use <see cref="ConvertFrom(FusFile, string)"/> and <see cref="ConvertTo(SceneContainer, int)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
     /// in order to have each visited element converted and/or split into its high/low level, render-ready/serialization-ready components.
     /// </summary>
     public static class FusSceneConverter
@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core
         /// <param name="fus"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static SceneContainer ConvertFrom(FusFile fus, string id = null)
+        public static SceneContainer ConvertFrom(FusFile fus, string? id = null)
         {
             return ConvertFromAsync(fus, id).Result;
         }
@@ -39,7 +39,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
         /// <param name="id">Path to this scene used as an addition for asset retriving inside the correct folder</param>
-        public static async Task<SceneContainer> ConvertFromAsync(FusFile fus, string id = null)
+        public static async Task<SceneContainer> ConvertFromAsync(FusFile fus, string? id = null)
         {
             if (fus == null)
             {
@@ -249,6 +249,8 @@ namespace Fusee.Engine.Core
             _boneContainers = new Stack<SceneNode>();
 
             _allEffects = new Dictionary<FusMaterialBase, List<SceneNode>>();
+            _fusScene = new();
+            _currentNode = new SceneNode();
         }
 
         internal async Task<SceneContainer> Convert(FusScene sc)
@@ -1045,7 +1047,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="m">The mesh to convert.</param>
         [VisitMethod]
-        public void ConvMesh(Mesh m)
+        public new void ConvMesh(Mesh m)
         {
             // convert mesh
             var mesh = new Serialization.V2.FusMesh

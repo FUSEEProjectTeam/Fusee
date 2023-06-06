@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Uniform)]
-        public WritableTexture DepthTex
+        public WritableTexture? DepthTex
         {
             get { return _depthTexture; }
             set
@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core.Effects
                 SetFxParam(nameof(DepthTex), _depthTexture);
             }
         }
-        private WritableTexture _depthTexture;
+        private WritableTexture? _depthTexture;
 
         /// <summary>
         /// The shader shard containing the strength of the eye dome lighting.

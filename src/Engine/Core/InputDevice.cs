@@ -1,3 +1,4 @@
+using CommunityToolkit.Diagnostics;
 using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,8 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class InputDevice
     {
-        private IInputDeviceImp _inpDevImp;
-        internal IInputDeviceImp DeviceImp => _inpDevImp;
+        private IInputDeviceImp? _inpDevImp;
+        internal IInputDeviceImp? DeviceImp => _inpDevImp;
 
         private readonly Dictionary<int, AxisDescription> _axes;        // All axes provided by this device. Includes polled, listened and calculated axes
         private readonly Dictionary<int, float> _axesToPoll;            // Axes that need to be polled
@@ -321,7 +322,7 @@ namespace Fusee.Engine.Core
 
         private bool TryGetPolledAxis(int iAxisId, out float value)
         {
-            if (_calculatedAxes.TryGetValue(iAxisId, out CalculatedAxisDescription calculatedAxis))
+            if (_calculatedAxes.TryGetValue(iAxisId, out CalculatedAxisDescription? calculatedAxis))
             {
                 value = calculatedAxis.CurrentAxisValue;
                 return true;
@@ -329,6 +330,7 @@ namespace Fusee.Engine.Core
 
             if (_axesToPoll.ContainsKey(iAxisId))
             {
+                Guard.IsNotNull(_inpDevImp);
                 value = _inpDevImp.GetAxis(iAxisId);
                 return true;
             }
@@ -514,7 +516,7 @@ namespace Fusee.Engine.Core
         /// position.
         /// </remarks>
         public AxisDescription RegisterVelocityAxis(int origAxisId, int triggerButtonId = 0,
-            int velocityAxisId = 0, string name = null, AxisDirection direction = AxisDirection.Unknown)
+            int velocityAxisId = 0, string? name = null, AxisDirection direction = AxisDirection.Unknown)
         {
             if (!_axes.TryGetValue(origAxisId, out AxisDescription origAxisDesc))
             {
@@ -616,7 +618,7 @@ namespace Fusee.Engine.Core
         ///   Button axes are useful to simulate a trigger or thrust panel with the help of individual buttons. There is a user-definable acceleration and
         ///   deceleration period, so a simulation resulting on this input delivers a feeling of inertance.
         /// </remarks>
-        public AxisDescription RegisterSingleButtonAxis(int origButtonId, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.2f, float rampDownTime = 0.2f, int buttonAxisId = 0, string name = null)
+        public AxisDescription RegisterSingleButtonAxis(int origButtonId, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.2f, float rampDownTime = 0.2f, int buttonAxisId = 0, string? name = null)
         {
             if (!_buttons.TryGetValue(origButtonId, out ButtonDescription origButtonDesc))
             {
@@ -711,7 +713,7 @@ namespace Fusee.Engine.Core
         /// will stop the animation and keep the value at its current amount.
         /// There is a user-definable acceleration and deceleration period, so a simulation resulting on this input delivers a feeling of inertance.
         /// </remarks>
-        public AxisDescription RegisterTwoButtonAxis(int origButtonIdNegative, int origButtonIdPositive, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.15f, float rampDownTime = 0.35f, int buttonAxisId = 0, string name = null)
+        public AxisDescription RegisterTwoButtonAxis(int origButtonIdNegative, int origButtonIdPositive, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.15f, float rampDownTime = 0.35f, int buttonAxisId = 0, string? name = null)
         {
             if (!_buttons.TryGetValue(origButtonIdPositive, out ButtonDescription origButtonDescPos))
             {

@@ -191,7 +191,9 @@ namespace Fusee.Base.Core
             catch (Exception)
             {
                 Diagnostics.Warn($"Generating glyph for char {c}:{Convert.ToChar(c)} failed, skipping");
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
                 return new ImageData(0, 0);
+#pragma warning restore ERP022 // Unobserved exception in generic exception handler
             }
 
             var ret = new ImageData(res.ToArray().Select(x => x.A).ToArray(), width, height, new ImagePixelFormat(ColorFormat.Intensity));

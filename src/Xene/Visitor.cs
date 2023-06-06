@@ -14,10 +14,41 @@ namespace Fusee.Xene
     {
     }
 
+    /// <summary>
+    /// Visit Node
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <typeparam name="TComponent"></typeparam>
+    /// <param name="visitor"></param>
+    /// <param name="node"></param>
     public delegate void VisitNodeMethod<TNode, TComponent>(Visitor<TNode, TComponent> visitor, TNode node) where TNode : class, INode where TComponent : class, IComponent;
+
+    /// <summary>
+    /// Visit Component
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <typeparam name="TComponent"></typeparam>
+    /// <param name="visitor"></param>
+    /// <param name="component"></param>
     public delegate void VisitComponentMethod<TNode, TComponent>(Visitor<TNode, TComponent> visitor, TComponent component) where TNode : class, INode where TComponent : class, IComponent;
 
+
+    /// <summary>
+    /// Visit Node Method of Module
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <typeparam name="TComponent"></typeparam>
+    /// <param name="visitor"></param>
+    /// <param name="node"></param>
     public delegate void VisitNodeMethodOfModule<TNode, TComponent>(IVisitorModule visitor, TNode node) where TNode : class, INode where TComponent : class, IComponent;
+
+    /// <summary>
+    /// Visit Component Of Module
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <typeparam name="TComponent"></typeparam>
+    /// <param name="visitor"></param>
+    /// <param name="component"></param>
     public delegate void VisitComponentMethodOfModule<TNode, TComponent>(IVisitorModule visitor, TComponent component) where TNode : class, INode where TComponent : class, IComponent;
 
     /// <summary>

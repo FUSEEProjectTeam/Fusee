@@ -10,6 +10,9 @@ namespace Fusee.PointCloud.Common
     /// </summary>
     public interface IPointCloudImpBase
     {
+        /// <summary>
+        /// Token for invalidating the cached gpu data .
+        /// </summary>
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; }
 
         /// <summary>

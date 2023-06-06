@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace Fusee.Engine.Core
             int lineNumber = 1;
 
             //Read the first line of text
-            string line = tr.ReadLine();
+            string? line = tr.ReadLine();
 
             //Continue to read until you reach end of file
             while (line != null)
@@ -96,8 +97,8 @@ namespace Fusee.Engine.Core
                     }
 
                     var vI = new int[values.Length];
-                    int[] nI = null;
-                    int[] tI = null;
+                    int[]? nI = null;
+                    int[]? tI = null;
                     int i = 0;
                     foreach (var vRef in values)
                     {
@@ -120,8 +121,7 @@ namespace Fusee.Engine.Core
 
                         if (vDef.Length > 1 && !String.IsNullOrEmpty(vDef[1]))
                         {
-                            if (tI == null)
-                                tI = new int[values.Length];
+                            tI ??= new int[values.Length];
                             tI[i] = int.Parse(vDef[1]) - 1;
                         }
 
@@ -131,13 +131,14 @@ namespace Fusee.Engine.Core
                                 throw new FormatException("Error reading obj file (" + lineNumber +
                                                     "). Syntax error in face definition");
 
-                            if (nI == null)
-                                nI = new int[values.Length];
+                            nI ??= new int[values.Length];
                             nI[i] = int.Parse(vDef[2]) - 1;
                         }
                         i++;
                     }
 
+                    Guard.IsNotNull(tI); // must be set during iteration
+                    Guard.IsNotNull(nI); // must be set during iteration
                     g.AddFace(vI, tI, nI);
                 }
                 else if (line.StartsWith("mtllib"))
@@ -210,7 +211,7 @@ namespace Fusee.Engine.Core
         /// <param name="strIn">The string.</param>
         /// <param name="separator">The separator.</param>
         /// <returns>An array of string with all separated values.</returns>
-        public static string[] FilteredSplit(string strIn, char[] separator)
+        public static string[] FilteredSplit(string strIn, char[]? separator)
         {
             // Sometime if we have a white space at the beginning of the string, split
             // will return an empty string. Let's remove that.
@@ -255,7 +256,7 @@ namespace Fusee.Engine.Core
       public Texture texture;
   }
 
- 
+
 
       /// <summary>
       /// This method is used to load information stored in .mtl files referenced by the .obj file.

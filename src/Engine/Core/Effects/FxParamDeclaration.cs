@@ -67,12 +67,12 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The value of the parameter.
         /// </summary>
-        public T Value;
+        public T? Value;
 
         /// <summary>
         /// The type of the parameter.
         /// </summary>
-        public Type ParamType => typeof(T);
+        public readonly Type ParamType => typeof(T);
 
         /// <summary>
         /// Sets the value of this parameter declaration.

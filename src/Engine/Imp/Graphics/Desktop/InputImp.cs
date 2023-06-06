@@ -260,7 +260,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 }
                 catch
                 {
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
                     return "No gamepad connected";
+#pragma warning restore ERP022 // Unobserved exception in generic exception handler
                 }
             }
         }

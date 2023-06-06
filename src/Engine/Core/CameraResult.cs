@@ -16,22 +16,30 @@ namespace Fusee.Engine.Core
             View = view;
         }
 
+        /// <inheritdoc/>
         public bool Equals(CameraResult other)
         {
-            return Camera == other.Camera && View == other.View;
+            return  Camera == other.Camera && View == other.View;
         }
 
-        public static bool operator ==(CameraResult left, CameraResult right)
+        /// <inheritdoc/>
+        public static bool operator ==(CameraResult? left, CameraResult? right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(CameraResult left, CameraResult right)
+        /// <inheritdoc/>
+        public static bool operator !=(CameraResult? left, CameraResult? right)
         {
             return left.Equals(right);
         }
 
-        public override bool Equals(object obj)
+        /// <summary>
+        /// Check if two <see cref="CameraResult"/>s are the same
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object? obj)
         {
             if ((obj is null) || !GetType().Equals(obj.GetType()))
                 return false;

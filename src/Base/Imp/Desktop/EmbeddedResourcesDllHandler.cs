@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -26,6 +27,8 @@ namespace Fusee.Base.Imp.Desktop
 
                 Assembly assem = Assembly.GetCallingAssembly();
                 AssemblyName an = assem.GetName();
+                Assembly.GetExecutingAssembly().Modules.First().GetPEKind(out var _, out var machine);
+
 
                 using var resourceStream = assem.GetManifestResourceStream(resourceName);
 
@@ -33,7 +36,7 @@ namespace Fusee.Base.Imp.Desktop
                 {
                     // The temporary folder holds one or more of the temporary DLLs
                     // It is made "unique" to avoid different versions of the DLL or architectures.
-                    var tempFolder = String.Format("{0}.{1}.{2}", an.Name, an.ProcessorArchitecture, an.Version);
+                    var tempFolder = string.Format("{0}.{1}.{2}", an.Name, machine, an.Version);
 
                     string dirName = Path.Combine(Path.GetTempPath(), tempFolder);
                     if (!Directory.Exists(dirName))

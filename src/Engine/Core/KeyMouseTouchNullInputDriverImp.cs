@@ -69,16 +69,20 @@ namespace Fusee.Engine.Core
         /// Called whenever an axis value changes. Since this is a dummy device this event will never fire.
         /// Only provided to meet the <see cref="IInputDriverImp"/> interface definition.
         /// </summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         /// <summary>
         /// Called whenever a button value changes. Since this is a dummy device this event will never fire.
         /// Only provided to meet the <see cref="IInputDriverImp"/> interface definition.
         /// </summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         /// <summary>
-        /// Called by the input system to poll for axis changes. 
+        /// Called by the input system to poll for axis changes.
         /// Since this is a dummy device this method will return 0 for all possible input axis IDs.
         /// </summary>
         /// <param name="iAxisId">The input axis ID in question.</param>
@@ -86,7 +90,7 @@ namespace Fusee.Engine.Core
         public float GetAxis(int iAxisId) => 0;
 
         /// <summary>
-        /// Called by the input system to poll for button changes. 
+        /// Called by the input system to poll for button changes.
         /// Since this is a dummy device this method will return 0 for all possible input axis IDs.
         /// </summary>
         /// <param name="iButtonId">The input button ID in question.</param>
@@ -290,7 +294,7 @@ namespace Fusee.Engine.Core
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
 
         /// <summary>
-        /// Called by the input system to poll for axis changes. 
+        /// Called by the input system to poll for axis changes.
         /// Since this is a dummy device this method will return 0 for all possible input axis IDs.
         /// </summary>
         /// <param name="iAxisId">The input axis ID in question.</param>
@@ -298,7 +302,7 @@ namespace Fusee.Engine.Core
         public float GetAxis(int iAxisId) => 0;
 
         /// <summary>
-        /// Called by the input system to poll for button changes. 
+        /// Called by the input system to poll for button changes.
         /// Since this is a dummy device this method will return 0 for all possible input axis IDs.
         /// </summary>
         /// <param name="iButtonId">The input button ID in question.</param>
@@ -322,7 +326,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Constructor. Initializes internal structures.
-        /// </summary>        
+        /// </summary>
         public TouchNullDevImp()
         {
             _tpAxisDescs = new Dictionary<int, AxisImpDescription>(_nTouchPointsSupported * 2 + 5)
@@ -495,7 +499,7 @@ namespace Fusee.Engine.Core
         public DeviceCategory Category => DeviceCategory.Touch;
 
         /// <summary>
-        /// Called by the input system to poll for axis changes. 
+        /// Called by the input system to poll for axis changes.
         /// Since this is a dummy device this method will return 0 for all possible input axis IDs.
         /// </summary>
         /// <param name="iAxisId">The input axis ID in question.</param>
@@ -503,7 +507,7 @@ namespace Fusee.Engine.Core
         public float GetAxis(int iAxisId) => 0;
 
         /// <summary>
-        /// Called by the input system to poll for button changes. 
+        /// Called by the input system to poll for button changes.
         /// Since this is a dummy device this method will return 0 for all possible input axis IDs.
         /// </summary>
         /// <param name="iButtonId">The input button ID in question.</param>
@@ -515,8 +519,8 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Null implementation driver providing dummy devices for Keyboard, Mouse and Touch <see cref="DeviceCategory"/> types.
     /// Inject an instance of this class into your <see cref="Input"/> using <see cref="Input.AddDriverImp(IInputDriverImp)"/>
-    /// in situations where no real input should be provided. This guarantees that your app can still access 
-    /// <see cref="Input.Keyboard"/>, <see cref="Input.Mouse"/> and <see cref="Input.Touch"/> without causing a <see cref="NullReferenceException"/>. 
+    /// in situations where no real input should be provided. This guarantees that your app can still access
+    /// <see cref="Input.Keyboard"/>, <see cref="Input.Mouse"/> and <see cref="Input.Touch"/> without causing a <see cref="NullReferenceException"/>.
     /// These devices will never generate input values other than 0 (on all axes) or false (on all buttons) and will never fire
     /// axis or button events.
     /// </summary>

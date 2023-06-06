@@ -107,7 +107,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
             SI_RIGHT
         }
 
-        #endregion 
+        #endregion
 
         #region Const Variables
 
@@ -590,7 +590,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             ZeroPoint?.Invoke(this, EventArgs.Empty);
         }
         /// <summary>
-        /// Is called if the mouse is moved. 
+        /// Is called if the mouse is moved.
         /// </summary>
         /// <param name="args"></param>
         protected virtual void OnMotion(MotionEventArgs args)
@@ -600,12 +600,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
 
         #region IDisposable Member
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc/>
         protected virtual void Dispose(bool disposing)
         {
             if (!IsDisposed)
