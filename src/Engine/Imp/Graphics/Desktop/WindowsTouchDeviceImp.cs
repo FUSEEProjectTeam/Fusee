@@ -13,8 +13,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class WindowsTouchInputDriverImp : IInputDriverImp
     {
-        readonly GameWindow _gameWindow;
-        readonly WindowsTouchInputDeviceImp _touch;
+        private readonly GameWindow _gameWindow;
+        private readonly WindowsTouchInputDeviceImp _touch;
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsTouchInputDriverImp"/> class.
         /// </summary>
@@ -160,6 +160,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private static extern IntPtr DefWindowProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
+        private
         // private static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
         static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
@@ -189,8 +190,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             /// <param name="y">The y coordinate.</param>
             public POINT(int x, int y)
             {
-                this.X = x;
-                this.Y = y;
+                X = x;
+                Y = y;
             }
 
             /// <summary>
@@ -219,7 +220,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         [DllImport("user32.dll")]
-        static extern bool ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
+        private static extern bool ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
 
         private delegate IntPtr WinProc(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 

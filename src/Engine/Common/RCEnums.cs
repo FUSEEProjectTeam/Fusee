@@ -224,10 +224,10 @@ namespace Fusee.Engine.Common
     public enum ClearFlags : int
     {
 #pragma warning disable 1591
-        Depth = ((int)0x00000100),
-        Accum = ((int)0x00000200),
-        Stencil = ((int)0x00000400),
-        Color = ((int)0x00004000),
+        Depth = 0x00000100,
+        Accum = 0x00000200,
+        Stencil = 0x00000400,
+        Color = 0x00004000,
 #pragma warning restore 1591
     }
 

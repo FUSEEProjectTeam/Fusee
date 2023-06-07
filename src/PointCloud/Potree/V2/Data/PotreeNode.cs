@@ -52,10 +52,7 @@ namespace Fusee.PointCloud.Potree.V2.Data
 
             foreach (var child in Children)
             {
-                if (child != null)
-                {
-                    child.Traverse(callback);
-                }
+                child?.Traverse(callback);
             }
         }
     }

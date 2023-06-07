@@ -4,10 +4,10 @@ using System;
 
 namespace Fusee.Tools.CmdLine
 {
-    class Program
+    internal class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, ProtoSchema>(args)
                 .WithParsed<Pack>(pack =>
@@ -37,7 +37,7 @@ namespace Fusee.Tools.CmdLine
         }
     }
 
-    enum ErrorCode : int
+    internal enum ErrorCode : int
     {
         Success,
         CommandLineSyntax = -1,

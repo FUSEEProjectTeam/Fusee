@@ -15,7 +15,7 @@ namespace Fusee.PointCloud.Core.Scene
     /// </summary>
     public class PointCloudRenderModule : IRendererModule
     {
-        RenderContext _rc;
+        private RenderContext _rc;
 
         /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.

@@ -3,7 +3,7 @@ using Fusee.Xirkit;
 
 namespace Fusee.Tests.Xirkit
 {
-    class HelperClasses
+    internal class HelperClasses
     {
         public class SimpleClass
         {
@@ -52,7 +52,7 @@ namespace Fusee.Tests.Xirkit
 
             public void PerformCalculation()
             {
-                this.x += x;
+                x += x;
             }
         }
 

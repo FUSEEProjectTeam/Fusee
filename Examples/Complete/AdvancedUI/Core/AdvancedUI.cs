@@ -36,7 +36,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         private SceneInteractionHandler _sih;
         private SceneNode _camNode;
         private Transform _mainCamPivot;
-        private Camera _mainCam = new(ProjectionMethod.Perspective, 0.1f, 1000, M.PiOver4)
+        private readonly Camera _mainCam = new(ProjectionMethod.Perspective, 0.1f, 1000, M.PiOver4)
         {
             BackgroundColor = new float4(0.1f, 0.1f, 0.1f, 1)
         };

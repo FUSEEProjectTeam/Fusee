@@ -68,6 +68,6 @@ namespace Fusee.Base.Imp.Desktop
         }
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
-        static extern IntPtr LoadLibrary(string lpFileName);
+        private static extern IntPtr LoadLibrary(string lpFileName);
     }
 }

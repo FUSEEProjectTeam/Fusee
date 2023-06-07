@@ -6,9 +6,9 @@ using System.Threading;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
 {
-    class SiApp
+    internal class SiApp
     {
-        const string SI_DLL = "siappdll";
+        private const string SI_DLL = "siappdll";
 
         #region Enums
 
@@ -360,8 +360,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
     /// </summary>
     public class _3DconnexionDevice : IDisposable
     {
-        IntPtr _deviceHandle = IntPtr.Zero;
-        int _leds = -1;
+        private IntPtr _deviceHandle = IntPtr.Zero;
+        private int _leds = -1;
 
         /// <summary>
         /// Event when Device is at 0 Point
@@ -515,7 +515,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             var o = default(SiApp.SiOpenData);
             _ = SiApp.SiOpenWinInit(ref o, windowHandle);
 
-            _deviceHandle = SiApp.SiOpen(this.AppName, SiApp.SI_ANY_DEVICE, IntPtr.Zero, SiApp.SI_EVENT, ref o);
+            _deviceHandle = SiApp.SiOpen(AppName, SiApp.SI_ANY_DEVICE, IntPtr.Zero, SiApp.SI_EVENT, ref o);
             if (_deviceHandle == IntPtr.Zero)
             {
                 _ = SiApp.SiTerminate();
@@ -524,14 +524,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
 
             SiApp.SiGetDeviceName(_deviceHandle, out string devName);
 
-            this.DeviceName = devName;
+            DeviceName = devName;
 
-            this.DeviceID = SiApp.SiGetDeviceID(_deviceHandle);
+            DeviceID = SiApp.SiGetDeviceID(_deviceHandle);
 
             SiApp.SiDevInfo info = default;
             SiApp.SiGetDeviceInfo(_deviceHandle, ref info);
 
-            this.FirmwareVersion = info.firmware;
+            FirmwareVersion = info.firmware;
         }
 
         /// <summary>
@@ -695,7 +695,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// <param name="type">The type of the change, can be 0 (for CONNECTED), 1 (for DISCONNECTED), or any other number (for UNKNOWN).</param>
         public DeviceChangeEventArgs(int deviceId, int type)
         {
-            this.DeviceID = deviceId;
+            DeviceID = deviceId;
             Type = type switch
             {
                 0 => EDeviceChangeType.CONNECTED,
@@ -750,12 +750,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// <param name="rz">Z coordinate of the rotation.</param>
         public MotionEventArgs(int tx, int ty, int tz, int rx, int ry, int rz)
         {
-            this.TX = tx;
-            this.TY = ty;
-            this.TZ = tz;
-            this.RX = rx;
-            this.RY = ry;
-            this.RZ = rz;
+            TX = tx;
+            TY = ty;
+            TZ = tz;
+            RX = rx;
+            RY = ry;
+            RZ = rz;
         }
 
         /// <summary>

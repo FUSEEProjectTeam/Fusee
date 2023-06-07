@@ -14,8 +14,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class WindowsSpaceMouseDriverImp : IInputDriverImp
     {
-        readonly GameWindow _gameWindow;
-        readonly WindowsSpaceMouseInputDeviceImp _SMI;
+        private readonly GameWindow _gameWindow;
+        private readonly WindowsSpaceMouseInputDeviceImp _SMI;
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseDriverImp"/> class.
         /// </summary>
@@ -124,6 +124,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private static extern IntPtr DefWindowProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
+        private
         // private static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
         static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 

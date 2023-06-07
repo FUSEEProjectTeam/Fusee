@@ -1692,7 +1692,7 @@ namespace Fusee.Engine.Core
                     }
                     else if (val is WritableMultisampleTexture writableMultTex)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableMultisampleTexture)writableMultTex);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle(writableMultTex);
                         _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.TextureMultisample);
                     }
                     else if (val is ITexture tex)

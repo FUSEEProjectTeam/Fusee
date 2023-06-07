@@ -458,7 +458,7 @@ namespace Fusee.PointCloud.Potree
 
             // advance to end of stream
             _fileStream.Seek(0, SeekOrigin.End);
-            var fileLength = (long)Metadata.PointCount * (long)Metadata.PointSize;
+            var fileLength = Metadata.PointCount * (long)Metadata.PointSize;
 
             // set complete length before writing, this generates the full file
             // writing operations are much faster afterwards

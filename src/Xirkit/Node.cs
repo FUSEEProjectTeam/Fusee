@@ -165,8 +165,7 @@ namespace Fusee.Xirkit
         /// </summary>
         public void Propagate()
         {
-            if (_cp != null)
-                _cp.PerformCalculation();
+            _cp?.PerformCalculation();
 
             foreach (IOutPin outPin in _outPinList)
             {

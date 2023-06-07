@@ -4,7 +4,6 @@ using System;
 
 namespace Fusee.Engine.Imp.Graphics.Blazor
 {
-#pragma warning disable MEN002
 #pragma warning disable 1591
 
     /// <summary>
@@ -2764,6 +2763,5 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
     {
     }
 
-#pragma warning restore MEN002
 #pragma warning restore 1591
 }

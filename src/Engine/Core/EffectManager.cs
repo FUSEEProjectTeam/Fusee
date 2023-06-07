@@ -1,10 +1,8 @@
-﻿using CommunityToolkit.Diagnostics;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 
 namespace Fusee.Engine.Core
 {
@@ -20,7 +18,7 @@ namespace Fusee.Engine.Core
 
             var senderSF = sender as Effect;
 
-            if(senderSF == null)
+            if (senderSF == null)
             {
                 Diagnostics.Warn("Casting changed effect to type Effect failed!");
                 return;

@@ -35,7 +35,7 @@ namespace Fusee.Xirkit
         private readonly LerpFunc _lerpIt;
 
         // The comparer is needed for sorting the _timeline.
-        readonly IComparer<Keyframe<TValue>> _comparer = new ListSort<TValue>();
+        private readonly IComparer<Keyframe<TValue>> _comparer = new ListSort<TValue>();
 
 
         // The _value at a certain time in the channel

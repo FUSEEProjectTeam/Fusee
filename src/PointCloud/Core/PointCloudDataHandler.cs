@@ -64,12 +64,12 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private MemoryCache<OctantId, MemoryOwner<VisualizationPoint>> _pointCache;
+        private readonly MemoryCache<OctantId, MemoryOwner<VisualizationPoint>> _pointCache;
 
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
+        private readonly MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
         private readonly CreateGpuData<TGpuData> _createGpuDataHandler;
         private readonly LoadPointsHandler _loadPointsHandler;
