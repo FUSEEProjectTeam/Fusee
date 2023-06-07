@@ -281,13 +281,13 @@ namespace Fusee.Engine.Core
         /// Called whenever an axis value changes. Since this is a dummy device this event will never fire.
         /// Only provided to meet the <see cref="IInputDriverImp"/> interface definition.
         /// </summary>
-        public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
+        public event EventHandler<AxisValueChangedArgs>? AxisValueChanged;
 
         /// <summary>
         /// Called whenever a button value changes. Since this is a dummy device this event will never fire.
         /// Only provided to meet the <see cref="IInputDriverImp"/> interface definition.
         /// </summary>
-        public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
+        public event EventHandler<ButtonValueChangedArgs>? ButtonValueChanged;
 
         /// <summary>
         /// Called by the input system to poll for axis changes.
@@ -451,13 +451,13 @@ namespace Fusee.Engine.Core
         /// Called whenever an axis value changes. Since this is a dummy device this event will never fire.
         /// Only provided to meet the <see cref="IInputDriverImp"/> interface definition.
         /// </summary>
-        public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
+        public event EventHandler<AxisValueChangedArgs>? AxisValueChanged;
 
         /// <summary>
         /// Called whenever a button value changes. Since this is a dummy device this event will never fire.
         /// Only provided to meet the <see cref="IInputDriverImp"/> interface definition.
         /// </summary>
-        public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
+        public event EventHandler<ButtonValueChangedArgs>? ButtonValueChanged;
 
         /// <summary>
         /// The number of Axes provided by this device.
@@ -551,11 +551,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Never fired by this driver.
         /// </summary>
-        public event EventHandler<NewDeviceImpConnectedArgs> NewDeviceConnected;
+        public event EventHandler<NewDeviceImpConnectedArgs>? NewDeviceConnected;
 
         /// <summary>
         /// Never fired by this driver.
         /// </summary>
-        public event EventHandler<DeviceImpDisconnectedArgs> DeviceDisconnected;
+        public event EventHandler<DeviceImpDisconnectedArgs>? DeviceDisconnected;
     }
 }

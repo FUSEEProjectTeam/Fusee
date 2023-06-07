@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 
@@ -25,6 +26,8 @@ namespace Fusee.Engine.Core
             if (m.UVs == null)
                 throw new ArgumentException("Can not calculate tangents, no uv map");
 
+            Guard.IsNotNull(m.Vertices);
+            Guard.IsNotNull(m.Triangles);
 
             var tangents = new float4[m.Vertices.Length];
 
@@ -84,15 +87,18 @@ namespace Fusee.Engine.Core
             if (m == null)
                 throw new ArgumentException("Mesh cannot be empty!");
 
+
             if (m?.Normals == null || m.Normals.Length < 0)
-                throw new ArgumentException($"Can not calculate bitangents, empty normals in this mesh: {m.Name}");
+                throw new ArgumentException($"Can not calculate bitangents, empty normals in this mesh: {m?.Name}");
 
             if (m.Tangents == null || m.Tangents.Length < 1)
-                throw new ArgumentException($"Can not calculate bitangents, empty tangent list in this mesh: {m.Name}");
+                throw new ArgumentException($"Can not calculate bitangents, empty tangent list in this mesh: {m?.Name}");
 
             if (m.Tangents != null && (m.Normals != null && m.Normals.Length != m.Tangents.Length))
                 throw new ArgumentException($"Can not calculate bitangents, quantity of normals: {m.Normals.Length} and quantity of tangents: {m.Tangents.Length} differs.");
 
+            Guard.IsNotNull(m.Tangents);
+            Guard.IsNotNull(m.Normals);
 
             var bitangents = new float3[m.Tangents.Length];
 

@@ -44,7 +44,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Event to notify a <see cref="SurfaceEffectBase"/> about a changed value of a property of this class.
         /// </summary>
-        public event EventHandler<SurfaceEffectEventArgs> PropertyChanged;
+        public event EventHandler<SurfaceEffectEventArgs>? PropertyChanged;
 
         /// <summary>
         /// This method needs to be called by the setter of each property.
@@ -97,7 +97,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private Texture _albedoTex;
+        private Texture? _albedoTex;
 
         /// <summary>
         /// The normal texture.

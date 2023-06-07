@@ -249,7 +249,7 @@ namespace Fusee.Engine.Core
             _canvasHeight = canvasHeight;
 
             float2 pickPosClip;
-            if (_prePassResults.Count() == 0)
+            if (!_prePassResults.Any())
             {
                 Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
                 return null;

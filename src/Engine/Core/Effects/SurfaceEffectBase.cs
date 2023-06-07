@@ -59,7 +59,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.SurfOutStruct)]
-        public string SurfaceOutput;
+        public string SurfaceOutput = string.Empty;
 
         /// <summary>
         /// Fragment shader "in" declaration of the <see cref="SurfaceOutput"/>.
@@ -80,14 +80,14 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.SurfOut)]
-        public string SurfOutFragMethod;
+        public string? SurfOutFragMethod;
 
         /// <summary>
         /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.SurfOut)]
-        public string SurfOutVertMethod;
+        public string? SurfOutVertMethod;
         //======================================================//
         /// <summary>
         /// Fragment shader "in" declaration for the uv coordinates.
@@ -206,12 +206,14 @@ namespace Fusee.Engine.Core.Effects
             foreach (var structProp in surfInType.GetProperties())
             {
                 var paramDcl = BuildFxParamDecl(structProp, GetType().GetProperty(surfInName));
+                Guard.IsNotNull(paramDcl);
                 UniformParameters.Add(paramDcl.Hash, paramDcl);
             }
 
             HandleUniform(ShaderCategory.Fragment, nameof(SurfaceInput), surfInType);
 
             var lightingShards = SurfaceOut.GetShadingModelShards(surfaceInput.ShadingModel);
+            Guard.IsNotNull(lightingShards.StructDecl);
             SurfaceOutput = lightingShards.StructDecl;
 
             if (renderStateSet == null)
@@ -273,6 +275,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Uniform:
                         {
                             var paramDcl = BuildFxParamDecl(prop);
+                            Guard.IsNotNull(paramDcl);
                             UniformParameters.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
@@ -297,6 +300,7 @@ namespace Fusee.Engine.Core.Effects
                         foreach (var structProp in prop.PropertyType.GetProperties())
                         {
                             var paramDcl = BuildFxParamDecl(structProp, prop);
+                            Guard.IsNotNull(paramDcl);
                             UniformParameters.Add(paramDcl.Hash, paramDcl);
                         }
                         HandleUniform(shaderAttribute.ShaderCategory, prop.Name, prop.PropertyType);
@@ -343,6 +347,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.InternalUniform:
                         {
                             var paramDcl = BuildFxParamDecl(field);
+                            Guard.IsNotNull(paramDcl);
                             UniformParameters.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
@@ -666,7 +671,7 @@ namespace Fusee.Engine.Core.Effects
             SetFxParam(memberName + "." + args.Name, args.Value);
         }
 
-        private PropertyInfo[] GetPublicProperties(Type type)
+        private static PropertyInfo[] GetPublicProperties(Type type)
         {
             var propertyInfos = new List<PropertyInfo>();
 
@@ -692,7 +697,7 @@ namespace Fusee.Engine.Core.Effects
             return propertyInfos.ToArray();
         }
 
-        private FieldInfo[] GetPublicFields(Type type)
+        private static FieldInfo[] GetPublicFields(Type type)
         {
             var fieldInfos = new List<FieldInfo>();
 

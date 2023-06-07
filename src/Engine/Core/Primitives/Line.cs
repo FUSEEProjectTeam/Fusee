@@ -220,7 +220,7 @@ namespace Fusee.Engine.Core.Primitives
             UVs = new MeshAttributes<float2>(uvs);
         }
 
-        private float3 RotateVectorInXYPlane(float3 vec, float angle)
+        private static float3 RotateVectorInXYPlane(float3 vec, float angle)
         {
             var x = (float)(vec.x * System.Math.Cos(angle) - vec.y * System.Math.Sin(angle));
             var y = (float)(vec.x * System.Math.Sin(angle) + vec.y * System.Math.Cos(angle));

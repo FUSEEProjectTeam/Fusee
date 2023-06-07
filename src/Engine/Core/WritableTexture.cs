@@ -13,7 +13,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
         /// </summary>
-        public event EventHandler<TextureEventArgs> TextureChanged;
+        public event EventHandler<TextureEventArgs>? TextureChanged;
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.

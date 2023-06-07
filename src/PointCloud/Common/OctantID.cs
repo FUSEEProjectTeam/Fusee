@@ -67,13 +67,23 @@ namespace Fusee.PointCloud.Common
     //  |  MSB                                                                                                  LSB  |
     //
 
-
+    /// <summary>
+    /// One OctantId
+    /// </summary>
     public struct OctantId : IEnumerable<(int, OctantOrientation)>, IEquatable<OctantId>
     {
         private long _id = -1;
 
-        public bool Valid => _id >= 0;
+        /// <summary>
+        /// Check if this <see cref="OctantId"/> is valid
+        /// </summary>
+        public readonly bool Valid => _id >= 0;
 
+        /// <summary>
+        /// Generate an <see cref="OctantId"/> instance from given octant orientations
+        /// </summary>
+        /// <param name="ooList"></param>
+        /// <exception cref="ArgumentException"></exception>
         public OctantId(params OctantOrientation[] ooList)
         {
             _id = 0;
@@ -159,7 +169,7 @@ namespace Fusee.PointCloud.Common
             OctantOrientation.RightFrontUp => '5',
             OctantOrientation.RightBackDown => '6',
             OctantOrientation.RightBackUp => '7',
-            _ => throw new ArgumentException(nameof(octOr))
+            _ => throw new ArgumentException(null, nameof(octOr))
         };
 
         /// <summary>
@@ -239,6 +249,7 @@ namespace Fusee.PointCloud.Common
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerator<(int, OctantOrientation)> GetEnumerator()
         {
             int level = Level;
@@ -316,6 +327,18 @@ namespace Fusee.PointCloud.Common
         public readonly bool Equals(OctantId other)
         {
             return _id == other._id;
+        }
+
+        /// <inheritdoc/>
+        public static bool operator ==(OctantId left, OctantId right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <inheritdoc/>
+        public static bool operator !=(OctantId left, OctantId right)
+        {
+            return !(left == right);
         }
     }
 }

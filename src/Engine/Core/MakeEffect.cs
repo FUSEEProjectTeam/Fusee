@@ -230,7 +230,7 @@ namespace Fusee.Engine.Core
         /// <param name="shadowMap">The shadow map.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture? shadowMap = null)
+        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget? srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture? shadowMap = null)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -273,7 +273,7 @@ namespace Fusee.Engine.Core
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
+        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, WritableArrayTexture? shadowMap, float2[]? clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -383,18 +383,18 @@ namespace Fusee.Engine.Core
             DeferredShaders.ShadowMapFrag);
         }
 
-        private static List<IFxParamDeclaration> DeferredLightingEffectParams(IRenderTarget srcRenderTarget, float4 backgroundColor)
+        private static List<IFxParamDeclaration> DeferredLightingEffectParams(IRenderTarget? srcRenderTarget, float4 backgroundColor)
         {
             return new List<IFxParamDeclaration>()
             {
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Subsurface], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Subsurface]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Depth]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Position]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Subsurface], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Subsurface]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Depth]},
 
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
                 new FxParamDeclaration<float4> { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},

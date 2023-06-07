@@ -21,7 +21,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (renderCanvas == null)
                 throw new ArgumentNullException(nameof(renderCanvas));
 
-            if (!(renderCanvas is RenderCanvasImp))
+            if (renderCanvas is not RenderCanvasImp)
                 throw new ArgumentException($"renderCanvas must be of type {typeof(RenderCanvasImp).FullName}.", nameof(renderCanvas));
 
             _view = ((RenderCanvasImp)renderCanvas).View;

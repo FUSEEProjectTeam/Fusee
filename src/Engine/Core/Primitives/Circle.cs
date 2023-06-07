@@ -113,7 +113,7 @@ namespace Fusee.Engine.Core.Primitives
             UVs = new MeshAttributes<float2>(uvs);
         }
 
-        private float Normalize(float input, float max, float min)
+        private static float Normalize(float input, float max, float min)
         {
             return (input - min) / (max - min);
         }

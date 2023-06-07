@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 using System;
@@ -75,7 +74,7 @@ namespace Fusee.Engine.Core
         private Font _font;
         private ImageData? _image;
         private uint _pixelHeight;
-        private string _alphabet;
+        private string? _alphabet;
         private readonly Dictionary<uint, GlyphOnMap> _glyphOnMapCache;
 
         /// <summary>

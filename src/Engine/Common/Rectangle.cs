@@ -49,13 +49,13 @@ namespace Fusee.Engine.Common
         /// <value>
         /// The width.
         /// </value>
-        public int Width { get { return Right - Left; } }
+        public readonly int Width { get { return Right - Left; } }
         /// <summary>
         /// Gets the height of the rectangle.
         /// </summary>
         /// <value>
         /// The height.
         /// </value>
-        public int Height { get { return Bottom - Top; } }
+        public readonly int Height { get { return Bottom - Top; } }
     }
 }

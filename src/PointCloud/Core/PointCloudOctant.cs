@@ -109,7 +109,7 @@ namespace Fusee.PointCloud.Core
             Level = OctId.Level;
             IsVisible = false;
 
-            int.TryParse(OctId[Level - 1].ToString(), out int posInParent);
+            _ = int.TryParse(OctId[Level - 1].ToString(), out int posInParent);
             PosInParent = posInParent;
 
             if (children == null)

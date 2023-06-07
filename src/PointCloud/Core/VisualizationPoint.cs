@@ -31,7 +31,7 @@ namespace Fusee.PointCloud.Core
         public uint Flags;
 
         /// <inheritdoc/>
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"Position: {Position} - Color: {Color} - Flags: {FlagsParser(Flags)}";
         }

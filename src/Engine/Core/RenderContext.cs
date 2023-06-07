@@ -152,12 +152,12 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The currently used <see cref="Effect"/> is set in <see cref="SetEffect(Effect, bool)"/>.
         /// </summary>
-        private Effect _currentEffect;
+        private Effect? _currentEffect;
 
         /// <summary>
         /// The currently bound shader program.
         /// </summary>
-        internal IShaderHandle CurrentShaderProgram;
+        internal IShaderHandle? CurrentShaderProgram;
 
         #endregion
 

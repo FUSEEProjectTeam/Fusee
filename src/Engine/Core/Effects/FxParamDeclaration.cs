@@ -34,7 +34,7 @@ namespace Fusee.Engine.Core.Effects
         /// Gets the value of this parameter declaration. Implementations should provide a type check using <see cref="ParamType"/>.
         /// </summary>
         /// <returns></returns>
-        object GetValue();
+        object? GetValue();
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public string Name
         {
-            get { return _name; }
+            readonly get { return _name; }
             set
             {
                 _name = value;
@@ -95,7 +95,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Gets the value of this parameter declaration.
         /// </summary>
-        public object GetValue()
+        public readonly object? GetValue()
         {
             return Value;
         }

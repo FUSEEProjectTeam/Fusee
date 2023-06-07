@@ -102,8 +102,8 @@ namespace Fusee.Engine.Core.Scene
         Slerp,
     }
 
-    /// <summary> 
-    /// Symbolic value describing the data type of stored values. 
+    /// <summary>
+    /// Symbolic value describing the data type of stored values.
     /// </summary>
     public enum TypeId
     {
@@ -131,12 +131,12 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The scene component to be controlled by this animation track.
         /// </summary>
-        public SceneComponent SceneComponent;
+        public SceneComponent? SceneComponent;
 
         /// <summary>
         /// The name to the property/field to control. May be a dot-separated path to a sub-item (e.g. "Transform.Position.x").
         /// </summary>
-        public string Property;
+        public string? Property;
 
         /// <summary>
         /// The type of the key-values stored in this animation track.
@@ -144,7 +144,7 @@ namespace Fusee.Engine.Core.Scene
         public TypeId TypeId;
 
         /// <summary>
-        /// The lerp type to use for interpolation. 
+        /// The lerp type to use for interpolation.
         /// </summary>
         public LerpType LerpType = LerpType.Lerp;
 

@@ -31,9 +31,9 @@ namespace Fusee.Engine.Core
         }
 
         /// <inheritdoc/>
-        public bool Equals(CameraResult other)
+        public readonly bool Equals(CameraResult other)
         {
-            return  Camera == other.Camera && View == other.View;
+            return Camera == other.Camera && View == other.View;
         }
 
         /// <inheritdoc/>
@@ -53,7 +53,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object? obj)
+        public override readonly bool Equals(object? obj)
         {
             if ((obj is null) || !GetType().Equals(obj.GetType()))
                 return false;
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns the hash for this instance.
         /// </summary>
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return HashCode.Combine(Camera.GetHashCode(), View.Row1.GetHashCode(), View.Row2.GetHashCode(), View.Row3.GetHashCode(), View.Row4.GetHashCode());
         }

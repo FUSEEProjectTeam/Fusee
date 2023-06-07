@@ -55,7 +55,7 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Returns a <see cref="PixelChannel"/> for each channel of <see cref="ColorFormat"/> providing additional information about channel offset and bits per channel.
         /// </summary>
-        public IEnumerator<ImagePixelChannel> PixelChannel
+        public readonly IEnumerator<ImagePixelChannel> PixelChannel
         {
             get
             {

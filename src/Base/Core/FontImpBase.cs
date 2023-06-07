@@ -162,8 +162,6 @@ namespace Fusee.Base.Core
         /// <returns></returns>
         public float GetUnscaledKerning(uint leftC, uint rightC)
         {
-            var glyphLeft = _font.GetGlyphs(new CodePoint(leftC), ColorFontSupport.None).First();
-            var glyphRight = _font.GetGlyphs(new CodePoint(rightC), ColorFontSupport.None).First();
             return 0;
         }
 

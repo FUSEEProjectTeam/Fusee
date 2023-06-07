@@ -71,8 +71,7 @@ namespace Fusee.Structures
 
             Level = Guid.Length;
 
-            int posInParent;
-            int.TryParse(Guid[Level - 1].ToString(), out posInParent);
+            _ = int.TryParse(Guid[Level - 1].ToString(), out int posInParent);
             PosInParent = posInParent;
 
             if (children == null)

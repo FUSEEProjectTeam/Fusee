@@ -14,9 +14,9 @@ namespace Fusee.Tools.CmdLine
                 {
                     pack.Run();
                 })
-                .WithParsed<Player>(player =>
+                .WithParsed<Player>(async player =>
                 {
-                    player.Run();
+                    await player.Run();
                 })
                 .WithParsed<ProtoSchema>(protoschema =>
                 {

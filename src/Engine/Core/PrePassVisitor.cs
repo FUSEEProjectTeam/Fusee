@@ -115,6 +115,12 @@ namespace Fusee.Engine.Core
             _currentLight++;
         }
 
+        /// <summary>
+        /// Called when a camera is found inside the <see cref="SceneContainer"/>
+        /// This is done inside this pre-pass visitor, as the camera can be anywhere inside the container, however we want to render the whole container
+        /// independent of the camera position inside the scene graph.
+        /// </summary>
+        /// <param name="camComp"></param>
         [VisitMethod]
         public void OnCamera(Camera camComp)
         {

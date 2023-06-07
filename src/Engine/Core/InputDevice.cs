@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core
     public class InputDevice
     {
         private IInputDeviceImp? _inpDevImp;
-        internal IInputDeviceImp? DeviceImp => _inpDevImp;
+        internal IInputDeviceImp DeviceImp => _inpDevImp;
 
         private readonly Dictionary<int, AxisDescription> _axes;        // All axes provided by this device. Includes polled, listened and calculated axes
         private readonly Dictionary<int, float> _axesToPoll;            // Axes that need to be polled
@@ -103,7 +103,7 @@ namespace Fusee.Engine.Core
         /// </value>
         public int NewAxisID => _nextAxisId + 1;
 
-        private void OnImpButtonValueChanged(object sender, ButtonValueChangedArgs args)
+        private void OnImpButtonValueChanged(object? sender, ButtonValueChangedArgs args)
         {
             if (!_buttonsToListen.ContainsKey(args.Button.Id))
                 throw new InvalidOperationException($"Unknown Button {args.Button.Name} ({args.Button.Id})");
@@ -113,7 +113,7 @@ namespace Fusee.Engine.Core
             _buttonsToListenJustChanged[args.Button.Id] = args.Pressed;
         }
 
-        private void OnImpAxisValueChanged(object sender, AxisValueChangedArgs args)
+        private void OnImpAxisValueChanged(object? sender, AxisValueChangedArgs args)
         {
             if (!_axesToListen.ContainsKey(args.Axis.Id))
                 throw new InvalidOperationException($"Unknown Axis {args.Axis.Name} ({args.Axis.Id})");
@@ -126,7 +126,7 @@ namespace Fusee.Engine.Core
 
         internal void Reconnect(IInputDeviceImp deviceImp)
         {
-            if (_isConnected) throw new InvalidOperationException($"Cannot reconnect already connected input device (connected to {_inpDevImp.Desc}). Disconnect first.");
+            if (_isConnected) throw new InvalidOperationException($"Cannot reconnect already connected input device (connected to {_inpDevImp?.Desc}). Disconnect first.");
             _inpDevImp = deviceImp ?? throw new ArgumentNullException(nameof(deviceImp));
             _inpDevImp.AxisValueChanged += OnImpAxisValueChanged;
             _inpDevImp.ButtonValueChanged += OnImpButtonValueChanged;
@@ -168,6 +168,7 @@ namespace Fusee.Engine.Core
             {
                 _buttonsToPoll[buttonId] = false;
             }
+
 
             // Actually disconnect by releasing any reference to the implementation object.
             _inpDevImp.AxisValueChanged -= OnImpAxisValueChanged;
@@ -341,7 +342,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Occurs when the value of a given axis has changed.
         /// </summary>
-        public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
+        public event EventHandler<AxisValueChangedArgs>? AxisValueChanged;
 
         /// <summary>
         /// Gets the number of buttons supported by this device.
@@ -431,7 +432,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Occurs when the value of a given button has changed.
         /// </summary>
-        public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
+        public event EventHandler<ButtonValueChangedArgs>? ButtonValueChanged;
 
         #region Derived Axis Handling
         //public delegate float AxisValueCalculator(float oldVal, float newVal, float time);
@@ -449,7 +450,7 @@ namespace Fusee.Engine.Core
         {
             public AxisDescription AxisDesc;
             public float CurrentAxisValue;
-            public AxisValueCalculator Calculator;
+            public AxisValueCalculator? Calculator;
         }
 
         private readonly Dictionary<int, CalculatedAxisDescription> _calculatedAxes;

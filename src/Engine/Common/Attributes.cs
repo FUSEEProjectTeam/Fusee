@@ -12,12 +12,12 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The name of the currently selected application.
         /// </summary>
-        public string Name;
+        public string? Name;
 
         /// <summary>
         /// The description of the currently selected application.
         /// </summary>
-        public string Description;
+        public string? Description;
 
         // TBI: public Icon Icon;
 

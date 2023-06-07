@@ -90,7 +90,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The input of the space mouse.
         /// </summary>
-        public readonly SixDOFDevice SpaceMouseInput;
+        public readonly SixDOFDevice? SpaceMouseInput;
 
         private readonly Dictionary<string, InputDevice> _inputDevices;
         private readonly List<SpecialDeviceCreator> _specialDeviceCreators;
@@ -219,7 +219,7 @@ namespace Fusee.Engine.Core
         /// This is an instance event. Use <see cref="DeviceConnected"/> for a static-over-singleton access
         /// to the same functionality.
         /// </remarks>
-        public event EventHandler<DeviceConnectionArgs> InputDeviceConnected;
+        public event EventHandler<DeviceConnectionArgs>? InputDeviceConnected;
         /// <summary>
         /// Occurs when a device such as a gamepad is connected.
         /// </summary>
@@ -227,7 +227,7 @@ namespace Fusee.Engine.Core
         /// This is a static event. Use <see cref="DeviceConnected"/> for an instance property
         /// to the same functionality.
         /// </remarks>
-        public static event EventHandler<DeviceConnectionArgs> DeviceConnected
+        public static event EventHandler<DeviceConnectionArgs>? DeviceConnected
         {
             add
             {
@@ -252,7 +252,7 @@ namespace Fusee.Engine.Core
         /// This is an instance event. Use <see cref="DeviceConnected"/> for a static-over-singleton access
         /// to the same functionality.
         /// </remarks>
-        public event EventHandler<DeviceConnectionArgs> InputDeviceDisconnected;
+        public event EventHandler<DeviceConnectionArgs>? InputDeviceDisconnected;
         /// <summary>
         /// Occurs when a device such as a gamepad is disconnected.
         /// </summary>
@@ -260,7 +260,7 @@ namespace Fusee.Engine.Core
         /// This is a static event. Use <see cref="DeviceConnected"/> for an instance property
         /// to the same functionality.
         /// </remarks>
-        public static event EventHandler<DeviceConnectionArgs> DeviceDisconnected
+        public static event EventHandler<DeviceConnectionArgs>? DeviceDisconnected
         {
             add
             {
@@ -354,7 +354,7 @@ namespace Fusee.Engine.Core
             // First see if a special device can be found to handle this
             foreach (var sdc in _specialDeviceCreators)
             {
-                if (sdc.Match(imp))
+                if (sdc.Match is not null && sdc.Creator is not null && sdc.Match(imp))
                 {
                     InputDevice ret = sdc.Creator(imp);
                     if (ret != null)
@@ -405,7 +405,7 @@ namespace Fusee.Engine.Core
 
 
 
-        private void OnNewDeviceImpConnected(object sender, NewDeviceImpConnectedArgs args)
+        private void OnNewDeviceImpConnected(object? sender, NewDeviceImpConnectedArgs args)
         {
             if (sender == null) throw new ArgumentNullException(nameof(sender));
 
@@ -429,7 +429,7 @@ namespace Fusee.Engine.Core
             InputDeviceConnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = existingDevice });
         }
 
-        private void OnDeviceImpDisconnected(object sender, DeviceImpDisconnectedArgs args)
+        private void OnDeviceImpDisconnected(object? sender, DeviceImpDisconnectedArgs args)
         {
             if (sender == null) throw new ArgumentNullException(nameof(sender));
             if (sender is not IInputDriverImp driver) throw new InvalidOperationException("Device disconnecting from unknown driver " + sender.ToString());

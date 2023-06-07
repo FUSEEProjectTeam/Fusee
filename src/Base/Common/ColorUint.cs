@@ -1197,7 +1197,7 @@ namespace Fusee.Base.Common
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         ///
         /// </returns>
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return A.GetHashCode() + R.GetHashCode() + G.GetHashCode() + B.GetHashCode();
         }
@@ -1211,7 +1211,7 @@ namespace Fusee.Base.Common
         /// <c>true</c> if the specified <see cref="T:Fusee.Engine.ColorUint"/> is equal to this instance; otherwise, <c>false</c>.
         ///
         /// </returns>
-        public bool Equals(ColorUint other)
+        public readonly bool Equals(ColorUint other)
         {
             if (R == other.R && G == other.G && B == other.B)
                 return A == other.A;
@@ -1228,7 +1228,7 @@ namespace Fusee.Base.Common
         /// <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
         ///
         /// </returns>
-        public override bool Equals(object value)
+        public override readonly bool Equals(object value)
         {
             if (value == null || !object.ReferenceEquals(value.GetType(), typeof(ColorUint)))
                 return false;

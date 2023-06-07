@@ -57,12 +57,12 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object? obj) => obj is not null && obj is VertexWeight w && w.JointIndex.Equals(JointIndex) && w.Weight.Equals(Weight);
+        public override readonly bool Equals(object? obj) => obj is not null && obj is VertexWeight w && w.JointIndex.Equals(JointIndex) && w.Weight.Equals(Weight);
 
         /// <summary>
         /// Returns the hash code of one vertex weight
         /// </summary>
-        public override int GetHashCode() => (7 * JointIndex.GetHashCode()) + 5 * Weight.GetHashCode();
+        public override readonly int GetHashCode() => (7 * JointIndex.GetHashCode()) + 5 * Weight.GetHashCode();
 
         /// <summary>
         /// Check if two vertex weights are the same
