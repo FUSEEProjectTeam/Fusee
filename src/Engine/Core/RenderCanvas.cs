@@ -152,7 +152,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// This event is usually triggered when loading is completed (after init() method)
         /// </summary>
-        public EventHandler<EventArgs> LoadingCompleted;
+        public EventHandler<EventArgs?>? LoadingCompleted;
 
         /// <summary>
         /// Called after <see cref="RenderCanvas.Init"/> can be used to await async tasks (e.g. loading methods)

@@ -45,7 +45,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns currently visited <see cref="InstanceData"/> during a traversal.
         /// </summary>
-        protected InstanceData CurrentInstanceData;
+        protected InstanceData? CurrentInstanceData;
 
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.

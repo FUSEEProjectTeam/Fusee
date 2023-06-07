@@ -259,11 +259,11 @@ namespace Fusee.Engine.Core
             Traverse(sc.Children);
 
             // During scene traversal we collect all effects but do not create them, yet
-            // within this loop the look up and texture retrival is being performed in an asynchronous way
+            // within this loop the look up and texture retrieval is being performed in an asynchronous way
 
             foreach (var mat in _allEffects.Keys)
             {
-                Effect effect = null;
+                Effect? effect = null;
 
                 if (mat is FusMaterialStandard m)
                     effect = await LookupMaterial(m);

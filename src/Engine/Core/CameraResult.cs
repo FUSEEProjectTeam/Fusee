@@ -4,12 +4,26 @@ using System;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// One camera result found after a scene traversal
+    /// </summary>
     public struct CameraResult : IEquatable<CameraResult>
     {
+        /// <summary>
+        /// The camera object
+        /// </summary>
         public Camera Camera { get; private set; }
 
+        /// <summary>
+        /// The view matrix associated with the found camera
+        /// </summary>
         public float4x4 View { get; private set; }
 
+        /// <summary>
+        /// Generate a camera result instance from given camera object and view matrix
+        /// </summary>
+        /// <param name="cam"></param>
+        /// <param name="view"></param>
         public CameraResult(Camera cam, float4x4 view)
         {
             Camera = cam;

@@ -52,9 +52,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// The pick result after picking.
         /// </summary>
-#pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
         public List<PickResult>? PickResults { get; set; }
-#pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 
         internal struct MinPickValue
         {
@@ -129,6 +127,7 @@ namespace Fusee.PointCloud.Core.Scene
 
             foreach (var r in currentRes)
             {
+                Guard.IsNotNull(r.Mesh.Vertices);
                 var pickRes = new PointCloudPickResult
                 {
                     Node = null,

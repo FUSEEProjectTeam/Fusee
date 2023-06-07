@@ -5,6 +5,9 @@ using System;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// 1D Texture
+    /// </summary>
     public class Texture1D : Texture
     {
 
@@ -27,7 +30,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Initialize a Texture from an existing IImageData. The input IImageData will be copied into this Texture via <seealso cref="Blt"/> command.
+        /// Initialize a Texture from an existing IImageData. The input IImageData will be copied into this Texture via <seealso cref="RenderContext.BlitMultisample2DTextureToTexture(WritableMultisampleTexture, WritableTexture)"/> command.
         /// </summary>
         /// <param name="imageData">The existing <see cref="IImageData"/> that will be copied to initialize a Texture instance.</param>
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>

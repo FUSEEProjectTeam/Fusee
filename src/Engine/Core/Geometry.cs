@@ -370,8 +370,8 @@ namespace Fusee.Engine.Core
 
             List<uint> mTris = new();
             List<float3> mVerts = new();
-            List<float2> mTexCoords = (HasTexCoords) ? new List<float2>() : null;
-            List<float3> mNormals = (HasNormals) ? new List<float3>() : null;
+            List<float2>? mTexCoords = (HasTexCoords) ? new List<float2>() : null;
+            List<float3>? mNormals = (HasNormals) ? new List<float3>() : null;
 
             foreach (Face f in _faces)
             {

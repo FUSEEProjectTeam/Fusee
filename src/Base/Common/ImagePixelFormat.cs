@@ -24,7 +24,7 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Returns how many bytes make up one pixel. Example RGB = 3 Bytes, each channel consists of 1 byte.
         /// </summary>
-        public int BytesPerPixel
+        public readonly int BytesPerPixel
         {
             get
             {

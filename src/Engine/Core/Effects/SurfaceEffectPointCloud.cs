@@ -155,6 +155,11 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Property)]
         public readonly string WorldSpacePointRadOut = GLSL.CreateOut(GLSL.Type.Float, "vWorldSpacePointRad");
 
+        /// <summary>
+        /// Generate the varying variables
+        /// </summary>
+        /// <param name="doRenderInstanced"></param>
+        /// <returns></returns>
         protected static List<string> CalculateVaryings(bool doRenderInstanced)
         {
             if (!doRenderInstanced)

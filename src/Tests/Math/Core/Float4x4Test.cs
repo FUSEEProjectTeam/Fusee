@@ -297,10 +297,7 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(ThisException))]
         public void Invalid_GetWithIdx_Exception(int idx, string expected)
         {
-#pragma warning disable EPS06 // Hidden struct copy operation
             var actual = Assert.Throws<ArgumentOutOfRangeException>(() => float4x4.Zero[idx, idx]);
-#pragma warning restore EPS06 // Hidden struct copy operation
-
             Assert.Equal(expected, actual.ParamName);
         }
 

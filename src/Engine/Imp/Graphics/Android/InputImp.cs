@@ -69,8 +69,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         public string DriverId => GetType().FullName;
 
-#pragma warning disable 0067
-
         /// <summary>
         /// Not supported on this driver. Devices supported here are considered to be connected all the time.
         /// You can register handlers but they will never get called.
@@ -592,8 +590,6 @@ $"Unknown axis {iAxisId}.  Probably an event based axis or unsupported by this d
             }
         }
 
-#pragma warning disable 0067
-
         /// <summary>
         /// No axes exist on this device, so listeners registered to this event will never get called.
         /// </summary>
@@ -604,8 +600,6 @@ $"Unknown axis {iAxisId}.  Probably an event based axis or unsupported by this d
         /// to get information from this device.
         /// </summary>
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
-
-#pragma warning restore 0067
 
         /* TODO - find something working on Android
         /// <summary>
@@ -866,16 +860,12 @@ $"Unknown axis {iAxisId}.  Probably an event based axis or unsupported by this d
         /// <summary>
         /// No event-based axes are exposed by this device. Use <see cref="GetAxis"/> to acquire mouse axis information.
         /// </summary>
-#pragma warning disable 0067
-
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
         /// <summary>
         /// All three mouse buttons are event-based. Listen to this event to get information about mouse button state changes.
         /// </summary>
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
-
-#pragma warning restore 0067
 
         /// <summary>
         /// Retrieves values for the X, Y and Wheel axes. No other axes are supported by this device.

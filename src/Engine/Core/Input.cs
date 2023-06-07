@@ -14,7 +14,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The input device (such as a game pad) that was just connected or disconnected.
         /// </summary>
-        public InputDevice InputDevice;
+        public InputDevice? InputDevice;
     }
 
     // Two-phased creation. First check if a match is given, then create.
@@ -30,12 +30,12 @@ namespace Fusee.Engine.Core
     /// </summary>
     /// <param name="device"></param>
     /// <returns></returns>
-    public delegate InputDevice CreatorFunc(IInputDeviceImp device);
+    public delegate InputDevice CreatorFunc(IInputDeviceImp? device);
 
     class SpecialDeviceCreator
     {
-        public MatchFunc Match;
-        public CreatorFunc Creator;
+        public MatchFunc? Match;
+        public CreatorFunc? Creator;
     }
 
     /// <summary>
@@ -298,7 +298,7 @@ namespace Fusee.Engine.Core
 
         }
 
-        private static Input _instance;
+        private static Input? _instance;
 
         /// <summary>
         ///     Provides the singleton Instance of the Input Class.
@@ -334,7 +334,7 @@ namespace Fusee.Engine.Core
                 // Inform interested users about disconnection
                 InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = dev });
 
-                IInputDeviceImp inputDeviceImp = dev.DeviceImp;
+                var inputDeviceImp = dev.DeviceImp;
 
                 // Remove device from the list
                 _inputDevices.Remove(devId);
@@ -415,7 +415,7 @@ namespace Fusee.Engine.Core
                 throw new ArgumentNullException(nameof(args), "Device or InputDeviceImp must not be null");
 
             string deviceKey = driver.DriverId + "_" + args.InputDeviceImp.Id;
-            if (_inputDevices.TryGetValue(deviceKey, out InputDevice existingDevice))
+            if (_inputDevices.TryGetValue(deviceKey, out InputDevice? existingDevice))
             {
                 existingDevice.Reconnect(args.InputDeviceImp);
             }
@@ -435,7 +435,7 @@ namespace Fusee.Engine.Core
             if (sender is not IInputDriverImp driver) throw new InvalidOperationException("Device disconnecting from unknown driver " + sender.ToString());
 
             string deviceKey = driver.DriverId + "_" + args.Id;
-            if (_inputDevices.TryGetValue(deviceKey, out InputDevice existingDevice))
+            if (_inputDevices.TryGetValue(deviceKey, out InputDevice? existingDevice))
             {
                 existingDevice.Disconnect();
             }

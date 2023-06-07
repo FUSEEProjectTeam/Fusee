@@ -159,11 +159,8 @@ namespace Fusee.Base.Core
             }
             catch
             {
-#pragma warning disable ERP022 // Unobserved exception in generic exception handler
                 FailCallback();
             }
-#pragma warning restore ERP022 // Unobserved exception in generic exception handler
-
         }
 
         private void ProcessAsset(object data)

@@ -69,17 +69,13 @@ namespace Fusee.Engine.Core
         /// Called whenever an axis value changes. Since this is a dummy device this event will never fire.
         /// Only provided to meet the <see cref="IInputDriverImp"/> interface definition.
         /// </summary>
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public event EventHandler<AxisValueChangedArgs>? AxisValueChanged;
 
         /// <summary>
         /// Called whenever a button value changes. Since this is a dummy device this event will never fire.
         /// Only provided to meet the <see cref="IInputDriverImp"/> interface definition.
         /// </summary>
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public event EventHandler<ButtonValueChangedArgs>? ButtonValueChanged;
 
         /// <summary>
         /// Called by the input system to poll for axis changes.

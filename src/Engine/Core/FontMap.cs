@@ -297,9 +297,7 @@ namespace Fusee.Engine.Core
             }
             catch
             {
-#pragma warning disable ERP022 // Unobserved exception in generic exception handler
                 return _glyphOnMapCache[63];
-#pragma warning restore ERP022 // Unobserved exception in generic exception handler
             }
         }
     }
