@@ -40,6 +40,14 @@ namespace Fusee.PointCloud.Core.Scene
     }
 
     /// <summary>
+    /// Strategy on how to pick points
+    /// </summary>
+    public enum PickStrategy
+    {
+
+    }
+
+    /// <summary>
     /// Point cloud picker module. Inject to pick <see cref="PointCloudComponent"/>s
     /// </summary>
     public class PointCloudPickerModule : IPickerModule
@@ -83,7 +91,7 @@ namespace Fusee.PointCloud.Core.Scene
             var rayD = new RayD(new double2(_state.PickPosClip.x, _state.PickPosClip.y), (double4x4)view, (double4x4)proj);
 
             var tmpList = new List<PointCloudOctant>();
-            var allHitBoxes = PickOctantRecursively((PointCloudOctant)_octree.Root, rayD, tmpList).ToList();
+            var allHitBoxes = RayCastPickOctantRecursively((PointCloudOctant)_octree.Root, rayD, tmpList).ToList();
 
             if (allHitBoxes == null || allHitBoxes.Count == 0) return;
 
@@ -122,7 +130,7 @@ namespace Fusee.PointCloud.Core.Scene
                 }
             });
 
-            if (currentRes == null || currentRes.Count == 0) return;
+            if (currentRes == null || currentRes.IsEmpty) return;
 
 
             var mvp = proj * view * _state.Model;
@@ -156,7 +164,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <param name="ra">Radius of sphere with center point of <paramref name="ce"/></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        float2 SphereRayIntersection(float3 ro, float3 rd, float3 ce, float ra)
+        static float2 SphereRayIntersection(float3 ro, float3 rd, float3 ce, float ra)
         {
             var oc = ro - ce;
             var b = float3.Dot(oc, rd);
@@ -168,8 +176,25 @@ namespace Fusee.PointCloud.Core.Scene
             return new float2(-b - h, -b + h);
         }
 
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //private List<PointCloudOctant> SphereIntersectionPickOctantRecursively(PointCloudOctant node, double4x4 inverseSphereMatrix, List<PointCloudOctant> list)
+        //{
+        //    list.Add(node);
+        //    if (node.Children[0] != null)
+        //    {
+        //        foreach (var child in node.Children.Cast<PointCloudOctant>())
+        //        {
+        //            if (child?.IsVisible == true && child.InsideOrIntersecting(inverseSphereMatrix))
+        //            {
+        //                SphereIntersectionPickOctantRecursively(child, inverseSphereMatrix, list);
+        //            }
+        //        }
+        //    }
+        //    return list;
+        //}
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private List<PointCloudOctant> PickOctantRecursively(PointCloudOctant node, RayD ray, List<PointCloudOctant> list)
+        private List<PointCloudOctant> RayCastPickOctantRecursively(PointCloudOctant node, RayD ray, List<PointCloudOctant> list)
         {
             list.Add(node);
             if (node.Children[0] != null)
@@ -178,7 +203,7 @@ namespace Fusee.PointCloud.Core.Scene
                 {
                     if (child?.IsVisible == true && child.IntersectRay(ray))
                     {
-                        PickOctantRecursively(child, ray, list);
+                        RayCastPickOctantRecursively(child, ray, list);
                     }
                 }
             }
