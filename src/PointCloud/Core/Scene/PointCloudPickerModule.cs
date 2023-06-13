@@ -76,6 +76,9 @@ namespace Fusee.PointCloud.Core.Scene
             Guard.IsNotNull(_octree);
             Guard.IsNotNull(_state);
 
+            if (float.IsInfinity(_state.PickPosClip.x) || float.IsInfinity(_state.PickPosClip.y))
+                return;
+
             var proj = _state.CurrentCameraResult.Camera.GetProjectionMat(_state.ScreenSize.x, _state.ScreenSize.y, out _);
             var view = _state.CurrentCameraResult.View;
             var rayD = new RayD(new double2(_state.PickPosClip.x, _state.PickPosClip.y), (double4x4)view, (double4x4)proj);
@@ -164,23 +167,6 @@ namespace Fusee.PointCloud.Core.Scene
             h = MathF.Sqrt(h);
             if (float.IsNaN(h) || float.IsInfinity(h)) return new float2(-1.0f);
             return new float2(-b - h, -b + h);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private List<PointCloudOctant> SphereIntersectionPickOctantRecursively(PointCloudOctant node, double4x4 inverseSphereMatrix, List<PointCloudOctant> list)
-        {
-            list.Add(node);
-            if (node.Children[0] != null)
-            {
-                foreach (var child in node.Children.Cast<PointCloudOctant>())
-                {
-                    if (child?.IsVisible == true && child.InsideOrIntersecting(inverseSphereMatrix))
-                    {
-                        SphereIntersectionPickOctantRecursively(child, inverseSphereMatrix, list);
-                    }
-                }
-            }
-            return list;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

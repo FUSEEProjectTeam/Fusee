@@ -201,7 +201,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="s">The sphere to test against.</param>
         /// <param name="invSphereModel">The inverse model matrix which is currently used to render the <see cref="Sphere"/> (can e. g. be displayed as an ellipsoid)</param>
         /// <returns></returns>
-        public bool InsideOrIntersecting(double4x4 invSphereModel)
+        public bool InsideOrIntersectingSphere(double4x4 invSphereModel)
         {
             //Transform ellipsoid to sphere(invMat) and transform this PointCloudOctant to an AABBf which lies within the sphere's coordinate system.
             //Then test the sphere against the transformed box.
