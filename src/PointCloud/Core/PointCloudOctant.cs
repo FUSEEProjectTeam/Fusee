@@ -198,7 +198,6 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Returns true if the shape is completely inside or is intersecting this <see cref="PointCloudOctant"/>
         /// </summary>
-        /// <param name="s">The sphere to test against.</param>
         /// <param name="invSphereModel">The inverse model matrix which is currently used to render the <see cref="Sphere"/> (can e. g. be displayed as an ellipsoid)</param>
         /// <returns></returns>
         public bool InsideOrIntersectingSphere(double4x4 invSphereModel)
