@@ -1,4 +1,5 @@
-﻿using Fusee.Math.Core;
+﻿using Fusee.Engine.Core.Primitives;
+using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.Structures;
 
@@ -191,6 +192,56 @@ namespace Fusee.PointCloud.Core
             return (point.x >= Min.x && point.x <= Max.x) &&
             (point.y >= Min.y && point.y <= Max.y) &&
             (point.z >= Min.z && point.z <= Max.z);
+        }
+
+
+        /// <summary>
+        /// Returns true if the shape is completely inside or is intersecting this <see cref="PointCloudOctant"/>
+        /// </summary>
+        /// <param name="invSphereModel">The inverse model matrix which is currently used to render the <see cref="Sphere"/> (can e. g. be displayed as an ellipsoid)</param>
+        /// <returns></returns>
+        public bool InsideOrIntersectingSphere(double4x4 invSphereModel)
+        {
+            //Transform ellipsoid to sphere(invMat) and transform this PointCloudOctant to an AABBf which lies within the sphere's coordinate system.
+            //Then test the sphere against the transformed box.
+            var size = invSphereModel.ScaleComponent() * (double3.One * Size);
+            var center = invSphereModel * Center;
+            var box = new AABBd(center - (size * 0.5f), center + (size * 0.5f));
+
+            //Create all planes for the box. If the signed distance from the sphere center (0,0,0) to all planes is less than the radius of the sphere, the sphere is completely inside the box.
+            var frontNormal = (-double3.UnitZ * invSphereModel).Normalize();
+            var frontPoint = (Center - size.z / 2) * invSphereModel;
+            var frontP = new PlaneD(frontNormal, frontPoint);
+            var backNormal = (double3.UnitZ * invSphereModel).Normalize();
+            var backPoint = (Center + size.z / 2) * invSphereModel;
+            var backP = new PlaneD(backNormal, backPoint);
+
+            var leftNormal = (-double3.UnitX * invSphereModel).Normalize();
+            var leftPoint = (Center - size.x / 2) * invSphereModel;
+            var leftP = new PlaneD(leftNormal, leftPoint);
+            var rightNormal = (double3.UnitX * invSphereModel).Normalize();
+            var rightPoint = (Center + size.x / 2) * invSphereModel;
+            var rightP = new PlaneD(rightNormal, rightPoint);
+
+            var bottomNormal = (-double3.UnitY * invSphereModel).Normalize();
+            var bottomPoint = (Center - size.y / 2) * invSphereModel;
+            var bottomP = new PlaneD(bottomNormal, bottomPoint);
+            var topNormal = (double3.UnitY * invSphereModel).Normalize();
+            var topPoint = (Center + size.y / 2) * invSphereModel;
+            var topP = new PlaneD(topNormal, topPoint);
+
+            if (frontP.SignedDistanceFromPoint(double3.Zero) <= 0.5f &&
+                backP.SignedDistanceFromPoint(double3.Zero) <= 0.5f &&
+                leftP.SignedDistanceFromPoint(double3.Zero) <= 0.5f &&
+                rightP.SignedDistanceFromPoint(double3.Zero) <= 0.5f &&
+                bottomP.SignedDistanceFromPoint(double3.Zero) <= 0.5f &&
+                topP.SignedDistanceFromPoint(double3.Zero) <= 0.5f)
+                return true; //Ellipsoid is completely inside the box.
+
+
+            var p = box.ClosestPoint(double3.Zero);
+            //If the length of the vector from the center of the sphere to the closest point on the box surface is smaller than the radius of the sphere the box and the sphere overlap.
+            return p.Length <= 0.5f; // if true, ellipsoid and box intersect
         }
 
         /// <summary>
