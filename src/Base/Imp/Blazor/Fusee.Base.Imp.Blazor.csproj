@@ -16,6 +16,6 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
-		<PackageReference Include="Microsoft.JSInterop" Version="7.0.5" />
+		<PackageReference Include="Microsoft.JSInterop" Version="7.0.7" />
 	</ItemGroup>
 </Project>
