@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using System.Runtime.Intrinsics.X86;
 
 namespace Fusee.ImGuiImp.Desktop.Templates
 {
@@ -321,6 +322,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             if (Directory.Exists(currentFolder))
             {
                 CurrentOpenFolder = new DirectoryInfo(currentFolder);
+                CurrentlySelectedFolder = new DirectoryInfo(currentFolder);
             }
             else
             {
@@ -341,7 +343,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             var driveCount = 0;
             foreach (var drive in DriveInfo.GetDrives())
             {
-                if (drive.IsReady)
+                if (drive.IsReady && (drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Removable))
                 {
                     if (ImGui.Selectable($"{drive.Name} {drive.DriveType}##{_folderPickerCount}"))
                     {
@@ -362,18 +364,17 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 {
                     var name = fse.Name;
 
-
                     if (fse.Attributes.HasFlag(FileAttributes.Directory))
                     {
                         ImGui.PushStyleColor(ImGuiCol.Text, FolderColor.ToUintColor());
                         ImGui.PushStyleColor(ImGuiCol.Header, SelectedColor.ToUintColor());
                         if (ImGui.Selectable(name + "/", CurrentlySelectedFolder?.Name == name, ImGuiSelectableFlags.DontClosePopups | ImGuiSelectableFlags.AllowDoubleClick))
                         {
-                            CurrentlySelectedFolder = new DirectoryInfo(fse.FullName);
                             if (ImGui.IsMouseDoubleClicked(0))
                             {
                                 if (ImGui.GetIO().WantCaptureMouse)
                                 {
+                                    CurrentlySelectedFolder = new DirectoryInfo(fse.FullName);
                                     LastOpenendFolders.Push(CurrentOpenFolder);
                                     CurrentOpenFolder = new DirectoryInfo(fse.FullName);
                                 }

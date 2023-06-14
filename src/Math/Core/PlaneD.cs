@@ -25,7 +25,7 @@ namespace Fusee.Math.Core
                 _normal.x = _a;
             }
         }
-        private double _a;
+        private double _a = 0;
 
         /// <summary>
         /// The B plane coefficient.
@@ -40,7 +40,7 @@ namespace Fusee.Math.Core
                 _normal.y = _b;
             }
         }
-        private double _b;
+        private double _b = 0;
 
         /// <summary>
         /// The C plane coefficient.
@@ -55,13 +55,13 @@ namespace Fusee.Math.Core
                 _normal.z = _c;
             }
         }
-        private double _c;
+        private double _c = 0;
 
         /// <summary>
         /// The D plane coefficient.
         /// </summary>
         [JsonProperty(PropertyName = "D")]
-        public double D;
+        public double D = 1;
 
         /// <summary>
         /// The plane's normal vector. May NOT be of unit length if the plane isn't normalized.
@@ -76,7 +76,21 @@ namespace Fusee.Math.Core
                 return _normal;
             }
         }
-        private double3 _normal;
+        private double3 _normal = double3.UnitZ;
+
+        /// <summary>
+        /// Creates a plane from a normal and a point.
+        /// </summary>
+        /// <param name="normal">The plane's normal vector.</param>
+        /// <param name="point">A point on the plane.</param>
+        public PlaneD(double3 normal, double3 point)
+        {
+            A = normal.x;
+            B = normal.y;
+            C = normal.z;
+
+            D = A * point.x + B * point.y + C * point.z;
+        }        
 
         /// <summary>
         /// Normalizes this plane.
