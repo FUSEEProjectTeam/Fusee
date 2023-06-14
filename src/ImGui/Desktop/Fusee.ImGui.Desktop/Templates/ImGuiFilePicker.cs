@@ -193,6 +193,13 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0);
             ImGui.PushStyleColor(ImGuiCol.WindowBg, _windowBackgroundUint);
 
+            // close on ESC
+            if (ImGui.IsKeyReleased(ImGuiKey.Escape))
+            {
+                OnCancel?.Invoke(this, EventArgs.Empty);
+                filePickerOpen = false;
+            }
+
             if (DoFocusPicker)
                 ImGui.SetNextWindowFocus();
             var headerHeight = FontSize + WindowPadding.Y * 2;
@@ -243,7 +250,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.EndGroup();
 
             // Folder Selection
-            var currentFolder = CurrentOpenFolder.FullName;
+            var currentFolder = Environment.ExpandEnvironmentVariables(CurrentOpenFolder.FullName);
             ImGui.SameLine(DriveSelectionWidth + WindowPadding.X + ImGui.GetStyle().ItemSpacing.X);
             ImGui.SetNextItemWidth(FolderTextInputWidth - ImGui.CalcTextSize(FolderLabelTxt).X - ImGui.GetStyle().ItemSpacing.X);
             ImGui.InputTextWithHint($"{FolderLabelTxt}##{_filePickerCount}", PathToFolderTxt, ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
@@ -259,17 +266,44 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                 return 0;
             });
-            if (Directory.Exists(currentFolder))
+            var envCurrentFolder = Environment.ExpandEnvironmentVariables(currentFolder);
+            if (!string.IsNullOrEmpty(envCurrentFolder))
             {
-                CurrentOpenFolder = new DirectoryInfo(currentFolder);
-            }
-            else
-            {
-                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
-                ImGui.BeginTooltip();
-                ImGui.TextColored(WarningTextColor, FolderNotFoundTxt);
-                ImGui.EndTooltip();
-                ImGui.PopStyleVar();
+                var currentFolderFi = new FileInfo(envCurrentFolder); // parse something like folder and file (e. g. C:\test\test.las)
+
+                if (Directory.Exists(envCurrentFolder) || envCurrentFolder.Contains(Path.DirectorySeparatorChar) || envCurrentFolder.Contains(Path.AltDirectorySeparatorChar))
+                {
+                    if (Directory.Exists(envCurrentFolder))
+                    {
+                        CurrentOpenFolder = new DirectoryInfo(envCurrentFolder);
+                        CurrentlySelectedFolder = new DirectoryInfo(envCurrentFolder);
+                    }
+
+
+                    if (File.Exists(currentFolderFi.FullName) && !string.IsNullOrEmpty(currentFolderFi.DirectoryName))
+                    {
+                        CurrentOpenFolder = new DirectoryInfo(currentFolderFi.DirectoryName);
+                        CurrentlySelectedFolder = new DirectoryInfo(currentFolderFi.DirectoryName);
+                        SelectedFile = currentFolderFi;
+                    }
+                    else if (currentFolderFi.Extension == ".las") // only check if extension is given, print error only when no las file is found
+                    {
+                        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
+                        ImGui.BeginTooltip();
+                        ImGui.TextColored(WarningTextColor, FileNotFoundTxt);
+                        ImGui.EndTooltip();
+                        ImGui.PopStyleVar();
+                    }
+
+                }
+                else
+                {
+                    ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
+                    ImGui.BeginTooltip();
+                    ImGui.TextColored(WarningTextColor, FolderNotFoundTxt);
+                    ImGui.EndTooltip();
+                    ImGui.PopStyleVar();
+                }
             }
 
             // Folder Browser

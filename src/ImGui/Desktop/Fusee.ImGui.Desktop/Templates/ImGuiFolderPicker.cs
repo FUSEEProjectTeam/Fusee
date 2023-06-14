@@ -1,3 +1,4 @@
+using Fusee.Engine.Core;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -247,6 +248,14 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0);
             ImGui.PushStyleColor(ImGuiCol.WindowBg, _windowBackgroundUint);
 
+
+            // close on ESC
+            if (ImGui.IsKeyReleased(ImGuiKey.Escape))
+            {
+                OnCancel?.Invoke(this, EventArgs.Empty);
+                filePickerOpen = false;
+            }
+
             if (DoFocusPicker)
                 ImGui.SetNextWindowFocus();
             var headerHeight = FontSize + WindowPadding.Y * 2;
@@ -303,7 +312,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.EndGroup();
 
             // Folder Selection
-            var currentFolder = CurrentOpenFolder.FullName;
+            var currentFolder = Environment.ExpandEnvironmentVariables(CurrentOpenFolder.FullName);
             ImGui.SameLine(DriveSelectionWidth + WindowPadding.X + ImGui.GetStyle().ItemSpacing.X);
             ImGui.SetNextItemWidth(FolderTextInputWidth - ImGui.CalcTextSize(FolderLabelTxt).X - ImGui.GetStyle().ItemSpacing.X);
             ImGui.InputTextWithHint($"{FolderLabelTxt}##{_folderPickerCount}", PathToFolderTxt, ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
@@ -319,10 +328,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                 return 0;
             });
-            if (Directory.Exists(currentFolder))
+            var envCurrentFolder = Environment.ExpandEnvironmentVariables(currentFolder);
+            if (Directory.Exists(envCurrentFolder))
             {
-                CurrentOpenFolder = new DirectoryInfo(currentFolder);
-                CurrentlySelectedFolder = new DirectoryInfo(currentFolder);
+                CurrentOpenFolder = new DirectoryInfo(envCurrentFolder);
+                CurrentlySelectedFolder = new DirectoryInfo(envCurrentFolder);
             }
             else
             {
@@ -411,7 +421,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             if (CurrentlySelectedFolder != null && CurrentlySelectedFolder.Exists)
             {
                 ImGui.SameLine(sameLineOffset);
-                if (ImGui.Button($"{PickedFileTxt}##{_folderPickerCount}", BottomButtonSize))
+
+                if (ImGui.Button($"{PickedFileTxt}##{_folderPickerCount}", BottomButtonSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
                 {
                     if (CurrentlySelectedFolder != null)
                         OnPicked?.Invoke(this, CurrentlySelectedFolder);
