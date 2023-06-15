@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 
@@ -22,7 +22,7 @@ namespace Fusee.Engine.Core.Primitives
 
         private void BuildSphere(int segments, int rings)// segments: Longitude ||| - rings: Latitude ---
         {
-            const float radius = 1f;
+            const float radius = 0.5f;
             const double pi = System.Math.PI;
             const double twoPi = pi * 2f;
 

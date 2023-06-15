@@ -282,7 +282,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             var driveCount = 0;
             foreach (var drive in DriveInfo.GetDrives())
             {
-                if (drive.IsReady)
+                if (drive.IsReady && (drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Removable))
                 {
                     if (ImGui.Selectable($"{drive.Name} {drive.DriveType}##{_filePickerCount}"))
                     {
