@@ -162,7 +162,7 @@ namespace Fusee.Engine.Core
             if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
 
-            if (DoFrumstumCulling)
+            if (DoFrustumCulling)
             {
                 FrustumF frustum;
                 if (_currentPass == RenderPasses.Shadow)
@@ -201,7 +201,7 @@ namespace Fusee.Engine.Core
             if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
 
-            if (DoFrumstumCulling)
+            if (DoFrustumCulling)
             {
                 FrustumF frustum;
                 if (_currentPass == RenderPasses.Shadow)
@@ -464,14 +464,14 @@ namespace Fusee.Engine.Core
                     {
                         PerCamClear(cam);
                         NotifyCameraChanges(cam.Camera);
-                        DoFrumstumCulling = cam.Camera.FrustumCullingOn;
+                        DoFrustumCulling = cam.Camera.FrustumCullingOn;
                         PerCamRender(cam, cam.Camera.RenderTexture);
                     }
                 }
 
                 //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
                 _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
-                DoFrumstumCulling = true;
+                DoFrustumCulling = true;
             }
             else
             {
@@ -526,9 +526,9 @@ namespace Fusee.Engine.Core
             _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes);
 
             //Cache state because rendering the shadow maps will change the state eventually.
-            var doCulling = DoFrumstumCulling;
+            var doCulling = DoFrustumCulling;
             RenderShadowMaps();
-            DoFrumstumCulling = doCulling;
+            DoFrustumCulling = doCulling;
 
             //Undo all user-made and shadow pass related render state changes to be able to work on a "white sheet" from here on.
             _rc.UnlockAllRenderStates();
@@ -711,7 +711,7 @@ namespace Fusee.Engine.Core
                 {
                     case LightType.Point:
                         {
-                            DoFrumstumCulling = false;
+                            DoFrustumCulling = false;
 
                             if (_shadowCubeMapEffect == null)
                             {
@@ -779,7 +779,7 @@ namespace Fusee.Engine.Core
                         }
                     case LightType.Spot:
                         {
-                            DoFrumstumCulling = true;
+                            DoFrustumCulling = true;
                             _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                             _rc.SetEffect(_shadowEffect);
                             _rc.SetRenderTarget(shadowParams.ShadowMap);
