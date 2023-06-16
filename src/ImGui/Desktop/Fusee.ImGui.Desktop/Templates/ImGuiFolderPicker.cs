@@ -1,3 +1,4 @@
+using Fusee.Engine.Core;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,82 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public string ParentFolderTxt = "Parent";
         public string BackTxt = "Back";
 
+        /// <summary>
+        /// Show a button which let's the user create a new folder at the current directory
+        /// </summary>
+        public bool ShowNewFolderButton
+        {
+            get => _showNewFolderButton;
+            set
+            {
+                if (value)
+                    DriveSelectionWidth = 120;
+                else
+                    DriveSelectionWidth = 100;
+
+                _showNewFolderButton = value;
+            }
+        }
+        public string NewFolderButtonTxt = "\uf65e";
+
+        /// <summary>
+        /// Caption of the create new folder window
+        /// </summary>
+        public string CreateNewFolderTxt = "Create new folder";
+
+        /// <summary>
+        /// Caption of the create folder button
+        /// </summary>
+        public string CreateFolderTxt = "Create folder";
+
+        /// <summary>
+        /// Create new folder name hint txt
+        /// </summary>
+        public string CreateNewFolderHintTxt = "Insert folder name";
+
+        private bool _showNewFolderButton;
+        private bool _isNewFolderNameWindowOpen;
+
+        // as we cannot use the property as ref, we need to check and set all variables every time
+        // so that, when we call if(IsNewFolderNameWindowOpen), the variables are being set properly, too even when the window itself was closed via 'x'
+        private bool IsNewFolderNameWindowOpen
+        {
+            get
+            {
+                if (_isNewFolderNameWindowOpen)
+                {
+                    // push the folder window to the back
+                    DoFocusPicker = false;
+                }
+                else
+                {
+                    // reset text and reset windows
+                    _createFolderException = null;
+                    _newFolderName = "";
+                    DoFocusPicker = true;
+                }
+                return _isNewFolderNameWindowOpen;
+            }
+            set
+            {
+                _isNewFolderNameWindowOpen = value;
+                if (_isNewFolderNameWindowOpen)
+                {
+                    // push the folder window to the back
+                    DoFocusPicker = false;
+                }
+                else
+                {
+                    // reset text and reset windows
+                    _createFolderException = null;
+                    _newFolderName = "";
+                    DoFocusPicker = true;
+                }
+            }
+        }
+        private string _newFolderName = "";
+        private Exception? _createFolderException;
+
         public DirectoryInfo? SelectedFolder { get; protected set; }
         public DirectoryInfo RootFolder { get; protected set; }
 
@@ -70,7 +147,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
         protected const float FolderTextInputWidth = 350;
         protected const float FileTextInputWidth = 300;
-        protected const float DriveSelectionWidth = 100;
+        protected static float DriveSelectionWidth = 100;
         protected const float BrowserHeight = 200;
         protected readonly Vector2 WindowPadding = new(15, 15);
         protected readonly Vector2 BottomButtonSize = new(55, 26);
@@ -171,6 +248,14 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0);
             ImGui.PushStyleColor(ImGuiCol.WindowBg, _windowBackgroundUint);
 
+
+            // close on ESC
+            if (ImGui.IsKeyReleased(ImGuiKey.Escape))
+            {
+                OnCancel?.Invoke(this, EventArgs.Empty);
+                filePickerOpen = false;
+            }
+
             if (DoFocusPicker)
                 ImGui.SetNextWindowFocus();
             var headerHeight = FontSize + WindowPadding.Y * 2;
@@ -212,13 +297,22 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 ImGui.EndDisabled();
             }
 
+            if (ShowNewFolderButton)
+            {
+                ImGui.SameLine();
+                if (ImGui.Button($"{NewFolderButtonTxt}##{_folderPickerCount}", TopButtonSize))
+                {
+                    _isNewFolderNameWindowOpen = true;
+                }
+            }
+
             if ((IntPtr)SymbolsFontPtr.NativePtr != IntPtr.Zero)
                 ImGui.PopFont();
 
             ImGui.EndGroup();
 
             // Folder Selection
-            var currentFolder = CurrentOpenFolder.FullName;
+            var currentFolder = Environment.ExpandEnvironmentVariables(CurrentOpenFolder.FullName);
             ImGui.SameLine(DriveSelectionWidth + WindowPadding.X + ImGui.GetStyle().ItemSpacing.X);
             ImGui.SetNextItemWidth(FolderTextInputWidth - ImGui.CalcTextSize(FolderLabelTxt).X - ImGui.GetStyle().ItemSpacing.X);
             ImGui.InputTextWithHint($"{FolderLabelTxt}##{_folderPickerCount}", PathToFolderTxt, ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
@@ -234,10 +328,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                 return 0;
             });
-            if (Directory.Exists(currentFolder))
+            var envCurrentFolder = Environment.ExpandEnvironmentVariables(currentFolder);
+            if (Directory.Exists(envCurrentFolder))
             {
-                CurrentOpenFolder = new DirectoryInfo(currentFolder);
-                CurrentlySelectedFolder = new DirectoryInfo(currentFolder);
+                CurrentOpenFolder = new DirectoryInfo(envCurrentFolder);
+                CurrentlySelectedFolder = new DirectoryInfo(envCurrentFolder);
             }
             else
             {
@@ -326,7 +421,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             if (CurrentlySelectedFolder != null && CurrentlySelectedFolder.Exists)
             {
                 ImGui.SameLine(sameLineOffset);
-                if (ImGui.Button($"{PickedFileTxt}##{_folderPickerCount}", BottomButtonSize))
+
+                if (ImGui.Button($"{PickedFileTxt}##{_folderPickerCount}", BottomButtonSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
                 {
                     if (CurrentlySelectedFolder != null)
                         OnPicked?.Invoke(this, CurrentlySelectedFolder);
@@ -354,11 +450,67 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             ImGui.End();
 
+            if (ShowNewFolderButton && IsNewFolderNameWindowOpen)
+            {
+                ImGui.SetNextWindowFocus();
+                ImGui.Begin($"{CreateNewFolderTxt}##{_folderPickerCount}", ref _isNewFolderNameWindowOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDocking);
+                ImGui.InputTextWithHint($"", $"{CreateNewFolderHintTxt}", ref _newFolderName, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
+                {
+                    var arr = _newFolderName.ToCharArray();
+
+                    if (x->SelectionStart < x->SelectionEnd && x->SelectionStart >= 0 && x->SelectionEnd <= arr.Length)
+                    {
+                        var selectedText = arr[x->SelectionStart..x->SelectionEnd];
+                        if (selectedText != null)
+                            ImGuiInputImp.CurrentlySelectedText = new string(selectedText);
+                    }
+
+                    return 0;
+                });
+                ImGui.SameLine();
+
+                if (ImGui.Button($"{CreateFolderTxt}"))
+                {
+                    if (!string.IsNullOrEmpty(_newFolderName))
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(Path.Combine(currentFolder, _newFolderName));
+                        }
+                        catch (Exception ex)
+                        {
+                            _createFolderException = ex;
+                            return;
+
+                        }
+                    }
+                    IsNewFolderNameWindowOpen = false;
+                }
+
+                // display a possible exception during folder creation as a tooltip text
+                if (_createFolderException != null)
+                {
+                    ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(5, 5));
+                    var size = ImGui.CalcTextSize(_createFolderException?.Message);
+                    ImGui.SetNextWindowSize(new Vector2(size.X / 4, -1));
+                    ImGui.BeginTooltip();
+                    ImGui.PushStyleColor(ImGuiCol.Text, WarningTextColor);
+                    ImGui.TextWrapped(_createFolderException?.Message);
+                    ImGui.PopStyleColor();
+                    ImGui.EndTooltip();
+                    ImGui.PopStyleVar();
+                }
+
+                ImGui.End();
+            }
+
             ImGui.PopStyleVar(2);
             ImGui.PopStyleColor();
 
             return;
         }
+
+
 
         /// <summary>
         /// We differentiate between files and folders, as we want to print the folders first
