@@ -298,7 +298,7 @@ namespace Fusee.Engine.Core
             foreach (var module in VisitorModules)
             {
                 var m = (IPickerModule)module;
-                if (m.PickResults != null)
+                if (m.PickResults.Count != 0)
                     res.AddRange(m.PickResults);
             }
 
