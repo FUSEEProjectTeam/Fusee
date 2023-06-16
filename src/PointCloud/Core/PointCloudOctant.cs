@@ -1,5 +1,4 @@
-﻿using Fusee.Engine.Core.Primitives;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.Structures;
 
@@ -196,11 +195,11 @@ namespace Fusee.PointCloud.Core
 
 
         /// <summary>
-        /// Returns true if the shape is completely inside or is intersecting this <see cref="PointCloudOctant"/>
+        /// Returns true if an ellipsoid is completely inside or is intersecting this <see cref="PointCloudOctant"/>
         /// </summary>
-        /// <param name="invSphereModel">The inverse model matrix which is currently used to render the <see cref="Sphere"/> (can e. g. be displayed as an ellipsoid)</param>
+        /// <param name="invSphereModel">The inverse transformation matrix that transforms an ellipsoid into a sphere.</param>
         /// <returns></returns>
-        public bool InsideOrIntersectingSphere(double4x4 invSphereModel)
+        public bool InsideOrIntersectingEllipsoid(double4x4 invSphereModel)
         {
             //Transform ellipsoid to sphere(invMat) and transform this PointCloudOctant to an AABBf which lies within the sphere's coordinate system.
             //Then test the sphere against the transformed box.
