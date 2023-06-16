@@ -516,7 +516,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 if (AllowedExtensions != null && AllowedExtensions.Contains(fi.Extension))
                 {
                     ImGui.SameLine(sameLineOffset);
-                    if (ImGui.Button($"{PickedFileTxt}##{_filePickerCount}", BottomButtonSize))
+                    if (ImGui.Button($"{PickedFileTxt}##{_filePickerCount}", BottomButtonSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
                     {
                         if (HandlePickedFile(fi))
                         {
