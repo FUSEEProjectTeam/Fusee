@@ -255,6 +255,32 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Returns the closest point to a point p, that lies on the surface of the <see cref="AABBf"/>.
+        /// </summary>
+        /// <param name="point">The reference point.</param>
+        /// <returns></returns>
+        public float3 ClosestPoint(float3 point)
+        {
+            float3 d = point - Center;
+            float3 q = Center;
+
+            for (int i = 0; i < 3; i++)
+            {
+                var axis = i == 0 ? float3.UnitX : i == 1 ? float3.UnitY : float3.UnitZ;
+                var halfLength = i == 0 ? Size.x / 2 : i == 1 ? Size.y / 2 : Size.z / 2;
+                float dist = float3.Dot(d, axis);
+
+                if (dist > halfLength) dist = halfLength;
+                if (dist < -halfLength) dist = -halfLength;
+
+                q += dist * axis;
+            }
+
+            return q;
+        }
+
+
+        /// <summary>
         /// Check if two AABBs intersect each other
         /// </summary>
         /// <param name="left"></param>
