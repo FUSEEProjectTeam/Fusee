@@ -2,7 +2,7 @@ using Fusee.Base.Imp.Blazor;
 using Fusee.Engine.Common;
 using Microsoft.JSInterop;
 using System;
-
+using System.ComponentModel;
 
 namespace Fusee.Engine.Imp.Graphics.Blazor
 {
@@ -104,12 +104,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public event EventHandler<RenderEventArgs> Update;
 
         /// <summary>
+        /// Occurs when closing the application
+        /// </summary>
+        public event EventHandler<CancelEventArgs> Closing;
+
+        /// <summary>
         /// Closes the game window.
         /// </summary>
         /// <remarks>Not needed in WebGL.</remarks>
         public void CloseGameWindow()
         {
             UnLoad?.Invoke(this, null);
+            Closing.Invoke(this, null);
         }
 
         /// <summary>
@@ -128,7 +134,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         public void Present()
         {
-            // Nothing to do in WebGL            
+            // Nothing to do in WebGL
         }
 
         /// <summary>
