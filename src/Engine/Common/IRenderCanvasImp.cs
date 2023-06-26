@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Fusee.Engine.Common
 {
@@ -63,7 +64,7 @@ namespace Fusee.Engine.Common
 
         /// <summary>
         /// Implementation Tasks: Gets and sets a value indicating whether this <see cref="IRenderCanvasImp"/> is in fullscreen mode.
-        /// This option can not be applied to all plattforms. 
+        /// This option can not be applied to all plattforms.
         /// </summary>
         /// <value>
         ///   <c>true</c> if fullscreen; otherwise, <c>false</c>.
@@ -166,5 +167,9 @@ namespace Fusee.Engine.Common
         /// Occurs when [Resize] is called.
         /// </summary>
         event EventHandler<ResizeEventArgs> Resize;
+        /// <summary>
+        /// Occurs when [Close] is called.
+        /// </summary>
+        event EventHandler<CancelEventArgs> Closing;
     }
 }
