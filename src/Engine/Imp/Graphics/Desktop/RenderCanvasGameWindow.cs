@@ -2,6 +2,7 @@
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
+using System.ComponentModel;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -95,9 +96,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int major = version[0];
             // int minor = (int)version[2];
 
-            if (major < 2)
+            if (major < 3)
             {
-                throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
+                throw new InvalidOperationException("You need at least OpenGL 3.0 to run this application. GLSL not supported.");
             }
 
             // Use VSync!
@@ -121,6 +122,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _renderCanvasImp.Height = e.Height;
                 _renderCanvasImp.DoResize(e.Width, e.Height);
             }
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            _renderCanvasImp.DoClose(e);
+            base.OnClosing(e);
         }
 
         protected override void OnUpdateFrame(OpenTK.Windowing.Common.FrameEventArgs args)
