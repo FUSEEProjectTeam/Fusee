@@ -256,11 +256,16 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 filePickerOpen = false;
             }
 
+            var openFileTextSize = ImGui.CalcTextSize(PickedFileTxt) + new Vector2(7, 11);
+            var cancelFileTextSize = ImGui.CalcTextSize(CancelFileOpenTxt) + new Vector2(7, 11);
+
             if (DoFocusPicker)
                 ImGui.SetNextWindowFocus();
             var headerHeight = FontSize + WindowPadding.Y * 2;
             var itemSpacing = ImGui.GetStyle().ItemSpacing;
-            WinSize = new Vector2(FolderTextInputWidth + DriveSelectionWidth + (WindowPadding.X * 2) + itemSpacing.X, headerHeight + BrowserHeight + TopButtonSize.Y + BottomButtonSize.Y + 4 * WindowPadding.Y + 3 * itemSpacing.Y + 5);
+            WinSize = new Vector2(
+                FolderTextInputWidth + DriveSelectionWidth + (WindowPadding.X * 2) + itemSpacing.X + openFileTextSize.X + cancelFileTextSize.X,
+                headerHeight + BrowserHeight + TopButtonSize.Y + BottomButtonSize.Y + (openFileTextSize.Y / 2) + 4 * WindowPadding.Y + 3 * itemSpacing.Y + 5);
             ImGui.SetNextWindowSize(WinSize);
             ImGui.Begin(Id, ref filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDocking);
 
@@ -314,7 +319,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             // Folder Selection
             var currentFolder = Environment.ExpandEnvironmentVariables(CurrentOpenFolder.FullName);
             ImGui.SameLine(DriveSelectionWidth + WindowPadding.X + ImGui.GetStyle().ItemSpacing.X);
-            ImGui.SetNextItemWidth(FolderTextInputWidth - ImGui.CalcTextSize(FolderLabelTxt).X - ImGui.GetStyle().ItemSpacing.X);
+            ImGui.SetNextItemWidth(FolderTextInputWidth - ImGui.CalcTextSize(FolderLabelTxt).X - ImGui.GetStyle().ItemSpacing.X + openFileTextSize.X + cancelFileTextSize.X);
             ImGui.InputTextWithHint($"{FolderLabelTxt}##{_folderPickerCount}", PathToFolderTxt, ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
                 var arr = currentFolder.ToCharArray();
@@ -367,7 +372,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.EndChild();
             ImGui.SameLine();
 
-            if (ImGui.BeginChild($"#FolderBrowser##{_folderPickerCount}", new Vector2(FolderTextInputWidth, BrowserHeight), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.HorizontalScrollbar))
+            if (ImGui.BeginChild($"#FolderBrowser##{_folderPickerCount}", new Vector2(-1, BrowserHeight), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.HorizontalScrollbar))
             {
                 var fileSystemEntries = GetFileSystemEntries(CurrentOpenFolder.FullName);
                 foreach (var fse in fileSystemEntries)
@@ -416,13 +421,13 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.SetNextItemWidth(FileTextInputWidth - ImGui.CalcTextSize(FileLabelTxt).X - ImGui.GetStyle().ItemSpacing.X);
             ImGui.Dummy(new Vector2(-1, -1));
 
-            var sameLineOffset = WinSize.X - WindowPadding.X - (BottomButtonSize.X * 2 + ImGui.GetStyle().ItemSpacing.X * 4);
+            var sameLineOffset = WinSize.X - WindowPadding.X - (openFileTextSize.X + cancelFileTextSize.X + ImGui.GetStyle().ItemSpacing.X * 4);
 
             if (CurrentlySelectedFolder != null && CurrentlySelectedFolder.Exists)
             {
                 ImGui.SameLine(sameLineOffset);
 
-                if (ImGui.Button($"{PickedFileTxt}##{_folderPickerCount}", BottomButtonSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
+                if (ImGui.Button($"{PickedFileTxt}##{_folderPickerCount}", openFileTextSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
                 {
                     if (CurrentlySelectedFolder != null)
                         OnPicked?.Invoke(this, CurrentlySelectedFolder);
@@ -435,12 +440,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.SameLine(sameLineOffset);
                 ImGui.BeginDisabled();
-                ImGui.Button(PickedFileTxt, BottomButtonSize);
+                ImGui.Button(PickedFileTxt, openFileTextSize);
                 ImGui.EndDisabled();
             }
 
             ImGui.SameLine();
-            if (ImGui.Button($"{CancelFileOpenTxt}##{_folderPickerCount}", BottomButtonSize))
+            if (ImGui.Button($"{CancelFileOpenTxt}##{_folderPickerCount}", cancelFileTextSize))
             {
                 OnCancel?.Invoke(this, EventArgs.Empty);
                 filePickerOpen = false;

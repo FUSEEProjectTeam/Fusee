@@ -157,7 +157,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         protected readonly DirectoryInfo StartingFolder;
 
         protected const float FolderTextInputWidth = 350;
-        protected const float FileTextInputWidth = 300;
+        protected const float FileTextInputWidth = 350;
         protected static float DriveSelectionWidth = 100;
         protected const float BrowserHeight = 200;
         protected readonly Vector2 WindowPadding = new(15, 15);
@@ -259,6 +259,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
                 AllowedExtensions.AddRange(allowedExtensions.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries));
             }
+
         }
 
         public virtual unsafe void Draw(ref bool filePickerOpen)
@@ -277,11 +278,16 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 filePickerOpen = false;
             }
 
+            var openFileTextSize = ImGui.CalcTextSize(PickedFileTxt) + new Vector2(7, 11);
+            var cancelFileTextSize = ImGui.CalcTextSize(CancelFileOpenTxt) + new Vector2(7, 11);
+
             if (DoFocusPicker)
                 ImGui.SetNextWindowFocus();
             var headerHeight = FontSize + WindowPadding.Y * 2;
             var itemSpacing = ImGui.GetStyle().ItemSpacing;
-            WinSize = new Vector2(FolderTextInputWidth + DriveSelectionWidth + (WindowPadding.X * 2) + itemSpacing.X, headerHeight + BrowserHeight + TopButtonSize.Y + BottomButtonSize.Y + 4 * WindowPadding.Y + 3 * itemSpacing.Y + 5);
+            WinSize = new Vector2(
+                FolderTextInputWidth + DriveSelectionWidth + (WindowPadding.X * 2) + itemSpacing.X + openFileTextSize.X + cancelFileTextSize.X,
+                headerHeight + BrowserHeight + TopButtonSize.Y + BottomButtonSize.Y + (openFileTextSize.Y / 2) + 4 * WindowPadding.Y + 3 * itemSpacing.Y + 5);
             ImGui.SetNextWindowSize(WinSize);
             ImGui.Begin(Id, ref filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDocking);
 
@@ -338,7 +344,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             // Folder Selection
             var currentFolder = Environment.ExpandEnvironmentVariables(CurrentOpenFolder.FullName);
             ImGui.SameLine(DriveSelectionWidth + WindowPadding.X + ImGui.GetStyle().ItemSpacing.X);
-            ImGui.SetNextItemWidth(FolderTextInputWidth - ImGui.CalcTextSize(FolderLabelTxt).X - ImGui.GetStyle().ItemSpacing.X);
+            ImGui.SetNextItemWidth(FolderTextInputWidth - ImGui.CalcTextSize(FolderLabelTxt).X - ImGui.GetStyle().ItemSpacing.X + openFileTextSize.X + cancelFileTextSize.X);
             ImGui.InputTextWithHint($"{FolderLabelTxt}##{_filePickerCount}", PathToFolderTxt, ref currentFolder, 400, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.CallbackAlways, (x) =>
             {
                 var arr = currentFolder.ToCharArray();
@@ -417,7 +423,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             ImGui.EndChild();
             ImGui.SameLine();
 
-            if (ImGui.BeginChild($"#FolderBrowser##{_filePickerCount}", new Vector2(FolderTextInputWidth, BrowserHeight), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.HorizontalScrollbar))
+            if (ImGui.BeginChild($"#FolderBrowser##{_filePickerCount}", new Vector2(-1, BrowserHeight), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.HorizontalScrollbar))
             {
                 if (CurrentOpenFolder != null && CurrentOpenFolder.Exists)
                 {
@@ -509,14 +515,14 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             if (_sizeOfInputText == Vector2.Zero)
                 _sizeOfInputText = ImGui.GetItemRectSize();
 
-            var sameLineOffset = WinSize.X - WindowPadding.X - (BottomButtonSize.X * 2 + ImGui.GetStyle().ItemSpacing.X * 4);
+            var sameLineOffset = WinSize.X - WindowPadding.X - (openFileTextSize.X + cancelFileTextSize.X + ImGui.GetStyle().ItemSpacing.X * 4);
             if (SelectedFile != null)
             {
                 var fi = SelectedFile;
                 if (AllowedExtensions != null && AllowedExtensions.Contains(fi.Extension))
                 {
                     ImGui.SameLine(sameLineOffset);
-                    if (ImGui.Button($"{PickedFileTxt}##{_filePickerCount}", BottomButtonSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
+                    if (ImGui.Button($"{PickedFileTxt}##{_filePickerCount}", openFileTextSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
                     {
                         if (HandlePickedFile(fi))
                         {
@@ -529,7 +535,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 {
                     ImGui.SameLine(sameLineOffset);
                     ImGui.BeginDisabled();
-                    ImGui.Button(PickedFileTxt, BottomButtonSize);
+                    ImGui.Button(PickedFileTxt, openFileTextSize);
                     ImGui.EndDisabled();
                 }
             }
@@ -537,12 +543,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.SameLine(sameLineOffset);
                 ImGui.BeginDisabled();
-                ImGui.Button(PickedFileTxt, BottomButtonSize);
+                ImGui.Button(PickedFileTxt, openFileTextSize);
                 ImGui.EndDisabled();
             }
 
             ImGui.SameLine();
-            if (ImGui.Button($"{CancelFileOpenTxt}##{_filePickerCount}", BottomButtonSize))
+            if (ImGui.Button($"{CancelFileOpenTxt}##{_filePickerCount}", cancelFileTextSize))
             {
                 OnCancel?.Invoke(this, EventArgs.Empty);
                 filePickerOpen = false;
