@@ -1,10 +1,8 @@
-using Fusee.Engine.Core;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using System.Runtime.Intrinsics.X86;
 
 namespace Fusee.ImGuiImp.Desktop.Templates
 {
@@ -267,7 +265,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 FolderTextInputWidth + DriveSelectionWidth + (WindowPadding.X * 2) + itemSpacing.X + openFileTextSize.X + cancelFileTextSize.X,
                 headerHeight + BrowserHeight + TopButtonSize.Y + BottomButtonSize.Y + (openFileTextSize.Y / 2) + 4 * WindowPadding.Y + 3 * itemSpacing.Y + 5);
             ImGui.SetNextWindowSize(WinSize);
-            ImGui.Begin(Id, ref filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDocking);
+            ImGui.Begin(Id, ref filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoDocking);
 
             if ((IntPtr)SymbolsFontPtr.NativePtr != IntPtr.Zero)
                 ImGui.PushFont(SymbolsFontPtr);
