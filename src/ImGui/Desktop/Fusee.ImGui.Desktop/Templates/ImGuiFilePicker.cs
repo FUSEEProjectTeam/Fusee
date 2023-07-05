@@ -24,7 +24,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// </summary>
         public bool AllowFilePickerResize { get; set; } = true;
 
-
         /// <summary>
         /// Allow resizing of new folder window
         /// </summary>
