@@ -21,7 +21,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// <summary>
         /// Allow resizing of file picker window
         /// </summary>
-        public bool AllowFilePickerResize { get; set; } = true;
+        public bool AllowFolderPickerResize { get; set; } = true;
 
         /// <summary>
         /// Allow resizing of new folder window
@@ -253,7 +253,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             // Begin window
             ImGui.SetNextWindowSizeConstraints(new Vector2(500, 300), ImGui.GetWindowViewport().Size * 0.75f);
-            var allowResizeFlag = AllowFilePickerResize ? ImGuiWindowFlags.None : ImGuiWindowFlags.NoResize;
+            var allowResizeFlag = AllowFolderPickerResize ? ImGuiWindowFlags.None : ImGuiWindowFlags.NoResize;
             ImGui.Begin(Id, ref filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | allowResizeFlag);
 
             // draw navigation buttons and folder selection on the same line
