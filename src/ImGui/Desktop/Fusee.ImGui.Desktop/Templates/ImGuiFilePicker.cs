@@ -1,7 +1,6 @@
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Numerics;
 
@@ -82,19 +81,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// <summary>
         /// Show a button which let's the user create a new folder at the current directory
         /// </summary>
-        public bool ShowNewFolderButton
-        {
-            get => _showNewFolderButton;
-            set
-            {
-                if (value)
-                    DriveSelectionWidth = 120;
-                else
-                    DriveSelectionWidth = 100;
+        public bool ShowNewFolderButton { get; set; }
 
-                _showNewFolderButton = value;
-            }
-        }
         public string NewFolderButtonTxt = "\uf65e";
 
         /// <summary>
@@ -112,7 +100,6 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// </summary>
         public string CreateNewFolderHintTxt = "Insert folder name";
 
-        private bool _showNewFolderButton;
         private bool _isNewFolderNameWindowOpen;
 
         // as we cannot use the property as ref, we need to check and set all variables every time
@@ -166,15 +153,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         protected DirectoryInfo CurrentlySelectedFolder;
         protected readonly DirectoryInfo StartingFolder;
 
-        protected const float FolderTextInputWidth = 350;
-        protected const float FileTextInputWidth = 350;
-        protected static float DriveSelectionWidth = 100;
-        protected const float BrowserHeight = 200;
         protected readonly Vector2 WindowPadding = new(15, 15);
         protected readonly Vector2 BottomButtonSize = new(55, 26);
         protected readonly Vector2 TopButtonSize = new(35, 30);
-        protected Vector2 WinSize;
+
         protected bool DoFocusPicker = true;
+
 
         private static int _filePickerCount = 0;
 
@@ -653,7 +637,14 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                 {
                     try
                     {
-                        Directory.CreateDirectory(Path.Combine(currentFolder.FullName, _newFolderName));
+                        if (Path.IsPathRooted(_newFolderName))
+                        {
+                            Directory.CreateDirectory(_newFolderName);
+                        }
+                        else
+                        {
+                            Directory.CreateDirectory(Path.Combine(currentFolder.FullName, _newFolderName));
+                        }
                     }
                     catch (Exception ex)
                     {
