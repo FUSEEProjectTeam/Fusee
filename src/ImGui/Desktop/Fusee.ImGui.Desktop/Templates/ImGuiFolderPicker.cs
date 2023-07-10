@@ -471,7 +471,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.SameLine();
 
-                if (ImGui.Button($"{PickedFolderTxt}##{_folderPickerCount}", pickedFileButtonSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
+                if (ImGui.Button($"{PickedFolderTxt}##{_folderPickerCount}", pickedFileButtonSize) ||
+                    (ImGui.IsKeyReleased(ImGuiKey.Enter) && !IsNewFolderNameWindowOpen))
                 {
                     if (CurrentlySelectedFolder != null)
                         OnPicked?.Invoke(this, CurrentlySelectedFolder);
@@ -528,7 +529,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             });
             ImGui.SameLine();
 
-            if (ImGui.Button($"{CreateFolderTxt}", createFolderButtonSize))
+            if (ImGui.Button($"{CreateFolderTxt}", createFolderButtonSize) ||
+                ImGui.IsKeyReleased(ImGuiKey.Enter))
             {
                 if (!string.IsNullOrEmpty(_newFolderName))
                 {
