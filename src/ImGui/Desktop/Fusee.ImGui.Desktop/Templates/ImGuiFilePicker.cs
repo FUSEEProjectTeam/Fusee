@@ -635,15 +635,18 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 if (!string.IsNullOrEmpty(_newFolderName))
                 {
+                    var folderName = string.Empty;
                     try
                     {
                         if (Path.IsPathRooted(_newFolderName))
                         {
+                            folderName = _newFolderName;
                             Directory.CreateDirectory(_newFolderName);
                         }
                         else
                         {
-                            Directory.CreateDirectory(Path.Combine(currentFolder.FullName, _newFolderName));
+                            folderName = Path.Combine(currentFolder.FullName, _newFolderName);
+                            Directory.CreateDirectory(folderName);
                         }
                     }
                     catch (Exception ex)
@@ -652,6 +655,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                         return;
 
                     }
+
+                    // open new folder
+                    CurrentlySelectedFolder = new DirectoryInfo(folderName);
+                    LastOpenendFolders.Push(CurrentOpenFolder);
+                    CurrentOpenFolder = new DirectoryInfo(folderName);
                 }
                 IsNewFolderNameWindowOpen = false;
             }

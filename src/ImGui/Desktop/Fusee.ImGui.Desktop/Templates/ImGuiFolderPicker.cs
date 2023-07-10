@@ -36,12 +36,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// <summary>
         /// Caption of the "Open" button.
         /// </summary>
-        public string PickedFileTxt = "Open";
+        public string PickedFolderTxt = "Open";
 
         /// <summary>
         /// Caption of the "Cancel" button.
         /// </summary>
-        public string CancelFileOpenTxt = "Cancel";
+        public string CancelFolderOpenTxt = "Cancel";
 
         /// <summary>
         /// Path to folder text.
@@ -59,9 +59,9 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         public string FolderLabelTxt = "Folder";
 
         /// <summary>
-        /// Caption of file input text
+        /// Caption of folder input text (bottom)
         /// </summary>
-        public string FileLabelTxt = "Folder";
+        public string SelectedFolderLabelTxt = "Folder";
 
         public string ParentFolderTxt = "Parent";
         public string BackTxt = "Back";
@@ -194,7 +194,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         /// <summary>
         /// Background of file selection menu
         /// </summary>
-        public Vector4 FileSelectionMenuBackground = new(125, 125, 125, 255);
+        public Vector4 FolderSelectionMenuBackground = new(125, 125, 125, 255);
 
         /// <summary>
         /// Color of <see cref="ImGui.SetTooltip(string)"/> when an error occurs
@@ -232,16 +232,16 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         }
 
 
-        public virtual unsafe void Draw(ref bool filePickerOpen)
+        public virtual unsafe void Draw(ref bool folderPickerOpen)
         {
-            IsOpen = filePickerOpen;
-            if (!filePickerOpen) return;
+            IsOpen = folderPickerOpen;
+            if (!folderPickerOpen) return;
 
             // close on ESC
             if (ImGui.IsKeyReleased(ImGuiKey.Escape))
             {
                 OnCancel?.Invoke(this, EventArgs.Empty);
-                filePickerOpen = false;
+                folderPickerOpen = false;
             }
 
             if (DoFocusPicker)
@@ -254,7 +254,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             // Begin window
             ImGui.SetNextWindowSizeConstraints(new Vector2(500, 300), ImGui.GetWindowViewport().Size * 0.75f);
             var allowResizeFlag = AllowFolderPickerResize ? ImGuiWindowFlags.None : ImGuiWindowFlags.NoResize;
-            ImGui.Begin(Id, ref filePickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | allowResizeFlag);
+            ImGui.Begin(Id, ref folderPickerOpen, ImGuiWindowFlags.Modal | ImGuiWindowFlags.NoCollapse | allowResizeFlag);
 
             // draw navigation buttons and folder selection on the same line
             DrawNavButtons();
@@ -262,18 +262,18 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             // draw drive and file selector window
             ImGui.NewLine();
-            ImGui.PushStyleColor(ImGuiCol.ChildBg, FileSelectionMenuBackground.ToUintColor());
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, FolderSelectionMenuBackground.ToUintColor());
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 10));
 
             DrawDriveSelector();
-            DrawFolderSelector(ref filePickerOpen);
+            DrawFolderSelector(ref folderPickerOpen);
 
             ImGui.PopStyleColor();
             ImGui.PopStyleVar();
 
             // draw okay, cancel button
             ImGui.NewLine();
-            DrawFolderSelectorButtons(ref filePickerOpen);
+            DrawFolderSelectorButtons(ref folderPickerOpen);
 
             ImGui.End();
 
@@ -389,7 +389,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         private void DrawDriveSelector()
         {
             // take all space in y, however shrink in y in item height + standard padding + WindowPadding
-            var offsetFromBottom = ImGui.CalcTextSize(PickedFileTxt) + ImGui.GetStyle().FramePadding * 2 + ImGui.GetStyle().WindowPadding * 2;
+            var offsetFromBottom = ImGui.CalcTextSize(PickedFolderTxt) + ImGui.GetStyle().FramePadding * 2 + ImGui.GetStyle().WindowPadding * 2;
             var driveSelectionWidth = ImGui.GetWindowSize().X * 0.25f; // 25% of windowSize.x
 
             ImGui.BeginChild($"DriveSelection##{_folderPickerCount}", new Vector2(driveSelectionWidth, -offsetFromBottom.Y), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize);
@@ -416,7 +416,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
             ImGui.SameLine();
             // take all space in y, however shrink in y in item height + standard padding + WindowPadding
-            var offsetFromBottom = ImGui.CalcTextSize(PickedFileTxt) + ImGui.GetStyle().FramePadding * 2 + ImGui.GetStyle().WindowPadding * 2;
+            var offsetFromBottom = ImGui.CalcTextSize(PickedFolderTxt) + ImGui.GetStyle().FramePadding * 2 + ImGui.GetStyle().WindowPadding * 2;
             if (ImGui.BeginChild($"#FolderBrowser##{_folderPickerCount}", new Vector2(-1, -offsetFromBottom.Y), false, ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.HorizontalScrollbar))
             {
                 var fileSystemEntries = GetFileSystemEntries(CurrentOpenFolder.FullName);
@@ -458,8 +458,8 @@ namespace Fusee.ImGuiImp.Desktop.Templates
 
         private void DrawFolderSelectorButtons(ref bool filePickerOpen)
         {
-            var pickedFileButtonSize = ImGui.CalcTextSize(PickedFileTxt) + ImGui.GetStyle().FramePadding * 2;
-            var cancelFileButtonSize = ImGui.CalcTextSize(CancelFileOpenTxt) + ImGui.GetStyle().FramePadding * 2;
+            var pickedFileButtonSize = ImGui.CalcTextSize(PickedFolderTxt) + ImGui.GetStyle().FramePadding * 2;
+            var cancelFileButtonSize = ImGui.CalcTextSize(CancelFolderOpenTxt) + ImGui.GetStyle().FramePadding * 2;
 
             ImGui.BeginChild($"FolderSelector##{_folderPickerCount}", new Vector2(-1, -1), false, ImGuiWindowFlags.AlwaysAutoResize);
 
@@ -471,7 +471,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.SameLine();
 
-                if (ImGui.Button($"{PickedFileTxt}##{_folderPickerCount}", pickedFileButtonSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
+                if (ImGui.Button($"{PickedFolderTxt}##{_folderPickerCount}", pickedFileButtonSize) || ImGui.IsKeyReleased(ImGuiKey.Enter))
                 {
                     if (CurrentlySelectedFolder != null)
                         OnPicked?.Invoke(this, CurrentlySelectedFolder);
@@ -484,12 +484,12 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 ImGui.SameLine();
                 ImGui.BeginDisabled();
-                ImGui.Button(PickedFileTxt, pickedFileButtonSize);
+                ImGui.Button(PickedFolderTxt, pickedFileButtonSize);
                 ImGui.EndDisabled();
             }
 
             ImGui.SameLine();
-            if (ImGui.Button($"{CancelFileOpenTxt}##{_folderPickerCount}", cancelFileButtonSize))
+            if (ImGui.Button($"{CancelFolderOpenTxt}##{_folderPickerCount}", cancelFileButtonSize))
             {
                 OnCancel?.Invoke(this, EventArgs.Empty);
                 filePickerOpen = false;
@@ -532,15 +532,18 @@ namespace Fusee.ImGuiImp.Desktop.Templates
             {
                 if (!string.IsNullOrEmpty(_newFolderName))
                 {
+                    var folderName = string.Empty;
                     try
                     {
                         if (Path.IsPathRooted(_newFolderName))
                         {
+                            folderName = _newFolderName;
                             Directory.CreateDirectory(_newFolderName);
                         }
                         else
                         {
-                            Directory.CreateDirectory(Path.Combine(currentFolder.FullName, _newFolderName));
+                            folderName = Path.Combine(currentFolder.FullName, _newFolderName);
+                            Directory.CreateDirectory(folderName);
                         }
                     }
                     catch (Exception ex)
@@ -549,6 +552,11 @@ namespace Fusee.ImGuiImp.Desktop.Templates
                         return;
 
                     }
+
+                    // open new folder
+                    CurrentlySelectedFolder = new DirectoryInfo(folderName);
+                    LastOpenendFolders.Push(CurrentOpenFolder);
+                    CurrentOpenFolder = new DirectoryInfo(folderName);
                 }
                 IsNewFolderNameWindowOpen = false;
             }
