@@ -7,6 +7,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.Android;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using Uri = Android.Net.Uri;
 
@@ -308,6 +309,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
 
+        /// <summary>
+        /// Occurs when [closing] - not wired, dummy impl.
+        /// </summary>
+        public event EventHandler<CancelEventArgs> Closing;
+
         #endregion Events
 
         /// <summary>
@@ -459,7 +465,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 _renderCanvasImp.DoRender();
         }
 
-        // This method is called every time the context needs to be recreated. 
+        // This method is called every time the context needs to be recreated.
         //Use it to set any egl-specific settings prior to context creation.
         protected override void CreateFrameBuffer()
         {
