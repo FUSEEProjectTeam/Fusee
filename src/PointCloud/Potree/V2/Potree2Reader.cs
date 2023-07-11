@@ -281,13 +281,13 @@ namespace Fusee.PointCloud.Potree.V2
             var allPtsBytes = allPoints.Span.AsBytes();
 
             // convert all points to byte, slice the position value (stride/offset) and copy to position array
-            for (int i = 0, j = 0; i < allPtsBytes.Length; i += 32, j++)
+            for (var i = 0; i < allPoints.Length; i++)
             {
-                MemoryMarshal.Cast<byte, float3>(allPtsBytes.Slice(i, 12)).CopyTo(positions.Span.Slice(j, 1));
+                positions.Span[i] = allPoints.Span[i].Position;
             }
 
-            // dangerous, undefined behaviour -> do not use the array values after this method
-            // this is irrelevant, as we use a local variable only
+            // dangerous, undefined behavior -> do not use the array values after this method
+            // this is irrelevant, as we use only a local variable
             var eigen = new Eigen(positions.DangerousGetArray().Array);
             var rotMat = (float4x4)eigen.RotationMatrix;
 
