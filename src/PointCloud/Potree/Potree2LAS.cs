@@ -80,20 +80,52 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// LAS point type
     /// </summary>
-    public enum LASPointType : byte
+    internal enum LASPointType : byte
     {
         /// <summary>
         /// 0
         /// </summary>
         Zero = 0x0,
         /// <summary>
+        /// 1
+        /// </summary>
+        One = 0x1,
+        /// <summary>
         /// 2
         /// </summary>
         Two = 0x2,
         /// <summary>
+        /// 3
+        /// </summary>
+        Three = 0x3,
+        /// <summary>
+        /// 4
+        /// </summary>
+        Four = 0x4,
+        /// <summary>
+        /// 5
+        /// </summary>
+        Five = 0x5,
+        /// <summary>
+        /// 6
+        /// </summary>
+        Six = 0x6,
+        /// <summary>
         /// 7
         /// </summary>
-        Seven = 0x7
+        Seven = 0x7,
+        /// <summary>
+        /// 8
+        /// </summary>
+        Eight = 0x8,
+        /// <summary>
+        /// 9
+        /// </summary>
+        Nine = 0x9,
+        /// <summary>
+        /// 10
+        /// </summary>
+        Ten = 0x10,
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -195,7 +227,6 @@ namespace Fusee.PointCloud.Potree
         private bool disposedValue;
         private LASHeader _header;
         private readonly PotreeData _potreeData;
-        private readonly LASPointType _type;
 
         private readonly List<VariableLengthRecordHeader> _vlrh = new();
         private readonly List<LasExtraBytes> _extraByteDesc = new();
@@ -206,13 +237,11 @@ namespace Fusee.PointCloud.Potree
         /// <param name="savePath"></param>
         /// <param name="potreeData"></param>
         /// <param name="ptType"></param>
-        public Potree2LAS(FileInfo savePath, PotreeData potreeData, LASPointType ptType = LASPointType.Two)
+        public Potree2LAS(FileInfo savePath, PotreeData potreeData)
         {
             Guard.IsNotNull(savePath);
             Guard.IsNotNull(potreeData);
             Guard.IsTrue(savePath.Extension == ".las");
-
-            _type = ptType;
 
             if (savePath.Exists)
             {
@@ -238,14 +267,23 @@ namespace Fusee.PointCloud.Potree
             Guard.IsLessThan(year, ushort.MaxValue);
             Guard.IsLessThan(size, ushort.MaxValue);
 
-            // check if the point type selected by the user is correct(ish)
-            Guard.IsGreaterThanOrEqualTo(Metadata.PointSize, _type switch
+            // automatic point guessing
+            var ptSize = _potreeData.Metadata.OffsetToExtraBytes == - 1 ? size : (_potreeData.Metadata.OffsetToExtraBytes - 1);
+            LASPointType ptType = ptSize switch
             {
-                LASPointType.Zero => 21,
-                LASPointType.Two => 27,
-                LASPointType.Seven => 37,
+                20 => LASPointType.Zero,
+                28 => LASPointType.One,
+                26 => LASPointType.Two,
+                34 => LASPointType.Three,
+                57 => LASPointType.Four,
+                63 => LASPointType.Five,
+                30 => LASPointType.Six,
+                36 => LASPointType.Seven,
+                38 => LASPointType.Eight,
+                59 => LASPointType.Nine,
+                67 => LASPointType.Ten,
                 _ => throw new NotImplementedException(),
-            });
+            };
 
             // Note: AABB is not y/z flipped, offset and scale is.
             _header = new LASHeader
@@ -267,7 +305,7 @@ namespace Fusee.PointCloud.Potree
                 ScaleFactorZ = Metadata.Scale.y,
                 NumberOfPtRecords = (ulong)Metadata.PointCount,
                 LegacyNbrOfPoints = (uint)Metadata.PointCount,
-                PointDataRecordFormat = (byte)_type
+                PointDataRecordFormat = (byte)ptType
             };
 
             _header.LeacyNbrOfPointsByRtn[0] = (uint)Metadata.PointCount;
