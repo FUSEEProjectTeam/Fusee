@@ -282,7 +282,7 @@ namespace Fusee.PointCloud.Potree
                 38 => LASPointType.Eight,
                 59 => LASPointType.Nine,
                 67 => LASPointType.Ten,
-                _ => throw new NotImplementedException(),
+                _ => throw new NotImplementedException($"Potree point type of size {ptSize} not supported."),
             };
 
             // Note: AABB is not y/z flipped, offset and scale is.
