@@ -35,7 +35,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Creates a Transform component
         /// </summary>
-        public Transform() : this(float4x4.Identity, float4x4.Identity, float4x4.Identity)
+        public Transform()
         {
         }
 
