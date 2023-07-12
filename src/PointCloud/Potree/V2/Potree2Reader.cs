@@ -258,8 +258,43 @@ namespace Fusee.PointCloud.Potree.V2
 
             CacheMetadata(true);
 
+            PotreeData.Metadata.PrincipalAxisRotation = CalculatePrincipalAxis(PotreeData);
+
             return PotreeData;
         }
+
+
+
+        /// <summary>
+        /// Calculate the principal axis rotation from given data
+        ///    - Load root node
+        ///    - Convert to covariance matrix
+        ///    - Calculate principal axis
+        /// </summary>
+        /// <param name="data">The potree data</param>
+        /// <returns></returns>
+        private float4x4 CalculatePrincipalAxis(PotreeData data)
+        {
+            using var allPoints = LoadVisualizationPoint(data.Hierarchy.Root);
+            using var positions = MemoryOwner<float3>.Allocate(allPoints.Length);
+
+            var allPtsBytes = allPoints.Span.AsBytes();
+
+            // convert all points to byte, slice the position value (stride/offset) and copy to position array
+            for (var i = 0; i < allPoints.Length; i++)
+            {
+                positions.Span[i] = allPoints.Span[i].Position;
+            }
+
+            // dangerous, undefined behavior -> do not use the array values after this method
+            // this is irrelevant, as we use only a local variable
+            var eigen = new Eigen(positions.DangerousGetArray().Array);
+            var rotMat = (float4x4)eigen.RotationMatrix;
+
+            return rotMat;
+        }
+
+
 
         /// <summary>
         /// Changes the potree data package that is currently bound to the reader. So a reader can be used for multiple data packages, this avoids rereading the potree data like in <see cref="ReadNewFile(string)"/>.
@@ -316,7 +351,6 @@ namespace Fusee.PointCloud.Potree.V2
 
             return (Metadata, Hierarchy);
         }
-
 
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)
         {

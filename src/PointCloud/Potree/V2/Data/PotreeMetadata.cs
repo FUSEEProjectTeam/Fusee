@@ -90,6 +90,9 @@ namespace Fusee.PointCloud.Potree.V2.Data
         [JsonIgnore]
         public string FolderPath { get; set; }
 
+        [JsonIgnore]
+        public float4x4 PrincipalAxisRotation { get; set; }
+
     }
 }
 
