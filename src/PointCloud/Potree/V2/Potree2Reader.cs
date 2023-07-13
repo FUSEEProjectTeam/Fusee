@@ -1,6 +1,7 @@
 using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
@@ -11,6 +12,7 @@ using Fusee.PointCloud.Potree.V2.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -288,10 +290,16 @@ namespace Fusee.PointCloud.Potree.V2
 
             // dangerous, undefined behavior -> do not use the array values after this method
             // this is irrelevant, as we use only a local variable
-            var eigen = new Eigen(positions.DangerousGetArray().Array);
-            var rotMat = (float4x4)eigen.RotationMatrix;
-
-            return rotMat;
+            try
+            {
+                var eigen = new Eigen(positions.DangerousGetArray().Array);
+                return (float4x4)eigen.RotationMatrix;
+            }
+            catch (ArithmeticException ex)
+            {
+                Diagnostics.Warn(ex);
+                return float4x4.Identity;
+            }
         }
 
 
