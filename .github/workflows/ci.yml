@@ -5,10 +5,12 @@ on:
     branches:
     - master
     - develop
+    - housekeeping
   pull_request:
     branches:
     - master
     - develop
+    - housekeeping
   workflow_dispatch:
 
 jobs:
