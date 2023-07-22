@@ -775,7 +775,7 @@ namespace Fusee.Engine.Core
                 mesh.BoundingBox = new(mesh.Vertices.AsReadOnlySpan);
             }
 
-            if (mesh.GetType() != typeof(Primitives.Plane) && (mesh.BoundingBox.Size.x <= 0f || mesh.BoundingBox.Size.y <= 0f || mesh.BoundingBox.Size.z <= 0f))
+            if (mesh is not Primitives.Plane && (mesh.BoundingBox.Size.x <= 0f || mesh.BoundingBox.Size.y <= 0f || mesh.BoundingBox.Size.z <= 0f))
             {
                 Diagnostics.Warn($"Size of current bounding box is 0 for one or more dimensions. Picking not possible.");
                 return;
