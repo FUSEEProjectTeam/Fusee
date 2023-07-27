@@ -4,7 +4,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.PointCloud.Common;
 using Microsoft.Extensions.Caching.Memory;
-using SixLabors.Fonts.Tables.TrueType;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -276,7 +275,7 @@ namespace Fusee.PointCloud.Core
                     LoadingQueue.Add(guid);
                 }
 
-              
+
                 _ = Task.Run(() =>
                 {
                     points = _loadPointsHandler.Invoke(guid);
@@ -286,14 +285,14 @@ namespace Fusee.PointCloud.Core
                     {
                         LoadingQueue.Remove(guid);
                     }
-                }).ContinueWith((finishedTask) => 
+                }).ContinueWith((finishedTask) =>
                 {
                     // if an exception happened during loading process call the error event for futher handling of the situation
                     if (finishedTask.Exception != null)
                     {
                         OnLoadingErrorEvent?.Invoke(this, new ErrorEventArgs(finishedTask.Exception));
                     }
-                    
+
                 });
             }
         }
