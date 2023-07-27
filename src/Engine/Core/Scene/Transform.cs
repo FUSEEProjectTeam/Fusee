@@ -11,11 +11,11 @@ namespace Fusee.Engine.Core.Scene
         #region Fields
 
         private bool _matrixDirty = true;
-        private float4x4 _matrix;
+        private float4x4 _matrix = float4x4.Identity;
 
-        private float4x4 _translationMtx;
-        private float4x4 _rotationMtx;
-        private float4x4 _scaleMtx;
+        private float4x4 _translationMtx = float4x4.Identity;
+        private float4x4 _rotationMtx = float4x4.Identity;
+        private float4x4 _scaleMtx = float4x4.Identity;
 
         //cached Values
         private bool _translationVecDirty = true;
@@ -35,7 +35,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Creates a Transform component
         /// </summary>
-        public Transform() : this(float4x4.Identity, float4x4.Identity, float4x4.Identity)
+        public Transform()
         {
         }
 

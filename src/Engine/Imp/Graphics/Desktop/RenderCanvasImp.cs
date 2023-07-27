@@ -7,6 +7,7 @@ using OpenTK.Windowing.Desktop;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -313,6 +314,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
 
+        /// <summary>
+        /// Occurs when [close] is called.
+        /// </summary>
+        public event EventHandler<CancelEventArgs> Closing;
+
         #endregion
 
         #region Members
@@ -349,7 +355,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             UnLoad?.Invoke(this, new InitEventArgs());
         }
-
         /// <summary>
         /// Does the update of this instance.
         /// </summary>
@@ -364,6 +369,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public virtual void DoRender()
         {
             Render?.Invoke(this, new RenderEventArgs());
+        }
+
+        /// <summary>
+        /// Does close the window
+        /// </summary>
+        public virtual void DoClose(CancelEventArgs e)
+        {
+            Closing?.Invoke(this, e);
         }
 
         /// <summary>

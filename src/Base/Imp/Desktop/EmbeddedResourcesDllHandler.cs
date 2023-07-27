@@ -33,7 +33,7 @@ namespace Fusee.Base.Imp.Desktop
                 {
                     // The temporary folder holds one or more of the temporary DLLs
                     // It is made "unique" to avoid different versions of the DLL or architectures.
-                    var tempFolder = String.Format("{0}.{1}.{2}", an.Name, an.ProcessorArchitecture, an.Version);
+                    var tempFolder = string.Format("{0}.{1}.{2}", an.Name, RuntimeInformation.ProcessArchitecture, an.Version);
 
                     string dirName = Path.Combine(Path.GetTempPath(), tempFolder);
                     if (!Directory.Exists(dirName))

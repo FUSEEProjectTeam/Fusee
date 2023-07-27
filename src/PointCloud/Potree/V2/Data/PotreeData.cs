@@ -1,5 +1,7 @@
-﻿using Fusee.PointCloud.Common;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.PointCloud.Common;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 
@@ -51,6 +53,8 @@ namespace Fusee.PointCloud.Potree.V2.Data
             OctreeMappedFile = MemoryMappedFile.CreateFromFile(path, FileMode.Open);
             ReadViewAccessor = OctreeMappedFile.CreateViewAccessor();
             WriteViewAccessor = OctreeMappedFile.CreateViewAccessor();
+
+            Guard.IsTrue(CheckAllFileStreamsValidity());
         }
 
         /// <summary>
@@ -75,6 +79,17 @@ namespace Fusee.PointCloud.Potree.V2.Data
             return GetNode(octantId);
         }
 
+        /// <summary>
+        /// Checks if all filestreams are open and valid
+        /// </summary>
+        /// <returns><see langword="false"/>if any errors are present</returns>
+        public bool CheckAllFileStreamsValidity()
+        {
+            return !OctreeMappedFile.SafeMemoryMappedFileHandle.IsInvalid &&
+                !OctreeMappedFile.SafeMemoryMappedFileHandle.IsClosed &&
+                ReadViewAccessor.CanRead && WriteViewAccessor.CanWrite;
+        }
+
         #region IDisposable
 
         private bool disposedValue;
@@ -86,9 +101,15 @@ namespace Fusee.PointCloud.Potree.V2.Data
             {
                 if (disposing)
                 {
+                    ReadViewAccessor.Flush();
+                    WriteViewAccessor.Flush();
                     ReadViewAccessor.Dispose();
                     WriteViewAccessor.Dispose();
                     OctreeMappedFile.Dispose();
+
+                    Debug.Assert(WriteViewAccessor.SafeMemoryMappedViewHandle.IsClosed);
+                    Debug.Assert(ReadViewAccessor.SafeMemoryMappedViewHandle.IsClosed);
+                    Debug.Assert(OctreeMappedFile.SafeMemoryMappedFileHandle.IsClosed);
                 }
 
                 disposedValue = true;
