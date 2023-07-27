@@ -206,7 +206,14 @@ namespace Fusee.PointCloud.Potree.V2
                 }
                 if (HandleReadExtraBytes != null)
                 {
-                    flags = HandleReadExtraBytes(extraBytesSpan);
+                    try
+                    {
+                        flags = HandleReadExtraBytes(extraBytesSpan);
+                    }
+                    catch (Exception e)
+                    {
+                        OnPointCloudReadError?.Invoke(this, new ErrorEventArgs(e));
+                    }
                 }
 
                 var flagsSpan = MemoryMarshal.Cast<uint, byte>(new uint[] { flags });
