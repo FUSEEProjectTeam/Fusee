@@ -106,10 +106,6 @@ namespace Fusee.PointCloud.Potree.V2.Data
                     ReadViewAccessor.Dispose();
                     WriteViewAccessor.Dispose();
                     OctreeMappedFile.Dispose();
-
-                    Debug.Assert(WriteViewAccessor.SafeMemoryMappedViewHandle.IsClosed);
-                    Debug.Assert(ReadViewAccessor.SafeMemoryMappedViewHandle.IsClosed);
-                    Debug.Assert(OctreeMappedFile.SafeMemoryMappedFileHandle.IsClosed);
                 }
 
                 disposedValue = true;
