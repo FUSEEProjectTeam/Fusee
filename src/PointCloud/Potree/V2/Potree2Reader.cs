@@ -37,6 +37,11 @@ namespace Fusee.PointCloud.Potree.V2
         public HandleReadExtraBytes? HandleReadExtraBytes { get; set; }
 
         /// <summary>
+        /// If any errors during load occur this event is being called
+        /// </summary>
+        public EventHandler<ErrorEventArgs>? OnPointCloudReadError;
+
+        /// <summary>
         /// Specify the byte offset for one point until the extra byte data is reached
         /// </summary>
         public int OffsetToExtraBytes = -1;
@@ -72,6 +77,7 @@ namespace Fusee.PointCloud.Potree.V2
                     {
                         var dataHandler = new PointCloudDataHandler<GpuMesh>(MeshMaker.CreateStaticMesh,
                             LoadVisualizationPointData);
+                        dataHandler.OnLoadingErrorEvent += OnPointCloudReadError;
                         var imp = new Potree2Cloud(dataHandler, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
@@ -79,6 +85,7 @@ namespace Fusee.PointCloud.Potree.V2
                     {
                         var dataHandlerInstanced = new PointCloudDataHandler<InstanceData>(MeshMaker.CreateInstanceData,
                             LoadVisualizationPointData, true);
+                        dataHandlerInstanced.OnLoadingErrorEvent += OnPointCloudReadError;
                         var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
@@ -86,6 +93,7 @@ namespace Fusee.PointCloud.Potree.V2
                     {
                         var dataHandlerDynamic = new PointCloudDataHandler<Mesh>(MeshMaker.CreateDynamicMesh,
                             LoadVisualizationPointData);
+                        dataHandlerDynamic.OnLoadingErrorEvent += OnPointCloudReadError;
                         var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
@@ -198,7 +206,14 @@ namespace Fusee.PointCloud.Potree.V2
                 }
                 if (HandleReadExtraBytes != null)
                 {
-                    flags = HandleReadExtraBytes(extraBytesSpan);
+                    try
+                    {
+                        flags = HandleReadExtraBytes(extraBytesSpan);
+                    }
+                    catch (Exception e)
+                    {
+                        OnPointCloudReadError?.Invoke(this, new ErrorEventArgs(e));
+                    }
                 }
 
                 var flagsSpan = MemoryMarshal.Cast<uint, byte>(new uint[] { flags });
