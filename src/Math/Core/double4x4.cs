@@ -2336,6 +2336,46 @@ namespace Fusee.Math.Core
             return new double4x4(d4x4);
         }
 
+#if MathNet
+
+        /// <summary>
+        /// Explicit cast operator to cast a MathNet Single DenseMatrix into a double4x4 value.
+        /// </summary>
+        /// <param name="sdm"></param>
+        public static explicit operator double4x4(MathNet.Numerics.LinearAlgebra.Single.DenseMatrix sdm)
+        {
+            return sdm.ToFuseeDoubleMatrix();
+        }
+
+        /// <summary>
+        /// Explicit cast operator to cast a MathNet Double DenseMatrix into a double4x4 value.
+        /// </summary>
+        /// <param name="ddm"></param>
+        public static explicit operator double4x4(MathNet.Numerics.LinearAlgebra.Double.DenseMatrix ddm)
+        {
+            return ddm.ToFuseeDoubleMatrix();
+        }
+
+        /// <summary>
+        /// Explicit cast operator to cast a double4x4 into a MathNet Single DenseMatrix value.
+        /// </summary>
+        /// <param name="d4x4"></param>
+        public static explicit operator MathNet.Numerics.LinearAlgebra.Single.DenseMatrix(double4x4 d4x4)
+        {
+            return d4x4.ToMathNetSingleMatrix();
+        }
+
+        /// <summary>
+        /// Explicit cast operator to cast a double4x4 into a MathNet Double DenseMatrix value.
+        /// </summary>
+        /// <param name="d4x4"></param>
+        public static explicit operator MathNet.Numerics.LinearAlgebra.Double.DenseMatrix(double4x4 d4x4)
+        {
+            return d4x4.ToMathNetDoubleMatrix();
+        }
+
+#endif
+
         #endregion Operators
 
         #region Overrides

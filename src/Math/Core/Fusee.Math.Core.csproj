@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;net7.0</TargetFrameworks>
@@ -14,6 +14,10 @@
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="protobuf-net" Version="3.2.26" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$(DefineConstants.Contains('MathNet'))">
+		<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
 	</ItemGroup>
 
 </Project>

@@ -1160,6 +1160,46 @@ namespace Fusee.Math.Core
             return new float3(d3);
         }
 
+#if MathNet
+
+        /// <summary>
+        /// Explicit cast operator to cast a MathNet Single DenseVector into a float3 value.
+        /// </summary>
+        /// <param name="sdv"></param>
+        public static explicit operator float3(MathNet.Numerics.LinearAlgebra.Single.DenseVector sdv)
+        {
+            return sdv.ToFuseeSingleVector();
+        }
+
+        /// <summary>
+        /// Explicit cast operator to cast a MathNet Double DenseVector into a float3 value.
+        /// </summary>
+        /// <param name="ddv"></param>
+        public static explicit operator float3(MathNet.Numerics.LinearAlgebra.Double.DenseVector ddv)
+        {
+            return ddv.ToFuseeSingleVector();
+        }
+
+        /// <summary>
+        /// Explicit cast operator to cast a float3 into a MathNet Single DenseVector value.
+        /// </summary>
+        /// <param name="f3"></param>
+        public static explicit operator MathNet.Numerics.LinearAlgebra.Single.DenseVector(float3 f3)
+        {
+            return f3.ToMathNetSingleVector();
+        }
+
+        /// <summary>
+        /// Explicit cast operator to cast a float3 into a MathNet Double DenseVector value.
+        /// </summary>
+        /// <param name="f3"></param>
+        public static explicit operator MathNet.Numerics.LinearAlgebra.Double.DenseVector(float3 f3)
+        {
+            return f3.ToMathNetDoubleVector();
+        }
+
+#endif
+
         #endregion Operators
 
         #region Overrides
