@@ -519,8 +519,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (_gameWindow != null)
             {
                 _gameWindow.UpdateFrequency = 60;
-                _gameWindow.RenderFrequency = 0;
-
                 _gameWindow.Run();
             }
         }
