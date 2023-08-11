@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
@@ -11,7 +12,7 @@ namespace Fusee.Engine.Gui
     /// <summary>
     /// Creates a text mesh for the GUI.
     /// </summary>
-    public class GuiText : Mesh
+    public class GuiText : Plane
     {
         private readonly FontMap _fontMap;
 
