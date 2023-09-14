@@ -124,7 +124,6 @@ namespace Fusee.PointCloud.Potree
 
             foreach (var mesh in meshes)
             {
-                mesh.Name = string.Empty;
                 if (mesh.Flags == null) continue;
                 var slice = points.Span.Slice(countStartSlice, mesh.Flags.Length);
 

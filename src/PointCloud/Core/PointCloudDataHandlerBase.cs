@@ -13,6 +13,11 @@ namespace Fusee.PointCloud.Core
     public abstract class PointCloudDataHandlerBase<TGpuData> : IDisposable where TGpuData : IDisposable
     {
         /// <summary>
+        /// Allows to inject a method that knows how to create a specific type of mesh.
+        /// </summary>
+        public CreateGpuData<TGpuData>? CreateGpuDataHandler;
+
+        /// <summary>
         /// Token, that allows to invalidate the complete GpuData cache.
         /// </summary>
         public InvalidateGpuDataCache InvalidateCacheToken { get; } = new();

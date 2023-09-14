@@ -1,3 +1,4 @@
+using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
@@ -77,7 +78,6 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         private MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
-        private readonly CreateGpuData<TGpuData> _createGpuDataHandler;
         private readonly LoadPointsHandler _loadPointsHandler;
         private const int _maxNumberOfDisposals = 1;
         private float _deltaTimeSinceLastDisposal;
@@ -100,7 +100,7 @@ namespace Fusee.PointCloud.Core
                 ExpirationScanFrequency = 31
             };
 
-            _createGpuDataHandler = createMeshHandler;
+            CreateGpuDataHandler = createMeshHandler;
             _loadPointsHandler = loadPointsHandler;
 
             _doRenderInstanced = doRenderInstanced;
@@ -131,6 +131,7 @@ namespace Fusee.PointCloud.Core
 
         private GpuDataState DoUpdateGpuData(OctantId octantId, ref IEnumerable<TGpuData> gpuData)
         {
+            Guard.IsNotNull(CreateGpuDataHandler);
             if (_pointCache.TryGetValue(octantId, out var points))
             {
                 if (UpdateGpuDataCache != null)
@@ -140,9 +141,9 @@ namespace Fusee.PointCloud.Core
                 else
                 {
                     if (!_doRenderInstanced)
-                        gpuData = MeshMaker.CreateMeshes(points, _createGpuDataHandler, octantId);
+                        gpuData = MeshMaker.CreateMeshes(points, CreateGpuDataHandler);
                     else
-                        gpuData = MeshMaker.CreateInstanceData(points, _createGpuDataHandler, octantId);
+                        gpuData = MeshMaker.CreateInstanceData(points, CreateGpuDataHandler);
                 }
                 return GpuDataState.Changed;
             }
@@ -163,6 +164,7 @@ namespace Fusee.PointCloud.Core
         /// <returns></returns>
         public override IEnumerable<TGpuData>? GetGpuData(OctantId octantId, Func<bool>? doUpdateIf, out GpuDataState gpuDataState)
         {
+            Guard.IsNotNull(CreateGpuDataHandler);
             if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
             {
                 var doUpdate = doUpdateIf != null ? doUpdateIf.Invoke() : false;
@@ -214,9 +216,9 @@ namespace Fusee.PointCloud.Core
             else if (_pointCache.TryGetValue(octantId, out var points))
             {
                 if (!_doRenderInstanced)
-                    gpuData = MeshMaker.CreateMeshes(points, _createGpuDataHandler, octantId);
+                    gpuData = MeshMaker.CreateMeshes(points, CreateGpuDataHandler);
                 else
-                    gpuData = MeshMaker.CreateInstanceData(points, _createGpuDataHandler, octantId);
+                    gpuData = MeshMaker.CreateInstanceData(points, CreateGpuDataHandler);
 
                 _gpuDataCache.AddOrUpdate(octantId, gpuData);
                 gpuDataState = GpuDataState.New;
