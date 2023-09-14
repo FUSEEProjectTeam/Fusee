@@ -50,9 +50,8 @@ namespace Fusee.PointCloud.Core
     /// </summary>
     /// <typeparam name="TGpuData"></typeparam>
     /// <param name="points">The point cloud points as generic array.</param>
-    /// <param name="octantId"></param>
     /// <returns></returns>
-    public delegate TGpuData CreateGpuData<TGpuData>(MemoryOwner<VisualizationPoint> points, OctantId octantId);
+    public delegate TGpuData CreateGpuData<TGpuData>(MemoryOwner<VisualizationPoint> points);
 
     /// <summary>
     /// Manages the caching and loading of point and mesh data.

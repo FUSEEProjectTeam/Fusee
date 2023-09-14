@@ -18,9 +18,8 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a GpuMesh from the point cloud points.</param>
-        /// <param name="octantId">The octant identifier.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateMeshes<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler, OctantId octantId)
+        public static IEnumerable<TGpuData> CreateMeshes<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler)
         {
             List<TGpuData> meshes;
 
@@ -50,7 +49,7 @@ namespace Fusee.PointCloud.Core
                     pointsPerMesh = points;
                 }
 
-                meshes.Add(createGpuDataHandler(pointsPerMesh, octantId));
+                meshes.Add(createGpuDataHandler(pointsPerMesh));
                 meshCnt++;
             }
             return meshes;
@@ -62,13 +61,12 @@ namespace Fusee.PointCloud.Core
         /// <typeparam name="TGpuData">Can be of type <see cref="GpuMesh"/> or <see cref="InstanceData"/>. The latter is used when rendering instanced.</typeparam>
         /// <param name="points">The generic point cloud points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a InstanceData from the point cloud points.</param>
-        /// <param name="octantId">The octant identifier.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler, OctantId octantId)
+        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler)
         {
             return new List<TGpuData>
             {
-                createGpuDataHandler(points, octantId)
+                createGpuDataHandler(points)
             };
         }
 
@@ -76,8 +74,7 @@ namespace Fusee.PointCloud.Core
         /// Returns meshes for point clouds of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="points">The lists of "raw" points.</param>
-        /// <param name="octantId">The id of the octant.</param>
-        public static GpuMesh CreateStaticMesh(MemoryOwner<VisualizationPoint> points, OctantId octantId)
+        public static GpuMesh CreateStaticMesh(MemoryOwner<VisualizationPoint> points)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -110,8 +107,7 @@ namespace Fusee.PointCloud.Core
         /// Returns meshes for point clouds of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="points">The lists of "raw" points.</param>
-        /// <param name="octantId">The id of the octant.</param>
-        public static Mesh CreateDynamicMesh(MemoryOwner<VisualizationPoint> points, OctantId octantId)
+        public static Mesh CreateDynamicMesh(MemoryOwner<VisualizationPoint> points)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -146,8 +142,7 @@ namespace Fusee.PointCloud.Core
         /// Returns meshes for point clouds of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="points">The lists of "raw" points.</param>
-        /// <param name="octantId">The id of the octant.</param>
-        public static InstanceData CreateInstanceData(MemoryOwner<VisualizationPoint> points, OctantId octantId)
+        public static InstanceData CreateInstanceData(MemoryOwner<VisualizationPoint> points)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -186,7 +181,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="b">The blue value.</param>
         /// <param name="a">The alpha value.</param>
         /// <returns></returns>
-        private static uint ColorToUInt(int r, int g, int b, int a)
+        public static uint ColorToUInt(int r, int g, int b, int a)
         {
             return (uint)((b << 16) | (g << 8) | (r << 0) | (a << 24));
         }
