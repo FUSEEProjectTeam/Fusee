@@ -95,18 +95,7 @@ namespace Fusee.PointCloud.Potree
         {
             GpuDataToRender = new List<InstanceData>();
             DataHandler = dataHandler;
-            DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
-        }
-
-        /// <summary>
-        /// Allows to update meshes with data from the points.
-        /// </summary>
-        /// <param name="meshes">The meshes that have to be updated.</param>
-        /// <param name="points">The points with the desired values.</param>
-        public void UpdateGpuDataCache(ref IEnumerable<InstanceData> meshes, MemoryOwner<VisualizationPoint> points)
-        {
-            Diagnostics.Warn("Not implemented. Cache will not be updated.");
         }
 
         /// <summary>
