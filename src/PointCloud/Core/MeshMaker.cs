@@ -3,7 +3,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.PointCloud.Common;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Core
