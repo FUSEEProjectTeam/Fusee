@@ -121,6 +121,45 @@ namespace Fusee.PointCloud.Potree.V2
         }
 
         /// <summary>
+        /// Returns all bytes from the current Potree file for a specific attribute.
+        /// Runtime scales with octree depth!!
+        /// </summary>
+        /// <param name="attrib"></param>
+        /// <returns></returns>
+        public List<byte>? GetAllBytesForAttribute(PotreeSettingsAttribute attrib)
+        {
+            Guard.IsNotNull(PotreeData);
+            
+            var res = new List<byte>();
+            var octree = GetOctree();
+            FillExtraByteList(ref res, PotreeData, (PointCloudOctant)octree.Root, attrib);
+            return res;
+        }
+
+        private void FillExtraByteList(ref List<byte> list, PotreeData potreeData, PointCloudOctant octant, PotreeSettingsAttribute attrib)
+        {
+            if (octant == null)
+                return;
+
+            var node = potreeData.GetNode(octant.OctId) ?? throw new NullReferenceException($"Couldn't get PotreeNode from octant.");
+            var pointArray = ReadRawNodeData(node);
+
+            for (var i = 0; i < pointArray.Length; i += potreeData.Metadata.PointSize)
+            {
+                var extraBytesSpan = pointArray.AsSpan().Slice(i + attrib.AttributeOffset, attrib.Size);
+                list.AddRange(extraBytesSpan.ToArray());
+            }
+
+            if (octant.Children == null || octant.Children.Length == 0)
+                return;
+
+            foreach (var child in octant.Children)
+            {
+                FillExtraByteList(ref list, potreeData, (PointCloudOctant)child, attrib);
+            }
+        }
+
+        /// <summary>
         /// Reads the points for a specific octant of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="id">Id of the octant.</param>
