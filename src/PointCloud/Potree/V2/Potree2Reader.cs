@@ -12,7 +12,6 @@ using Fusee.PointCloud.Potree.V2.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -121,42 +120,24 @@ namespace Fusee.PointCloud.Potree.V2
         }
 
         /// <summary>
-        /// Returns all bytes from the current Potree file for a specific attribute.
-        /// Runtime scales with octree depth!!
+        /// Returns all bytes of one node for a specific attribute.
         /// </summary>
         /// <param name="attrib"></param>
+        /// <param name="node"></param>
         /// <returns></returns>
-        public List<byte>? GetAllBytesForAttribute(PotreeSettingsAttribute attrib)
+        public MemoryStream GetAllBytesForAttribute(PotreeSettingsAttribute attrib, PotreeNode node)
         {
             Guard.IsNotNull(PotreeData);
-            
-            var res = new List<byte>();
-            var octree = GetOctree();
-            FillExtraByteList(ref res, PotreeData, (PointCloudOctant)octree.Root, attrib);
-            return res;
-        }
-
-        private void FillExtraByteList(ref List<byte> list, PotreeData potreeData, PointCloudOctant octant, PotreeSettingsAttribute attrib)
-        {
-            if (octant == null)
-                return;
-
-            var node = potreeData.GetNode(octant.OctId) ?? throw new NullReferenceException($"Couldn't get PotreeNode from octant.");
+            var res = new MemoryStream();
             var pointArray = ReadRawNodeData(node);
 
-            for (var i = 0; i < pointArray.Length; i += potreeData.Metadata.PointSize)
+            for (var i = 0; i < pointArray.Length; i += PotreeData.Metadata.PointSize)
             {
                 var extraBytesSpan = pointArray.AsSpan().Slice(i + attrib.AttributeOffset, attrib.Size);
-                list.AddRange(extraBytesSpan.ToArray());
+                res.Write(extraBytesSpan);
             }
 
-            if (octant.Children == null || octant.Children.Length == 0)
-                return;
-
-            foreach (var child in octant.Children)
-            {
-                FillExtraByteList(ref list, potreeData, (PointCloudOctant)child, attrib);
-            }
+            return res;
         }
 
         /// <summary>
