@@ -291,12 +291,8 @@ namespace Fusee.PointCloud.Potree.V2
 
             CacheMetadata(true);
 
-            PotreeData.Metadata.PrincipalAxisRotation = CalculatePrincipalAxis(PotreeData);
-
             return PotreeData;
         }
-
-
 
         /// <summary>
         /// Calculate the principal axis rotation from given data
@@ -304,11 +300,11 @@ namespace Fusee.PointCloud.Potree.V2
         ///    - Convert to covariance matrix
         ///    - Calculate principal axis
         /// </summary>
-        /// <param name="data">The potree data</param>
         /// <returns></returns>
-        private float4x4 CalculatePrincipalAxis(PotreeData data)
+        public float4x4 CalculatePrincipalAxis()
         {
-            using var allPoints = LoadVisualizationPoint(data.Hierarchy.Root);
+            Guard.IsNotNull(PotreeData);
+            using var allPoints = LoadVisualizationPoint(PotreeData.Hierarchy.Root);
             using var positions = MemoryOwner<float3>.Allocate(allPoints.Length);
 
             // convert all points to byte, slice the position value (stride/offset) and copy to position array
@@ -322,6 +318,7 @@ namespace Fusee.PointCloud.Potree.V2
             try
             {
                 var eigen = new Eigen(positions.Span.ToArray());
+                PotreeData.Metadata.PrincipalAxisRotation = (float4x4)eigen.RotationMatrix;
                 return (float4x4)eigen.RotationMatrix;
             }
             catch (ArithmeticException ex)
