@@ -40,10 +40,6 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         public EventHandler<ErrorEventArgs>? OnPointCloudReadError;
 
-        /// <summary>
-        /// Specify the byte offset for one point until the extra byte data is reached
-        /// </summary>
-        public int OffsetToExtraBytes = -1;
 
         /// <summary>
         /// Generate a new instance of <see cref="Potree2Reader"/>.
@@ -315,8 +311,6 @@ namespace Fusee.PointCloud.Potree.V2
             using var allPoints = LoadVisualizationPoint(data.Hierarchy.Root);
             using var positions = MemoryOwner<float3>.Allocate(allPoints.Length);
 
-            var allPtsBytes = allPoints.Span.AsBytes();
-
             // convert all points to byte, slice the position value (stride/offset) and copy to position array
             for (var i = 0; i < allPoints.Length; i++)
             {
@@ -327,7 +321,7 @@ namespace Fusee.PointCloud.Potree.V2
             // this is irrelevant, as we use only a local variable
             try
             {
-                var eigen = new Eigen(positions.DangerousGetArray().Array);
+                var eigen = new Eigen(positions.Span.ToArray());
                 return (float4x4)eigen.RotationMatrix;
             }
             catch (ArithmeticException ex)
@@ -346,7 +340,6 @@ namespace Fusee.PointCloud.Potree.V2
         public void ReadFile(PotreeData potreeData)
         {
             PotreeData = potreeData;
-
             CacheMetadata(true);
         }
 
