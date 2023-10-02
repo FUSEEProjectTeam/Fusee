@@ -268,7 +268,7 @@ namespace Fusee.PointCloud.Potree
             Guard.IsLessThan(size, ushort.MaxValue);
 
             // automatic point guessing
-            var ptSize = _potreeData.Metadata.OffsetToExtraBytes == - 1 ? size : (_potreeData.Metadata.OffsetToExtraBytes - 1);
+            var ptSize = _potreeData.Metadata.OffsetToExtraBytes == -1 ? size : (_potreeData.Metadata.OffsetToExtraBytes - 1);
             LASPointType ptType = ptSize switch
             {
                 20 => LASPointType.Zero,
