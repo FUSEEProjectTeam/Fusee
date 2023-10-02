@@ -36,7 +36,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// The distance between ray (origin: mouse position) and hit result (point)
         /// </summary>
-        public float2 DistanceToRay;
+        public float DistanceToRay;
     }
 
     /// <summary>
@@ -56,18 +56,18 @@ namespace Fusee.PointCloud.Core.Scene
 
         internal struct MinPickValue
         {
-            internal float2 Distance;
+            internal float Distance;
             internal Mesh Mesh;
             internal int VertIdx;
             internal OctantId OctantId;
         }
 
         /// <summary>
-        /// Determines visible points of a point cloud (using the components <see cref="VisibilityTester"/>) and renders them.
+        /// Picks visible points.
         /// </summary>
         /// <param name="pointCloud">The point cloud component.</param>
         [VisitMethod]
-        public void RenderPointCloud(PointCloudComponent pointCloud)
+        public void PickPointCloud(PointCloudComponent pointCloud)
         {
             PickResults.Clear();
             if (!pointCloud.Active) return;
@@ -88,47 +88,43 @@ namespace Fusee.PointCloud.Core.Scene
 
             if (allHitBoxes == null || allHitBoxes.Count == 0) return;
 
-            var currentRes = new ConcurrentBag<MinPickValue>();
+            var results = new ConcurrentBag<MinPickValue>();
 
             Parallel.ForEach(_pcImp.GpuDataToRender, (mesh) =>
             {
                 foreach (var box in allHitBoxes)
                 {
+                    var minDistBox = float.MaxValue;
+
                     if (!mesh.BoundingBox.Intersects(new AABBf((float3)box.Min, (float3)box.Max))) continue;
 
-                    var currentMin = new MinPickValue
-                    {
-                        Distance = float2.One * float.MaxValue
-                    };
-
                     Guard.IsNotNull(mesh.Vertices);
+                    var levelDependentSpacing = (_pointSpacing * MathF.Pow(2, box.Level)) / 2f;
 
                     for (var i = 0; i < mesh.Vertices.Length; i++)
                     {
-                        var dist = SphereRayIntersection((float3)rayD.Origin, (float3)rayD.Direction, mesh.Vertices[i], _pointSpacing * 0.5f);
-                        if (dist.x < 0 || dist.y < 0) continue;
+                        var dist = CalculateDistance(mesh.Vertices[i], (float3)rayD.Origin, (float3)rayD.Direction);
+                        if (dist < 0) continue;
 
-                        if (dist.x <= currentMin.Distance.x && dist.y <= currentMin.Distance.y)
+                        if (dist <= levelDependentSpacing && dist < minDistBox)
                         {
-                            currentMin.Distance = dist;
-                            currentMin.Mesh = mesh;
-                            currentMin.VertIdx = i;
-                            currentMin.OctantId = box.OctId;
-                            //break; // <- check if break after first result is enough even for sparse point clouds
+                            minDistBox = dist;
+                            results.Add(new MinPickValue()
+                            {
+                                Distance = dist,
+                                Mesh = mesh,
+                                VertIdx = i,
+                                OctantId = box.OctId
+                            });
                         }
                     }
-
-                    if (currentMin.Mesh == null) continue;
-                    currentRes.Add(currentMin);
                 }
+
             });
-
-            if (currentRes == null || currentRes.IsEmpty) return;
-
 
             var mvp = proj * view * _state.Model;
 
-            foreach (var r in currentRes)
+            foreach (var res in results)
             {
                 var pickRes = new PointCloudPickResult
                 {
@@ -136,32 +132,38 @@ namespace Fusee.PointCloud.Core.Scene
                     Projection = proj,
                     View = view,
                     Model = _state.Model,
-                    ClipPos = float4x4.TransformPerspective(mvp, r.Mesh.Vertices[r.VertIdx]),
-                    DistanceToRay = r.Distance,
-                    Mesh = r.Mesh,
-                    VertIdx = r.VertIdx,
-                    OctantId = r.OctantId
+                    ClipPos = float4x4.TransformPerspective(mvp, res.Mesh.Vertices[res.VertIdx]),
+                    DistanceToRay = res.Distance,
+                    Mesh = res.Mesh,
+                    VertIdx = res.VertIdx,
+                    OctantId = res.OctantId
                 };
 
                 PickResults.Add(pickRes);
             }
         }
 
+        private static float CalculateDistance(float3 point, float3 rayOrigin, float3 rayDirection)
+        {
+            if (float3.Dot(point - rayOrigin, rayDirection) < 0) //point is behind the ray's origin
+                return -1;
+            return float3.Cross(rayDirection, point - rayOrigin).Length;
+        }
 
         /// <summary>
         /// Calculates the intersection distance between a ray and a sphere.
         /// </summary>
-        /// <param name="ro"><see cref="RayF.Origin"/></param>
-        /// <param name="rd"><see cref="RayF.Direction"/></param>
-        /// <param name="ce">Center point of sphere/point</param>
-        /// <param name="ra">Radius of sphere with center point of <paramref name="ce"/></param>
+        /// <param name="rayOrigin"><see cref="RayF.Origin"/></param>
+        /// <param name="rayDirection"><see cref="RayF.Direction"/></param>
+        /// <param name="sphereCenter">Center point of sphere/point</param>
+        /// <param name="sphereRad">Radius of sphere with center point of <paramref name="sphereCenter"/></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static float2 SphereRayIntersection(float3 ro, float3 rd, float3 ce, float ra)
+        static float2 SphereRayIntersection(float3 rayOrigin, float3 rayDirection, float3 sphereCenter, float sphereRad)
         {
-            var oc = ro - ce;
-            var b = float3.Dot(oc, rd);
-            var c = float3.Dot(oc, oc) - ra * ra;
+            var oc = rayOrigin - sphereCenter;
+            var b = float3.Dot(oc, rayDirection);
+            var c = float3.Dot(oc, oc) - sphereRad * sphereRad;
             var h = b * b - c;
             if (h < 0.0f) return new float2(-1.0f); // no intersection
             h = MathF.Sqrt(h);
@@ -181,6 +183,32 @@ namespace Fusee.PointCloud.Core.Scene
                     {
                         PickOctantRecursively(child, ray, list);
                     }
+                }
+            }
+            return list;
+        }
+
+        private List<PointCloudOctant> PickOctantIterative(PointCloudOctant node, RayD ray, List<PointCloudOctant> list)
+        {
+            var stack = new Stack<PointCloudOctant>();
+            stack.Push(node);
+
+            while (stack.Count > 0)
+            {
+                var current = stack.Pop();
+
+                if (current?.IsVisible == true && current.IntersectRay(ray))
+                {
+                    list.Add(current);
+                }
+
+                if (current == null)
+                    continue;
+
+                foreach (var child in current.Children)
+                {
+                    if (child != null)
+                        stack.Push((PointCloudOctant)child);
                 }
             }
             return list;
