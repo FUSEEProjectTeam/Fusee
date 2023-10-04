@@ -121,19 +121,20 @@ namespace Fusee.PointCloud.Potree.V2
         /// <param name="attrib"></param>
         /// <param name="node"></param>
         /// <returns></returns>
-        public MemoryStream GetAllBytesForAttribute(PotreeSettingsAttribute attrib, PotreeNode node)
+        public byte[] GetAllBytesForAttribute(PotreeSettingsAttribute attrib, PotreeNode node)
         {
             Guard.IsNotNull(PotreeData);
-            var res = new MemoryStream();
             var pointArray = ReadRawNodeData(node);
+
+            var memStream = new MemoryStream();
 
             for (var i = 0; i < pointArray.Length; i += PotreeData.Metadata.PointSize)
             {
                 var extraBytesSpan = pointArray.AsSpan().Slice(i + attrib.AttributeOffset, attrib.Size);
-                res.Write(extraBytesSpan);
+                memStream.Write(extraBytesSpan);
             }
 
-            return res;
+            return memStream.ToArray();
         }
 
         /// <summary>
