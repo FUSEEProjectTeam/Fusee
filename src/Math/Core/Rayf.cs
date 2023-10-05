@@ -43,8 +43,7 @@ namespace Fusee.Math.Core
             {
                 if (_inverseDirty)
                 {
-                    _inverse = new float3(1 / Direction.x, 1 / Direction.y, 1 / Direction.z);
-
+                    _inverse = new float3(1 / Direction.x, 1 / Direction.y, 1 / Direction.z).Normalize();
                     _inverseDirty = false;
                 }
 
@@ -81,11 +80,7 @@ namespace Fusee.Math.Core
             var pickPosNearWorld = float4x4.TransformPerspective(invViewProjection, new float3(pickPosClip.x, pickPosClip.y, -1));
 
             Origin = pickPosNearWorld;
-
-            _direction = (pickPosFarWorld - pickPosNearWorld).Normalize();
-
-            _inverse = new float3(1 / _direction.x, 1 / _direction.y, 1 / _direction.z);
-            _inverseDirty = false;
+            Direction = (pickPosFarWorld - pickPosNearWorld).Normalize();
         }
     }
 }
