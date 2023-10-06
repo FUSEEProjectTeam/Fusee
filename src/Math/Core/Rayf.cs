@@ -67,20 +67,26 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Creates a new ray.
+        /// Creates a new ray in world space using clip coordinates.
+        /// Origin is the camera's world space position.
         /// </summary>
         /// <param name="pickPosClip">A mouse position in Clip Space.</param>
         /// <param name="view">The View Matrix of the rendered scene.</param>
         /// <param name="projection">The Projection Matrix of the rendered scene.</param>
         public RayF(float2 pickPosClip, float4x4 view, float4x4 projection)
         {
-            float4x4 invViewProjection = float4x4.Invert(projection * view);
+            //No need for perspective devision here. Ray has no intrinsic depth.
+            float4 rayClip = new (pickPosClip.x, pickPosClip.y, 1.0f, 1.0f);
+            float4 rayEye = float4x4.Invert(projection) * rayClip;
+            rayEye.z = 1.0f;
+            rayEye.w = 0.0f;
 
-            var pickPosFarWorld = float4x4.TransformPerspective(invViewProjection, new float3(pickPosClip.x, pickPosClip.y, 1));
-            var pickPosNearWorld = float4x4.TransformPerspective(invViewProjection, new float3(pickPosClip.x, pickPosClip.y, -1));
+            var invView = float4x4.Invert(view);
 
-            Origin = pickPosNearWorld;
-            Direction = (pickPosFarWorld - pickPosNearWorld).Normalize();
+            float3 rayWorld = (invView * rayEye).xyz.Normalize();
+
+            Origin = invView.Column4.xyz;
+            Direction = rayWorld;
         }
     }
 }
