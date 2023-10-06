@@ -180,7 +180,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The pick position on the screen.
         /// </summary>
-        public float2 PickPosClip { get; set; }
+        public float2 PickPosClip { get; private set; }
 
         private float4x4 _view;
         private float4x4 _invView;
@@ -598,7 +598,6 @@ namespace Fusee.Engine.Core
 
         private void PickLineAdjacencyGeometry(Mesh mesh)
         {
-
             var mvp = _projection * _view * State.Model;
             var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
             if (matOfNode == null)
