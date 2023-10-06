@@ -230,28 +230,41 @@ namespace Fusee.Math.Core
         /// <returns></returns>
         public bool IntersectRay(RayF ray)
         {
-            if (this.Intersects(ray.Origin))
-                return true;
+            var tmin = 0f;
+            float tmax = float.MaxValue;
 
-            float t1 = (min.x - ray.Origin.x) * ray.Inverse.x;
-            float t2 = (max.x - ray.Origin.x) * ray.Inverse.x;
-
-            float tmin = M.Min(t1, t2);
-            float tmax = M.Max(t1, t2);
-
-            for (int i = 1; i < 3; i++)
+            //For all three slabs (slab = space between two parallel box planes).
+            for (int i = 0; i < 3; i++)
             {
-                t1 = (min[i] - ray.Origin[i]) * ray.Inverse[i];
-                t2 = (max[i] - ray.Origin[i]) * ray.Inverse[i];
+                //Ray is parallel to slab. No hit if origin not within slab.
+                if (MathF.Abs(ray.Direction[i]) < float.Epsilon)
+                {
+                    if (ray.Origin[i] < min[i] || ray.Origin[i] > max[i])
+                        return false;
+                }
+                else
+                {
+                    //Compute intersection t value of ray within near and far plane of slab
+                    //float ood = 1.0f / ray.Direction[i];
+                    float t1 = (min[i] - ray.Origin[i]) * ray.Inverse[i];
+                    float t2 = (max[i] - ray.Origin[i]) * ray.Inverse[i];
 
-                t1 = float.IsNaN(t1) ? 0.0f : t1;
-                t2 = float.IsNaN(t2) ? 0.0f : t2;
+                    //Make t1 be intersection with near plane, t2 with far plane
+                    if (t1 > t2)
+                        (t2, t1) = (t1, t2); //Swap
+                    
+                    //Compute intersection of slab intersection intervals
+                    tmin = MathF.Max(tmin, t1);
+                    tmax = MathF.Min(tmax, t2);
+                    //Exit with no collision as soon as slab intersection becomes empty
+                    if (tmin > tmax) return false;
 
-                tmin = M.Max(tmin, M.Min(t1, t2));
-                tmax = M.Min(tmax, M.Max(t1, t2));
+                }
             }
 
-            return tmax >= M.Max(tmin, 0.0);
+            //Ray intersects all 3 slabs. Return intersection point (q) and intersection value (tmin)
+            //var q = ray.Origin * ray.Direction * tmin;
+            return true;
         }
 
         /// <summary>
