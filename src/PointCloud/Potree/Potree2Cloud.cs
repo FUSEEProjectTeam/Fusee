@@ -5,13 +5,14 @@ using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
 
 namespace Fusee.PointCloud.Potree
 {
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2Cloud : IPointCloudImp<GpuMesh, VisualizationPoint>
+    public class Potree2Cloud : IPointCloudImp<GpuMesh>
     {
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
 
@@ -103,8 +104,8 @@ namespace Fusee.PointCloud.Potree
         /// Allows to update meshes with data from the points.
         /// </summary>
         /// <param name="meshes">The meshes that have to be updated.</param>
-        /// <param name="points">The points with the desired values.</param>
-        public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> points)
+        /// <param name="pointsMmf">The <see cref="MemoryMappedFile"/> for the points.</param>
+        public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryMappedFile pointsMmf)
         {
             Diagnostics.Warn("Not implemented. Cache will not be updated.");
         }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,7 +24,7 @@ namespace Fusee.PointCloud.Core
     /// Delegate that allows to inject the loading method of the PointReader - loads the points from file.
     /// </summary>
     /// <param name="guid">Unique ID of an octant.</param>
-    public delegate MemoryOwner<VisualizationPoint> LoadPointsHandler(OctantId guid);
+    public delegate MemoryMappedFile LoadPointsHandler(OctantId guid);
 
     /// <summary>
     /// Delegate for a method that tries to get the mesh(es) of an octant. If they are not cached yet, they should be created an added to the _gpuDataCache.
@@ -50,9 +51,13 @@ namespace Fusee.PointCloud.Core
     /// Generic delegate to inject a method that nows how to actually create a GpuMesh or InstanceData for the given point type.
     /// </summary>
     /// <typeparam name="TGpuData"></typeparam>
-    /// <param name="points">The point cloud points as generic array.</param>
+    /// <param name="points">The points.</param>
+    /// <param name="numberOfPointsInGpuData">The number of points in one GPU Data.</param>
+    /// <param name="handleExtraBytes">Method that knows how to deal with a "extra byte" array.</param>
+    /// <param name="metaData">Meta information about the point stream.</param>
+    /// <param name="onPointCloudReadError">Event handler that deals with occurring errors.</param>
     /// <returns></returns>
-    public delegate TGpuData CreateGpuData<TGpuData>(MemoryOwner<VisualizationPoint> points);
+    public delegate TGpuData CreateGpuData<TGpuData>(byte[] points, int numberOfPointsInGpuData, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError);
 
     /// <summary>
     /// Manages the caching and loading of point and mesh data.
@@ -65,13 +70,16 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public EventHandler<ErrorEventArgs>? OnLoadingErrorEvent;
 
+        public CreateMeshMetaData MetaData { get; private set; }
+
+        private readonly HandleReadExtraBytes _handleExtraBytes;
 
         private HashSet<OctantId> _meshesToUpdate = new();
 
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private MemoryCache<OctantId, MemoryOwner<VisualizationPoint>> _pointCache;
+        private MemoryCache<OctantId, MemoryMappedFile> _pointCache;
 
         /// <summary>
         /// Caches loaded points.
@@ -79,6 +87,8 @@ namespace Fusee.PointCloud.Core
         private MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
         private readonly LoadPointsHandler _loadPointsHandler;
+        private readonly Func<OctantId, long> _getNumberOfPointsInNode;
+
         private const int _maxNumberOfDisposals = 1;
         private float _deltaTimeSinceLastDisposal;
         private readonly bool _doRenderInstanced;
@@ -91,7 +101,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="createMeshHandler">Method that knows how to create a mesh for the explicit point type (see <see cref="MeshMaker"/>).</param>
         /// <param name="loadPointsHandler">The method that is able to load the points from the hard drive/file.</param>
         /// <param name="doRenderInstanced"></param>
-        public PointCloudDataHandler(CreateGpuData<TGpuData> createMeshHandler, LoadPointsHandler loadPointsHandler, bool doRenderInstanced = false)
+        public PointCloudDataHandler(CreateGpuData<TGpuData> createMeshHandler, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, LoadPointsHandler loadPointsHandler, Func<OctantId, long> getNumberOfPointsInNode, bool doRenderInstanced = false)
         {
             _pointCache = new();
             _gpuDataCache = new()
@@ -102,8 +112,10 @@ namespace Fusee.PointCloud.Core
 
             CreateGpuDataHandler = createMeshHandler;
             _loadPointsHandler = loadPointsHandler;
-
+            _getNumberOfPointsInNode = getNumberOfPointsInNode;
             _doRenderInstanced = doRenderInstanced;
+            _handleExtraBytes = handleExtraBytes;
+            MetaData = metaData;
 
             LoadingQueue = new((8 ^ 8) / 8);
             DisposeQueue = new Dictionary<OctantId, IEnumerable<TGpuData>>((8 ^ 8) / 8);
@@ -112,7 +124,7 @@ namespace Fusee.PointCloud.Core
 
             _pointCache.HandleEvictedItem += (object key, object? value, EvictionReason reason, object? state) =>
             {
-                if (value != null && value is MemoryOwner<VisualizationPoint> mo)
+                if (value != null && value is MemoryMappedFile mo)
                 {
                     mo.Dispose();
                 }
@@ -126,24 +138,24 @@ namespace Fusee.PointCloud.Core
                     _meshesToUpdate = _pointCache.GetKeys.ToHashSet();
                 }
             };
-
         }
 
         private GpuDataState DoUpdateGpuData(OctantId octantId, ref IEnumerable<TGpuData> gpuData)
         {
             Guard.IsNotNull(CreateGpuDataHandler);
-            if (_pointCache.TryGetValue(octantId, out var points))
+            if (_pointCache.TryGetValue(octantId, out var pointMmf))
             {
                 if (UpdateGpuDataCache != null)
                 {
-                    UpdateGpuDataCache.Invoke(ref gpuData, points);
+                    UpdateGpuDataCache.Invoke(ref gpuData, pointMmf);
                 }
                 else
                 {
+                    int numberOfPointsInNode = (int)_getNumberOfPointsInNode(octantId);
                     if (!_doRenderInstanced)
-                        gpuData = MeshMaker.CreateMeshes(points, CreateGpuDataHandler);
+                        gpuData = MeshMaker.CreateMeshes(pointMmf, numberOfPointsInNode, CreateGpuDataHandler, _handleExtraBytes, MetaData, OnLoadingErrorEvent);
                     else
-                        gpuData = MeshMaker.CreateInstanceData(points, CreateGpuDataHandler);
+                        gpuData = MeshMaker.CreateInstanceData(pointMmf, numberOfPointsInNode, CreateGpuDataHandler, _handleExtraBytes, MetaData, OnLoadingErrorEvent);
                 }
                 return GpuDataState.Changed;
             }
@@ -215,10 +227,11 @@ namespace Fusee.PointCloud.Core
             }
             else if (_pointCache.TryGetValue(octantId, out var points))
             {
+                int numberOfPointsInNode = (int)_getNumberOfPointsInNode(octantId);
                 if (!_doRenderInstanced)
-                    gpuData = MeshMaker.CreateMeshes(points, CreateGpuDataHandler);
+                    gpuData = MeshMaker.CreateMeshes(points, numberOfPointsInNode, CreateGpuDataHandler, _handleExtraBytes, MetaData, OnLoadingErrorEvent);
                 else
-                    gpuData = MeshMaker.CreateInstanceData(points, CreateGpuDataHandler);
+                    gpuData = MeshMaker.CreateInstanceData(points, numberOfPointsInNode, CreateGpuDataHandler, _handleExtraBytes, MetaData, OnLoadingErrorEvent);
 
                 _gpuDataCache.AddOrUpdate(octantId, gpuData);
                 gpuDataState = GpuDataState.New;

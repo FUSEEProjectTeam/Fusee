@@ -11,7 +11,7 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2CloudDynamic : IPointCloudImp<Mesh, VisualizationPoint>
+    public class Potree2CloudDynamic : IPointCloudImp<Mesh>
     {
         /// <summary>
         /// Object for handling the invalidation of the gpu data cache.

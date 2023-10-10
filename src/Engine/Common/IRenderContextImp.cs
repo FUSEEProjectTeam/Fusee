@@ -482,7 +482,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
         /// <param name="instanceColors">The instance colors.</param>
-        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors);
+        public void SetInstanceColor(IInstanceDataImp instanceImp, uint[] instanceColors);
 
         /// <summary>
         /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.

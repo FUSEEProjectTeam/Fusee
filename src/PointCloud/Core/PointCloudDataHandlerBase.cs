@@ -4,6 +4,7 @@ using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.PointCloud.Common;
 using System;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
 
 namespace Fusee.PointCloud.Core
 {
@@ -76,7 +77,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Allows to update meshes with data from the points.
         /// </summary>
-        public UpdateGpuData<IEnumerable<TGpuData>, MemoryOwner<VisualizationPoint>>? UpdateGpuDataCache;
+        public UpdateGpuData<IEnumerable<TGpuData>, MemoryMappedFile>? UpdateGpuDataCache;
 
         private bool _disposed = false;
 

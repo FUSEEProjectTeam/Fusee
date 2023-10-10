@@ -77,7 +77,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Smallest common set of properties that are needed to render point clouds out of core.
     /// </summary>
-    public interface IPointCloudImp<TGpuData, TPoint> : IPointCloudImpBase
+    public interface IPointCloudImp<TGpuData> : IPointCloudImpBase
     {
         /// <summary>
         /// The <see cref="GpuMesh"/>, created from visible octants/point chunks, that are ready to be rendered.

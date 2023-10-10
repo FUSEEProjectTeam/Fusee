@@ -9,7 +9,7 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2CloudInstanced : IPointCloudImp<InstanceData, VisualizationPoint>
+    public class Potree2CloudInstanced : IPointCloudImp<InstanceData>
     {
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
 
