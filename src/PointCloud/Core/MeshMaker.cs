@@ -201,11 +201,15 @@ namespace Fusee.PointCloud.Core
                 colors[i] = ColorToUInt((int)color.r, (int)color.g, (int)color.b, 255);
 
                 uint flag = 0;
-                if (metaData.OffsetToExtraBytes != -1 && metaData.OffsetToExtraBytes != 0 && handleExtraBytes != null)
+                Span<byte> extraBytesRaw = new();
+                if (metaData.OffsetToExtraBytes != -1 && metaData.OffsetToExtraBytes != 0)
                 {
                     var extraByteSize = metaData.PointSize - metaData.OffsetToExtraBytes;
-                    var extraBytesRaw = pointsSpan.Slice(i * metaData.PointSize + metaData.OffsetToExtraBytes, extraByteSize);
-                
+                    extraBytesRaw = pointsSpan.Slice(i * metaData.PointSize + metaData.OffsetToExtraBytes, extraByteSize);
+                }
+                //handleExtraBytes should also handle the case there aren't any extra bytes -> call in any case.
+                if (handleExtraBytes != null)
+                {
                     try
                     {
                         flag = handleExtraBytes(extraBytesRaw);
