@@ -77,6 +77,7 @@ namespace Fusee.PointCloud.Core
         /// Generic method that creates meshes with 65k points maximum.
         /// </summary>
         /// <param name="mmf">The <see cref="MemoryMappedFile"/> that contains the points.</param>
+        /// <param name="numberOfPointInNode">The number of points in this node.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a GpuMesh from the point cloud points.</param>
         /// <param name="handleExtraBytes">Method that knows how to deal with a "extra byte" array.</param>
         /// <param name="metaData">Meta information about the point stream.</param>

@@ -179,7 +179,7 @@ namespace Fusee.PointCloud.Core
             Guard.IsNotNull(CreateGpuDataHandler);
             if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
             {
-                var doUpdate = doUpdateIf != null ? doUpdateIf.Invoke() : false;
+                var doUpdate = doUpdateIf != null && doUpdateIf.Invoke();
                 if (_meshesToUpdate.Contains(octantId) || doUpdate)
                 {
                     gpuDataState = DoUpdateGpuData(octantId, ref gpuData);
