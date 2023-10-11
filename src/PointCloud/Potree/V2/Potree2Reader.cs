@@ -316,6 +316,9 @@ namespace Fusee.PointCloud.Potree.V2
 
             LoadHierarchyRecursive(ref Hierarchy.Root, ref data, 0, Metadata.Hierarchy.FirstChunkSize);
 
+            //TODO: this is needed because the .NET Potree Converter is producing Nodes with 0 points right now. Remove when this is fixed.
+            CleanupHierarchy(Hierarchy.Root);
+
             Hierarchy.Nodes = new();
             Hierarchy.Root.Traverse(n => Hierarchy.Nodes.Add(n));
 
@@ -326,6 +329,30 @@ namespace Fusee.PointCloud.Potree.V2
             Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x + Metadata.Offset.x, Hierarchy.Root.Aabb.max.z + Metadata.Offset.z, Hierarchy.Root.Aabb.max.y + Metadata.Offset.y };
 
             return (Metadata, Hierarchy);
+        }
+        
+        private static void CleanupHierarchy(PotreeNode root)
+        {
+            Stack<PotreeNode> stack = new();
+            stack.Push(root);
+
+            while (stack.Count > 0)
+            {
+                PotreeNode node = stack.Pop();
+
+                for (int i = 0; i < node.Children.Length; i++)
+                {
+                    var child = node.Children[i];
+
+                    if (child != null)
+                    {
+                        if (child.NumPoints == 0)
+                            node.Children[i] = null;
+                        else
+                            stack.Push(child);
+                    }
+                }
+            }
         }
 
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)
