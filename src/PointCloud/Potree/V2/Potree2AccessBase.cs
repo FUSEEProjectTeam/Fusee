@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.PointCloud.Potree.V2.Data;
-using System.IO;
 using System.IO.MemoryMappedFiles;
 
 namespace Fusee.PointCloud.Potree.V2
@@ -43,8 +42,7 @@ namespace Fusee.PointCloud.Potree.V2
             var pointArray = new byte[nodeSize];
             PotreeData.ReadViewAccessor.ReadArray(node.ByteOffset, pointArray, 0, nodeSize);
 
-            var dir = new DirectoryInfo(PotreeData.Metadata.FolderPath);
-            var mmf = MemoryMappedFile.CreateNew($"{dir.Name}_{node.OctantId}", nodeSize);
+            var mmf = MemoryMappedFile.CreateNew(null, nodeSize);
             using var accessor = mmf.CreateViewAccessor();
             accessor.WriteArray(0, pointArray, 0, pointArray.Length);
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 
 namespace Fusee.Base.Core
 {
@@ -105,6 +106,7 @@ namespace Fusee.Base.Core
         private readonly MemoryCache _cache;
 
         private bool _disposed = false;
+        private readonly SemaphoreSlim _cacheLock = new(1);
 
         /// <summary>
         /// Creates a new instance and initializes the internal <see cref="MemoryCache"/>.
@@ -135,20 +137,26 @@ namespace Fusee.Base.Core
         /// </summary>
         /// <param name="key">The key of the cache item.</param>
         /// <param name="cacheEntry">The cache item.</param>
-        public void AddOrUpdate(TKey key, TItem cacheEntry)
+        public async void AddOrUpdate(TKey key, TItem cacheEntry)
         {
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetPriority(CacheItemPriority.High)
-                // Keep in cache for this time, reset time if accessed.
-                .SetSlidingExpiration(TimeSpan.FromSeconds(SlidingExpiration));
-
-            cacheEntryOptions.RegisterPostEvictionCallback((subkey, subValue, reason, state) =>
+            try
             {
-                HandleEvictedItem?.Invoke(subkey, subValue, reason, state);
-            });
+                await _cacheLock.WaitAsync();
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetPriority(CacheItemPriority.High)
+                    // Keep in cache for this time, reset time if accessed.
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(SlidingExpiration));
 
-            // Key not in cache, so get data.
-            _cache.Set(key, cacheEntry, cacheEntryOptions);
+                cacheEntryOptions.RegisterPostEvictionCallback((subkey, subValue, reason, state) =>
+                {
+                    HandleEvictedItem?.Invoke(subkey, subValue, reason, state);
+                });
+
+                // Key not in cache, so get data.
+                _cache.Set(key, cacheEntry, cacheEntryOptions);
+
+            }
+            finally { _cacheLock.Release(); }
         }
 
         /// <summary>

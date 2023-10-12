@@ -107,8 +107,6 @@ namespace Fusee.PointCloud.Potree
         /// <param name="modelMat">The model matrix of the SceneNode the PointCloud(Component) is part of.</param>
         public void Update(float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos, float4x4 modelMat)
         {
-            DataHandler.ProcessDisposeQueue();
-
             if (!_doUpdate &&
                 renderFrustum == VisibilityTester.RenderFrustum &&
                 viewportHeight == VisibilityTester.ViewportHeight &&

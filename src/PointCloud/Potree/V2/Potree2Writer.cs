@@ -5,7 +5,6 @@ using Fusee.PointCloud.Core;
 using Fusee.PointCloud.Potree.V2.Data;
 using System;
 using System.Collections.Generic;
-using System.IO.MemoryMappedFiles;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -53,7 +52,7 @@ namespace Fusee.PointCloud.Potree.V2
             Guard.IsLessThanOrEqualTo(potreeNode.NumPoints, int.MaxValue);
             Guard.IsNotNull(PotreeData);
             Guard.IsNotNull(HandleWriteExtraBytes);
-            
+
             for (int i = 0; i < visualizationPoints.Length; i++)
             {
                 foreach (var attrib in attribs)

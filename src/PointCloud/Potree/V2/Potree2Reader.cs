@@ -75,21 +75,21 @@ namespace Fusee.PointCloud.Potree.V2
                 default:
                 case RenderMode.StaticMesh:
                     {
-                        var dataHandler = new PointCloudDataHandler<GpuMesh>(MeshMaker.CreateStaticMesh, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode);
+                        var dataHandler = new PointCloudDataHandler<GpuMesh>(MeshMaker.CreateStaticMesh, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, GetAllBytesForAttribute);
                         dataHandler.OnLoadingErrorEvent += OnPointCloudReadError;
                         var imp = new Potree2Cloud(dataHandler, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.Instanced:
                     {
-                        var dataHandlerInstanced = new PointCloudDataHandler<InstanceData>(MeshMaker.CreateInstanceData, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, true);
+                        var dataHandlerInstanced = new PointCloudDataHandler<InstanceData>(MeshMaker.CreateInstanceData, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, GetAllBytesForAttribute, true);
                         dataHandlerInstanced.OnLoadingErrorEvent += OnPointCloudReadError;
                         var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.DynamicMesh:
                     {
-                        var dataHandlerDynamic = new PointCloudDataHandler<Mesh>(MeshMaker.CreateDynamicMesh, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode);
+                        var dataHandlerDynamic = new PointCloudDataHandler<Mesh>(MeshMaker.CreateDynamicMesh, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, GetAllBytesForAttribute);
                         dataHandlerDynamic.OnLoadingErrorEvent += OnPointCloudReadError;
                         var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
@@ -127,19 +127,23 @@ namespace Fusee.PointCloud.Potree.V2
         /// <summary>
         /// Returns all bytes of one node for a specific attribute.
         /// </summary>
-        /// <param name="attrib"></param>
-        /// <param name="node"></param>
+        /// <param name="attribName"></param>
+        /// <param name="pointsMmf"></param>
+        /// <param name="guid"></param>
         /// <returns></returns>
-        public byte[] GetAllBytesForAttribute(PotreeSettingsAttribute attrib, PotreeNode node)
+        public byte[] GetAllBytesForAttribute(string attribName, MemoryMappedFile pointsMmf, OctantId guid)
         {
             Guard.IsNotNull(PotreeData);
+            var node = PotreeData.GetNode(guid);
+            Guard.IsNotNull(node);
             var potreePointSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
-            using var mmf = ReadRawNodeData(node);
-            using var accessor = mmf.CreateViewAccessor();
+
+            using var accessor = pointsMmf.CreateViewAccessor();
             var pointArray = new byte[potreePointSize];
             accessor.ReadArray(0, pointArray, 0, potreePointSize);
 
             var memStream = new MemoryStream();
+            var attrib = PotreeData.Metadata.Attributes[attribName];
 
             for (var i = 0; i < pointArray.Length; i += PotreeData.Metadata.PointSize)
             {
@@ -330,7 +334,7 @@ namespace Fusee.PointCloud.Potree.V2
 
             return (Metadata, Hierarchy);
         }
-        
+
         private static void CleanupHierarchy(PotreeNode root)
         {
             Stack<PotreeNode> stack = new();
