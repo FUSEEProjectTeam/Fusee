@@ -75,8 +75,12 @@ namespace Fusee.PointCloud.Core
             set
             {
                 _minProjSizeModifier = value;
-                if (((PointCloudOctree)Octree).Root != null)
-                    _minScreenProjectedSize = ((PointCloudOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
+
+                if (Octree is PointCloudOctree pointCloudOctree)
+                {
+                    if (pointCloudOctree.Root != null)
+                        _minScreenProjectedSize = ((PointCloudOctant)pointCloudOctree.Root).ProjectedScreenSize * _minProjSizeModifier;
+                }
             }
         }
 
