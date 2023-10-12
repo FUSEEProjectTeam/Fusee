@@ -42,8 +42,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="guid">The unique id of an octant.</param>
         /// <param name="doUpdateIf">Allows inserting a condition, if true the mesh will be updated.</param>
-        /// <param name="gpuDataState">State of the gpu data in it's life cycle.</param>
-        public abstract IEnumerable<TGpuData>? GetGpuData(OctantId guid, Func<bool>? doUpdateIf, out GpuDataState gpuDataState);
+        public abstract IEnumerable<TGpuData>? GetGpuData(OctantId guid, Func<bool>? doUpdateIf);
 
         /// <summary>
         /// Loads points from the hard drive if they are neither in the loading queue nor in the PointCahce.
@@ -55,6 +54,16 @@ namespace Fusee.PointCloud.Core
         /// Allows to update meshes with data from the points.
         /// </summary>
         public UpdateGpuData<IEnumerable<TGpuData>, MemoryMappedFile>? UpdateGpuDataCache;
+
+        /// <summary>
+        /// Used to inject a application dependent method that processes newly created gpu data.
+        /// </summary>
+        public Action<TGpuData>? NewMeshAction;
+
+        /// <summary>
+        /// Used to inject a application dependent method that processes gpu data after some update.
+        /// </summary>
+        public Action<TGpuData>? UpdatedMeshAction;
 
         /// <summary>
         /// Returns all bytes of one node for a specific attribute.

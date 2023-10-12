@@ -127,7 +127,7 @@ namespace Fusee.PointCloud.Potree
             {
                 if (!guid.Valid) continue;
 
-                var instanceData = DataHandler.GetGpuData(guid, null, out _);
+                var instanceData = DataHandler.GetGpuData(guid, null);
 
                 if (instanceData == null) continue; //points for this octant aren't loaded yet.
 
