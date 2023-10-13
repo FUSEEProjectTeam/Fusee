@@ -76,21 +76,14 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Generic method that creates meshes with 65k points maximum.
         /// </summary>
-        /// <param name="mmf">The <see cref="MemoryMappedFile"/> that contains the points.</param>
-        /// <param name="numberOfPointInNode">The number of points in this node.</param>
+        /// <param name="points">The <see cref="MemoryOwner{T}"/> that contains the points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a GpuMesh from the point cloud points.</param>
-        /// <param name="handleExtraBytes">Method that knows how to deal with a "extra byte" array.</param>
-        /// <param name="metaData">Meta information about the point stream.</param>
-        /// <param name="onPointCloudReadError">Event handler that deals with occurring errors.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateMeshes<TGpuData>(MemoryMappedFile mmf, int numberOfPointInNode, CreateGpuData<TGpuData> createGpuDataHandler, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
+        public static IEnumerable<TGpuData> CreateMeshes<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler)
         {
             List<TGpuData> meshes;
 
-            var size = numberOfPointInNode * metaData.PointSize;
-            using var accessor = mmf.CreateViewAccessor();
-            var rawPoints = new byte[size];
-            accessor.ReadArray(0, rawPoints, 0, size);
+            var numberOfPointInNode = points.Length;
 
             int maxVertCount = ushort.MaxValue - 1;
             var noOfMeshes = (int)System.Math.Ceiling((float)numberOfPointInNode / maxVertCount);
@@ -106,16 +99,15 @@ namespace Fusee.PointCloud.Core
                     numberOfPointsInMesh = (numberOfPointInNode - maxVertCount * meshCnt);
                 else
                     numberOfPointsInMesh = maxVertCount;
-                
+
                 if (numberOfPointInNode > maxVertCount)
                 {
-                    var points = new byte[numberOfPointsInMesh * metaData.PointSize];
-                    Buffer.BlockCopy(rawPoints, i * metaData.PointSize, points, 0, numberOfPointsInMesh * metaData.PointSize);
-                    meshes.Add(createGpuDataHandler(points, numberOfPointsInMesh, handleExtraBytes, metaData, onPointCloudReadError));
+                    var pointsInMesh = points.Slice(i, numberOfPointsInMesh);
+                    meshes.Add(createGpuDataHandler(pointsInMesh));
                 }
                 else
-                    meshes.Add(createGpuDataHandler(rawPoints, numberOfPointsInMesh, handleExtraBytes, metaData, onPointCloudReadError));
-                
+                    meshes.Add(createGpuDataHandler(points));
+
                 meshCnt++;
             }
             return meshes;
@@ -125,33 +117,30 @@ namespace Fusee.PointCloud.Core
         /// Returns the instance Data for a given point type by using the provided delegate.
         /// </summary>
         /// <typeparam name="TGpuData">Can be of type <see cref="GpuMesh"/> or <see cref="InstanceData"/>. The latter is used when rendering instanced.</typeparam>
-        /// <param name="mmf">The <see cref="MemoryMappedFile"/> that contains the points.</param>
+        /// <param name="points">The <see cref="MemoryOwner{T}"/> that contains the points.</param>
         /// <param name="createGpuDataHandler">The method that defines how to create a InstanceData from the point cloud points.</param>
         /// <returns></returns>
-        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData>(MemoryMappedFile mmf, int numberOfPointsInNode, CreateGpuData<TGpuData> createGpuDataHandler, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
+        public static IEnumerable<TGpuData> CreateInstanceData<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler)
         {
-            var size = numberOfPointsInNode * metaData.PointSize;
+            return new List<TGpuData>
+            {
+                createGpuDataHandler(points)
+            };
+        }
+
+        public static MemoryOwner<VisualizationPoint> CreateVisualizationPoints(MemoryMappedFile mmf, int numberOfPoints, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
+        {
+            var size = numberOfPoints * metaData.PointSize;
             using var accessor = mmf.CreateViewAccessor();
             var rawPoints = new byte[size];
             accessor.ReadArray(0, rawPoints, 0, size);
 
-            return new List<TGpuData>
-            {
-                createGpuDataHandler(rawPoints, numberOfPointsInNode, handleExtraBytes, metaData, onPointCloudReadError)
-            };
-        }
+            MemoryOwner<VisualizationPoint> visPoints = MemoryOwner<VisualizationPoint>.Allocate(numberOfPoints);
+            var pointsSpan = rawPoints.AsSpan();
 
-        private static (float3[], uint[], uint[], uint[], AABBf) GetGpuDataContents(byte[] points, int numberOfPointsInMesh, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
-        {
-            var vertices = new float3[numberOfPointsInMesh];
-            var triangles = new uint[numberOfPointsInMesh];
-            var colors = new uint[numberOfPointsInMesh];
-            var flags = new uint[numberOfPointsInMesh];
-            var boundingBox = new AABBf();
-            var pointsSpan = points.AsSpan();
-
-            for (int i = 0; i < numberOfPointsInMesh; i++)
+            for (int i = 0; i < numberOfPoints; i++)
             {
+                var visPoint = new VisualizationPoint();
                 var byteCountPos = sizeof(int) * 3;
                 var posRaw = pointsSpan.Slice(i * metaData.PointSize + metaData.OffsetToPosValues, byteCountPos);
 
@@ -161,12 +150,7 @@ namespace Fusee.PointCloud.Core
                 var y = (float)(pos[1] * metaData.Scale.y);
                 var z = (float)(pos[2] * metaData.Scale.z);
 
-                vertices[i] = new float3(x, z, y);
-                if (i == 0)
-                    boundingBox = new(vertices[i], vertices[i]);
-                else
-                    boundingBox |= vertices[i];
-                triangles[i] = (uint)i;
+                visPoint.Position = new float3(x, z, y);
 
                 float4 color;
                 if (metaData.OffsetColor != -1)
@@ -199,7 +183,7 @@ namespace Fusee.PointCloud.Core
                     color = float4.UnitW;
                 }
 
-                colors[i] = ColorToUInt((int)color.r, (int)color.g, (int)color.b, 255);
+                visPoint.Color = color;
 
                 uint flag = 0;
                 Span<byte> extraBytesRaw = new();
@@ -220,23 +204,49 @@ namespace Fusee.PointCloud.Core
                         onPointCloudReadError?.Invoke(null, new ErrorEventArgs(e));
                     }
                 }
-                flags[i] = flag;
+                visPoint.Flags = flag;
+
+                visPoints.Span[i] = visPoint;
+            }
+
+            return visPoints;
+        }
+
+        private static (float3[], uint[], uint[], uint[], AABBf) GetGpuDataContents(MemoryOwner<VisualizationPoint> points)
+        {
+            var numberOfPointsInMesh = points.Length;
+            var vertices = new float3[numberOfPointsInMesh];
+            var triangles = new uint[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var flags = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf();
+            var pointsSpan = points.Span;
+
+            for (int i = 0; i < numberOfPointsInMesh; i++)
+            {
+                vertices[i] = pointsSpan[i].Position;
+                if (i == 0)
+                    boundingBox = new(vertices[i], vertices[i]);
+                else
+                    boundingBox |= vertices[i];
+                triangles[i] = (uint)i;
+
+                var col = pointsSpan[i].Color;
+                colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
+
+                flags[i] = pointsSpan[i].Flags;
             }
 
             return (vertices, triangles, colors, flags, boundingBox);
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="VisualizationPoint"/>.
+        /// Returns meshes for points of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="points">The <see cref="MemoryOwner{T}"/> that contains the points.</param>
-        /// <param name="numberOfPointsInMesh">Number of points in this GPU Data.</param>
-        /// <param name="handleExtraBytes">Method that knows how to deal with a "extra byte" array.</param>
-        /// <param name="metaData">Meta information about the point stream.</param>
-        /// <param name="onPointCloudReadError">Event handler that deals with occurring errors.</param>
-        public static GpuMesh CreateStaticMesh(byte[] points, int numberOfPointsInMesh, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
+        public static GpuMesh CreateStaticMesh(MemoryOwner<VisualizationPoint> points)
         {
-            var meshData = GetGpuDataContents(points, numberOfPointsInMesh, handleExtraBytes, metaData, onPointCloudReadError);
+            var meshData = GetGpuDataContents(points);
             var vertices = meshData.Item1;
             var triangles = meshData.Item2;
             var colors = meshData.Item3;
@@ -248,16 +258,12 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="VisualizationPoint"/>.
+        /// Returns meshes for points of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="points">The <see cref="MemoryOwner{T}"/> that contains the points.</param>
-        /// <param name="numberOfPointsInMesh">Number of points in this GPU Data.</param>
-        /// <param name="handleExtraBytes">Method that knows how to deal with a "extra byte" array.</param>
-        /// <param name="metaData">Meta information about the point stream.</param>
-        /// <param name="onPointCloudReadError">Event handler that deals with occurring errors.</param>
-        public static Mesh CreateDynamicMesh(byte[] points, int numberOfPointsInMesh, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
+        public static Mesh CreateDynamicMesh(MemoryOwner<VisualizationPoint> points)
         {
-            var meshData = GetGpuDataContents(points, numberOfPointsInMesh, handleExtraBytes, metaData, onPointCloudReadError);
+            var meshData = GetGpuDataContents(points);
             var vertices = meshData.Item1;
             var triangles = meshData.Item2;
             var colors = meshData.Item3;
@@ -274,13 +280,9 @@ namespace Fusee.PointCloud.Core
         /// Returns meshes for point clouds of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="points">The <see cref="MemoryOwner{T}"/> that contains the points.</param>
-        /// <param name="numberOfPointsInMesh">Number of points in this GPU Data.</param>
-        /// <param name="handleExtraBytes">Method that knows how to deal with a "extra byte" array.</param>
-        /// <param name="metaData">Meta information about the point stream.</param>
-        /// <param name="onPointCloudReadError">Event handler that deals with occurring errors.</param>
-        public static InstanceData CreateInstanceData(byte[] points, int numberOfPointsInMesh, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
+        public static InstanceData CreateInstanceData(MemoryOwner<VisualizationPoint> points)
         {
-            var meshData = GetGpuDataContents(points, numberOfPointsInMesh, handleExtraBytes, metaData, onPointCloudReadError);
+            var meshData = GetGpuDataContents(points);
             var vertices = meshData.Item1;
             var colors = meshData.Item3;
             //var flags = meshData.Item4;

@@ -109,19 +109,19 @@ namespace Fusee.PointCloud.Core.Scene
             switch (pointCloud.RenderMode)
             {
                 case RenderMode.StaticMesh:
-                    foreach (var mesh in ((IPointCloudImp<GpuMesh>)pointCloud.PointCloudImp).GpuDataToRender)
+                    foreach (var mesh in ((IPointCloudImp<GpuMesh, VisualizationPoint>)pointCloud.PointCloudImp).GpuDataToRender)
                     {
                         _rc.Render(mesh, _isForwardModule);
                     }
                     break;
                 case RenderMode.Instanced:
-                    foreach (var instanceData in ((IPointCloudImp<InstanceData>)pointCloud.PointCloudImp).GpuDataToRender)
+                    foreach (var instanceData in ((IPointCloudImp<InstanceData, VisualizationPoint>)pointCloud.PointCloudImp).GpuDataToRender)
                     {
                         _rc.Render(quad, instanceData, _isForwardModule);
                     }
                     break;
                 case RenderMode.DynamicMesh:
-                    foreach (var mesh in ((IPointCloudImp<Mesh>)pointCloud.PointCloudImp).GpuDataToRender)
+                    foreach (var mesh in ((IPointCloudImp<Mesh, VisualizationPoint>)pointCloud.PointCloudImp).GpuDataToRender)
                     {
                         _rc.Render(mesh, null, _isForwardModule);
                     }
