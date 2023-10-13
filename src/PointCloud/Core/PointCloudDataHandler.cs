@@ -350,11 +350,9 @@ namespace Fusee.PointCloud.Core
         /// <returns></returns>
         public override byte[] GetAllBytesForAttribute(string attribName, OctantId guid)
         {
+            //NOTE: Don't add to the caches here! This defies the purpose of the caches, that is to save the "lastly-viewed" nodes.
             if (!_rawPointCache.TryGetValue(guid, out var pointsMmf))
-            {
                 pointsMmf = _loadPointsHandler.Invoke(guid);
-                _rawPointCache.AddOrUpdate(guid, pointsMmf);
-            }
 
             return _getAllBytesForAttribute(attribName, pointsMmf, guid);
         }
