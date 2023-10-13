@@ -126,13 +126,39 @@ namespace Fusee.PointCloud.Potree
         {
             GpuDataToRender = new List<Mesh>();
             DataHandler = dataHandler;
+            DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
+        }
+
+        /// <summary>
+        /// Allows to update meshes with data from the points.
+        /// </summary>
+        /// <param name="meshes">The meshes that have to be updated.</param>
+        /// <param name="points">The points with the desired values.</param>
+        public void UpdateGpuDataCache(ref IEnumerable<Mesh> meshes, MemoryOwner<VisualizationPoint> points)
+        {
+            var countStartSlice = 0;
+
+            foreach (var mesh in meshes)
+            {
+                if (mesh.Flags == null) continue;
+                var slice = points.Span.Slice(countStartSlice, mesh.Flags.Length);
+
+                for (int i = 0; i < slice.Length; i++)
+                {
+                    var pt = slice[i];
+                    if (mesh.Flags[i] != pt.Flags)
+                        mesh.Flags[i] = pt.Flags;
+                }
+                countStartSlice += mesh.Flags.Length;
+            }
         }
 
         /// <summary>
         /// Determines if new Meshes should be loaded.
         /// </summary>
         public bool LoadNewMeshes { get; set; } = true;
+
 
         private List<OctantId> _visibleOctantsCache = new();
 
