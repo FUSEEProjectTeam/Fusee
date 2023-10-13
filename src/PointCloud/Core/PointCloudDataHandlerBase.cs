@@ -53,7 +53,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Allows to update meshes with data from the points.
         /// </summary>
-        public UpdateGpuData<IEnumerable<TGpuData>, MemoryMappedFile>? UpdateGpuDataCache;
+        public UpdateGpuData<IEnumerable<TGpuData>, MemoryOwner<VisualizationPoint>>? UpdateGpuDataCache;
 
         /// <summary>
         /// Used to inject a application dependent method that processes newly created gpu data.

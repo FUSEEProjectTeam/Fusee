@@ -1,4 +1,6 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Base.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
@@ -9,7 +11,7 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2CloudInstanced : IPointCloudImp<InstanceData>
+    public class Potree2CloudInstanced : IPointCloudImp<InstanceData, VisualizationPoint>
     {
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
 

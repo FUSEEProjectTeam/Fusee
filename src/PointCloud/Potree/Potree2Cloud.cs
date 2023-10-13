@@ -1,4 +1,5 @@
-﻿using Fusee.Base.Core;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
@@ -11,7 +12,7 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2Cloud : IPointCloudImp<GpuMesh>
+    public class Potree2Cloud : IPointCloudImp<GpuMesh, VisualizationPoint>
     {
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
 
@@ -104,7 +105,7 @@ namespace Fusee.PointCloud.Potree
         /// </summary>
         /// <param name="meshes">The meshes that have to be updated.</param>
         /// <param name="pointsMmf">The <see cref="MemoryMappedFile"/> for the points.</param>
-        public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryMappedFile pointsMmf)
+        public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> visPoints)
         {
             Diagnostics.Warn("Not implemented. Cache will not be updated.");
         }

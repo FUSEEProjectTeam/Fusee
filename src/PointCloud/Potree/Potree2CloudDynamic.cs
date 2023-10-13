@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+﻿using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
@@ -11,7 +11,7 @@ namespace Fusee.PointCloud.Potree
     /// <summary>
     /// Non-point-type-specific implementation of Potree2 clouds.
     /// </summary>
-    public class Potree2CloudDynamic : IPointCloudImp<Mesh>
+    public class Potree2CloudDynamic : IPointCloudImp<Mesh, VisualizationPoint>
     {
         /// <summary>
         /// Object for handling the invalidation of the gpu data cache.
@@ -199,7 +199,7 @@ namespace Fusee.PointCloud.Potree
 
                 var guidMeshes = DataHandler.GetGpuData(guid, () => !_visibleOctantsCache.Contains(guid));
 
-                if(guidMeshes != null)
+                if (guidMeshes != null)
                     GpuDataToRender.AddRange(guidMeshes);
 
                 currentOctants.Add(guid);
