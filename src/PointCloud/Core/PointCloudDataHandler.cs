@@ -273,7 +273,6 @@ namespace Fusee.PointCloud.Core
 
                 _gpuDataCache.AddOrUpdate(octantId, gpuData);
                 _creatingMeshesTriggeredFor.TryRemove(octantId, out var _);
-
             });
         }
 
@@ -358,7 +357,6 @@ namespace Fusee.PointCloud.Core
             }
 
             return _getAllBytesForAttribute(attribName, pointsMmf, guid);
-
         }
 
         /// <summary>

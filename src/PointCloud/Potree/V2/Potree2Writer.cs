@@ -60,7 +60,7 @@ namespace Fusee.PointCloud.Potree.V2
                     if (attrib != null)
                     {
                         var extraBytesRaw = HandleWriteExtraBytes(visualizationPoints.Span[i].Flags, attrib).ToArray();
-                        PotreeData.WriteViewAccessor.WriteArray(potreeNode.ByteOffset + (PotreeData.Metadata.PointSize * i) + PotreeData.Metadata.OffsetToExtraBytes, extraBytesRaw, 0, extraBytesRaw.Length);
+                        PotreeData.WriteViewAccessor.WriteArray(potreeNode.ByteOffset + (PotreeData.Metadata.PointSize * i) + attrib.AttributeOffset, extraBytesRaw, 0, extraBytesRaw.Length);
                     }
                 }
             }
