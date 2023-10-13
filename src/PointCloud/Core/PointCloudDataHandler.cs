@@ -161,7 +161,7 @@ namespace Fusee.PointCloud.Core
             };
         }
 
-        private GpuDataState DoUpdateGpuData(OctantId octantId, ref IEnumerable<TGpuData> gpuData)
+        private bool DoUpdateGpuData(OctantId octantId, ref IEnumerable<TGpuData> gpuData)
         {
             Guard.IsNotNull(CreateGpuDataHandler);
 
@@ -170,7 +170,7 @@ namespace Fusee.PointCloud.Core
                 if (UpdateGpuDataCache != null)
                 {
                     UpdateGpuDataCache.Invoke(ref gpuData, points);
-                    return GpuDataState.Changed;
+                    return true;
                 }
                 else
                 {
@@ -180,7 +180,7 @@ namespace Fusee.PointCloud.Core
             }
 
             //No points in cache - cannot update (point loading is triggered in VisibilityTester)
-            return GpuDataState.None;
+            return false;
         }
 
         /// <summary>
@@ -198,12 +198,11 @@ namespace Fusee.PointCloud.Core
             if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
             {
                 var doUpdate = doUpdateIf != null && doUpdateIf.Invoke();
-                GpuDataState gpuDataState;
+
                 if (_meshesToUpdate.Contains(octantId) || doUpdate)
                 {
-                    gpuDataState = DoUpdateGpuData(octantId, ref gpuData);
-
-                    if (gpuDataState != GpuDataState.None)
+                    var updateSucceded = DoUpdateGpuData(octantId, ref gpuData);
+                    if (updateSucceded)
                     {
                         _gpuDataCache.AddOrUpdate(octantId, gpuData);
                         _meshesToUpdate.Remove(octantId);
@@ -211,29 +210,17 @@ namespace Fusee.PointCloud.Core
                         {
                             InvalidateCacheToken.IsDirty = false;
                         }
+
+                        foreach (var mesh in gpuData)
+                        {
+                            UpdatedMeshAction?.Invoke(mesh);
+                        }
                         return gpuData;
                     }
 
                     //Mesh remains in the _meshesToUpdate list but couldn't be updated because the points were missing.
                     _gpuDataCache.Remove(octantId);
                     return null;
-                }
-                else
-                    gpuDataState = GpuDataState.Unchanged;
-
-                if (gpuDataState == GpuDataState.Changed)
-                {
-                    foreach (var mesh in gpuData)
-                    {
-                        UpdatedMeshAction?.Invoke(mesh);
-                    }
-                }
-                else if (gpuDataState == GpuDataState.New)
-                {
-                    foreach (var mesh in gpuData)
-                    {
-                        NewMeshAction?.Invoke(mesh);
-                    }
                 }
 
                 return gpuData;
