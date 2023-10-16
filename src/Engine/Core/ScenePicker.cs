@@ -609,7 +609,7 @@ namespace Fusee.Engine.Core
 
             if (mesh.Triangles == null) return;
             if (mesh.Vertices == null) return;
-            if (CurrentCameraResult == null)
+            if (CurrentCameraResult.Camera == null)
             {
                 Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
                 return;
@@ -697,7 +697,6 @@ namespace Fusee.Engine.Core
 
         private void PickLineGeometry(Mesh mesh)
         {
-
             var mvp = _projection * _view * State.Model;
 
             var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
@@ -710,7 +709,7 @@ namespace Fusee.Engine.Core
 
             if (mesh.Triangles == null) return;
             if (mesh.Vertices == null) return;
-            if (CurrentCameraResult == null)
+            if (CurrentCameraResult.Camera == null)
             {
                 Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
                 return;
@@ -780,7 +779,8 @@ namespace Fusee.Engine.Core
                 return;
             }
 
-            var ray = new RayF(PickPosClip, _view, _projection);
+            if (_currentCameraResult.Camera == null) return;
+            var ray = new RayF(PickPosClip, _view, _projection, _currentCameraResult.Camera.ProjectionMethod == ProjectionMethod.Orthographic);
 
             var box = State.Model * mesh.BoundingBox;
             if (!box.IntersectRay(ray))
