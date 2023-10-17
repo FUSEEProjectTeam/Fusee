@@ -2,6 +2,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +13,7 @@ namespace Fusee.Engine.Core
         private readonly IRenderContextImp _renderContextImp;
         private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new();
         private readonly Stack<IInstanceDataImp> _toBeDeletedInstanceDataImps = new();
-        private readonly Dictionary<Suid, (IMeshImp IMeshImp, Mesh? Mesh)> _identifierToMeshImpDictionary = new();
+        private readonly ConcurrentDictionary<Suid, (IMeshImp IMeshImp, Mesh? Mesh)> _identifierToMeshImpDictionary = new();
 
         private readonly Dictionary<Suid, IInstanceDataImp> _identifierToInstanceDataImpDictionary = new();
 
@@ -80,7 +81,7 @@ namespace Fusee.Engine.Core
             _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp.IMeshImp);
 
             // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
-            _ = _identifierToMeshImpDictionary.Remove(meshDataEventArgs.Mesh.SessionUniqueIdentifier);
+            _ = _identifierToMeshImpDictionary.TryRemove(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out var _);
         }
 
         internal void UpdateAllMeshes()
@@ -286,7 +287,7 @@ namespace Fusee.Engine.Core
             mesh.DisposeData += DisposeMesh;
             meshImp.MeshType = mesh.MeshType;
 
-            _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, (meshImp, null));
+            var _ = _identifierToMeshImpDictionary.TryAdd(mesh.SessionUniqueIdentifier, (meshImp, null));
         }
 
         // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
@@ -338,7 +339,7 @@ namespace Fusee.Engine.Core
 
             meshImp.MeshType = mesh.MeshType;
 
-            _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, (meshImp, mesh));
+            var _ = _identifierToMeshImpDictionary.TryAdd(mesh.SessionUniqueIdentifier, (meshImp, mesh));
 
             return meshImp;
         }
