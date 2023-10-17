@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Core
@@ -159,7 +160,11 @@ namespace Fusee.PointCloud.Core
                     _meshesToUpdate = _rawPointCache.GetKeys.ToHashSet();
                 }
             };
+
+            _synchCtx = SynchronizationContext.Current ?? new SynchronizationContext();
         }
+
+        private SynchronizationContext _synchCtx;
 
         private bool DoUpdateGpuData(OctantId octantId, ref IEnumerable<TGpuData> gpuData)
         {
@@ -199,31 +204,36 @@ namespace Fusee.PointCloud.Core
             {
                 var doUpdate = doUpdateIf != null && doUpdateIf.Invoke();
 
-                if (_meshesToUpdate.Contains(octantId) || doUpdate)
+                if (!_meshesToUpdate.Contains(octantId) && !doUpdate)
+                    return gpuData;
+                else
                 {
-                    var updateSucceded = DoUpdateGpuData(octantId, ref gpuData);
-                    if (updateSucceded)
+                    var _ = Task.Run(() =>
                     {
-                        _gpuDataCache.AddOrUpdate(octantId, gpuData);
-                        _meshesToUpdate.Remove(octantId);
-                        if (_meshesToUpdate.Count == 0)
+                        _synchCtx.Post(_ =>
                         {
-                            InvalidateCacheToken.IsDirty = false;
-                        }
+                            var updateSucceded = DoUpdateGpuData(octantId, ref gpuData);
+                            if (updateSucceded)
+                            {
+                                if (_meshesToUpdate.Count == 0)
+                                {
+                                    InvalidateCacheToken.IsDirty = false;
+                                }
 
-                        foreach (var mesh in gpuData)
-                        {
-                            UpdatedMeshAction?.Invoke(mesh);
-                        }
-                        return gpuData;
-                    }
+                                foreach (var mesh in gpuData)
+                                {
+                                    UpdatedMeshAction?.Invoke(mesh);
+                                }
 
-                    //Mesh remains in the _meshesToUpdate list but couldn't be updated because the points were missing.
-                    _gpuDataCache.Remove(octantId);
-                    return null;
+                                _gpuDataCache.AddOrUpdate(octantId, gpuData);
+                                _meshesToUpdate.Remove(octantId);
+                            }
+                        }, null);
+
+                        //Mesh remains in the _meshesToUpdate list but couldn't be updated because the points were missing.
+                        //_gpuDataCache.Remove(octantId);
+                    });
                 }
-
-                return gpuData;
             }
             else
             {
@@ -247,19 +257,24 @@ namespace Fusee.PointCloud.Core
             {
                 IEnumerable<TGpuData> gpuData;
 
-                int numberOfPointsInNode = (int)_getNumberOfPointsInNode(octantId);
-                if (!_doRenderInstanced)
-                    gpuData = MeshMaker.CreateMeshes(points, CreateGpuDataHandler);
-                else
-                    gpuData = MeshMaker.CreateInstanceData(points, CreateGpuDataHandler);
-
-                foreach (var mesh in gpuData)
+                _synchCtx.Post(_ =>
                 {
-                    NewMeshAction?.Invoke(mesh);
-                }
+                    int numberOfPointsInNode = (int)_getNumberOfPointsInNode(octantId);
+                    if (!_doRenderInstanced)
+                        gpuData = MeshMaker.CreateMeshes(points, CreateGpuDataHandler);
+                    else
+                        gpuData = MeshMaker.CreateInstanceData(points, CreateGpuDataHandler);
 
-                _gpuDataCache.AddOrUpdate(octantId, gpuData);
-                _creatingMeshesTriggeredFor.TryRemove(octantId, out var _);
+                    foreach (var mesh in gpuData)
+                    {
+                        NewMeshAction?.Invoke(mesh);
+                    }
+
+                    _gpuDataCache.AddOrUpdate(octantId, gpuData);
+                    _creatingMeshesTriggeredFor.TryRemove(octantId, out var _);
+
+                }, null);
+
             });
         }
 
