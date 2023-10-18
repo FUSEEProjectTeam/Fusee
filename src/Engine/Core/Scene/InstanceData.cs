@@ -91,7 +91,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The unique id of this object.
         /// </summary>
-        public Suid SessionUniqueId { get; } = Suid.GenerateSuid();
+        public Guid UniqueId { get; } = Guid.NewGuid();
 
         /// <summary>
         /// Creates a new instance of type <see cref="InstanceData"/>. Will fail if the length of a provided array doesn't match <see cref="Amount"/>.

@@ -15,7 +15,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
         /// </summary>
-        public Suid SessionUniqueIdentifier { get; }
+        public Guid UniqueIdentifier { get; }
 
         /// <summary>
         /// The primitive type this mesh is composed of.

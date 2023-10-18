@@ -13,9 +13,9 @@ namespace Fusee.Engine.Core
         private readonly IRenderContextImp _renderContextImp;
         private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new();
         private readonly Stack<IInstanceDataImp> _toBeDeletedInstanceDataImps = new();
-        private readonly ConcurrentDictionary<Suid, (IMeshImp IMeshImp, Mesh? Mesh)> _identifierToMeshImpDictionary = new();
+        private readonly ConcurrentDictionary<Guid, (IMeshImp IMeshImp, Mesh? Mesh)> _identifierToMeshImpDictionary = new();
 
-        private readonly Dictionary<Suid, IInstanceDataImp> _identifierToInstanceDataImpDictionary = new();
+        private readonly Dictionary<Guid, IInstanceDataImp> _identifierToInstanceDataImpDictionary = new();
 
         /// <summary>
         /// Creates a new Instance of MeshManager. The instance is handling the memory allocation and deallocation on the GPU by observing Mesh objects.
@@ -74,14 +74,14 @@ namespace Fusee.Engine.Core
 
         private void DisposeMesh(object sender, MeshChangedEventArgs meshDataEventArgs)
         {
-            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out var toBeUpdatedMeshImp))
+            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.UniqueIdentifier, out var toBeUpdatedMeshImp))
                 throw new KeyNotFoundException("Mesh is not registered.");
 
             // Add the meshImp to the toBeDeleted Stack...#
             _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp.IMeshImp);
 
             // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
-            _ = _identifierToMeshImpDictionary.TryRemove(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out var _);
+            _ = _identifierToMeshImpDictionary.TryRemove(meshDataEventArgs.Mesh.UniqueIdentifier, out var _);
         }
 
         internal void UpdateAllMeshes()
@@ -211,19 +211,19 @@ namespace Fusee.Engine.Core
 
         private void DisposeInstanceData(object sender, InstanceDataChangedEventArgs instanceDataEventArgs)
         {
-            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceDataEventArgs.InstanceData.SessionUniqueId, out IInstanceDataImp instanceDataImp))
+            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceDataEventArgs.InstanceData.UniqueId, out IInstanceDataImp instanceDataImp))
                 throw new KeyNotFoundException("InstanceData is not registered.");
 
             // Add the meshImp to the toBeDeleted Stack...
             _toBeDeletedInstanceDataImps.Push(instanceDataImp);
 
             // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
-            _ = _identifierToInstanceDataImpDictionary.Remove(instanceDataEventArgs.InstanceData.SessionUniqueId);
+            _ = _identifierToInstanceDataImpDictionary.Remove(instanceDataEventArgs.InstanceData.UniqueId);
         }
 
         private void InstanceDataChanged(object sender, InstanceDataChangedEventArgs instanceDataEventArgs)
         {
-            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceDataEventArgs.InstanceData.SessionUniqueId, out var instanceImp))
+            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceDataEventArgs.InstanceData.UniqueId, out var instanceImp))
             {
                 throw new ArgumentException("InstanceData is not registered yet. Use RegisterInstanceData first.");
             }
@@ -287,7 +287,7 @@ namespace Fusee.Engine.Core
             mesh.DisposeData += DisposeMesh;
             meshImp.MeshType = mesh.MeshType;
 
-            var _ = _identifierToMeshImpDictionary.TryAdd(mesh.SessionUniqueIdentifier, (meshImp, null));
+            var _ = _identifierToMeshImpDictionary.TryAdd(mesh.UniqueIdentifier, (meshImp, null));
         }
 
         // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
@@ -339,14 +339,14 @@ namespace Fusee.Engine.Core
 
             meshImp.MeshType = mesh.MeshType;
 
-            var _ = _identifierToMeshImpDictionary.TryAdd(mesh.SessionUniqueIdentifier, (meshImp, mesh));
+            var _ = _identifierToMeshImpDictionary.TryAdd(mesh.UniqueIdentifier, (meshImp, mesh));
 
             return meshImp;
         }
 
         private IInstanceDataImp RegisterNewInstanceData(Mesh mesh, InstanceData instanceData)
         {
-            if (!_identifierToMeshImpDictionary.TryGetValue(mesh.SessionUniqueIdentifier, out var meshImp))
+            if (!_identifierToMeshImpDictionary.TryGetValue(mesh.UniqueIdentifier, out var meshImp))
             {
                 throw new ArgumentException("Mesh is not registered yet. Use RegisterMesh first.");
             }
@@ -357,7 +357,7 @@ namespace Fusee.Engine.Core
             var instanceDataImp = _renderContextImp.CreateInstanceDataImp(meshImp.IMeshImp);
             instanceDataImp.Amount = instanceData.Amount;
 
-            _identifierToInstanceDataImpDictionary.Add(instanceData.SessionUniqueId, instanceDataImp);
+            _identifierToInstanceDataImpDictionary.Add(instanceData.UniqueId, instanceDataImp);
             _renderContextImp.SetInstanceTransform(instanceDataImp, instanceData.Positions, instanceData.Rotations, instanceData.Scales);
             _renderContextImp.SetInstanceColor(instanceDataImp, instanceData.Colors);
 
@@ -366,7 +366,7 @@ namespace Fusee.Engine.Core
 
         public IMeshImp GetImpFromMesh(Mesh m)
         {
-            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out var foundMeshImp))
+            if (!_identifierToMeshImpDictionary.TryGetValue(m.UniqueIdentifier, out var foundMeshImp))
             {
                 return RegisterNewMesh(m);
             }
@@ -375,7 +375,7 @@ namespace Fusee.Engine.Core
 
         public IMeshImp GetImpFromMesh(GpuMesh m)
         {
-            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out var foundMeshImp))
+            if (!_identifierToMeshImpDictionary.TryGetValue(m.UniqueIdentifier, out var foundMeshImp))
             {
                 throw new ArgumentException("GpuMesh not found, make sure you created it first.");
             }
@@ -384,7 +384,7 @@ namespace Fusee.Engine.Core
 
         public IInstanceDataImp GetImpFromInstanceData(Mesh m, InstanceData instanceData)
         {
-            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceData.SessionUniqueId, out IInstanceDataImp imp))
+            if (!_identifierToInstanceDataImpDictionary.TryGetValue(instanceData.UniqueId, out IInstanceDataImp imp))
             {
                 return RegisterNewInstanceData(m, instanceData);
             }

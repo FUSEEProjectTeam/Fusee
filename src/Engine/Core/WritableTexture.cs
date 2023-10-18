@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
         /// </summary>
-        public Suid SessionUniqueIdentifier { get; private set; }
+        public Guid UniqueIdentifier { get; private set; }
 
         /// <summary>
         /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
@@ -123,7 +123,7 @@ namespace Fusee.Engine.Core
         /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
         public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            SessionUniqueIdentifier = Suid.GenerateSuid();
+            UniqueIdentifier = Guid.NewGuid();
             PixelFormat = colorFormat;
             Width = width;
             Height = height;

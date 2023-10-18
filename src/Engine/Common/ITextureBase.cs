@@ -130,7 +130,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
         /// </summary>
-        Suid SessionUniqueIdentifier { get; }
+        Guid UniqueIdentifier { get; }
 
         /// <summary>
         /// Defines if Mipmaps are generated for this texture.
