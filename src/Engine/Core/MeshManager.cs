@@ -2,7 +2,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +12,7 @@ namespace Fusee.Engine.Core
         private readonly IRenderContextImp _renderContextImp;
         private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new();
         private readonly Stack<IInstanceDataImp> _toBeDeletedInstanceDataImps = new();
-        private readonly ConcurrentDictionary<Guid, (IMeshImp IMeshImp, Mesh? Mesh)> _identifierToMeshImpDictionary = new();
+        private readonly Dictionary<Guid, (IMeshImp IMeshImp, Mesh? Mesh)> _identifierToMeshImpDictionary = new();
 
         private readonly Dictionary<Guid, IInstanceDataImp> _identifierToInstanceDataImpDictionary = new();
 
@@ -81,7 +80,7 @@ namespace Fusee.Engine.Core
             _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp.IMeshImp);
 
             // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
-            _ = _identifierToMeshImpDictionary.TryRemove(meshDataEventArgs.Mesh.UniqueIdentifier, out var _);
+            _ = _identifierToMeshImpDictionary.Remove(meshDataEventArgs.Mesh.UniqueIdentifier);
         }
 
         internal void UpdateAllMeshes()
@@ -287,7 +286,7 @@ namespace Fusee.Engine.Core
             mesh.DisposeData += DisposeMesh;
             meshImp.MeshType = mesh.MeshType;
 
-            var _ = _identifierToMeshImpDictionary.TryAdd(mesh.UniqueIdentifier, (meshImp, null));
+            _identifierToMeshImpDictionary.Add(mesh.UniqueIdentifier, (meshImp, null));
         }
 
         // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
@@ -339,7 +338,7 @@ namespace Fusee.Engine.Core
 
             meshImp.MeshType = mesh.MeshType;
 
-            var _ = _identifierToMeshImpDictionary.TryAdd(mesh.UniqueIdentifier, (meshImp, mesh));
+            _identifierToMeshImpDictionary.Add(mesh.UniqueIdentifier, (meshImp, mesh));
 
             return meshImp;
         }
