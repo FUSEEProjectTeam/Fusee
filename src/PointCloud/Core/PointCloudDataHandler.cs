@@ -83,7 +83,7 @@ namespace Fusee.PointCloud.Core
 
         private readonly HandleReadExtraBytes _handleExtraBytes;
 
-        private HashSet<OctantId> _meshesToUpdate = new();
+        private HashSet<OctantId> _updateFromInvalidateCache = new();
 
         /// <summary>
         /// Caches loaded points.
@@ -151,47 +151,20 @@ namespace Fusee.PointCloud.Core
 
             _gpuDataCache.HandleEvictedItem += OnItemEvictedFromGpuDataCache;
             _rawPointCache.HandleEvictedItem += OnItemEvictedFromRawPointCache;
-            _rawPointCache.HandleEvictedItem += OnItemEvictedFromVisPointCache;
+            _visPtCache.HandleEvictedItem += OnItemEvictedFromVisPointCache;
 
             InvalidateCacheToken.IsDirtyPropertyChanged += (isDirty) =>
             {
                 if (isDirty)
                 {
-                    _meshesToUpdate = _rawPointCache.GetKeys.ToHashSet();
+                    _updateFromInvalidateCache = _visPtCache.GetKeys.ToHashSet();
                 }
             };
-
-            _synchCtx = SynchronizationContext.Current ?? new SynchronizationContext();
-        }
-
-        private SynchronizationContext _synchCtx;
-
-        private bool DoUpdateGpuData(OctantId octantId, ref IEnumerable<TGpuData> gpuData)
-        {
-            Guard.IsNotNull(CreateGpuDataHandler);
-
-            if (_visPtCache.TryGetValue(octantId, out var points))
-            {
-                if (UpdateGpuDataCache != null)
-                {
-                    UpdateGpuDataCache.Invoke(ref gpuData, points);
-                    return true;
-                }
-                else
-                {
-                    //Mesh has to be created anew.
-                    TriggerMeshCreation(octantId);
-                }
-            }
-
-            //No points in cache - cannot update (point loading is triggered in VisibilityTester)
-            return false;
         }
 
         /// <summary>
-        /// First looks in the mesh cache, if there are meshes return,
-        /// else look in the DisposeQueue, if there are meshes return,
-        /// else look in the point cache, if there are points create a mesh and add to the _meshCache.
+        /// First looks in the mesh cache, if there isn't pending update for this mesh, return.
+        /// Else try to trigger the mesh creation.
         /// </summary>
         /// <param name="octantId">The unique id of an octant.</param>
         /// <param name="doUpdateIf"> Allows inserting a condition, if true the mesh will be updated. This is an addition to <see cref="InvalidateGpuDataCache.IsDirty"/></param>
@@ -199,49 +172,50 @@ namespace Fusee.PointCloud.Core
         public override IEnumerable<TGpuData>? GetGpuData(OctantId octantId, Func<bool>? doUpdateIf)
         {
             Guard.IsNotNull(CreateGpuDataHandler);
+            IEnumerable<TGpuData>? gpuData;
 
-            if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
+            var doUpdate = doUpdateIf != null && doUpdateIf.Invoke();
+
+            if (doUpdate || _updateFromInvalidateCache.Contains(octantId))//meshes could already be queued for update in _updateFromInvalidateCache
             {
-                var doUpdate = doUpdateIf != null && doUpdateIf.Invoke();
+                _gpuDataCache.TryGetValue(octantId, out gpuData);
 
-                if (!_meshesToUpdate.Contains(octantId) && !doUpdate)
-                    return gpuData;
-                else
+                if (gpuData == null)
                 {
-                    var _ = Task.Run(() =>
-                    {
-                        _synchCtx.Post(_ =>
-                        {
-                            var updateSucceded = DoUpdateGpuData(octantId, ref gpuData);
-                            if (updateSucceded)
-                            {
-                                if (_meshesToUpdate.Count == 0)
-                                {
-                                    InvalidateCacheToken.IsDirty = false;
-                                }
-
-                                foreach (var mesh in gpuData)
-                                {
-                                    UpdatedMeshAction?.Invoke(mesh);
-                                }
-
-                                _gpuDataCache.AddOrUpdate(octantId, gpuData);
-                                _meshesToUpdate.Remove(octantId);
-                            }
-                        }, null);
-
-                        //Mesh remains in the _meshesToUpdate list but couldn't be updated because the points were missing.
-                        //_gpuDataCache.Remove(octantId);
-                    });
+                    //Octant contents need to be updated / rendered but we haven't a mesh to update.
+                    TriggerMeshCreation(octantId);
+                    return null;
                 }
+
+                if (UpdateGpuData(octantId, gpuData))
+                    _updateFromInvalidateCache.Remove(octantId);
             }
-            else
+            else if (_gpuDataCache.TryGetValue(octantId, out gpuData) && !_updateFromInvalidateCache.Contains(octantId))
+            {
+                return gpuData;
+            }
+            else if (!_updateFromInvalidateCache.Contains(octantId))
             {
                 TriggerMeshCreation(octantId);
             }
 
             //no points yet, probably in loading queue
             return null;
+        }
+
+        /// <summary>
+        /// Returns all bytes of one node for a specific attribute.
+        /// </summary>
+        /// <param name="attribName"></param>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public override byte[] GetAllBytesForAttribute(string attribName, OctantId guid)
+        {
+            //NOTE: Don't add to the caches here! This defies the purpose of the caches, that is to save the "lastly-viewed" nodes.
+            if (!_rawPointCache.TryGetValue(guid, out var pointsMmf))
+                pointsMmf = _loadPointsHandler.Invoke(guid);
+
+            return _getAllBytesForAttribute(attribName, pointsMmf, guid);
         }
 
         private void TriggerMeshCreation(OctantId octantId)
@@ -253,29 +227,21 @@ namespace Fusee.PointCloud.Core
 
             _creatingMeshesTriggeredFor.TryAdd(octantId, octantId);
 
-            var _ = Task.Run(() =>
+            IEnumerable<TGpuData> gpuData;
+
+            int numberOfPointsInNode = (int)_getNumberOfPointsInNode(octantId);
+            if (!_doRenderInstanced)
+                gpuData = MeshMaker.CreateMeshes(points, CreateGpuDataHandler);
+            else
+                gpuData = MeshMaker.CreateInstanceData(points, CreateGpuDataHandler);
+
+            foreach (var mesh in gpuData)
             {
-                IEnumerable<TGpuData> gpuData;
+                NewMeshAction?.Invoke(mesh);
+            }
 
-                _synchCtx.Post(_ =>
-                {
-                    int numberOfPointsInNode = (int)_getNumberOfPointsInNode(octantId);
-                    if (!_doRenderInstanced)
-                        gpuData = MeshMaker.CreateMeshes(points, CreateGpuDataHandler);
-                    else
-                        gpuData = MeshMaker.CreateInstanceData(points, CreateGpuDataHandler);
-
-                    foreach (var mesh in gpuData)
-                    {
-                        NewMeshAction?.Invoke(mesh);
-                    }
-
-                    _gpuDataCache.AddOrUpdate(octantId, gpuData);
-                    _creatingMeshesTriggeredFor.TryRemove(octantId, out var _);
-
-                }, null);
-
-            });
+            _gpuDataCache.AddOrUpdate(octantId, gpuData);
+            _creatingMeshesTriggeredFor.TryRemove(octantId, out var _);
         }
 
         /// <summary>
@@ -344,19 +310,46 @@ namespace Fusee.PointCloud.Core
             }
         }
 
-        /// <summary>
-        /// Returns all bytes of one node for a specific attribute.
-        /// </summary>
-        /// <param name="attribName"></param>
-        /// <param name="guid"></param>
-        /// <returns></returns>
-        public override byte[] GetAllBytesForAttribute(string attribName, OctantId guid)
+        private bool UpdateGpuData(OctantId octantId, IEnumerable<TGpuData> gpuData)
         {
-            //NOTE: Don't add to the caches here! This defies the purpose of the caches, that is to save the "lastly-viewed" nodes.
-            if (!_rawPointCache.TryGetValue(guid, out var pointsMmf))
-                pointsMmf = _loadPointsHandler.Invoke(guid);
+            var updateSucceded = UpdateFromVisPoints(octantId, ref gpuData);
+            if (updateSucceded)
+            {
+                foreach (var mesh in gpuData)
+                {
+                    UpdatedMeshAction?.Invoke(mesh);
+                }
+                _gpuDataCache.AddOrUpdate(octantId, gpuData);
+            }
+            else
+            {
+                //No points to update with - remove dirty mesh
+                _gpuDataCache.Remove(octantId);
+            }
 
-            return _getAllBytesForAttribute(attribName, pointsMmf, guid);
+            return updateSucceded;
+        }
+
+        private bool UpdateFromVisPoints(OctantId octantId, ref IEnumerable<TGpuData> gpuData)
+        {
+            Guard.IsNotNull(CreateGpuDataHandler);
+
+            if (_visPtCache.TryGetValue(octantId, out var points))
+            {
+                if (UpdateGpuDataCache != null)
+                {
+                    UpdateGpuDataCache.Invoke(ref gpuData, points);
+                    return true;
+                }
+                else
+                {
+                    //Mesh has to be created anew.
+                    TriggerMeshCreation(octantId);
+                }
+            }
+
+            //No points in cache - cannot update (point loading is triggered in VisibilityTester)
+            return false;
         }
 
         /// <summary>
@@ -386,8 +379,8 @@ namespace Fusee.PointCloud.Core
 
 
                 _gpuDataCache.Dispose();
+                _visPtCache.Dispose();
                 _rawPointCache.Dispose();
-
 
                 // Note disposing has been done.
                 _disposed = true;
