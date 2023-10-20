@@ -86,17 +86,17 @@ namespace Fusee.PointCloud.Core
         private HashSet<OctantId> _updateFromInvalidateCache = new();
 
         /// <summary>
-        /// Caches loaded points.
+        /// Caches loaded raw points.
         /// </summary>
         private MemoryCache<OctantId, MemoryMappedFile> _rawPointCache;
 
         /// <summary>
-        /// Caches loaded points.
+        /// Caches loaded points that are ready for the visualization.
         /// </summary>
         private MemoryCache<OctantId, MemoryOwner<VisualizationPoint>> _visPtCache;
 
         /// <summary>
-        /// Caches loaded points.
+        /// Caches loaded gpu data.
         /// </summary>
         private MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
@@ -321,11 +321,6 @@ namespace Fusee.PointCloud.Core
                 }
                 _gpuDataCache.AddOrUpdate(octantId, gpuData);
             }
-            else
-            {
-                //No points to update with - remove dirty mesh
-                _gpuDataCache.Remove(octantId);
-            }
 
             return updateSucceded;
         }
@@ -376,7 +371,6 @@ namespace Fusee.PointCloud.Core
 
                 // Call the appropriate methods to clean up
                 // unmanaged resources here.
-
 
                 _gpuDataCache.Dispose();
                 _visPtCache.Dispose();
