@@ -291,20 +291,20 @@ namespace Fusee.PointCloud.Core
         /// <param name="guid">The octant for which the points should be loaded.</param>
         public override void TriggerPointLoading(OctantId guid)
         {
-            if (_rawPointCache.TryGetValue(guid, out var _)) return;
-
             if (_loadingPointsTriggeredFor.ContainsKey(guid))
                 return;
 
             _loadingPointsTriggeredFor.TryAdd(guid, guid);
-
             _ = Task.Run(() =>
             {
-                var pointsMmf = _loadPointsHandler.Invoke(guid);
-                _loadingPointsTriggeredFor.TryRemove(guid, out var _);
-                _rawPointCache.AddOrUpdate(guid, pointsMmf);
+                if (!_rawPointCache.TryGetValue(guid, out var pointsMmf))
+                {
+                    pointsMmf = _loadPointsHandler.Invoke(guid);
+                    _rawPointCache.AddOrUpdate(guid, pointsMmf);
+                }
 
                 CreateVisPointCacheEntry(pointsMmf, guid);
+                _loadingPointsTriggeredFor.TryRemove(guid, out var _);
 
             }).ContinueWith((finishedTask) =>
             {
