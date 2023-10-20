@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Core
@@ -88,17 +87,17 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Caches loaded raw points.
         /// </summary>
-        private MemoryCache<OctantId, MemoryMappedFile> _rawPointCache;
+        private readonly MemoryCache<OctantId, MemoryMappedFile> _rawPointCache;
 
         /// <summary>
         /// Caches loaded points that are ready for the visualization.
         /// </summary>
-        private MemoryCache<OctantId, MemoryOwner<VisualizationPoint>> _visPtCache;
+        private readonly MemoryCache<OctantId, MemoryOwner<VisualizationPoint>> _visPtCache;
 
         /// <summary>
         /// Caches loaded gpu data.
         /// </summary>
-        private MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
+        private readonly MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
         private readonly LoadPointsHandler _loadPointsHandler;
         private readonly Func<OctantId, long> _getNumberOfPointsInNode;
@@ -108,6 +107,10 @@ namespace Fusee.PointCloud.Core
 
         private readonly ConcurrentDictionary<OctantId, OctantId> _loadingPointsTriggeredFor = new();
         private readonly ConcurrentDictionary<OctantId, OctantId> _creatingMeshesTriggeredFor = new();
+
+        private readonly ConcurrentQueue<IEnumerable<TGpuData>> _disposeQueue = new();
+        private const int _maxNumberOfDisposals = 10;
+        private float _deltaTimeSinceLastDisposal = 0.0f;
 
         private bool _disposed;
 
@@ -162,6 +165,8 @@ namespace Fusee.PointCloud.Core
             };
         }
 
+        private HashSet<OctantId> _queuedForUpdate = new HashSet<OctantId>();
+
         /// <summary>
         /// First looks in the mesh cache, if there isn't pending update for this mesh, return.
         /// Else try to trigger the mesh creation.
@@ -176,7 +181,15 @@ namespace Fusee.PointCloud.Core
 
             var doUpdate = doUpdateIf != null && doUpdateIf.Invoke();
 
-            if (doUpdate || _updateFromInvalidateCache.Contains(octantId))//meshes could already be queued for update in _updateFromInvalidateCache
+            //Queue meshes for update.
+            if ((doUpdate || _updateFromInvalidateCache.Contains(octantId)) && !_queuedForUpdate.Contains(octantId))
+            {
+                _queuedForUpdate.Add(octantId);
+                _updateFromInvalidateCache.Remove(octantId);
+            }
+
+            //Update or return meshes.
+            if (_queuedForUpdate.Contains(octantId))
             {
                 _gpuDataCache.TryGetValue(octantId, out gpuData);
 
@@ -188,19 +201,47 @@ namespace Fusee.PointCloud.Core
                 }
 
                 if (UpdateGpuData(octantId, gpuData))
-                    _updateFromInvalidateCache.Remove(octantId);
+                    _queuedForUpdate.Remove(octantId);
             }
-            else if (_gpuDataCache.TryGetValue(octantId, out gpuData) && !_updateFromInvalidateCache.Contains(octantId))
+            else if (_gpuDataCache.TryGetValue(octantId, out gpuData))
             {
                 return gpuData;
             }
-            else if (!_updateFromInvalidateCache.Contains(octantId))
+            else
             {
                 TriggerMeshCreation(octantId);
             }
 
             //no points yet, probably in loading queue
             return null;
+        }
+
+        /// <summary>
+        /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the gpu data cache.
+        /// Make sure to call this on the main thread.
+        /// </summary>
+        public override void ProcessDisposeQueue()
+        {
+            if (_deltaTimeSinceLastDisposal < DisposeRate)
+                _deltaTimeSinceLastDisposal += Time.DeltaTime;
+            else
+            {
+                _deltaTimeSinceLastDisposal = 0;
+
+                if (_disposeQueue.Count > 0)
+                {
+                    var nodesInQueue = _disposeQueue.Count;
+                    var count = nodesInQueue < _maxNumberOfDisposals ? nodesInQueue : _maxNumberOfDisposals;
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        _disposeQueue.TryDequeue(out var gpuData);
+                        foreach (var data in gpuData)
+                            data.Dispose();
+                    }
+                }
+
+            }
         }
 
         /// <summary>
@@ -303,11 +344,7 @@ namespace Fusee.PointCloud.Core
         private void OnItemEvictedFromGpuDataCache(object guid, object? meshes, EvictionReason reason, object? state)
         {
             if (meshes == null) return;
-
-            foreach (var gpuData in (IEnumerable<TGpuData>)meshes)
-            {
-                gpuData.Dispose();
-            }
+            _disposeQueue.Enqueue((IEnumerable<TGpuData>)meshes);
         }
 
         private bool UpdateGpuData(OctantId octantId, IEnumerable<TGpuData> gpuData)
@@ -375,6 +412,14 @@ namespace Fusee.PointCloud.Core
                 _gpuDataCache.Dispose();
                 _visPtCache.Dispose();
                 _rawPointCache.Dispose();
+
+                foreach (var gpuDatas in _disposeQueue)
+                {
+                    foreach (var gpuData in gpuDatas)
+                    {
+                        gpuData.Dispose();
+                    }
+                }
 
                 // Note disposing has been done.
                 _disposed = true;

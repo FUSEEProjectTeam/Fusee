@@ -3,9 +3,7 @@
 using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.PointCloud.Common;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO.MemoryMappedFiles;
 
 namespace Fusee.PointCloud.Core
 {
@@ -49,6 +47,12 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="guid">The octant for which the points should be loaded.</param>
         public abstract void TriggerPointLoading(OctantId guid);
+
+        /// <summary>
+        /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the gpu data cache.
+        /// Make sure to call this on the main thread.
+        /// </summary>
+        public abstract void ProcessDisposeQueue();
 
         /// <summary>
         /// Allows to update meshes with data from the points.
@@ -110,7 +114,7 @@ namespace Fusee.PointCloud.Core
 
                 // Call the appropriate methods to clean up
                 // unmanaged resources here.
-                
+
                 _disposed = true;
             }
         }
