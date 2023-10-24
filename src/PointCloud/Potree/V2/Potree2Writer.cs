@@ -12,6 +12,7 @@ namespace Fusee.PointCloud.Potree.V2
     /// Delegate for a method that knows how to parse a info from a flag uint back to its byte representation.
     /// </summary>
     /// <param name="flag"></param>
+    /// <param name="attrib">The attribute.</param>
     /// <returns></returns>
     public delegate Span<byte> HandleWriteExtraBytes(uint flag, PotreeSettingsAttribute attrib);
 

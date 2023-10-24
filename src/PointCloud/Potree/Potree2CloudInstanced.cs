@@ -13,6 +13,9 @@ namespace Fusee.PointCloud.Potree
     /// </summary>
     public class Potree2CloudInstanced : IPointCloudImp<InstanceData, VisualizationPoint>
     {
+        /// <summary>
+        /// Provides a dirty flag for the gpu data cache and a property changed handle for it.
+        /// </summary>
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
 
         /// <summary>

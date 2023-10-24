@@ -14,6 +14,9 @@ namespace Fusee.PointCloud.Potree
     /// </summary>
     public class Potree2Cloud : IPointCloudImp<GpuMesh, VisualizationPoint>
     {
+        /// <summary>
+        /// Object for handling the invalidation of the gpu data cache.
+        /// </summary>
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
 
         /// <summary>
@@ -104,7 +107,7 @@ namespace Fusee.PointCloud.Potree
         /// Allows to update meshes with data from the points.
         /// </summary>
         /// <param name="meshes">The meshes that have to be updated.</param>
-        /// <param name="pointsMmf">The <see cref="MemoryMappedFile"/> for the points.</param>
+        /// <param name="visPoints">The <see cref="MemoryMappedFile"/> for the points.</param>
         public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> visPoints)
         {
             Diagnostics.Warn("Not implemented. Cache will not be updated.");
