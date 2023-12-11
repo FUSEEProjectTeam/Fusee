@@ -83,24 +83,26 @@ namespace Fusee.PointCloud.Potree
         /// <summary>
         /// The center of the point clouds AABB / Octree root.
         /// </summary>
-        public float3 Center => (float3)VisibilityTester.Octree.Root.Center;
+        public float3 Center { get; private set; }
 
         /// <summary>
         /// The size (longest edge) of the point clouds AABB / Octree root.
         /// </summary>
-        public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
+        public float3 Size { get; private set; }
 
         private bool _doUpdate = true;
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
         /// </summary>
-        public Potree2Cloud(PointCloudDataHandlerBase<GpuMesh> dataHandler, IPointCloudOctree octree)
+        public Potree2Cloud(PointCloudDataHandlerBase<GpuMesh> dataHandler, IPointCloudOctree octree, float3 size, float3 center)
         {
-            GpuDataToRender = new List<GpuMesh>();
+            GpuDataToRender = [];
             DataHandler = dataHandler;
             DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
+            Size = size;
+            Center = center;
         }
 
         /// <summary>

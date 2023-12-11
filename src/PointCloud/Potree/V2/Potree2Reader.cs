@@ -70,6 +70,8 @@ namespace Fusee.PointCloud.Potree.V2
 
             };
 
+            var shiftedAabbCenter = (float3)(PotreeData.Metadata.AABB.Center - PotreeData.Metadata.Offset);
+
             switch (renderMode)
             {
                 default:
@@ -77,21 +79,21 @@ namespace Fusee.PointCloud.Potree.V2
                     {
                         var dataHandler = new PointCloudDataHandler<GpuMesh>(MeshMaker.CreateStaticMesh, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, GetAllBytesForAttribute);
                         dataHandler.OnLoadingErrorEvent += OnPointCloudReadError;
-                        var imp = new Potree2Cloud(dataHandler, GetOctree());
+                        var imp = new Potree2Cloud(dataHandler, GetOctree(), (float3)PotreeData.Metadata.AABB.Size, shiftedAabbCenter);
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.Instanced:
                     {
                         var dataHandlerInstanced = new PointCloudDataHandler<InstanceData>(MeshMaker.CreateInstanceData, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, GetAllBytesForAttribute, true);
                         dataHandlerInstanced.OnLoadingErrorEvent += OnPointCloudReadError;
-                        var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
+                        var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree(), (float3)PotreeData.Metadata.AABB.Size, shiftedAabbCenter);
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.DynamicMesh:
                     {
                         var dataHandlerDynamic = new PointCloudDataHandler<Mesh>(MeshMaker.CreateDynamicMesh, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, GetAllBytesForAttribute);
                         dataHandlerDynamic.OnLoadingErrorEvent += OnPointCloudReadError;
-                        var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree());
+                        var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree(), (float3)PotreeData.Metadata.AABB.Size, shiftedAabbCenter);
                         return new PointCloudComponent(imp, renderMode);
                     }
             }
@@ -328,10 +330,6 @@ namespace Fusee.PointCloud.Potree.V2
 
             FlipYZAxis(Metadata, Hierarchy);
 
-            // adapt the global AABB after conversion, this works with the current LAS writer
-            Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x + Metadata.Offset.x, Hierarchy.Root.Aabb.min.z + Metadata.Offset.z, Hierarchy.Root.Aabb.min.y + Metadata.Offset.y };
-            Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x + Metadata.Offset.x, Hierarchy.Root.Aabb.max.z + Metadata.Offset.z, Hierarchy.Root.Aabb.max.y + Metadata.Offset.y };
-
             return (Metadata, Hierarchy);
         }
 
@@ -496,6 +494,8 @@ namespace Fusee.PointCloud.Potree.V2
             }
             potreeMetadata.OffsetList = new List<double>(3) { potreeMetadata.Offset.x, potreeMetadata.Offset.z, potreeMetadata.Offset.y };
             potreeMetadata.ScaleList = new List<double>(3) { potreeMetadata.Scale.x, potreeMetadata.Scale.z, potreeMetadata.Scale.y };
+            potreeMetadata.BoundingBox.MaxList = new List<double>(3) { potreeMetadata.BoundingBox.Max.x, potreeMetadata.BoundingBox.Max.z, potreeMetadata.BoundingBox.Max.y };
+            potreeMetadata.BoundingBox.MinList = new List<double>(3) { potreeMetadata.BoundingBox.Min.x, potreeMetadata.BoundingBox.Min.z, potreeMetadata.BoundingBox.Min.y };
         }
 
         private static void CalculateAttributeOffsets(ref PotreeMetadata potreeMetadata)

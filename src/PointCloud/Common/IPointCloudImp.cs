@@ -16,12 +16,12 @@ namespace Fusee.PointCloud.Common
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; }
 
         /// <summary>
-        /// Center of the PointCloud's AABB
+        /// Center of the PointCloud's AABB (already shifted/offsetted)
         /// </summary>
         public float3 Center { get; }
 
         /// <summary>
-        /// Dimensions of the PointCloud's AABB
+        /// Dimensions of the PointCloud's AABB ("real" size, not the octree cube)
         /// </summary>
         public float3 Size { get; }
 
