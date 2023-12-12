@@ -97,7 +97,7 @@ namespace Fusee.PointCloud.Potree
         /// </summary>
         public Potree2Cloud(PointCloudDataHandlerBase<GpuMesh> dataHandler, IPointCloudOctree octree, float3 size, float3 center)
         {
-            GpuDataToRender = [];
+            GpuDataToRender = new();
             DataHandler = dataHandler;
             DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
