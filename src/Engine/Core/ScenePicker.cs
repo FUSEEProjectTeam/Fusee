@@ -278,6 +278,10 @@ namespace Fusee.Engine.Core
                 }
             }
 
+            //Early out for the case that the scene is rendered with more than one canvas and the mouse isn't inside the correct one.
+            if (pickCam == null || pickCam == default)
+                return null;
+
             CurrentCameraResult = pickCam;
 
             pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
