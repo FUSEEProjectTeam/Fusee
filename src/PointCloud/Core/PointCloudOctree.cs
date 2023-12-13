@@ -21,7 +21,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Constructor for creating an Octree that is suitable for creating files from it. 
         /// </summary>
-        public PointCloudOctree(double3 center, double size, int maxLvl)
+        public PointCloudOctree(double3 center, double3 size, int maxLvl)
         {
             Root = new PointCloudOctant(center, size, new OctantId("r"));
             Depth = maxLvl;

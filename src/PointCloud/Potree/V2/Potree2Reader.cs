@@ -116,7 +116,7 @@ namespace Fusee.PointCloud.Potree.V2
             Guard.IsNotNull(PotreeData.Metadata);
 
             var center = PotreeData.Hierarchy.Root.Aabb.Center;
-            var size = PotreeData.Hierarchy.Root.Aabb.Size.y;
+            var size = PotreeData.Hierarchy.Root.Aabb.Size;//System.Math.Max(System.Math.Max(PotreeData.Hierarchy.Root.Aabb.Size.x, PotreeData.Hierarchy.Root.Aabb.Size.y), PotreeData.Hierarchy.Root.Aabb.Size.z);
             var maxLvl = PotreeData.Metadata.Hierarchy.Depth;
 
             var octree = new PointCloudOctree(center, size, maxLvl);
@@ -190,7 +190,7 @@ namespace Fusee.PointCloud.Potree.V2
                 {
                     var potreeChild = potreeNode.Children[i];
 
-                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, new OctantId(potreeChild.Name));
+                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size, new OctantId(potreeChild.Name));
 
                     if (potreeChild.NodeType == NodeType.LEAF)
                     {

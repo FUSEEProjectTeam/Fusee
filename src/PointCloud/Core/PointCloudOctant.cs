@@ -42,7 +42,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Length, width and height of this Octant.
         /// </summary>
-        public double Size
+        public double3 Size
         {
             get { return _size; }
             set
@@ -52,12 +52,12 @@ namespace Fusee.PointCloud.Core
                 Max = _center + 0.5f * _size;
             }
         }
-        private double _size;
+        private double3 _size;
 
         /// <summary>
         /// List of child octants.
         /// </summary>
-        public IEmptyOctant<double3, double>[] Children { get; private set; }
+        public IEmptyOctant<double3, double3>[] Children { get; private set; }
 
         /// <summary>
         /// If true this octant does not have any children.
@@ -96,7 +96,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="size">The size (in all three dimensions) of this octant.</param>
         /// <param name="octId"></param>
         /// <param name="children">The octants child octants.</param>
-        public PointCloudOctant(double3 center, double size, OctantId octId, PointCloudOctant[]? children = null)
+        public PointCloudOctant(double3 center, double3 size, OctantId octId, PointCloudOctant[]? children = null)
         {
             Center = center;
             Size = size;
@@ -142,7 +142,7 @@ namespace Fusee.PointCloud.Core
         /// Instantiates a child octant at the given position.
         /// </summary>
         /// <param name="atPosInParent">The <see cref="PosInParent"/> the new child has.</param>
-        public IEmptyOctant<double3, double> CreateChild(int atPosInParent)
+        public IEmptyOctant<double3, double3> CreateChild(int atPosInParent)
         {
             throw new System.NotImplementedException();
         }
@@ -152,11 +152,14 @@ namespace Fusee.PointCloud.Core
         /// Returns true if one of the Frustum planes is intersecting this octant.
         /// </summary>
         /// <param name="frustum">The frustum to test against.</param>
+        /// <param name="translation">Additional translation.</param>
+        /// <param name="scale">Additional scale.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
         public bool InsideOrIntersectingFrustum(FrustumF frustum, float3 translation, float3 scale)
         {
+            //var maxSize = (float)System.Math.Max(System.Math.Max(Size.x, Size.y), Size.z);
             var translatedCenter = new float3(Center) + translation;
-            var scaledSize = new float3((float)Size) * scale;
+            var scaledSize = new float3(Size) * scale;
             return frustum.Near.InsideOrIntersecting(translatedCenter, scaledSize) &
                 frustum.Far.InsideOrIntersecting(translatedCenter, scaledSize) &
                 frustum.Left.InsideOrIntersecting(translatedCenter, scaledSize) &
@@ -173,12 +176,13 @@ namespace Fusee.PointCloud.Core
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
         public bool InsideOrIntersectingFrustum(FrustumF frustum)
         {
-            return frustum.Near.InsideOrIntersecting(new float3(Center), (float)Size) &
-                frustum.Far.InsideOrIntersecting(new float3(Center), (float)Size) &
-                frustum.Left.InsideOrIntersecting(new float3(Center), (float)Size) &
-                frustum.Right.InsideOrIntersecting(new float3(Center), (float)Size) &
-                frustum.Top.InsideOrIntersecting(new float3(Center), (float)Size) &
-                frustum.Bottom.InsideOrIntersecting(new float3(Center), (float)Size);
+            var sizeF = (float3)Size;
+            return frustum.Near.InsideOrIntersecting(new float3(Center), sizeF) &
+                frustum.Far.InsideOrIntersecting(new float3(Center), sizeF) &
+                frustum.Left.InsideOrIntersecting(new float3(Center), sizeF) &
+                frustum.Right.InsideOrIntersecting(new float3(Center), sizeF) &
+                frustum.Top.InsideOrIntersecting(new float3(Center), sizeF) &
+                frustum.Bottom.InsideOrIntersecting(new float3(Center), sizeF);
         }
 
         /// <summary>
