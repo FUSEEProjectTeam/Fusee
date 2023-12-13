@@ -102,7 +102,8 @@ namespace Fusee.PointCloud.Core
 
                 if (numberOfPointInNode > maxVertCount)
                 {
-                    var pointsInMesh = points.Slice(i, numberOfPointsInMesh);
+                    using MemoryOwner<VisualizationPoint> pointsInMesh = MemoryOwner<VisualizationPoint>.Allocate(numberOfPointsInMesh);
+                    points.Span.Slice(i, numberOfPointsInMesh).CopyTo(pointsInMesh.Span);
                     meshes.Add(createGpuDataHandler(pointsInMesh));
                 }
                 else
