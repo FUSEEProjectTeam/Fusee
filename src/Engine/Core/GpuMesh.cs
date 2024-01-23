@@ -44,7 +44,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
         /// </summary>
-        public Suid SessionUniqueIdentifier { get; } = Suid.GenerateSuid();
+        public Guid UniqueIdentifier { get; } = Guid.NewGuid();
 
         /// <summary>
         /// Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)

@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
         /// </summary>
-        public Suid SessionUniqueIdentifier { get; }
+        public Guid UniqueIdentifier { get; }
 
         /// <summary>
         /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
@@ -125,7 +125,7 @@ namespace Fusee.Engine.Core
             //    throw new ArgumentException($"Multisample texture factor {multisampleFactor} is either '0' or too big. GL_MAX_SAMPLES for this ImagePixelFormat is {maxSamples}");
             //}
 
-            SessionUniqueIdentifier = Suid.GenerateSuid();
+            UniqueIdentifier = Guid.NewGuid();
             PixelFormat = colorFormat;
             Width = width;
             Height = height;

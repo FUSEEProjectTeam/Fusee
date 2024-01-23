@@ -34,7 +34,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
         /// </summary>
-        public Suid SessionUniqueIdentifier { get; } = Suid.GenerateSuid();
+        public Guid UniqueIdentifier { get; } = Guid.NewGuid();
 
         private bool _disposed;
 
@@ -108,7 +108,7 @@ namespace Fusee.Engine.Core.Effects
             }
 
             // Return true if the fields match:
-            return (SessionUniqueIdentifier == p.SessionUniqueIdentifier);
+            return (UniqueIdentifier == p.UniqueIdentifier);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Fusee.Engine.Core.Effects
             }
 
             // Return true if the fields match:
-            return (SessionUniqueIdentifier == p.SessionUniqueIdentifier);
+            return (UniqueIdentifier == p.UniqueIdentifier);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Fusee.Engine.Core.Effects
         /// <returns>A hash code for the current object.</returns>
         public override int GetHashCode()
         {
-            return SessionUniqueIdentifier.GetHashCode();
+            return UniqueIdentifier.GetHashCode();
         }
 
         /// <summary>

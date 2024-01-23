@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
@@ -9,15 +10,18 @@ namespace Fusee.PointCloud.Common
     /// </summary>
     public interface IPointCloudImpBase
     {
+        /// <summary>
+        /// Object for handling the invalidation of the gpu data cache.
+        /// </summary>
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; }
 
         /// <summary>
-        /// Center of the PointCloud's AABB
+        /// Center of the PointCloud's AABB (already shifted/offsetted)
         /// </summary>
         public float3 Center { get; }
 
         /// <summary>
-        /// Dimensions of the PointCloud's AABB
+        /// Dimensions of the PointCloud's AABB ("real" size, not the octree cube)
         /// </summary>
         public float3 Size { get; }
 
@@ -83,6 +87,13 @@ namespace Fusee.PointCloud.Common
         /// The <see cref="GpuMesh"/>, created from visible octants/point chunks, that are ready to be rendered.
         /// </summary>
         public List<TGpuData> GpuDataToRender { get; set; }
+
+        /// <summary>
+        /// Allows to update meshes with data from the points.
+        /// </summary>
+        /// <param name="meshes">The meshes that have to be updated.</param>
+        /// <param name="points">The points with the desired values.</param>
+        public void UpdateGpuDataCache(ref IEnumerable<TGpuData> meshes, MemoryOwner<TPoint> points);
 
     }
 }

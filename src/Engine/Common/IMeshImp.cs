@@ -1,4 +1,6 @@
 ﻿using ProtoBuf;
+using System;
+
 namespace Fusee.Engine.Common
 {
     /// <summary>

@@ -1,5 +1,4 @@
-﻿using Fusee.Engine.Common;
-using Fusee.Engine.Core.Effects;
+﻿using Fusee.Engine.Core.Effects;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +8,7 @@ namespace Fusee.Engine.Core
     {
         private readonly RenderContext _rc;
         private readonly Stack<Effect> _effectsToBeDeleted = new();
-        private readonly Dictionary<Suid, Effect> _allEffects = new();
+        private readonly Dictionary<Guid, Effect> _allEffects = new();
 
         private void EffectChanged(object sender, EffectManagerEventArgs args)
         {
@@ -38,7 +37,7 @@ namespace Fusee.Engine.Core
             // Setup handler to observe changes of the mesh data and dispose event (deallocation)
             ef.EffectChanged += EffectChanged;
 
-            _allEffects.Add(ef.SessionUniqueIdentifier, ef);
+            _allEffects.Add(ef.UniqueIdentifier, ef);
         }
 
         /// <summary>
@@ -50,9 +49,9 @@ namespace Fusee.Engine.Core
             _rc = renderContextImp;
         }
 
-        public Effect GetEffect(Effect ef)
+        public Effect? GetEffect(Effect ef)
         {
-            return _allEffects.TryGetValue(ef.SessionUniqueIdentifier, out var effect) ? effect : null;
+            return _allEffects.TryGetValue(ef.UniqueIdentifier, out var effect) ? effect : null;
         }
 
         /// <summary>
@@ -64,7 +63,7 @@ namespace Fusee.Engine.Core
             {
                 var tmPop = _effectsToBeDeleted.Pop();
                 // Remove one Effect from _allEffects
-                _allEffects.Remove(tmPop.SessionUniqueIdentifier);
+                _allEffects.Remove(tmPop.UniqueIdentifier);
                 // Remove one Effect from Memory
                 _rc.RemoveShader(tmPop);
             }

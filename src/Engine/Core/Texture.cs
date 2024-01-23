@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
         /// </summary>
-        public Suid SessionUniqueIdentifier { get; protected set; }
+        public Guid UniqueIdentifier { get; protected set; }
         #endregion
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LinearMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
-            SessionUniqueIdentifier = Suid.GenerateSuid();
+            UniqueIdentifier = Guid.NewGuid();
             ImageData = new ImageData(pixelData, width, height, colorFormat);
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
@@ -156,7 +156,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
-            SessionUniqueIdentifier = Suid.GenerateSuid();
+            UniqueIdentifier = Guid.NewGuid();
             ImageData = imageData;
 
             DoGenerateMipMaps = generateMipMaps;

@@ -73,20 +73,34 @@ namespace Fusee.Math.Core
         /// <param name="pickPosClip">A mouse position in Clip Space.</param>
         /// <param name="view">The View Matrix of the rendered scene.</param>
         /// <param name="projection">The Projection Matrix of the rendered scene.</param>
-        public RayF(float2 pickPosClip, float4x4 view, float4x4 projection)
+        /// <param name="isOrthographic">Is the projection matrix a orthographic one?</param>
+        public RayF(float2 pickPosClip, float4x4 view, float4x4 projection, bool isOrthographic = false)
         {
-            //No need for perspective devision here. Ray has no intrinsic depth.
-            float4 rayClip = new (pickPosClip.x, pickPosClip.y, 1.0f, 1.0f);
-            float4 rayEye = float4x4.Invert(projection) * rayClip;
-            rayEye.z = 1.0f;
-            rayEye.w = 0.0f;
+            if (!isOrthographic)
+            {
+                //No need for perspective devision here. Ray has no intrinsic depth.
+                //Doesn't work for ortho projection.
+                //Numerically more stable because of the missing perspective division.
+                float4 rayClip = new(pickPosClip.x, pickPosClip.y, 1.0f, 1.0f);
+                float4 rayEye = float4x4.Invert(projection) * rayClip;
+                rayEye.z = 1.0f;
+                rayEye.w = 0.0f;
 
-            var invView = float4x4.Invert(view);
+                var invView = float4x4.Invert(view);
 
-            float3 rayWorld = (invView * rayEye).xyz.Normalize();
+                float3 rayWorld = (invView * rayEye).xyz.Normalize();
+                Origin = invView.Column4.xyz;
+                Direction = rayWorld;
+            }
+            else
+            {
+                float4x4 invViewProjection = float4x4.Invert(projection * view);
+                var pickPosFarWorld = invViewProjection * new float3(pickPosClip.x, pickPosClip.y, 1);
+                var pickPosNearWorld = invViewProjection * new float3(pickPosClip.x, pickPosClip.y, -1);
 
-            Origin = invView.Column4.xyz;
-            Direction = rayWorld;
+                Origin = pickPosNearWorld;
+                Direction = (pickPosFarWorld - pickPosNearWorld).Normalize();
+            }
         }
     }
 }

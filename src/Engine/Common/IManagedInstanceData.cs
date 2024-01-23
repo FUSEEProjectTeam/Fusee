@@ -21,7 +21,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The unique id of the object.
         /// </summary>
-        public Suid SessionUniqueId
+        public Guid UniqueId
         {
             get;
         }

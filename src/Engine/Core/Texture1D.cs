@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         public Texture1D(byte[] pixelData, int width, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LinearMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
-            SessionUniqueIdentifier = Suid.GenerateSuid();
+            UniqueIdentifier = Guid.NewGuid();
             ImageData = new ImageData(pixelData, width, 1, colorFormat);
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core
             if (imageData.Height != 1)
                 throw new ArgumentException("Height of the image data is not 1, use a Texture instead.");
 
-            SessionUniqueIdentifier = Suid.GenerateSuid();
+            UniqueIdentifier = Guid.NewGuid();
             ImageData = imageData;
 
             DoGenerateMipMaps = generateMipMaps;

@@ -40,10 +40,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <param name="rc"></param>
         public void UpdateContext(RenderContext rc)
         {
-            if (rc == null)
-                throw new ArgumentNullException(nameof(rc));
-
-            _rc = rc;
+            _rc = rc ?? throw new ArgumentNullException(nameof(rc));
 
             // prevent rendering with <see cref="Mesh.HasDirtyIndices"/>
             _rc.AllowDirtyMeshs = false;
@@ -55,10 +52,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <param name="state"></param>
         public void UpdateState(RendererState state)
         {
-            if (state == null)
-                throw new ArgumentNullException(nameof(state));
-
-            _state = state;
+            _state = state ?? throw new ArgumentNullException(nameof(state));
         }
 
         /// <summary>

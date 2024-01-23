@@ -12,6 +12,7 @@ namespace Fusee.PointCloud.Potree.V2
     /// Delegate for a method that knows how to parse a info from a flag uint back to its byte representation.
     /// </summary>
     /// <param name="flag"></param>
+    /// <param name="attrib">The attribute.</param>
     /// <returns></returns>
     public delegate Span<byte> HandleWriteExtraBytes(uint flag, PotreeSettingsAttribute attrib);
 
@@ -36,7 +37,7 @@ namespace Fusee.PointCloud.Potree.V2
         /// <param name="octantId"></param>
         /// <param name="visualizationPoints"></param>
         /// <param name="attribs"></param>
-        public void WriteVisualizationPoint(OctantId octantId, MemoryOwner<VisualizationPoint> visualizationPoints, List<PotreeSettingsAttribute> attribs)
+        public void WriteVisualizationPointForNode(OctantId octantId, MemoryOwner<VisualizationPoint> visualizationPoints, List<PotreeSettingsAttribute> attribs)
         {
             Guard.IsNotNull(PotreeData);
             var node = PotreeData.GetNode(octantId);
@@ -44,42 +45,26 @@ namespace Fusee.PointCloud.Potree.V2
             // if node is null the hierarchy is broken and we look for an octant that isn't there...
             Guard.IsNotNull(node);
 
-            WriteVisualizationPoint(node, visualizationPoints, attribs);
+            WriteVisualizationPoints(node, visualizationPoints, attribs);
         }
 
-        private void WriteVisualizationPoint(PotreeNode potreeNode, MemoryOwner<VisualizationPoint> visualizationPoints, List<PotreeSettingsAttribute> attribs)
+        private void WriteVisualizationPoints(PotreeNode potreeNode, MemoryOwner<VisualizationPoint> visualizationPoints, List<PotreeSettingsAttribute> attribs)
         {
             Guard.IsLessThanOrEqualTo(potreeNode.NumPoints, int.MaxValue);
             Guard.IsNotNull(PotreeData);
             Guard.IsNotNull(HandleWriteExtraBytes);
 
-            var pointArray = ReadRawNodeData(potreeNode);
-            var visualizationArray = visualizationPoints.Span;
-            var visualizationIdx = 0;
-            for (int i = 0; i < pointArray.Length; i += PotreeData.Metadata.PointSize)
+            for (int i = 0; i < visualizationPoints.Length; i++)
             {
                 foreach (var attrib in attribs)
                 {
                     if (attrib != null)
                     {
-                        var attribSlice = new Span<byte>(pointArray).Slice(i + attrib.AttributeOffset, attrib.Size);
-                        HandleWriteExtraBytes(visualizationArray[visualizationIdx].Flags, attrib).CopyTo(attribSlice);
+                        var extraBytesRaw = HandleWriteExtraBytes(visualizationPoints.Span[i].Flags, attrib).ToArray();
+                        PotreeData.WriteViewAccessor.WriteArray(potreeNode.ByteOffset + (PotreeData.Metadata.PointSize * i) + attrib.AttributeOffset, extraBytesRaw, 0, extraBytesRaw.Length);
                     }
                 }
-
-                visualizationIdx++;
             }
-
-            WriteRawNodeData(potreeNode, pointArray);
-        }
-
-        private void WriteRawNodeData(PotreeNode potreeNode, byte[] rawNodeData)
-        {
-            Guard.IsNotNull(PotreeData);
-            Guard.IsNotNull(rawNodeData);
-
-            var potreePointSize = (int)potreeNode.NumPoints * PotreeData.Metadata.PointSize;
-            PotreeData.WriteViewAccessor.WriteArray(potreeNode.ByteOffset, rawNodeData, 0, potreePointSize);
         }
     }
 }

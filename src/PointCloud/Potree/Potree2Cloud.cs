@@ -5,6 +5,7 @@ using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
 
 namespace Fusee.PointCloud.Potree
 {
@@ -13,6 +14,9 @@ namespace Fusee.PointCloud.Potree
     /// </summary>
     public class Potree2Cloud : IPointCloudImp<GpuMesh, VisualizationPoint>
     {
+        /// <summary>
+        /// Object for handling the invalidation of the gpu data cache.
+        /// </summary>
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
 
         /// <summary>
@@ -79,32 +83,34 @@ namespace Fusee.PointCloud.Potree
         /// <summary>
         /// The center of the point clouds AABB / Octree root.
         /// </summary>
-        public float3 Center => (float3)VisibilityTester.Octree.Root.Center;
+        public float3 Center { get; private set; }
 
         /// <summary>
         /// The size (longest edge) of the point clouds AABB / Octree root.
         /// </summary>
-        public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
+        public float3 Size { get; private set; }
 
         private bool _doUpdate = true;
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
         /// </summary>
-        public Potree2Cloud(PointCloudDataHandlerBase<GpuMesh> dataHandler, IPointCloudOctree octree)
+        public Potree2Cloud(PointCloudDataHandlerBase<GpuMesh> dataHandler, IPointCloudOctree octree, float3 size, float3 center)
         {
-            GpuDataToRender = new List<GpuMesh>();
+            GpuDataToRender = new();
             DataHandler = dataHandler;
             DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
+            Size = size;
+            Center = center;
         }
 
         /// <summary>
         /// Allows to update meshes with data from the points.
         /// </summary>
         /// <param name="meshes">The meshes that have to be updated.</param>
-        /// <param name="points">The points with the desired values.</param>
-        public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> points)
+        /// <param name="visPoints">The <see cref="MemoryMappedFile"/> for the points.</param>
+        public void UpdateGpuDataCache(ref IEnumerable<GpuMesh> meshes, MemoryOwner<VisualizationPoint> visPoints)
         {
             Diagnostics.Warn("Not implemented. Cache will not be updated.");
         }
@@ -142,7 +148,7 @@ namespace Fusee.PointCloud.Potree
             {
                 if (!guid.Valid) continue;
 
-                var meshes = DataHandler.GetGpuData(guid, null, out _);
+                var meshes = DataHandler.GetGpuData(guid, null);
 
                 if (meshes == null) continue; //points for this octant aren't loaded yet.
 

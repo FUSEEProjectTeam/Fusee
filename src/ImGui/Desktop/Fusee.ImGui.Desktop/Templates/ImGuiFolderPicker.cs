@@ -131,7 +131,7 @@ namespace Fusee.ImGuiImp.Desktop.Templates
         private Exception? _createFolderException;
 
         public DirectoryInfo? SelectedFolder { get; protected set; }
-        public DirectoryInfo RootFolder { get; protected set; }
+        public DirectoryInfo RootFolder;
 
         public int FontSize;
         public ImFontPtr SymbolsFontPtr = null;
