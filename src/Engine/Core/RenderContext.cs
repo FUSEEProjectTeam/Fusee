@@ -6,7 +6,6 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Fusee.ImGuiImp.Desktop")]
