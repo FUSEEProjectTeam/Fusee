@@ -372,6 +372,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         /// <summary>
         /// Does the postrender of this instance.
+        /// SLIRP
         /// </summary>
         public virtual void DoPostRender()
         {

@@ -1,5 +1,6 @@
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.PointCloud.Common;
 
 namespace Fusee.Examples.PointCloudPotree2.Core
@@ -22,9 +23,13 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         private PointCloudPotree2Core _pointRenderingCore;
 
+        //Changed for SLIRP
+        public Camera MainCamera => _pointRenderingCore?.MainCamera;
+        public PointCloudPotree2Core Core => _pointRenderingCore;
+
         public PointCloudPotree2()
         {
-
+            
         }
 
         public override void Init()
@@ -32,7 +37,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             VSync = false;
             _pointRenderingCore = new PointCloudPotree2Core(RC)
             {
-                RenderToTexture = false
+                RenderToTexture = false 
             };
 
             _pointRenderingCore.Init();

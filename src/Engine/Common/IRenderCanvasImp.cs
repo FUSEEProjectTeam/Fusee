@@ -137,6 +137,7 @@ namespace Fusee.Engine.Common
 
         /// <summary>
         /// Does the postrender of this instance.
+        /// SLIRP
         /// </summary>
         public void DoPostRender();
 

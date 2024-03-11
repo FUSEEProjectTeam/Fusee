@@ -1,4 +1,5 @@
 ﻿using Fusee.Base.Common;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
@@ -51,6 +52,9 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private PotreeData _potreeData;
 
         private readonly RenderContext _rc;
+
+        //Expose camera to use it in SLIRP
+        public Camera MainCamera => _cam;
 
         public void OnLoadNewFile(object sender, EventArgs e)
         {
@@ -111,7 +115,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _cam = new(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
             {
-                BackgroundColor = float4.One,
+                //SLIRP
+                BackgroundColor = float4.Zero,
                 RenderTexture = RenderTexture
             };
 

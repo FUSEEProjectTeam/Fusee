@@ -24,7 +24,8 @@ namespace Fusee.Engine.Core
         ///     The canvas implementor.
         /// </value>
         [InjectMe]
-        public IRenderCanvasImp CanvasImplementor { set; get; }
+        public IRenderCanvasImp CanvasImplementor { 
+            set; get; }
 
         /// <summary>
         ///     Gets and sets the RenderContext implementor.
