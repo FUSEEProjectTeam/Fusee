@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<OutputPath>$(BaseOutputPath)\Tests\Render\Desktop\</OutputPath>
 		<OutputType>Exe</OutputType>
 		<StartupObject>Fusee.Tests.Render.Desktop.Run</StartupObject>
