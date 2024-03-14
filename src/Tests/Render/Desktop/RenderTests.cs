@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Diagnostics;
@@ -34,7 +35,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -46,7 +47,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -58,7 +59,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -70,7 +71,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -82,7 +83,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -94,7 +95,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -106,7 +107,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -118,7 +119,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -130,7 +131,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -142,7 +143,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -154,7 +155,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -166,7 +167,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -178,7 +179,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -190,7 +191,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         [Test]
@@ -202,7 +203,7 @@ namespace Fusee.Tests.Render.Desktop
             var result = CompareImage(referenceImagePath, testImagePath);
 
             TestContext.WriteLine($"Number of pixels: {result.pixelCount}\nNumber of different pixels: {result.differentPixelCount}\nAverage difference: {result.averageDifference}\nMaximum difference: {result.maximumDifference}\n");
-            Assert.LessOrEqual(result.averageDifference, 0.01f);
+            ClassicAssert.LessOrEqual(result.averageDifference, 0.01f);
         }
 
         /// <summary>
