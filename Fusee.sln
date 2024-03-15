@@ -40,7 +40,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Xene", "src\Xene\Fuse
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Base.Core", "src\Base\Core\Fusee.Base.Core.csproj", "{7E0C9336-7A38-4C87-97E2-A8D2A90AA29D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Player.Android", "src\Engine\Player\Android\Fusee.Engine.Player.Android.csproj", "{A7B18E33-2677-4441-B5C6-ED85421CBA13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Player.Android", "src\Engine\Player\Android\Fusee.Engine.Player.Android.csproj", "{A7B18E33-2677-4441-B5C6-ED85421CBA13}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fusee.Engine.Imp.Graphics.Shared", "src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.shproj", "{253263C9-9C67-44A5-94D3-51C586BBDAEC}"
 EndProject
@@ -112,7 +112,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.Core"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.Desktop", "Examples\Complete\Simple\Desktop\Fusee.Examples.Simple.Desktop.csproj", "{427EF482-D453-4772-8FE2-8D7BEA766C2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.Simple.Android", "Examples\Complete\Simple\Android\Fusee.Examples.Simple.Android.csproj", "{72B29431-717A-47AD-9BDB-2A60E284D727}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.Android", "Examples\Complete\Simple\Android\Fusee.Examples.Simple.Android.csproj", "{72B29431-717A-47AD-9BDB-2A60E284D727}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThreeDFont", "ThreeDFont", "{DF5CEA4E-1434-466F-9DC2-80AFDBB5A340}"
 EndProject
@@ -1720,6 +1720,33 @@ Global
 		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug-Android|Any CPU.Deploy.0 = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug-Blazor|Any CPU.Deploy.0 = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Debug-Desktop|Any CPU.Deploy.0 = Debug|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-Android|Any CPU.Deploy.0 = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-Blazor|Any CPU.Deploy.0 = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-Desktop|Any CPU.Deploy.0 = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587}.Release-NuGet|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1848,6 +1875,7 @@ Global
 		{A1E5AC7E-97B2-4BED-AB75-780416E422A5} = {D1853E25-C274-44E7-8AB6-9BE3A4E61928}
 		{D1853E25-C274-44E7-8AB6-9BE3A4E61928} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
 		{DF33EBD9-9CD9-409C-A10F-AC6FA8FA851D} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
+		{2B2B1019-F05F-4898-91D2-A5489A1BF587} = {F799DB2B-D7BA-4B88-A16F-F8E2317137D3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}
