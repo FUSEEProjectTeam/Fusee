@@ -9,7 +9,7 @@
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-		
+
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\AdvancedUI\Core\Fusee.Examples.AdvancedUI.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Camera\Core\Fusee.Examples.Camera.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\ComputeFractal\Core\Fusee.Examples.ComputeFractal.Core.csproj" />
@@ -25,26 +25,25 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Deferred\Core\Fusee.Examples.Deferred.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\ThreeDFont\Core\Fusee.Examples.ThreeDFont.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\UI\Core\Fusee.Examples.UI.Core.csproj" />
-		
+
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
 		<PackageReference Include="NUnit" Version="4.1.0" />
 		<PackageReference Include="NUnitLite" Version="4.1.0" />
 		<PackageReference Include="NUnit.Analyzers" Version="4.0.1">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="References\*">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+		<None Update="References\*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="$(FuseeEngineRoot)\ext\MesaOpenGL\opengl32.dll" Link="opengl32.dll">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+		<None Include="$(FuseeEngineRoot)\ext\MesaOpenGL\opengl32.dll" Link="opengl32.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>
