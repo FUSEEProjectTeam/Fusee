@@ -22,10 +22,10 @@ jobs:
       DOTNET_NOLOGO: true
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET 7.0
+    - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: dotnet restore solution
       run: dotnet restore Fusee.sln
     - name: dotnet format solution
@@ -49,10 +49,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 7.0
+    - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: AssetStorage
       run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Tests.AssetStorage.Desktop.csproj
     - name: Math
@@ -82,10 +82,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 7.0
+    - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: Render image compare
       run: dotnet run -c Release --project src/Tests/Render/Desktop/Fusee.Tests.Render.Desktop.csproj
     - name: Upload artifact
@@ -94,8 +94,8 @@ jobs:
       with:
         name: Rendertests
         path: |
-            bin/Release/Tests/Render/Desktop/net7.0/*.png
-            bin/Release/Tests/Render/Desktop/net7.0/References/*.png
+            bin/Release/Tests/Render/Desktop/net8.0/*.png
+            bin/Release/Tests/Render/Desktop/net8.0/References/*.png
 
   builddesktop:
     needs: [tests, rendertests]
@@ -111,10 +111,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 7.0
+    - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: Build Release-Desktop
       run: dotnet build -c Release-Desktop Fusee.sln
     - name: Upload Player-Artifact
@@ -148,14 +148,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 7.0
+    - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
       with:
-        vs-version: '[17.4,]'
+        vs-version: '[17.9,]'
         msbuild-architecture: x64
 #    - name: Setup dotnet macos workload
 #      run: dotnet workload install macos
@@ -168,7 +168,7 @@ jobs:
 #    - name: Build F.T.B.Blazorpatch
 #      run: dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
 #    - name: Patch Blazor
-#      run: dotnet bin/Release/Tools/Build/Blazorpatch/net7.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net7.0/publish/wwwroot -t All
+#      run: dotnet bin/Release/Tools/Build/Blazorpatch/net8.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net8.0/publish/wwwroot -t All
     - name: Build F.E.Player.Desktop
       run: dotnet publish -c Release -p:PublishProfile=win-x64-release src\Engine\Player\Desktop\Fusee.Engine.Player.Desktop.csproj
     - name: Pack Fusee.sln NuGet
@@ -188,7 +188,7 @@ jobs:
     - name: Pack VSTemplate
       run: msbuild dis\VSTemplate\VSTemplate.sln -t:restore,build -p:Configuration=Release
     - name: Pack Blender Addon
-      run: tar -c -a -f bin\Release\nuget\io_export_fus.zip -C bin\Release\Tools\CmdLine\net7.0\BlenderScripts\addons *
+      run: tar -c -a -f bin\Release\nuget\io_export_fus.zip -C bin\Release\Tools\CmdLine\net8.0\BlenderScripts\addons *
     - name: Upload NuGet-Atrifacts
       uses: actions/upload-artifact@v3
       with:
@@ -212,10 +212,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup .NET 7.0
+    - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: Setup dotnet macos workload
       run: dotnet workload install macos
     - name: Build Release-Blazor
@@ -229,12 +229,12 @@ jobs:
     - name: Build F.T.B.Blazorpatch
       run: dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
     - name: Patch Blazor
-      run: dotnet bin/Release/Tools/Build/Blazorpatch/net7.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net7.0/publish/wwwroot -t All
+      run: dotnet bin/Release/Tools/Build/Blazorpatch/net8.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net8.0/publish/wwwroot -t All
     - name: Upload Player-Artifact
       uses: actions/upload-artifact@v3
       with:
         name: fusee-blazor-${{ matrix.os }}-player
-        path: bin/Release/Player/Blazor/net7.0/publish/
+        path: bin/Release/Player/Blazor/net8.0/publish/
 
   buildandroid:
     name: Build Android
@@ -253,7 +253,7 @@ jobs:
     - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: Build with MSBuild
       run: msbuild Fusee.sln -r -p:Configuration=Release-Android
 
@@ -271,10 +271,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup .NET 7.0
+      - name: Setup .NET 8.0
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
