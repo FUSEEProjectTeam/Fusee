@@ -72,7 +72,7 @@ namespace Fusee.Examples.RenderContextOnly.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new RenderContextOnly.Core.Simple();
+                var app = new Core.RenderContextOnly();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 var rci = new RenderCanvasImp(ApplicationContext, null, delegate
