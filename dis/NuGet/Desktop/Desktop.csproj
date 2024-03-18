@@ -2,7 +2,7 @@
 	
 	<PropertyGroup>
 		<PackageId>Fusee.Desktop</PackageId>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<IncludeSymbols>false</IncludeSymbols>
 		<IsPackable>true</IsPackable>
