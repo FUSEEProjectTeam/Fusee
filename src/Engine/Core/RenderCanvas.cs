@@ -2,6 +2,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
@@ -72,7 +73,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Used to inject functionality that is meant to be executed when the application is shutting down.
         /// </summary>
-        public event EventHandler? ApplicationIsShuttingDown;
+        public event EventHandler<CancelEventArgs>? ApplicationIsShuttingDown;
 
         /// <summary>
         /// Used to inject functionality that is meant to execute at the end of each frame. E.g. if components of the SceneGraph need to be changed.
@@ -90,8 +91,7 @@ namespace Fusee.Engine.Core
             private set
             {
                 _isShuttingDown = value;
-                if (_isShuttingDown)
-                    ApplicationIsShuttingDown?.Invoke(this, new EventArgs());
+
             }
         }
         private bool _isShuttingDown;
@@ -191,6 +191,12 @@ namespace Fusee.Engine.Core
 
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
+            CanvasImplementor.Closing += (s, e) =>
+            {
+                ApplicationIsShuttingDown?.Invoke(this, e);
+                IsShuttingDown = !e.Cancel; // only set shutdown if not canceled
+            };
+
             CanvasImplementor.Init += async delegate
             {
                 Init();
@@ -222,11 +228,13 @@ namespace Fusee.Engine.Core
                 // pre-rendering
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
 
+                // update all meshes (changed values like position, normals, etc.) before rendering them
+                RC.UpdateAllMeshes();
+
                 // rendering
                 if (Width != 0 || Height != 0)
                     RenderAFrame();
 
-                RC.UpdateAllMeshes();
                 RC.CleanupResourceManagers();
 
                 EndOfFrame?.Invoke(this, EventArgs.Empty);

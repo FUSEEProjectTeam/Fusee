@@ -1,6 +1,33 @@
 ﻿namespace Fusee.PointCloud.Common
 {
     /// <summary>
+    /// The gpu data can take different states in its life cycle.
+    /// Gpu data may need to be handled differently according to its current state.
+    /// </summary>
+    public enum GpuDataState
+    {
+        /// <summary>
+        /// Default, gpu data wasn't created yet and or points havent been loaded yet.
+        /// </summary>
+        None = -1,
+
+        /// <summary>
+        /// Gpu data was newly created.
+        /// </summary>
+        New = 0,
+
+        /// <summary>
+        /// Gpu data accessed but hasn't changed.
+        /// </summary>
+        Unchanged = 1,
+
+        /// <summary>
+        /// Gpu data accessed and has changed. For example if a property of the data was updated.
+        /// </summary>
+        Changed = 2,
+    }
+
+    /// <summary>
     /// Available render modes.
     /// </summary>
     public enum RenderMode

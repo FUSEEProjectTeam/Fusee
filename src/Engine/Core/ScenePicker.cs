@@ -294,12 +294,15 @@ namespace Fusee.Engine.Core
 
         private IEnumerable<PickResult> CheckVisitorModuleResults()
         {
+            var res = new List<PickResult>();
             foreach (var module in VisitorModules)
             {
                 var m = (IPickerModule)module;
-                if (m.PickResult != null)
-                    yield return m.PickResult;
+                if (m.PickResults.Count != 0)
+                    res.AddRange(m.PickResults);
             }
+
+            return res;
         }
 
         /// <summary>
@@ -772,7 +775,7 @@ namespace Fusee.Engine.Core
                 mesh.BoundingBox = new(mesh.Vertices.AsReadOnlySpan);
             }
 
-            if (mesh.GetType() != typeof(Primitives.Plane) && (mesh.BoundingBox.Size.x <= 0f || mesh.BoundingBox.Size.y <= 0f || mesh.BoundingBox.Size.z <= 0f))
+            if (mesh is not Primitives.Plane && (mesh.BoundingBox.Size.x <= 0f || mesh.BoundingBox.Size.y <= 0f || mesh.BoundingBox.Size.z <= 0f))
             {
                 Diagnostics.Warn($"Size of current bounding box is 0 for one or more dimensions. Picking not possible.");
                 return;

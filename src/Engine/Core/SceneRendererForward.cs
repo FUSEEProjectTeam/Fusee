@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core
         /// Enables or disables Frustum Culling.
         /// If we render with one or more cameras this value will be overwritten by <see cref="Camera.FrustumCullingOn"/>.
         /// </summary>
-        public bool DoFrumstumCulling = true;
+        public bool DoFrustumCulling = true;
 
         /// <summary>
         /// The RenderLayer this renderer should render.
@@ -330,7 +330,7 @@ namespace Fusee.Engine.Core
                     {
                         PerCamClear(cam);
                         NotifyCameraChanges(cam.Camera);
-                        DoFrumstumCulling = cam.Camera.FrustumCullingOn;
+                        DoFrustumCulling = cam.Camera.FrustumCullingOn;
                         PerCamRender(cam);
                     }
                 }
@@ -338,7 +338,7 @@ namespace Fusee.Engine.Core
                 //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
                 _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
                 //Standard value: frustum culling is on.
-                DoFrumstumCulling = true;
+                DoFrustumCulling = true;
             }
             else
             {
@@ -709,7 +709,7 @@ namespace Fusee.Engine.Core
             if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
 
-            if (DoFrumstumCulling)
+            if (DoFrustumCulling)
             {
                 //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
                 if (mesh.BoundingBox.Size.x > 0 && mesh.BoundingBox.Size.y > 0 && mesh.BoundingBox.Size.z > 0)
@@ -739,7 +739,7 @@ namespace Fusee.Engine.Core
             if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
 
-            if (DoFrumstumCulling)
+            if (DoFrustumCulling)
             {
                 //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
                 if (mesh.BoundingBox.Size != float3.Zero)

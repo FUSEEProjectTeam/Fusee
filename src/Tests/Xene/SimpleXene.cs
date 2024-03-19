@@ -197,12 +197,36 @@ namespace Fusee.Tests.Xene
             );
         }
 
+
+        [Fact]
+        public void CallCurrentGetterTwiceOnIEnumeratorReturnedByViserator()
+        {
+            TestNode tree = CreateSimpleTestTree();
+
+            IEnumerable<TestResult> resultSet = tree.Viserate<TestViserator, TestResult, TestNode, TestComponent>();
+
+            IEnumerator<TestResult> iterator = resultSet.GetEnumerator();
+            
+            Assert.True(iterator.MoveNext());
+
+            // Call the getter of Current twice!
+            TestResult trCurrent1 = iterator.Current;
+            TestResult trCurrent2 = iterator.Current;
+
+            Assert.Equal(trCurrent1, trCurrent2);
+
+            // Besides the fact that both calls to Current.Get yield the same object, the main fact that is proven here
+            // is that calling Current.Get tiwce without a call to MoveNext in between works on our Viserator "_itemQueue".
+        }
+
+
+
         [Fact]
         public void SingleNodeViserator()
         {
             TestNode tree = CreateSimpleTestTree();
 
-            var resultSet = tree.Viserate<TestViserator, TestResult, TestNode, TestComponent>();
+            IEnumerable<TestResult> resultSet = tree.Viserate<TestViserator, TestResult, TestNode, TestComponent>();
             Assert.Collection(resultSet,
                 resultItem => Assert.Equal(new TestResult { Depth = 1, Path = "/RootNode/[2]" }, resultItem),
                 resultItem => Assert.Equal(new TestResult { Depth = 1, Path = "/RootNode/[6]" }, resultItem),
@@ -217,7 +241,7 @@ namespace Fusee.Tests.Xene
             var twoRoots = TwoTestTrees();
 
 
-            var resultSet = twoRoots.Viserate<TestViserator, TestResult, TestNode, TestComponent>();
+            IEnumerable<TestResult> resultSet = twoRoots.Viserate<TestViserator, TestResult, TestNode, TestComponent>();
 
             Assert.Collection(resultSet,
                 resultItem => Assert.Equal(new TestResult { Depth = 1, Path = "/RootNode/[2]" }, resultItem),

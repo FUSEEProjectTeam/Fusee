@@ -491,6 +491,8 @@ namespace Fusee.Engine.Common
 #pragma warning disable 1591
         Standard,
         Hand,
+        HResize,
+        VResize
 #pragma warning restore 1591
     }
 

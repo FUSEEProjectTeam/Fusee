@@ -9,6 +9,6 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    target-branch: "develop"
+    target-branch: "housekeeping"
     ignore:
       - dependency-name: "Google.Protobuf.Tools"

@@ -4,7 +4,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Potree.V2.Data;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Core
@@ -103,7 +102,6 @@ namespace Fusee.PointCloud.Core
                 flags[i] = points.Span[i].Flags;
             }
             var mesh = ModuleExtensionPoint.CreateGpuMesh(PrimitiveType.Points, vertices, triangles, null, colors, null, null, null, null, null, null, null, flags);
-            mesh.Name = octantId.ToString();
             mesh.BoundingBox = boundingBox;
             return mesh;
         }
@@ -140,7 +138,6 @@ namespace Fusee.PointCloud.Core
 
             return new Mesh(triangles, vertices, null, null, null, null, null, null, colors, null, null, flags)
             {
-                Name = OctantId.OctantIdToPotreeName(octantId),
                 MeshType = PrimitiveType.Points
             };
         }
@@ -177,7 +174,6 @@ namespace Fusee.PointCloud.Core
             // TODO: Add flags to InstanceData 
             return new InstanceData(points.Length, vertices, null, null, colors)
             {
-                Name = octantId.ToString()
             };
         }
 

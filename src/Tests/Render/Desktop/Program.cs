@@ -31,7 +31,7 @@ namespace Fusee.Tests.Render.Desktop
                 IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
                 AssetStorage.Instance.Dispose();
 
-                var baseDirOfExample = new Uri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
+                var baseDirOfExample = new Uri(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory));
                 FilePath = baseDirOfExample.LocalPath;
 
                 var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(Path.Combine(baseDirOfExample.LocalPath, "Assets"));
