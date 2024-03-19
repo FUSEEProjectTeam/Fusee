@@ -223,7 +223,7 @@ jobs:
     - name: Setup workloads
       run: |
         dotnet workload install wasm-tools
-        dotnet workload install wasm-tools-net6
+        dotnet workload install wasm-tools-net7
     - name: Publish F.E.Player.Blazor
       run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
     - name: Build F.T.B.Blazorpatch
