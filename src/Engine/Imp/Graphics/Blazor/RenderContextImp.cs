@@ -1227,34 +1227,23 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         /// <param name="instanceImp">The <see cref="InstanceDataImp"/>.</param>
         /// <param name="instanceColors">The colors of the instances.</param>
-        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
+        public void SetInstanceColor(IInstanceDataImp instanceImp, uint[] instanceColors)
         {
             if (instanceColors == null)
                 return;
 
-            float[] colorsFlat = new float[instanceColors.Length * 4];
-            int i = 0;
-            foreach (float4 v in instanceColors)
-            {
-                colorsFlat[i] = v.x;
-                colorsFlat[i + 1] = v.y;
-                colorsFlat[i + 2] = v.z;
-                colorsFlat[i + 3] = v.w;
-                i += 4;
-            }
-
             int vboBytes;
-            int colsBytes = instanceColors.Length * 4 * sizeof(float);
+            int colsBytes = instanceColors.Length * sizeof(uint);
             if (((InstanceDataImp)instanceImp).InstanceColorBufferObject == null)
             {
                 ((InstanceDataImp)instanceImp).InstanceColorBufferObject = gl2.CreateBuffer();
                 gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
-                gl2.BufferData(ARRAY_BUFFER, colorsFlat, DYNAMIC_DRAW);
+                gl2.BufferData(ARRAY_BUFFER, instanceColors, DYNAMIC_DRAW);
             }
             else
             {
                 gl2.BindBuffer(ARRAY_BUFFER, ((InstanceDataImp)instanceImp).InstanceColorBufferObject);
-                gl2.BufferSubData(ARRAY_BUFFER, IntPtr.Zero, colorsFlat);
+                gl2.BufferSubData(ARRAY_BUFFER, IntPtr.Zero, instanceColors);
             }
 
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
