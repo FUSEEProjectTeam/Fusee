@@ -245,13 +245,18 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+    - name: Setup-Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin' # See 'Supported distributions' for available options
+        java-version: '11'
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
       with:
         vs-version: '[17.4,]'
     - name: Setup .NET 7.0
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 7.0.x
     - name: Build with MSBuild
