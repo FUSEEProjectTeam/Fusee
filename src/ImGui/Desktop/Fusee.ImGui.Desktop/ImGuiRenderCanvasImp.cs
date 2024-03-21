@@ -45,8 +45,6 @@ namespace Fusee.ImGuiImp.Desktop
             {
                 //MUST be 0, is handled internally by ImGui. Other values will lead to AccessViolation Exception.
                 _gameWindow.UpdateFrequency = 0;
-                _gameWindow.RenderFrequency = 0;
-
                 _gameWindow.Run();
             }
         }

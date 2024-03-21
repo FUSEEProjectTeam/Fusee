@@ -106,9 +106,20 @@ namespace Fusee.Xene
         /// </returns>
         public bool MoveNext()
         {
-            if (_itemQueue.Count > 0)
-                return true;
-            return EnumMoveNext();
+            switch (_itemQueue.Count)
+            {
+                case 0:
+                    // Empty queue - enumeration has just begun. Start traversing
+                    return EnumMoveNext();
+                case 1:
+                    // Exactly one item in queue: This is the current "Current". Since we want to move to the next, dequeue it and carry on traversing
+                    _itemQueue.Dequeue();
+                    return EnumMoveNext();
+                default:
+                    // More than one item in the queue. Dequeue the current "Current" and signal that the loop can iterate over the next item.
+                    _itemQueue.Dequeue();
+                    return true;
+            }
         }
 
         /// <summary>
@@ -122,7 +133,8 @@ namespace Fusee.Xene
         /// <summary>
         /// Gets the element in the collection at the current position of the enumerator.
         /// </summary>
-        public TItem Current => _itemQueue.Dequeue();
+        // Peek only, don't Dequeue when Current is read. Otherwise it can only be read once (which is OK in foreach loops but NOT e.g. in other uses of IEnumerator).
+        public TItem Current => _itemQueue.Peek();
 
         object IEnumerator.Current => Current;
 

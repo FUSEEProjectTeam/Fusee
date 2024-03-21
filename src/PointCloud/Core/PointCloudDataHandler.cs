@@ -6,6 +6,7 @@ using Fusee.PointCloud.Common;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -59,6 +60,12 @@ namespace Fusee.PointCloud.Core
     /// <typeparam name="TGpuData">Generic for the point/mesh type.</typeparam>
     public class PointCloudDataHandler<TGpuData> : PointCloudDataHandlerBase<TGpuData>, IDisposable where TGpuData : IDisposable
     {
+        /// <summary>
+        /// If we encounter an error during our loading process, this event is being triggered
+        /// </summary>
+        public EventHandler<ErrorEventArgs>? OnLoadingErrorEvent;
+
+
         private HashSet<OctantId> _meshesToUpdate = new();
 
         /// <summary>
@@ -268,6 +275,7 @@ namespace Fusee.PointCloud.Core
                     LoadingQueue.Add(guid);
                 }
 
+
                 _ = Task.Run(() =>
                 {
                     points = _loadPointsHandler.Invoke(guid);
@@ -277,6 +285,14 @@ namespace Fusee.PointCloud.Core
                     {
                         LoadingQueue.Remove(guid);
                     }
+                }).ContinueWith((finishedTask) =>
+                {
+                    // if an exception happened during loading process call the error event for futher handling of the situation
+                    if (finishedTask.Exception != null)
+                    {
+                        OnLoadingErrorEvent?.Invoke(this, new ErrorEventArgs(finishedTask.Exception));
+                    }
+
                 });
             }
         }

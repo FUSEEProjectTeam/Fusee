@@ -1,5 +1,6 @@
 ﻿using Fusee.Math.Core;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Fusee.PointCloud.Core
 {
@@ -7,6 +8,7 @@ namespace Fusee.PointCloud.Core
     /// This point is used for visualization purposes.
     /// It is read from a file and converted to mesh data.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct VisualizationPoint
     {
         /// <summary>

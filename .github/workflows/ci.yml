@@ -5,10 +5,12 @@ on:
     branches:
     - master
     - develop
+    - housekeeping
   pull_request:
     branches:
     - master
     - develop
+    - housekeeping
   workflow_dispatch:
 
 jobs:
@@ -145,9 +147,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+    - name: Setup-Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
     - name: Setup .NET 7.0
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 7.0.x
     - name: Add msbuild to PATH
@@ -221,7 +228,7 @@ jobs:
     - name: Setup workloads
       run: |
         dotnet workload install wasm-tools
-        dotnet workload install wasm-tools-net6
+        dotnet workload install wasm-tools-net7
     - name: Publish F.E.Player.Blazor
       run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
     - name: Build F.T.B.Blazorpatch
@@ -243,13 +250,18 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+    - name: Setup-Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
       with:
         vs-version: '[17.4,]'
     - name: Setup .NET 7.0
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 7.0.x
     - name: Build with MSBuild

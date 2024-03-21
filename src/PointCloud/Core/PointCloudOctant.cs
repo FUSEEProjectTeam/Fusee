@@ -198,6 +198,30 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
+        /// Returns true if a sphere is completely inside or is intersecting this <see cref="PointCloudOctant"/>
+        /// see: https://web.archive.org/web/19991129023147/http://www.gamasutra.com/features/19991018/Gomez_4.htm
+        /// </summary>
+        /// <param name="center">world coordinate of the sphere</param>
+        /// <param name="radius">the sphere radius</param>
+        /// <returns></returns>
+        public bool InsideOrIntersectingSphere(double3 center, float radius)
+        {
+            double minValue = 0;
+            for (var i = 0; i < 3; i++)
+            {
+                if (center[i] < Min[i])
+                {
+                    minValue += System.Math.Sqrt(center[i] - Min[i]);
+                }
+                else if (center[i] > Max[i])
+                {
+                    minValue += System.Math.Sqrt(center[i] - Max[i]);
+                }
+            }
+            return minValue <= (radius * radius);
+        }
+
+        /// <summary>
         /// Checks if a given ray originates in, or intersects octant.
         /// </summary>
         /// <param name="ray">The ray to test against.</param>

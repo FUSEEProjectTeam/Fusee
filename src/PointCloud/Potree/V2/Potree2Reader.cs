@@ -1,6 +1,7 @@
 using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Buffers;
+using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
@@ -11,6 +12,7 @@ using Fusee.PointCloud.Potree.V2.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -33,6 +35,11 @@ namespace Fusee.PointCloud.Potree.V2
         /// Pass method how to handle the extra bytes, resulting uint will be passed into <see cref="Mesh.Flags"/>.
         /// </summary>
         public HandleReadExtraBytes? HandleReadExtraBytes { get; set; }
+
+        /// <summary>
+        /// If any errors during load occur this event is being called
+        /// </summary>
+        public EventHandler<ErrorEventArgs>? OnPointCloudReadError;
 
         /// <summary>
         /// Specify the byte offset for one point until the extra byte data is reached
@@ -70,6 +77,7 @@ namespace Fusee.PointCloud.Potree.V2
                     {
                         var dataHandler = new PointCloudDataHandler<GpuMesh>(MeshMaker.CreateStaticMesh,
                             LoadVisualizationPointData);
+                        dataHandler.OnLoadingErrorEvent += OnPointCloudReadError;
                         var imp = new Potree2Cloud(dataHandler, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
@@ -77,6 +85,7 @@ namespace Fusee.PointCloud.Potree.V2
                     {
                         var dataHandlerInstanced = new PointCloudDataHandler<InstanceData>(MeshMaker.CreateInstanceData,
                             LoadVisualizationPointData, true);
+                        dataHandlerInstanced.OnLoadingErrorEvent += OnPointCloudReadError;
                         var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
@@ -84,6 +93,7 @@ namespace Fusee.PointCloud.Potree.V2
                     {
                         var dataHandlerDynamic = new PointCloudDataHandler<Mesh>(MeshMaker.CreateDynamicMesh,
                             LoadVisualizationPointData);
+                        dataHandlerDynamic.OnLoadingErrorEvent += OnPointCloudReadError;
                         var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree());
                         return new PointCloudComponent(imp, renderMode);
                     }
@@ -200,7 +210,14 @@ namespace Fusee.PointCloud.Potree.V2
                 }
                 if (HandleReadExtraBytes != null)
                 {
-                    flags = HandleReadExtraBytes(extraBytesSpan);
+                    try
+                    {
+                        flags = HandleReadExtraBytes(extraBytesSpan);
+                    }
+                    catch (Exception e)
+                    {
+                        OnPointCloudReadError?.Invoke(this, new ErrorEventArgs(e));
+                    }
                 }
 
                 var flagsSpan = MemoryMarshal.Cast<uint, byte>(new uint[] { flags });
@@ -262,8 +279,49 @@ namespace Fusee.PointCloud.Potree.V2
 
             CacheMetadata(true);
 
+            PotreeData.Metadata.PrincipalAxisRotation = CalculatePrincipalAxis(PotreeData);
+
             return PotreeData;
         }
+
+
+
+        /// <summary>
+        /// Calculate the principal axis rotation from given data
+        ///    - Load root node
+        ///    - Convert to covariance matrix
+        ///    - Calculate principal axis
+        /// </summary>
+        /// <param name="data">The potree data</param>
+        /// <returns></returns>
+        private float4x4 CalculatePrincipalAxis(PotreeData data)
+        {
+            using var allPoints = LoadVisualizationPoint(data.Hierarchy.Root);
+            using var positions = MemoryOwner<float3>.Allocate(allPoints.Length);
+
+            var allPtsBytes = allPoints.Span.AsBytes();
+
+            // convert all points to byte, slice the position value (stride/offset) and copy to position array
+            for (var i = 0; i < allPoints.Length; i++)
+            {
+                positions.Span[i] = allPoints.Span[i].Position;
+            }
+
+            // dangerous, undefined behavior -> do not use the array values after this method
+            // this is irrelevant, as we use only a local variable
+            try
+            {
+                var eigen = new Eigen(positions.DangerousGetArray().Array);
+                return (float4x4)eigen.RotationMatrix;
+            }
+            catch (ArithmeticException ex)
+            {
+                Diagnostics.Warn(ex);
+                return float4x4.Identity;
+            }
+        }
+
+
 
         /// <summary>
         /// Changes the potree data package that is currently bound to the reader. So a reader can be used for multiple data packages, this avoids rereading the potree data like in <see cref="ReadNewFile(string)"/>.
@@ -320,7 +378,6 @@ namespace Fusee.PointCloud.Potree.V2
 
             return (Metadata, Hierarchy);
         }
-
 
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)
         {

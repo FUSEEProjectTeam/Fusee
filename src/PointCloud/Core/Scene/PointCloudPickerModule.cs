@@ -52,7 +52,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// The pick result after picking.
         /// </summary>
-        public List<PickResult>? PickResults { get; set; }
+        public List<PickResult> PickResults { get; set; } = new();
 
         internal struct MinPickValue
         {
@@ -69,12 +69,15 @@ namespace Fusee.PointCloud.Core.Scene
         [VisitMethod]
         public void RenderPointCloud(PointCloudComponent pointCloud)
         {
-            PickResults = new List<PickResult>();
+            PickResults.Clear();
             if (!pointCloud.Active) return;
 
             Guard.IsNotNull(_pcImp);
             Guard.IsNotNull(_octree);
             Guard.IsNotNull(_state);
+
+            if (float.IsInfinity(_state.PickPosClip.x) || float.IsInfinity(_state.PickPosClip.y))
+                return;
 
             var proj = _state.CurrentCameraResult.Camera.GetProjectionMat(_state.ScreenSize.x, _state.ScreenSize.y, out _);
             var view = _state.CurrentCameraResult.View;
@@ -120,7 +123,7 @@ namespace Fusee.PointCloud.Core.Scene
                 }
             });
 
-            if (currentRes == null || currentRes.Count == 0) return;
+            if (currentRes == null || currentRes.IsEmpty) return;
 
 
             var mvp = proj * view * _state.Model;
@@ -155,7 +158,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <param name="ra">Radius of sphere with center point of <paramref name="ce"/></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        float2 SphereRayIntersection(float3 ro, float3 rd, float3 ce, float ra)
+        static float2 SphereRayIntersection(float3 ro, float3 rd, float3 ce, float ra)
         {
             var oc = ro - ce;
             var b = float3.Dot(oc, rd);

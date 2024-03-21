@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Diagnostics.Tracing;
 using System.Linq;
 
 namespace Fusee.Math.Core
@@ -73,6 +75,7 @@ namespace Fusee.Math.Core
         /// Creates a new instance.
         /// </summary>
         /// <param name="vals"></param>
+        /// <exception cref="ArithmeticException">Throws if calculation fails due to numeric instability</exception>
         public Eigen(float3[] vals)
         {
             var valsD = vals.Select(val => (double3)val).ToArray();
@@ -82,6 +85,11 @@ namespace Fusee.Math.Core
             Values = new double[3];
             Vectors = new double3[3];
             CalculateVectorsAndValues(covarianceMatrix);
+
+            if(Values.Any(x => double.IsNaN(x)) || Vectors.Any(x => x.ToArray().Any(y => double.IsNaN(y))))
+            {
+                throw new ArithmeticException($"Calculation of Eigen values failed. NaN as values. Values: [{string.Join(",", Values)}] and Vectors: [{string.Join(",", Vectors.ToArray())}]");
+            }
         }
 
         /// <summary>
