@@ -167,11 +167,12 @@ namespace Fusee.Engine.Core
 
             if (DoFrustumCulling)
             {
-                Guard.IsNotNull(_lightFrustum);
-
                 FrustumF frustum;
                 if (_currentPass == RenderPasses.Shadow)
+                {
+                    Guard.IsNotNull(_lightFrustum);
                     frustum = _lightFrustum;
+                }
                 else
                     frustum = _rc.RenderFrustum;
 
@@ -213,10 +214,12 @@ namespace Fusee.Engine.Core
 
             if (DoFrustumCulling)
             {
-                Guard.IsNotNull(_lightFrustum);
                 FrustumF frustum;
                 if (_currentPass == RenderPasses.Shadow)
+                {
+                    Guard.IsNotNull(_lightFrustum);
                     frustum = _lightFrustum;
+                }
                 else
                     frustum = _rc.RenderFrustum;
 
