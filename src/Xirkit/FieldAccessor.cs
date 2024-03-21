@@ -59,8 +59,8 @@ namespace Fusee.Xirkit
     public class ConvertingFieldAccessor<TPin, TObj> : IMemberAccessor<TPin>
     {
         private readonly FieldInfo _fieldInfo;
-        readonly Converter<TPin, TObj> _p2o;
-        readonly Converter<TObj, TPin> _o2p;
+        private readonly Converter<TPin, TObj> _p2o;
+        private readonly Converter<TObj, TPin> _o2p;
         /// <summary>
         /// Initializes a new instance of the <see cref="ConvertingFieldAccessor{TPin, TObj}"/> class.
         /// </summary>
@@ -82,7 +82,7 @@ namespace Fusee.Xirkit
         /// <param name="val">The value that should be assigned.</param>
         public void Set(object o, TPin val)
         {
-            _fieldInfo.SetValue(o, (object)_p2o(val));
+            _fieldInfo.SetValue(o, _p2o(val));
         }
 
         /// <summary>

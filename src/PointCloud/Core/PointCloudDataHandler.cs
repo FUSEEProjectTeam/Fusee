@@ -71,17 +71,17 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private MemoryCache<OctantId, MemoryOwner<VisualizationPoint>> _pointCache;
+        private readonly MemoryCache<OctantId, MemoryOwner<VisualizationPoint>> _pointCache;
 
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        private MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
+        private readonly MemoryCache<OctantId, IEnumerable<TGpuData>> _gpuDataCache;
 
         private readonly CreateGpuData<TGpuData> _createGpuDataHandler;
         private readonly LoadPointsHandler _loadPointsHandler;
         private const int _maxNumberOfDisposals = 1;
-        private float _deltaTimeSinceLastDisposal;
+        private float? _deltaTimeSinceLastDisposal;
         private readonly bool _doRenderInstanced;
 
         private bool _disposed;
@@ -166,7 +166,7 @@ namespace Fusee.PointCloud.Core
         {
             if (_gpuDataCache.TryGetValue(octantId, out var gpuData))
             {
-                var doUpdate = doUpdateIf != null ? doUpdateIf.Invoke() : false;
+                var doUpdate = doUpdateIf is not null && doUpdateIf.Invoke();
                 if (_meshesToUpdate.Contains(octantId) || doUpdate)
                 {
                     gpuDataState = DoUpdateGpuData(octantId, ref gpuData);
@@ -248,7 +248,7 @@ namespace Fusee.PointCloud.Core
                         var nodesInQueue = DisposeQueue.Count;
                         var count = nodesInQueue < _maxNumberOfDisposals ? nodesInQueue : _maxNumberOfDisposals;
 
-                        for (int i = 0; i < count; i++)
+                        for (int? i = 0; i < count; i++)
                         {
                             var meshes = DisposeQueue.Last();
                             var removed = DisposeQueue.Remove(meshes.Key);

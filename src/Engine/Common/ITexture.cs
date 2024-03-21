@@ -10,6 +10,6 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The <see cref="IImageData"/> that makes up the <see cref="ITexture"/> instance.
         /// </summary>
-        IImageData ImageData { get; }
+        IImageData? ImageData { get; }
     }
 }

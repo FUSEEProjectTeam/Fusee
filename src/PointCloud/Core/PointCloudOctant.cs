@@ -109,7 +109,7 @@ namespace Fusee.PointCloud.Core
             Level = OctId.Level;
             IsVisible = false;
 
-            int.TryParse(OctId[Level - 1].ToString(), out int posInParent);
+            _ = int.TryParse(OctId[Level - 1].ToString(), out int posInParent);
             PosInParent = posInParent;
 
             if (children == null)
@@ -125,6 +125,8 @@ namespace Fusee.PointCloud.Core
         /// <param name="camPos">Position of the camera.</param>
         /// <param name="screenHeight">Hight of the canvas.</param>
         /// <param name="fov">Field of view.</param>
+        /// <param name="translation">Translation of node</param>
+        /// <param name="scale">Scale of node</param>
         public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov, float3 translation, float3 scale)
         {
             var translatedCenter = Center + new double3(translation);
@@ -152,6 +154,8 @@ namespace Fusee.PointCloud.Core
         /// Returns true if one of the Frustum planes is intersecting this octant.
         /// </summary>
         /// <param name="frustum">The frustum to test against.</param>
+        /// <param name="translation">Translation of octant</param>
+        /// <param name="scale">Scale of octant</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
         public bool InsideOrIntersectingFrustum(FrustumF frustum, float3 translation, float3 scale)
         {

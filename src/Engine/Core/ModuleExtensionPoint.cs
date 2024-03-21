@@ -35,12 +35,12 @@ namespace Fusee.Engine.Core
         /// Delegate of the method that knows how to create a GpuMesh - without passing the RenderContext down into the module.
         /// Set in the constructor the RenderContext.
         /// </summary>
-        public static CreateGpuMesh CreateGpuMesh
+        public static CreateGpuMesh? CreateGpuMesh
         {
             get { return Instance._createGpuMesh; }
             set { Instance._createGpuMesh = value; }
         }
-        private CreateGpuMesh _createGpuMesh;
+        private CreateGpuMesh? _createGpuMesh;
 
         /// <summary>
         /// Bound to the platform specific RenderContext implementation. Set by the <see cref="RenderContext"/>.

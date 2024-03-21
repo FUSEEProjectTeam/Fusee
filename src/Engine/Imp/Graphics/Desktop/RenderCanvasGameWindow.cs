@@ -67,7 +67,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
         /// <param name="minimumWidth">The minimum width of the game window.</param>
         /// <param name="minimumHeight">The minimum height of the game window</param>
-        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <param name="startVisible">Should the window be visible from the start, default: true.</param>
         public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool startVisible = true, int minimumWidth = 1280, int minimumHeight = 720)
             : base(new GameWindowSettings(), new NativeWindowSettings

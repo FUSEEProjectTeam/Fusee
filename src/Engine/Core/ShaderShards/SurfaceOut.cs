@@ -12,12 +12,12 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The struct declaration in GLSL.
         /// </summary>
-        public string StructDecl;
+        public string? StructDecl;
 
         /// <summary>
         /// The default constructor in GLSL.
         /// </summary>
-        public string DefaultInstance;
+        public string? DefaultInstance;
     }
 
     /// <summary>
@@ -244,10 +244,9 @@ namespace Fusee.Engine.Core.ShaderShards
                 $"struct {SurfaceEffectNameDeclarations.StructTypeName}",
                 "{",
                 $"  {GLSL.DecodeType(Pos.Item1)} {Pos.Item2};",
-                $"  {GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};"
+                $"  {GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};",
+                $"  {GLSL.DecodeType(Emission.Item1)} {Emission.Item2};"
             };
-
-            dcl.Add($"  {GLSL.DecodeType(Emission.Item1)} {Emission.Item2};");
 
             if (!setup.HasFlag(ShadingModel.Unlit) && !setup.HasFlag(ShadingModel.Edl))
                 dcl.Add($"  {GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");

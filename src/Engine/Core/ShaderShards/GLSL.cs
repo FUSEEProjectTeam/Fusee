@@ -4,9 +4,12 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
-    // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// Contains GLSL methods and attributes to generate ShaderShards
+    /// </summary>
     public static class GLSL
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public enum Type
         {
             Mat3,
@@ -26,22 +29,47 @@ namespace Fusee.Engine.Core.ShaderShards
             ArrayTextureShadow,
             Void
         }
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
+        /// <summary>
+        /// Create glsl uniform variable
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="varName"></param>
+        /// <returns></returns>
         public static string CreateUniform(Type type, string varName)
         {
             return $"uniform {DecodeType(type)} {varName};";
         }
 
+        /// <summary>
+        /// Create glsl out variable
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="varName"></param>
+        /// <returns></returns>
         public static string CreateOut(Type type, string varName)
         {
             return $"out {DecodeType(type)} {varName};\n";
         }
 
+        /// <summary>
+        /// Create glsl in variable
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="varName"></param>
+        /// <returns></returns>
         public static string CreateIn(Type type, string varName)
         {
             return $"in {DecodeType(type)} {varName};\n";
         }
 
+        /// <summary>
+        /// Create a glsl variable from given type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="varName"></param>
+        /// <returns></returns>
         internal static string CreateVar(Type type, string varName)
         {
             return $"{DecodeType(type)} {varName}";

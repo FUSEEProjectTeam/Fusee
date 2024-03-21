@@ -45,7 +45,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns currently visited <see cref="InstanceData"/> during a traversal.
         /// </summary>
-        protected InstanceData CurrentInstanceData;
+        protected InstanceData? CurrentInstanceData;
 
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
@@ -67,10 +67,13 @@ namespace Fusee.Engine.Core
 
         #region Traversal information
 
-        private CanvasTransform _ctc;
+        private CanvasTransform? _ctc;
         private MinMaxRect _parentRect;
         private int _numberOfLights;
 
+        /// <summary>
+        /// Visits the scene beforehand and collects <see cref="LightResult"/>s and <see cref="CameraResult"/>s
+        /// </summary>
         public PrePassVisitor PrePassVisitor { get; private set; }
 
         /// <summary>
@@ -96,7 +99,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The <see cref="RenderContext"/>, used to render the scene. This will be ignored if cameras are used.
         /// </summary>
-        protected RenderContext _rc;
+        protected RenderContext? _rc;
 
         /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
@@ -108,13 +111,11 @@ namespace Fusee.Engine.Core
         #region Initialization Construction Startup
 
 
-        private Light _legacyLight;
+        private Light? _legacyLight;
 
         private void SetDefaultLight()
         {
-            if (_legacyLight == null)
-            {
-                _legacyLight = new Light()
+            _legacyLight ??= new Light()
                 {
                     Active = true,
                     Strength = 1.0f,
@@ -125,7 +126,6 @@ namespace Fusee.Engine.Core
                     Type = LightType.Legacy,
                     IsCastingShadows = false
                 };
-            }
             // if there is no light in scene then add one (legacyMode)
             _lightResults.Add(new LightResult(_legacyLight)
             {
@@ -152,6 +152,7 @@ namespace Fusee.Engine.Core
             PrePassVisitor = new PrePassVisitor();
             IgnoreInactiveComponents = true;
             _state = new RendererState();
+            _animation = new Animation();
             InitAnimations(_sc);
         }
 
@@ -161,8 +162,6 @@ namespace Fusee.Engine.Core
         /// <param name="sc">The Scene, containing the Animations.</param>
         public void InitAnimations(SceneContainer sc)
         {
-            _animation = new Animation();
-
             foreach (var a in sc.Children.FindComponents(t => t.GetType() == typeof(Scene.Animation)))
             {
                 var ac = (Scene.Animation)a;
@@ -177,7 +176,7 @@ namespace Fusee.Engine.Core
                             case TypeId.Int:
                                 {
                                     var channel = new Channel<int>(Lerp.IntLerp);
-                                    foreach (AnimationKeyInt key in animTrackContainer.KeyFrames)
+                                    foreach (var key in animTrackContainer.KeyFrames.Cast<AnimationKeyInt>())
                                     {
                                         channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
                                     }
@@ -189,7 +188,7 @@ namespace Fusee.Engine.Core
                             case TypeId.Float:
                                 {
                                     var channel = new Channel<float>(Lerp.FloatLerp);
-                                    foreach (AnimationKeyFloat key in animTrackContainer.KeyFrames)
+                                    foreach (var key in animTrackContainer.KeyFrames.Cast<AnimationKeyFloat>())
                                     {
                                         channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
                                     }
@@ -202,7 +201,7 @@ namespace Fusee.Engine.Core
                             case TypeId.Float2:
                                 {
                                     var channel = new Channel<float2>(Lerp.Float2Lerp);
-                                    foreach (AnimationKeyFloat2 key in animTrackContainer.KeyFrames)
+                                    foreach (var key in animTrackContainer.KeyFrames.Cast<AnimationKeyFloat2>())
                                     {
                                         channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
                                     }
@@ -223,7 +222,7 @@ namespace Fusee.Engine.Core
                                                // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
                                     };
                                     var channel = new Channel<float3>(lerpFunc);
-                                    foreach (AnimationKeyFloat3 key in animTrackContainer.KeyFrames)
+                                    foreach (var key in animTrackContainer.KeyFrames.Cast<AnimationKeyFloat3>())
                                     {
                                         channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
                                     }
@@ -235,7 +234,7 @@ namespace Fusee.Engine.Core
                             case TypeId.Float4:
                                 {
                                     var channel = new Channel<float4>(Lerp.Float4Lerp);
-                                    foreach (AnimationKeyFloat4 key in animTrackContainer.KeyFrames)
+                                    foreach (var key in animTrackContainer.KeyFrames.Cast<AnimationKeyFloat4>())
                                     {
                                         channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
                                     }
@@ -773,11 +772,8 @@ namespace Fusee.Engine.Core
                 // the root bone (index 0).
                 if (vwl == null)
                     vwl = new VertexWeightList();
-                if (vwl.VertexWeights == null)
-                {
-                    vwl.VertexWeights =
+                vwl.VertexWeights ??=
                         new List<VertexWeight>(new[] { new VertexWeight { JointIndex = 0, Weight = 1.0f } });
-                }
 
                 var nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
                 for (var iJoint = 0; iJoint < nJoints; iJoint++)

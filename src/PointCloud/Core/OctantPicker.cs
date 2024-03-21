@@ -15,7 +15,13 @@ namespace Fusee.PointCloud.Core
     {
         private readonly PointCloudOctree _octree;
         private readonly RenderContext _rc;
+        /// <summary>
+        /// The currently used <see cref="Camera"/> for rendering the <see cref="PointCloudOctree"/>
+        /// </summary>
         public Camera Cam;
+        /// <summary>
+        /// The current position in world coordinates of the used <see cref="Camera"/>
+        /// </summary>
         public float3 CamPosWorld;
 
         /// <summary>
@@ -24,7 +30,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="octree">The octree to pick from.</param>
         /// <param name="rc">The render context.</param>
         /// <param name="cam">The camera the calculation is based on.</param>
-        /// <param name="camTransform">The transform of previously given camera.</param>
+        /// <param name="camPosWorld">The position of previously given camera.</param>
         public OctantPicker(PointCloudOctree octree, RenderContext rc, Camera cam, float3 camPosWorld)
         {
             _octree = octree;
@@ -103,7 +109,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="pickPosClip"></param>
         /// <param name="viewportSize"></param>
         /// <returns></returns>
-        public List<PointCloudOctant?> PickAllOctants(float2 pickPosClip, int2 viewportSize)
+        public List<PointCloudOctant>? PickAllOctants(float2 pickPosClip, int2 viewportSize)
         {
             return PickOctantWrapper(pickPosClip, viewportSize);
         }

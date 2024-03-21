@@ -167,7 +167,6 @@ namespace Fusee.Base.Imp.Desktop
             return false;
         }
 
-#pragma warning disable CS1998
         /// <summary>
         /// Create an async stream for the asset identified by id.
         /// </summary>
@@ -195,7 +194,6 @@ namespace Fusee.Base.Imp.Desktop
             return null;
 
         }
-#pragma warning restore CS1998
 
         /// <summary>
         /// Checks the existence of the identified asset as an async method.

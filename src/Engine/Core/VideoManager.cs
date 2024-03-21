@@ -7,10 +7,10 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class VideoManager
     {
-        private static VideoManager _instance;
-        private IVideoManagerImp _videoManagerImp;
+        private static VideoManager? _instance;
+        private IVideoManagerImp? _videoManagerImp;
 
-        internal IVideoManagerImp VideoManagerImp
+        internal IVideoManagerImp? VideoManagerImp
         {
             set { _videoManagerImp = value; }
         }
@@ -21,9 +21,9 @@ namespace Fusee.Engine.Core
         /// <param name="loopVideo"></param>
         /// <param name="useAudio"></param>
         /// <returns></returns>
-        public IVideoStreamImp LoadVideoFromFile(string filename, bool loopVideo, bool useAudio = true)
+        public IVideoStreamImp? LoadVideoFromFile(string filename, bool loopVideo, bool useAudio = true)
         {
-            return _videoManagerImp.CreateVideoStreamImpFromFile(filename, loopVideo, useAudio);
+            return _videoManagerImp?.CreateVideoStreamImpFromFile(filename, loopVideo, useAudio);
         }
         /// <summary>
         /// Loads video directly of a camera.
@@ -31,9 +31,9 @@ namespace Fusee.Engine.Core
         /// <param name="cameraIndex"></param>
         /// <param name="useAudio"></param>
         /// <returns></returns>
-        public IVideoStreamImp LoadVideoFromCamera(int cameraIndex = 0, bool useAudio = false)
+        public IVideoStreamImp? LoadVideoFromCamera(int cameraIndex = 0, bool useAudio = false)
         {
-            return _videoManagerImp.CreateVideoStreamImpFromCamera(cameraIndex, useAudio);
+            return _videoManagerImp?.CreateVideoStreamImpFromCamera(cameraIndex, useAudio);
         }
         /// <summary>
         /// Creates an instance of <see cref="VideoManager"/>.

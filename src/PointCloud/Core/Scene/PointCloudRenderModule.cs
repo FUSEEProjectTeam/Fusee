@@ -15,12 +15,12 @@ namespace Fusee.PointCloud.Core.Scene
     /// </summary>
     public class PointCloudRenderModule : IRendererModule
     {
-        RenderContext _rc;
+        private RenderContext? _rc;
 
         /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
         /// </summary>
-        private RendererState _state;
+        private RendererState? _state;
 
         /// <summary>
         /// The RenderLayer this renderer should render.
@@ -30,7 +30,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// The RenderLayer this renderer should render.
         /// </summary>
-        private Camera _camera;
+        private Camera? _camera;
 
         private readonly bool _isForwardModule;
 
@@ -40,10 +40,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <param name="rc"></param>
         public void UpdateContext(RenderContext rc)
         {
-            if (rc == null)
-                throw new ArgumentNullException(nameof(rc));
-
-            _rc = rc;
+            _rc = rc ?? throw new ArgumentNullException(nameof(rc));
 
             // prevent rendering with <see cref="Mesh.HasDirtyIndices"/>
             _rc.AllowDirtyMeshs = false;
@@ -55,10 +52,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <param name="state"></param>
         public void UpdateState(RendererState state)
         {
-            if (state == null)
-                throw new ArgumentNullException(nameof(state));
-
-            _state = state;
+            _state = state ?? throw new ArgumentNullException(nameof(state));
         }
 
         /// <summary>

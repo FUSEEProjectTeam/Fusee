@@ -13,6 +13,9 @@ namespace Fusee.PointCloud.Potree
     /// </summary>
     public class Potree2Cloud : IPointCloudImp<GpuMesh, VisualizationPoint>
     {
+        /// <summary>
+        /// Is being called when the GpuDataCache is being invalidated
+        /// </summary>
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; } = new();
 
         /// <summary>

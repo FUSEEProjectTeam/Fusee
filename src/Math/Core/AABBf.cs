@@ -230,7 +230,7 @@ namespace Fusee.Math.Core
         /// <returns></returns>
         public bool IntersectRay(RayF ray)
         {
-            if (this.Intersects(ray.Origin))
+            if (Intersects(ray.Origin))
                 return true;
 
             float t1 = (min.x - ray.Origin.x) * ray.Inverse.x;

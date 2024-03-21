@@ -2455,7 +2455,7 @@ namespace Fusee.Math.Core
             Vector128<float> thisrow2;
             Vector128<float> thisrow3;
 
-            fixed (float* m = &this.Row1.x)
+            fixed (float* m = &Row1.x)
             {
                 thisrow0 = Sse.LoadVector128(m);
                 thisrow1 = Sse.LoadVector128(m + 4);

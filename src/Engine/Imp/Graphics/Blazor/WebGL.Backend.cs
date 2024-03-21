@@ -100,26 +100,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             return exists != null;
         }
 
-        private void DisposeArrayTypes(object[] args)
-        {
-            for (int i = 0; i < args.Length; i++)
-            {
-                _ = args[i];
-
-                //if (arg is ITypedArray typedArray && typedArray != null)
-                //{
-                //var disposable = (IDisposable)typedArray;
-                //disposable.Dispose();
-                //}
-                //if (arg is WebAssembly.Core.Array jsArray && jsArray != null)
-                //{
-                //var disposable = (IDisposable)jsArray;
-                //disposable.Dispose();
-
-                //}
-            }
-        }
-
         protected void Invoke(string method, params object[] args)
         {
             object[] actualArgs = Translate(args);

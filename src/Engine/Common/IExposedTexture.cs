@@ -8,6 +8,6 @@
         /// <summary>
         /// Raw TextureHandle after GPU texture creation
         /// </summary>
-        ITextureHandle TextureHandle { get; }
+        ITextureHandle? TextureHandle { get; }
     }
 }

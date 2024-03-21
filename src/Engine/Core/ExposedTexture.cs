@@ -14,7 +14,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The opaque <see cref="ITextureHandle"/> to the pixel data on the GPU
         /// </summary>
-        public ITextureHandle TextureHandle { get; internal set; }
+        public ITextureHandle? TextureHandle { get; internal set; }
 
         /// <summary>
         /// Constructor initializes a Texture from a pixelData byte buffer, width and height in pixels and <see cref="ImagePixelFormat"/>.
@@ -33,7 +33,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Initialize a Texture from an existing IImageData. The input IImageData will be copied into this Texture via <seealso cref="Blt"/> command.
+        /// Initialize a Texture from an existing IImageData. The input IImageData will be copied into this Texture via <seealso cref="RenderContext.BlitMultisample2DTextureToTexture(WritableMultisampleTexture, WritableTexture)"/> command.
         /// </summary>
         /// <param name="imageData">The existing <see cref="IImageData"/> that will be copied to initialize a Texture instance.</param>
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>

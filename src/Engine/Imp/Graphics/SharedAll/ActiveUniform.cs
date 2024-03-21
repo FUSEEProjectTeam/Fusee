@@ -23,7 +23,7 @@ namespace Fusee.Engine.Imp.SharedAll
         /// </summary>
         public string Name
         {
-            get { return _name; }
+            readonly get { return _name; }
             set
             {
                 _name = value;

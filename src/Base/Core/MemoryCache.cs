@@ -17,7 +17,7 @@ namespace Fusee.Base.Core
         #region Microsoft.Extensions.Caching.Memory_6_OR_OLDER
 
         private static readonly Lazy<Func<MemoryCache, object>> GetEntries6 =
-            new Lazy<Func<MemoryCache, object>>(() => (Func<MemoryCache, object>)Delegate.CreateDelegate(
+            new(() => (Func<MemoryCache, object>)Delegate.CreateDelegate(
                 typeof(Func<MemoryCache, object>),
                 typeof(MemoryCache).GetProperty("EntriesCollection", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true),
                 throwOnBindFailure: true));
@@ -27,12 +27,12 @@ namespace Fusee.Base.Core
         #region Microsoft.Extensions.Caching.Memory_7_OR_NEWER
 
         private static readonly Lazy<Func<MemoryCache, object>> GetCoherentState =
-            new Lazy<Func<MemoryCache, object>>(() =>
+            new(() =>
                 CreateGetter<MemoryCache, object>(typeof(MemoryCache)
                     .GetField("_coherentState", BindingFlags.NonPublic | BindingFlags.Instance)));
 
         private static readonly Lazy<Func<object, IDictionary>> GetEntries7 =
-            new Lazy<Func<object, IDictionary>>(() =>
+            new(() =>
                 CreateGetter<object, IDictionary>(typeof(MemoryCache)
                     .GetNestedType("CoherentState", BindingFlags.NonPublic)
                     .GetField("_entries", BindingFlags.NonPublic | BindingFlags.Instance)));

@@ -1,23 +1,24 @@
-﻿using Fusee.Engine.Common;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using System;
 
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class InstanceData : SceneComponent, IManagedInstanceData
     {
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
         /// </summary>
-        public event EventHandler<InstanceDataChangedEventArgs> DataChanged;
+        public event EventHandler<InstanceDataChangedEventArgs>? DataChanged;
 
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
         /// </summary>
-        public event EventHandler<InstanceDataChangedEventArgs> DisposeData;
+        public event EventHandler<InstanceDataChangedEventArgs>? DisposeData;
 
         /// <summary>
         /// The position of each instance. This array needs to be as long as <see cref="Amount"/>.
@@ -27,8 +28,7 @@ namespace Fusee.Engine.Core.Scene
             get => _positions;
             set
             {
-                if (Amount != value.Length)
-                    throw new ArgumentOutOfRangeException();
+                Guard.IsEqualTo(value.Length, Amount);
                 _positions = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
             }
@@ -43,8 +43,8 @@ namespace Fusee.Engine.Core.Scene
             get => _rotations;
             set
             {
-                if (Amount != value?.Length)
-                    throw new ArgumentOutOfRangeException();
+                Guard.IsNotNull(value);
+                Guard.IsEqualTo(value.Length, Amount);
                 _rotations = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
             }
@@ -59,8 +59,8 @@ namespace Fusee.Engine.Core.Scene
             get => _scales;
             set
             {
-                if (Amount != value?.Length)
-                    throw new ArgumentOutOfRangeException();
+                Guard.IsNotNull(value);
+                Guard.IsEqualTo(value.Length, Amount);
                 _scales = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Transform));
             }
@@ -75,8 +75,8 @@ namespace Fusee.Engine.Core.Scene
             get => _colors;
             set
             {
-                if (Amount != value?.Length)
-                    throw new ArgumentOutOfRangeException();
+                Guard.IsNotNull(value);
+                Guard.IsEqualTo(value.Length, Amount);
                 _colors = value;
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Colors));
             }
@@ -105,28 +105,24 @@ namespace Fusee.Engine.Core.Scene
         public InstanceData(int amount, float3[] positions, float3[]? rotations = null, float3[]? scales = null, float4[]? colors = null)
         {
             Amount = amount;
-            if (Amount != positions.Length)
-                throw new ArgumentOutOfRangeException();
+            Guard.IsEqualTo(positions.Length, Amount);
             _positions = positions;
 
             if (scales != null)
             {
-                if (Amount != scales.Length)
-                    throw new ArgumentOutOfRangeException();
+                Guard.IsEqualTo(scales.Length, Amount);
                 _scales = scales;
             }
 
             if (rotations != null)
             {
-                if (Amount != rotations.Length)
-                    throw new ArgumentOutOfRangeException();
+                Guard.IsEqualTo(rotations.Length, Amount);
                 _rotations = rotations;
             }
 
             if (colors != null)
             {
-                if (Amount != colors.Length)
-                    throw new ArgumentOutOfRangeException();
+                Guard.IsEqualTo(colors.Length, Amount);
                 _colors = colors;
             }
         }

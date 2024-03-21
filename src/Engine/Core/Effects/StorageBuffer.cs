@@ -28,14 +28,14 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The handle of the buffer on the GPU.
         /// </summary>
-        public IBufferHandle BufferHandle
+        public IBufferHandle? BufferHandle
         {
             get => _bufferHandle;
             set => _bufferHandle = value;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
@@ -45,9 +45,9 @@ namespace Fusee.Engine.Core.Effects
         private readonly int _tSize;
         private readonly RenderCanvas _rc;
 
-        private T[] _data;
+        private T[]? _data;
         private bool _disposed;
-        private IBufferHandle _bufferHandle;
+        private IBufferHandle? _bufferHandle;
 
         /// <summary>
         /// Creates a new instance of type StorageBuffer.
@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core.Effects
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void Dispose()
         {
@@ -94,7 +94,7 @@ namespace Fusee.Engine.Core.Effects
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)

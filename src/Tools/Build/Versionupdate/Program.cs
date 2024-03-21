@@ -97,7 +97,7 @@ namespace Fusee.Tools.Build.Versionupdate
 
                       if (!string.IsNullOrEmpty(o.VersionStringOrFilePath)) // Check if VersionString is formatted correctly
                       {
-                          MatchCollection matches = null;
+                          MatchCollection? matches = null;
 
                           if (Regex.Match(o.VersionStringOrFilePath, versionStringPattern).Success)
                           {
