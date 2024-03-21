@@ -165,7 +165,7 @@ namespace Fusee.Engine.Core
 
             Guard.IsNotNull(_rc);
 
-            if (DoFrumstumCulling)
+            if (DoFrustumCulling)
             {
                 Guard.IsNotNull(_lightFrustum);
 
@@ -211,7 +211,7 @@ namespace Fusee.Engine.Core
 
             Guard.IsNotNull(_rc);
 
-            if (DoFrumstumCulling)
+            if (DoFrustumCulling)
             {
                 Guard.IsNotNull(_lightFrustum);
                 FrustumF frustum;
