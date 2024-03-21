@@ -1,7 +1,7 @@
 ﻿namespace Fusee.Xirkit
 {
     /// <summary>
-    /// Base class containing functionality common to all Channel types, no matter 
+    /// Base class containing functionality common to all Channel types, no matter
     /// of the type of the values of the containing key frames.
     /// </summary>
     public abstract class ChannelBase

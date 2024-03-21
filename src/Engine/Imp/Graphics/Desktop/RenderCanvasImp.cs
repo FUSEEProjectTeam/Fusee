@@ -239,9 +239,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             }
             catch
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
             {
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, false, startVisible, minWidth, minHeight);
             }
+#pragma warning restore ERP022 // Unobserved exception in generic exception handler
 
             WindowHandle = new WindowHandle()
             {

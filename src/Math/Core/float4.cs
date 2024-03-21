@@ -970,7 +970,7 @@ namespace Fusee.Math.Core
             if (!(obj is float4))
                 return false;
 
-            return this.Equals((float4)obj);
+            return Equals((float4)obj);
         }
 
         #endregion public override bool Equals(object obj)

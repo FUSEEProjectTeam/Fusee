@@ -4,7 +4,6 @@ using System;
 
 namespace Fusee.Engine.Imp.Graphics.Blazor
 {
-#pragma warning disable MEN002
 #pragma warning disable 1591
 
     /// <summary>
@@ -809,18 +808,21 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("bufferData", target, size, usage);
         }
 
+        [Obsolete]
         public void BufferData(uint target, float[] data, uint usage)
         {
             // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
             ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataFloat", target, data, usage);
         }
 
+        [Obsolete]
         public void BufferData(uint target, double[] data, uint usage)
         {
             // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
             ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataFloat", target, data, usage);
         }
 
+        [Obsolete]
         public void BufferData(uint target, uint[] data, uint usage)
         {
             // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
@@ -828,12 +830,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         }
 
+        [Obsolete]
         public void BufferData(uint target, ushort[] data, uint usage)
         {
             // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
             ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, Array, uint, object>("customBufferDataUShort", target, data, usage);
         }
 
+        [Obsolete]
         /*InvokeUnmarshalled only supports three type specifications - therefor we cannot implement WebGL2:
         //bufferSubData(target, dstByteOffset, srcData, srcOffset) and
         bufferSubData(target, dstByteOffset, srcData, srcOffset, length)*/
@@ -843,6 +847,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, IntPtr, Array, object>("customBufferSubDataFloat", target, dstByteOffset, data);
         }
 
+        [Obsolete]
         /*InvokeUnmarshalled only supports three type specifications - therefor we cannot implement WebGL2:
         //bufferSubData(target, dstByteOffset, srcData, srcOffset) and
         bufferSubData(target, dstByteOffset, srcData, srcOffset, length)*/
@@ -852,6 +857,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             ((IJSUnmarshalledRuntime)BlazorExtensions.Runtime).InvokeUnmarshalled<uint, IntPtr, Array, object>("customBufferDataDouble", target, dstByteOffset, data);
         }
 
+        [Obsolete]
         /*InvokeUnmarshalled only supports three type specifications - therefor we cannot implement WebGL2:
         //bufferSubData(target, dstByteOffset, srcData, srcOffset) and
         bufferSubData(target, dstByteOffset, srcData, srcOffset, length)*/
@@ -862,9 +868,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         }
 
-        /*InvokeUnmarshalled only supports three type specifications - therefor we cannot implement WebGL2:
+        /*InvokeUnmarshalled only supports three type specifications - therefore we cannot implement WebGL2:
         //bufferSubData(target, dstByteOffset, srcData, srcOffset) and
         bufferSubData(target, dstByteOffset, srcData, srcOffset, length)*/
+        [Obsolete]
         public void BufferSubData(uint target, IntPtr dstByteOffset, ushort[] data)
         {
             // Do not call Invoke via JSON Serialize but upload data unmarshalled and as quick as possible to javascript
@@ -2179,6 +2186,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("texImage2D", target, level, internalformat, width, height, border, format, type, pboOffset);
         }
 
+        [Obsolete]
         public void GLTexImage2D(uint target, int level, int internalformat, int width, int height, int border, uint format, uint type, Array source)
         {
             int[] parameter = new int[] { (int)target, level, internalformat, width, height, border, (int)format, (int)type };
@@ -2220,6 +2228,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, pboOffset);
         }
 
+        [Obsolete]
         public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, Array source)
         {
             int[] parameter = new int[] { (int)target, level, internalformat, width, height, depth, border, (int)format, (int)type };
@@ -2229,7 +2238,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
             else
             {
-                Console.WriteLine("~~~~ Warning: Unsupported texImage3D called :/");
                 Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, source);
             }
         }
@@ -2755,6 +2763,5 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
     {
     }
 
-#pragma warning restore MEN002
 #pragma warning restore 1591
 }

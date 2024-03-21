@@ -9,7 +9,7 @@ namespace Fusee.PointCloud.Common
     /// *L*eft  - negative X axis
     /// *R*ight - positive X axis
     /// *F*ront - negative Y axis
-    /// *B*ack  - positive Y axis 
+    /// *B*ack  - positive Y axis
     /// *D*own  - negative Z axis
     /// *U*p    - positive Z axis
     ///
@@ -19,6 +19,8 @@ namespace Fusee.PointCloud.Common
     [Flags]
     public enum OctantOrientation : byte
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
         LeftFrontDown = 0b000,
         RightFrontDown = 0b001,
 
@@ -37,6 +39,8 @@ namespace Fusee.PointCloud.Common
         FrontBackMask = 0b010,
         DownUpMask = 0b100,
         LeftRightFrontBackDownUpMask = DownUpMask | FrontBackMask | LeftRightMask,
+
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 
 
@@ -47,29 +51,39 @@ namespace Fusee.PointCloud.Common
         OctOrientBits = (long)(~(long)LevelBits),
     }
 
-    //  Current maximum Octree level is 19 
+    //  Current maximum Octree level is 19
     //  The entire ID denoting the Octant's zero-based level [0 (top)...18 (floor)] and its "path" is stored in a 64 bit word.
     //  The octant's depth is encoded in the most significant first seven bits as a signed 7-bit-integer. Negative
     //  depths denote invalid IDs.
-    //  Each level's octant orientation is encoded in three bits (least significant bit: *L*eft(0) / *R*ight (1), 
+    //  Each level's octant orientation is encoded in three bits (least significant bit: *L*eft(0) / *R*ight (1),
     //  medium significant bit: *F*ront (0) / *B*ack (1), most significant bit: *D*own (0) / *U*p (1))
     //  Groups of three consecutive bits start at bit 0 (LSB) reaching up to (including) bit 56. Altogether this
     //  allows to encode the octant orientation for 19 levels (= 57 bits / 3).
-    // 
+    //
     //  |   LevelBits:  7-bit signed int     |    Octant Orientation Bits. Three consecutive bits for each level     |
     //  |                                    |    level 0    |    level 1   |   ...   |   level 17   |   level 18    |
     //  |  SGN  MS                       LS  |  DU | FB | LR | DU | FB | LR |   ...   | DU | FB | LR | DU | FB | LR  |
     //  |  63 | 62 | 61 | 60 | 59 | 58 | 57  |  56 | 55 | 54 | 53 | 52 | 51 |   ...   | 05 | 04 | 03 | 02 | 01 | 00  |
     //  |  MSB                                                                                                  LSB  |
-    //  
+    //
 
-
+    /// <summary>
+    /// One OctantId
+    /// </summary>
     public struct OctantId : IEnumerable<(int, OctantOrientation)>, IEquatable<OctantId>
     {
         private long _id = -1;
 
-        public bool Valid => _id >= 0;
+        /// <summary>
+        /// Check if this <see cref="OctantId"/> is valid
+        /// </summary>
+        public readonly bool Valid => _id >= 0;
 
+        /// <summary>
+        /// Generate an <see cref="OctantId"/> instance from given octant orientations
+        /// </summary>
+        /// <param name="ooList"></param>
+        /// <exception cref="ArgumentException"></exception>
         public OctantId(params OctantOrientation[] ooList)
         {
             _id = 0;
@@ -91,14 +105,29 @@ namespace Fusee.PointCloud.Common
             Level = level;
         }
 
+        /// <summary>
+        /// Generate instance from internal known id
+        /// </summary>
+        /// <param name="id"></param>
         public OctantId(long id)
         {
             // Warning: No check performed
             _id = id;
         }
 
+        /// <summary>
+        /// Generate instance of <see cref="OctantId"/> from given potree octant id name
+        /// </summary>
+        /// <param name="potreeName"></param>
         public OctantId(string potreeName) : this(PotreeNameToOctantOrientations(potreeName)) { }
 
+        /// <summary>
+        /// Convert potree level name to octant orientation.
+        /// The name of one potree file is usually something like r01234, this methods converts 1 (!) char of this string
+        /// </summary>
+        /// <param name="potreeLevelName">char of potree level, allowed params [0-7,r]</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static OctantOrientation PotreeNameToOctantId(char potreeLevelName) => potreeLevelName switch
         {
             '0' => OctantOrientation.LeftFrontDown,
@@ -113,6 +142,11 @@ namespace Fusee.PointCloud.Common
             _ => throw new ArgumentException(nameof(potreeLevelName))
         };
 
+        /// <summary>
+        /// Converts a potree name to an octant orientation. The name is usually something like r0143
+        /// </summary>
+        /// <param name="potreeName">The name as string</param>
+        /// <returns></returns>
         public static OctantOrientation[] PotreeNameToOctantOrientations(string potreeName)
         {
             OctantOrientation[] octOr = new OctantOrientation[potreeName.Length];
@@ -135,9 +169,14 @@ namespace Fusee.PointCloud.Common
             OctantOrientation.RightFrontUp => '5',
             OctantOrientation.RightBackDown => '6',
             OctantOrientation.RightBackUp => '7',
-            _ => throw new ArgumentException(nameof(octOr))
+            _ => throw new ArgumentException(null, nameof(octOr))
         };
 
+        /// <summary>
+        /// Convert an internal <see cref="OctantId"/> to the fitting potree name (e. g. r0123)
+        /// </summary>
+        /// <param name="octId"></param>
+        /// <returns></returns>
         public static string OctantIdToPotreeName(OctantId octId)
         {
             var levels = octId.Level;
@@ -159,6 +198,11 @@ namespace Fusee.PointCloud.Common
             }
         }
 
+        /// <summary>
+        /// Implicit cast of an instance of <see cref="OctantId"/> to its internal representation as <see langword="long"/>
+        /// </summary>
+        /// <param name="oid"></param>
+
         public static implicit operator long(OctantId oid) => oid._id;
 
         /// Zero-based level of the octant ()
@@ -176,6 +220,9 @@ namespace Fusee.PointCloud.Common
             }
         }
 
+        /// <summary>
+        /// Return <see cref="OctantOrientation"/> from given level.
+        /// </summary>
         public OctantOrientation this[int level]
         {
             get
@@ -202,6 +249,7 @@ namespace Fusee.PointCloud.Common
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerator<(int, OctantOrientation)> GetEnumerator()
         {
             int level = Level;
@@ -218,37 +266,79 @@ namespace Fusee.PointCloud.Common
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Return <see langword="true"/> if <see cref="OctantOrientation"/> is oriented to the left
+        /// </summary>
+        /// <param name="oo"></param>
+        /// <returns></returns>
         public static bool IsLeft(OctantOrientation oo) => (oo & OctantOrientation.LeftRightMask) == 0;
+        /// <summary>
+        /// Return <see langword="true"/> if <see cref="OctantOrientation"/> is oriented to the right
+        /// </summary>
+        /// <param name="oo"></param>
+        /// <returns></returns>
         public static bool IsRight(OctantOrientation oo) => (oo & OctantOrientation.LeftRightMask) != 0;
 
+        /// <summary>
+        /// Return <see langword="true"/> if <see cref="OctantOrientation"/> is oriented to the front
+        /// </summary>
+        /// <param name="oo"></param>
+        /// <returns></returns>
         public static bool IsFront(OctantOrientation oo) => (oo & OctantOrientation.FrontBackMask) == 0;
+        /// <summary>
+        /// Return <see langword="true"/> if <see cref="OctantOrientation"/> is oriented to the back
+        /// </summary>
+        /// <param name="oo"></param>
+        /// <returns></returns>
         public static bool IsBack(OctantOrientation oo) => (oo & OctantOrientation.FrontBackMask) != 0;
 
+        /// <summary>
+        /// Return <see langword="true"/> if <see cref="OctantOrientation"/> is oriented downwards
+        /// </summary>
+        /// <param name="oo"></param>
+        /// <returns></returns>
         public static bool IsDown(OctantOrientation oo) => (oo & OctantOrientation.DownUpMask) == 0;
+        /// <summary>
+        /// Return <see langword="true"/> if <see cref="OctantOrientation"/> is oriented upwards
+        /// </summary>
+        /// <param name="oo"></param>
+        /// <returns></returns>
         public static bool IsUp(OctantOrientation oo) => (oo & OctantOrientation.DownUpMask) != 0;
 
         /// <inheritdoc/>
-        public override string ToString()
+        public override readonly string ToString()
         {
             return Convert.ToString(this, 2);
         }
 
         /// <inheritdoc/>
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return _id.GetHashCode();
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object? obj)
         {
-            return Equals((OctantId)obj);
+            return obj is not null && Equals((OctantId)obj);
         }
 
         /// <inheritdoc/>
-        public bool Equals(OctantId other)
+        public readonly bool Equals(OctantId other)
         {
             return _id == other._id;
+        }
+
+        /// <inheritdoc/>
+        public static bool operator ==(OctantId left, OctantId right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <inheritdoc/>
+        public static bool operator !=(OctantId left, OctantId right)
+        {
+            return !(left == right);
         }
     }
 }

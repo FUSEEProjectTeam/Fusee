@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Use <see cref="ConvertFrom(FusFile, string)"/> and <see cref="ConvertTo(SceneContainer)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
+    /// Use <see cref="ConvertFrom(FusFile, string)"/> and <see cref="ConvertTo(SceneContainer, int)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
     /// in order to have each visited element converted and/or split into its high/low level, render-ready/serialization-ready components.
     /// </summary>
     public static class FusSceneConverter
@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core
         /// <param name="fus"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static SceneContainer ConvertFrom(FusFile fus, string id = null)
+        public static SceneContainer ConvertFrom(FusFile fus, string? id = null)
         {
             return ConvertFromAsync(fus, id).Result;
         }
@@ -39,7 +39,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
         /// <param name="id">Path to this scene used as an addition for asset retriving inside the correct folder</param>
-        public static async Task<SceneContainer> ConvertFromAsync(FusFile fus, string id = null)
+        public static async Task<SceneContainer> ConvertFromAsync(FusFile fus, string? id = null)
         {
             if (fus == null)
             {
@@ -249,6 +249,8 @@ namespace Fusee.Engine.Core
             _boneContainers = new Stack<SceneNode>();
 
             _allEffects = new Dictionary<FusMaterialBase, List<SceneNode>>();
+            _fusScene = new();
+            _currentNode = new SceneNode();
         }
 
         internal async Task<SceneContainer> Convert(FusScene sc)
@@ -257,11 +259,11 @@ namespace Fusee.Engine.Core
             Traverse(sc.Children);
 
             // During scene traversal we collect all effects but do not create them, yet
-            // within this loop the look up and texture retrival is being performed in an asynchronous way
+            // within this loop the look up and texture retrieval is being performed in an asynchronous way
 
             foreach (var mat in _allEffects.Keys)
             {
-                Effect effect = null;
+                Effect? effect = null;
 
                 if (mat is FusMaterialStandard m)
                     effect = await LookupMaterial(m);
@@ -283,7 +285,7 @@ namespace Fusee.Engine.Core
 
                 foreach (var node in _allEffects[mat])
                 {
-                    if (node.GetComponents<Effect>().Count() > 0)
+                    if (node.GetComponents<Effect>().Any())
                     {
                         Diagnostics.Warn($"Node {node} already contains an effect, multiple effects can't be rendered or be used, yet!");
                     }
@@ -807,10 +809,12 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.TryAdd(m.Albedo.Texture, albedoTex);
                 }
+                Guard.IsNotNull(m.BRDF);
                 sfx = MakeEffect.FromBRDF(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, m.BRDF.SubsurfaceColor, emissive, albedoTex, m.Albedo.Mix, float2.One);
             }
             else if (!textureSetup.HasFlag(TextureSetup.AlbedoTex) && textureSetup.HasFlag(TextureSetup.NormalMap))
             {
+                Guard.IsNotNull(m.NormalMap);
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
                     normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
@@ -819,10 +823,12 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.TryAdd(m.NormalMap.Texture, normalTex);
                 }
+                Guard.IsNotNull(m.BRDF);
                 sfx = MakeEffect.FromBRDF(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, m.BRDF.SubsurfaceColor, emissive, null, 0f, float2.One, normalTex, m.NormalMap.Intensity);
             }
             else if (textureSetup.HasFlag(TextureSetup.AlbedoTex) && textureSetup.HasFlag(TextureSetup.NormalMap))
             {
+                Guard.IsNotNull(m.Albedo.Texture);
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
                     albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
@@ -831,6 +837,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.TryAdd(m.Albedo.Texture, albedoTex);
                 }
+                Guard.IsNotNull(m.NormalMap);
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
                     normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
@@ -839,10 +846,12 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.TryAdd(m.NormalMap.Texture, normalTex);
                 }
+                Guard.IsNotNull(m.BRDF);
                 sfx = MakeEffect.FromBRDF(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, m.BRDF.SubsurfaceColor, emissive, albedoTex, m.Albedo.Mix, float2.One, normalTex, m.NormalMap.Intensity);
             }
             else if (textureSetup == TextureSetup.NoTextures)
             {
+                Guard.IsNotNull(m.BRDF);
                 sfx = MakeEffect.FromBRDF(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, subsurfaceColor, emissive);
             }
 
@@ -877,6 +886,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
+                    Guard.IsNotNull(m.NormalMap);
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
                         normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
@@ -897,6 +907,7 @@ namespace Fusee.Engine.Core
                         };
                         _texMap.TryAdd(m.Albedo.Texture, albedoTex);
                     }
+                    Guard.IsNotNull(m.NormalMap);
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
                         normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
@@ -931,6 +942,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
+                    Guard.IsNotNull(m.NormalMap);
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
                         normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
@@ -951,6 +963,7 @@ namespace Fusee.Engine.Core
                         };
                         _texMap.TryAdd(m.Albedo.Texture, albedoTex);
                     }
+                    Guard.IsNotNull(m.NormalMap);
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
                         normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
@@ -985,6 +998,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
+                    Guard.IsNotNull(m.NormalMap);
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
                         normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
@@ -1005,6 +1019,7 @@ namespace Fusee.Engine.Core
                         };
                         _texMap.TryAdd(m.Albedo.Texture, albedoTex);
                     }
+                    Guard.IsNotNull(m.NormalMap);
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
                         normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
@@ -1045,7 +1060,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="m">The mesh to convert.</param>
         [VisitMethod]
-        public void ConvMesh(Mesh m)
+        public new void ConvMesh(Mesh m)
         {
             // convert mesh
             var mesh = new Serialization.V2.FusMesh
@@ -1072,7 +1087,7 @@ namespace Fusee.Engine.Core
     {
         protected readonly FusFile _convertedScene;
         protected readonly Stack<FusNode> _predecessors;
-        protected FusNode _currentNode;
+        protected FusNode? _currentNode;
 
         protected readonly Stack<FusComponent> _boneContainers;
 

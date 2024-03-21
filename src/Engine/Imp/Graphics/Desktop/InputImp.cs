@@ -84,7 +84,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             get { return GetType().FullName; }
         }
 
-#pragma warning disable 0067
         /// <summary>
         /// Not supported on this driver. Mouse and keyboard are considered to be connected all the time.
         /// You can register handlers but they will never get called.
@@ -422,14 +421,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         ///<summary>
         /// All axis are Poll based see GetAxis
         ///</summary>
-#pragma warning disable 0067
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
         /// <summary>
         /// no Buttons implemented
         /// </summary>
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
-#pragma warning restore 0067
 
         /// <summary>
         /// Retrieves values for the X, Y and Trigger axes. No other axes are supported by this device.
@@ -573,7 +570,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
 
-#pragma warning disable 0067
         /// <summary>
         /// No axes exist on this device, so listeners registered to this event will never get called.
         /// </summary>
@@ -584,7 +580,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// to get information from this device.
         /// </summary>
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
-#pragma warning restore 0067
 
         /// <summary>
         /// Called when keyboard button is pressed down.

@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	
+
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;net7.0</TargetFrameworks>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
+		<Nullable>enable</Nullable>
 		<IsPackable>true</IsPackable>
 		<Description>Fusee Engine Common</Description>
 	</PropertyGroup>
@@ -16,5 +16,5 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 	</ItemGroup>
-	
+
 </Project>

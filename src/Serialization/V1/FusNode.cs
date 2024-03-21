@@ -49,7 +49,7 @@ namespace Fusee.Serialization.V1
         public IEnumerable<IComponent> EnumComponents => Components?.Select(idx => Scene?.ComponentList[idx]);
 
         /// <summary>
-        /// Adds a component to this node's list of components. Internally the component is 
+        /// Adds a component to this node's list of components. Internally the component is
         /// stored in this node's <see cref="Scene"/> instance and referenced in the node.
         /// </summary>
         /// <param name="component">The component to store in this node's component list.</param>
@@ -61,7 +61,7 @@ namespace Fusee.Serialization.V1
         }
 
         /// <summary>
-        /// Adds a node as a a child node to 
+        /// Adds a node as a a child node to
         /// </summary>
         /// <param name="node"></param>
         public void AddNode(FusNode node)
@@ -77,11 +77,9 @@ namespace Fusee.Serialization.V1
                 throw new InvalidOperationException("Adding FusNode objects from other FusScenes is not yet implemented");
             }
 
-            if (node.Components == null)
-                node.Components = new List<int>();
+            node.Components ??= new List<int>();
 
-            if (Children == null)
-                Children = new List<FusNode>();
+            Children ??= new List<FusNode>();
 
             Children.Add(node);
         }

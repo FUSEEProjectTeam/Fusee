@@ -40,7 +40,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         private uint _blendDstAlpha;
 
         private bool _isCullEnabled;
-        private WebGLFramebuffer _lastBoundFbo;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.

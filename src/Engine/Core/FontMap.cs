@@ -72,9 +72,9 @@ namespace Fusee.Engine.Core
         public bool UpToDate { get; private set; }
 
         private Font _font;
-        private ImageData _image;
+        private ImageData? _image;
         private uint _pixelHeight;
-        private string _alphabet;
+        private string? _alphabet;
         private readonly Dictionary<uint, GlyphOnMap> _glyphOnMapCache;
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core
         /// <param name="alphabet">The alphabet. See <see cref="Alphabet"/>.</param>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public FontMap(Font font, uint pixelHeight, string alphabet = null)
+        public FontMap(Font font, uint pixelHeight, string? alphabet = null)
         {
             if (pixelHeight <= 0) throw new ArgumentOutOfRangeException(nameof(pixelHeight));
 
@@ -104,7 +104,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Gets the image containing all characters specified in the <see cref="Alphabet"/>. Use this image
         /// as a texture used by individual rectangles each displaying a single character. Use the information
-        /// retrieved from <see cref="GetGlyphOnMap"/> to position the character rectangles and to align 
+        /// retrieved from <see cref="GetGlyphOnMap"/> to position the character rectangles and to align
         /// their texture coordinates.
         /// </summary>
         /// <value>
@@ -114,7 +114,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                if (UpToDate)
+                if (UpToDate && _image != null)
                     return _image;
 
                 _font.PixelHeight = _pixelHeight;
@@ -242,7 +242,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets and sets the pixel height of each character on this font. This setting will affect the 
+        /// Gets and sets the pixel height of each character on this font. This setting will affect the
         /// size of the font <see cref="Image"/> , so be careful with this setting.
         /// </summary>
         /// <value>
@@ -264,7 +264,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The alphabet.
         /// </value>
-        public string Alphabet
+        public string? Alphabet
         {
             get { return _alphabet; }
             set
@@ -283,7 +283,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets the glyph on map information for the given character/glyph. This information can be used to create geometry textured with on single 
+        /// Gets the glyph on map information for the given character/glyph. This information can be used to create geometry textured with on single
         /// character from the font <see cref="Image"/>.
         /// </summary>
         /// <param name="c">The character to obtain information for.</param>

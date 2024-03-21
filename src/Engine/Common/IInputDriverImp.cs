@@ -11,7 +11,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The input device implementation object representing the input device (such as a game pad) that was just connected.
         /// </summary>
-        public IInputDeviceImp InputDeviceImp;
+        public IInputDeviceImp? InputDeviceImp;
     }
 
     /// <summary>
@@ -22,17 +22,17 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The device identifier of the device just disconnected.
         /// </summary>
-        public string Id;
+        public string? Id;
 
         /// <summary>
         /// The human-readable description string of the device that just disconnected.
         /// </summary>
-        public string Desc;
+        public string? Desc;
     }
 
 
     /// <summary>
-    /// Implementations of this interface represent a piece of software capable of connecting to 
+    /// Implementations of this interface represent a piece of software capable of connecting to
     /// one or more input devices (<see cref="IInputDeviceImp"/>. Members of this interface allow access to the devices.
     /// </summary>
     /// <remarks>

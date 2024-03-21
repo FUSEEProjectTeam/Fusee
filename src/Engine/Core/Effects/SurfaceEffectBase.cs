@@ -1,3 +1,4 @@
+using CommunityToolkit.Diagnostics;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
@@ -43,7 +44,7 @@ namespace Fusee.Engine.Core.Effects
 
         //================== Surface Shard IN ==========================//
         /// <summary>
-        /// User-defined input struct. Must derive from <see cref="DiffuseInput"/>. 
+        /// User-defined input struct. Must derive from <see cref="DiffuseInput"/>.
         /// Used in the <see cref="SurfOutFragMethod"/> to modify the parameters of the chosen <see cref="SurfaceOutput"/>.
         /// </summary>
         public SurfaceEffectInput SurfaceInput { get; set; }
@@ -58,7 +59,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.SurfOutStruct)]
-        public string SurfaceOutput;
+        public string SurfaceOutput = string.Empty;
 
         /// <summary>
         /// Fragment shader "in" declaration of the <see cref="SurfaceOutput"/>.
@@ -79,14 +80,14 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.SurfOut)]
-        public string SurfOutFragMethod;
+        public string? SurfOutFragMethod;
 
         /// <summary>
         /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.SurfOut)]
-        public string SurfOutVertMethod;
+        public string? SurfOutVertMethod;
         //======================================================//
         /// <summary>
         /// Fragment shader "in" declaration for the uv coordinates.
@@ -196,7 +197,7 @@ namespace Fusee.Engine.Core.Effects
             VertIn = ShaderShards.Vertex.VertProperties.InParams(surfaceInput.TextureSetup);
 
             SurfaceInput = surfaceInput;
-            SurfaceInput.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));
+            SurfaceInput.PropertyChanged += (object? sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));
 
             var surfInType = surfaceInput.GetType();
             var surfInName = nameof(SurfaceInput);
@@ -205,12 +206,14 @@ namespace Fusee.Engine.Core.Effects
             foreach (var structProp in surfInType.GetProperties())
             {
                 var paramDcl = BuildFxParamDecl(structProp, GetType().GetProperty(surfInName));
+                Guard.IsNotNull(paramDcl);
                 UniformParameters.Add(paramDcl.Hash, paramDcl);
             }
 
             HandleUniform(ShaderCategory.Fragment, nameof(SurfaceInput), surfInType);
 
             var lightingShards = SurfaceOut.GetShadingModelShards(surfaceInput.ShadingModel);
+            Guard.IsNotNull(lightingShards.StructDecl);
             SurfaceOutput = lightingShards.StructDecl;
 
             if (renderStateSet == null)
@@ -233,8 +236,8 @@ namespace Fusee.Engine.Core.Effects
         {
             Type t = GetType();
 
-            FxShaderAttribute shaderAttribute;
-            FxShardAttribute shardAttribute;
+            FxShaderAttribute? shaderAttribute;
+            FxShardAttribute? shardAttribute;
 
             var publicProps = GetPublicProperties(t);
             foreach (var prop in publicProps)
@@ -272,6 +275,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Uniform:
                         {
                             var paramDcl = BuildFxParamDecl(prop);
+                            Guard.IsNotNull(paramDcl);
                             UniformParameters.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
@@ -284,7 +288,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.SurfOut:
 
                         if (prop.PropertyType == typeof(string))
-                            HandleShard(shaderAttribute.ShaderCategory, shardAttribute, (string)prop.GetValue(this));
+                            HandleShard(shaderAttribute.ShaderCategory, shardAttribute, (string?)prop.GetValue(this));
                         else
                             throw new Exception($"{t.Name} ShaderEffect: Property {prop.Name} does not contain a valid shard.");
                         continue;
@@ -296,6 +300,7 @@ namespace Fusee.Engine.Core.Effects
                         foreach (var structProp in prop.PropertyType.GetProperties())
                         {
                             var paramDcl = BuildFxParamDecl(structProp, prop);
+                            Guard.IsNotNull(paramDcl);
                             UniformParameters.Add(paramDcl.Hash, paramDcl);
                         }
                         HandleUniform(shaderAttribute.ShaderCategory, prop.Name, prop.PropertyType);
@@ -342,6 +347,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.InternalUniform:
                         {
                             var paramDcl = BuildFxParamDecl(field);
+                            Guard.IsNotNull(paramDcl);
                             UniformParameters.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
@@ -354,7 +360,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.SurfOut:
                         if (field.FieldType == typeof(string))
                         {
-                            var val = (string)field.GetValue(this);
+                            var val = (string?)field.GetValue(this);
                             if (val == null || val == string.Empty)
                                 continue;
                             HandleShard(shaderAttribute.ShaderCategory, shardAttribute, val);
@@ -371,12 +377,12 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList, List<KeyValuePair<ShardCategory, string>> renderMathodDependentShards = null)
+        internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList, List<KeyValuePair<ShardCategory, string>>? renderMethodDependentShards = null)
         {
             List<KeyValuePair<ShardCategory, string>> completeList;
-            if (renderMathodDependentShards != null)
+            if (renderMethodDependentShards != null)
             {
-                completeList = shardList.Concat(renderMathodDependentShards).ToList();
+                completeList = shardList.Concat(renderMethodDependentShards).ToList();
                 completeList.Sort((x, y) => x.Key.CompareTo(y.Key));
             }
             else
@@ -389,7 +395,7 @@ namespace Fusee.Engine.Core.Effects
             return res;
         }
 
-        private void HandleShard(ShaderCategory shaderCategory, FxShardAttribute shardAttrib, string shardCode)
+        private void HandleShard(ShaderCategory shaderCategory, FxShardAttribute shardAttrib, string? shardCode)
         {
             switch (shaderCategory)
             {
@@ -534,7 +540,7 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        private IFxParamDeclaration BuildFxParamDecl(PropertyInfo prop, PropertyInfo parent = null)
+        private IFxParamDeclaration? BuildFxParamDecl(PropertyInfo prop, PropertyInfo? parent = null)
         {
             // Perform `new FxParamDeclaration<ParamType>{Name = paramName};`
             // Since we do not know ParamType at compile time we need to use reflection.
@@ -546,22 +552,22 @@ namespace Fusee.Engine.Core.Effects
             //Error because property ParamType has no setter.
             //concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.ParamType)).SetValue(ob, prop.GetType());
 
-            object val;
+            object? val;
             if (parent == null)
             {
-                concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, prop.Name);
+                concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name))?.SetValue(ob, prop.Name);
                 val = prop.GetValue(this);
             }
             else
             {
-                concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, parent.Name + "." + prop.Name);
+                concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name))?.SetValue(ob, parent.Name + "." + prop.Name);
                 val = prop.GetValue(parent.GetValue(this));
             }
-            concreteParamDecl.GetField("Value").SetValue(ob, val);
-            return (IFxParamDeclaration)ob;
+            concreteParamDecl?.GetField("Value")?.SetValue(ob, val);
+            return (IFxParamDeclaration?)ob;
         }
 
-        private IFxParamDeclaration BuildFxParamDecl(FieldInfo field)
+        private IFxParamDeclaration? BuildFxParamDecl(FieldInfo field)
         {
             // Perform `new FxParamDeclaration<ParamType>{Name = paramName};`
             // Since we do not know ParamType at compile time we need to use reflection.
@@ -573,13 +579,13 @@ namespace Fusee.Engine.Core.Effects
             //Error because property ParamType has no setter.
             //concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.ParamType)).SetValue(ob, prop.GetType());
 
-            concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, field.Name);
-            object val;
+            concreteParamDecl?.GetProperty(nameof(IFxParamDeclaration.Name))?.SetValue(ob, field.Name);
+            object? val;
 
             val = field.GetValue(this);
 
-            concreteParamDecl.GetField("Value").SetValue(ob, val);
-            return (IFxParamDeclaration)ob;
+            concreteParamDecl?.GetField("Value")?.SetValue(ob, val);
+            return (IFxParamDeclaration?)ob;
         }
 
         internal static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
@@ -657,15 +663,15 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Event Handler that is called on <see cref="INotifyValueChange{T}.PropertyChanged"/>.
         /// </summary>
-        /// <param name="sender">The sender object.</param>
+        /// <param name="_">sender</param>
         /// <param name="args">The event arguments.</param>
         /// <param name="memberName">The name of the member which this event originated from.</param>
-        protected void PropertyChangedHandler(object sender, SurfaceEffectEventArgs args, string memberName)
+        protected void PropertyChangedHandler(object? _, SurfaceEffectEventArgs args, string memberName)
         {
             SetFxParam(memberName + "." + args.Name, args.Value);
         }
 
-        private PropertyInfo[] GetPublicProperties(Type type)
+        private static PropertyInfo[] GetPublicProperties(Type type)
         {
             var propertyInfos = new List<PropertyInfo>();
 
@@ -691,7 +697,7 @@ namespace Fusee.Engine.Core.Effects
             return propertyInfos.ToArray();
         }
 
-        private FieldInfo[] GetPublicFields(Type type)
+        private static FieldInfo[] GetPublicFields(Type type)
         {
             var fieldInfos = new List<FieldInfo>();
 

@@ -13,7 +13,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Event handler for adding additional behavior to Add(). E.g. to add the parent for the element that was added to the child list.
         /// </summary>
-        public event EventHandler<AddChildEventArgs> OnAdd;
+        public event EventHandler<AddChildEventArgs>? OnAdd;
 
         /// <summary>
         /// Adds a <see cref="SceneNode"/> to the parent's list of children.

@@ -63,7 +63,7 @@ namespace Fusee.PointCloud.Potree.V2.Data
         /// <returns></returns>
         public PotreeNode? GetNode(OctantId octantId)
         {
-            return Hierarchy.Nodes.Find(n => n.OctantId == octantId);
+            return Hierarchy?.Nodes?.Find(n => n.OctantId == octantId);
         }
 
         /// <summary>

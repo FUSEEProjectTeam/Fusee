@@ -1,4 +1,5 @@
-﻿using Fusee.Base.Core;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Base.Core;
 using Fusee.PointCloud.Potree.V2.Data;
 using Newtonsoft.Json;
 using System.IO;
@@ -7,8 +8,17 @@ namespace Fusee.PointCloud.Potree.V2
 {
     //Todo: implement checks
 
+    /// <summary>
+    /// Collection of methods to check files and loading capabilities
+    /// </summary>
     public static class LoadChecker
     {
+        /// <summary>
+        /// Check if a potree folder can be loaded
+        /// </summary>
+        /// <param name="pathToNodeFileFolder"></param>
+        /// <param name="ignoreVersion"></param>
+        /// <returns></returns>
         public static bool CanHandleFile(string pathToNodeFileFolder, bool ignoreVersion = false)
         {
             var hierarchyFilePath = Path.Combine(pathToNodeFileFolder, Potree2Consts.HierarchyFileName);
@@ -22,6 +32,7 @@ namespace Fusee.PointCloud.Potree.V2
                 try
                 {
                     var metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilePath));
+                    Guard.IsNotNull(metadata);
 
                     if (!ignoreVersion && metadata.Version != "2.0")
                     {

@@ -11,6 +11,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Path = System.IO.Path;
@@ -23,7 +24,7 @@ namespace Fusee.Tools.CmdLine.Verbs
         [Value(0, HelpText = "Path or url to .fus/.fuz file or Fusee-App .dll.", MetaName = "Input", Required = false)]
         public string InputArgs { get; set; }
 
-        public int Run()
+        public async Task<int> Run()
         {
             var input = InputArgs;
 
@@ -47,11 +48,11 @@ namespace Fusee.Tools.CmdLine.Verbs
                             string uriWithoutScheme = uri.Host + uri.PathAndQuery + uri.Fragment;
                             bool status = false;
                             Console.WriteLine("Trying to download via https");
-                            status = DownloadFile("https://" + uriWithoutScheme, tempfilepath);
+                            status = await DownloadFile(new Uri("https://" + uriWithoutScheme), tempfilepath);
                             if (!status)
                             {
                                 Console.WriteLine("Trying to download via http");
-                                status = DownloadFile("http://" + uriWithoutScheme, tempfilepath);
+                                status = await DownloadFile(new Uri("http://" + uriWithoutScheme), tempfilepath);
                             }
                             if (!status)
                             {
@@ -64,7 +65,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                         }
                         else
                         {
-                            bool status = DownloadFile(uri.ToString(), tempfilepath);
+                            bool status = await DownloadFile(uri, tempfilepath);
                             if (!status)
                             {
                                 Environment.Exit((int)ErrorCode.CouldNotDownloadInputFile);
@@ -255,27 +256,32 @@ namespace Fusee.Tools.CmdLine.Verbs
                 dirList.Add(dir);
         }
 
-        private bool DownloadFile(string uri, string localfile)
+        private static async Task<bool> DownloadFile(Uri uri, string localfile)
         {
             bool status = false;
+            using var client = new HttpClient();
 
-            using (var client = new WebClient())
+            try
             {
-                try
-                {
-                    Console.Write("Downloading: " + uri);
+                Console.Write("Downloading: " + uri);
 
-                    client.DownloadFile(uri, localfile);
-                    status = true;
+                using var response = await client.GetAsync(uri);
+                using var streamToReadFrom = await response.Content.ReadAsStreamAsync();
+                using var localFileStream = new FileInfo(localfile).OpenWrite();
+                await streamToReadFrom.CopyToAsync(localFileStream);
 
-                    Console.WriteLine(" - SUCCESS");
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine(" - FAILD");
-                    status = false;
-                }
+                localFileStream.Dispose();
+                streamToReadFrom.Dispose();
+                response.Dispose();
+
+                Console.WriteLine(" - SUCCESS");
             }
+            catch (Exception)
+            {
+                Console.WriteLine(" - FAILED");
+                status = false;
+            }
+
 
             return status;
         }

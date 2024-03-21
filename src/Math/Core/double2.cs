@@ -854,7 +854,7 @@ namespace Fusee.Math.Core
             if (!(obj is double2))
                 return false;
 
-            return this.Equals((double2)obj);
+            return Equals((double2)obj);
         }
 
         #endregion public override bool Equals(object obj)

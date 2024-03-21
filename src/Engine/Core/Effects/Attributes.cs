@@ -3,27 +3,47 @@ using System;
 namespace Fusee.Engine.Core.Effects
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    sealed class NoUniformAttribute : Attribute
+    internal sealed class NoUniformAttribute : Attribute
     {
 
     }
 
+    /// <summary>
+    /// The FxShaderAttribute
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public sealed class FxShaderAttribute : Attribute
     {
+        /// <summary>
+        /// Specify shader category aka vertex, fragment, etc.
+        /// </summary>
         public readonly ShaderCategory ShaderCategory;
 
+        /// <summary>
+        /// Generate FxShaderAttribute with given shader category
+        /// </summary>
+        /// <param name="category"></param>
         public FxShaderAttribute(ShaderCategory category)
         {
             ShaderCategory = category;
         }
     }
 
+    /// <summary>
+    /// The FxShardAttribute
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public sealed class FxShardAttribute : Attribute
     {
+        /// <summary>
+        ///  Specify shader category aka vertex, fragment, etc.
+        /// </summary>
         public readonly ShardCategory ShardCategory;
 
+        /// <summary>
+        /// Generate FxShardAttribute with given shader category
+        /// </summary>
+        /// <param name="category"></param>
         public FxShardAttribute(ShardCategory category)
         {
             ShardCategory = category;
@@ -77,7 +97,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         SurfOutStruct = 4,
 
-        /// <summary> 
+        /// <summary>
         /// Those are uniforms in the shader code but should not be properties of a <see cref="SurfaceEffectBase"/> because they will be updated by the SceneRenderer.
         /// </summary>
         InternalUniform = 8,

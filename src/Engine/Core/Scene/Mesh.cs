@@ -331,7 +331,10 @@ namespace Fusee.Engine.Core.Scene
         protected Mesh()
         {
             if (VerticesSet)
+            {
+                Guard.IsNotNull(Vertices);
                 BoundingBox = new AABBf(Vertices.AsReadOnlySpan);
+            }
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Fusee.Tools.Build.Blazorpatch
 {
@@ -66,9 +67,9 @@ namespace Fusee.Tools.Build.Blazorpatch
               const originalResponseBuffer = await response.arrayBuffer();
               const originalResponseArray = new Int8Array(originalResponseBuffer);
               const decompressedResponseArray = BrotliDecode(originalResponseArray);
-              const contentType = type === 
+              const contentType = type ===
                 'dotnetwasm' ? 'application/wasm' : 'application/octet-stream';
-              return new Response(decompressedResponseArray, 
+              return new Response(decompressedResponseArray,
                 { headers: { 'content-type': contentType } });
             })();
           }
@@ -83,7 +84,7 @@ namespace Fusee.Tools.Build.Blazorpatch
             ErrorCode errorCode = ErrorCode.Success;
 
             Parser.Default.ParseArguments<Options>(args)
-                  .WithParsed<Options>(o =>
+                  .WithParsed<Options>(async o =>
                   {
                       if (o != null && o.BlazorPath != null)
                       {
@@ -96,7 +97,7 @@ namespace Fusee.Tools.Build.Blazorpatch
                                   errorCode = RemoveBaseUrl(o.BlazorPath, errorCode);
                                   break;
                               case ReplaceType.DecodePatch:
-                                  errorCode = DecodePatch(o.BlazorPath, errorCode);
+                                  errorCode = await DecodePatch(o.BlazorPath, errorCode);
                                   break;
                               case ReplaceType.CopyPlayerCore:
                                   errorCode = CopyPlayerCore(o.BlazorPath, errorCode);
@@ -112,7 +113,7 @@ namespace Fusee.Tools.Build.Blazorpatch
                                       errorCode = RemoveBaseUrl(o.BlazorPath, errorCode);
 
                                   if (errorCode == ErrorCode.Success)
-                                      errorCode = DecodePatch(o.BlazorPath, errorCode);
+                                      errorCode = await DecodePatch(o.BlazorPath, errorCode);
 
                                   if (errorCode == ErrorCode.Success)
                                       errorCode = CopyPlayerCore(o.BlazorPath, errorCode);
@@ -172,7 +173,7 @@ namespace Fusee.Tools.Build.Blazorpatch
             return errorCode;
         }
 
-        public static ErrorCode DecodePatch(string filePath, ErrorCode errorCode)
+        public static async Task<ErrorCode> DecodePatch(string filePath, ErrorCode errorCode)
         {
             using (var client = new HttpClient())
             {
@@ -183,7 +184,7 @@ namespace Fusee.Tools.Build.Blazorpatch
                     if (response.IsSuccessStatusCode)
                     {
                         using var fs = File.Create(Path.Combine(filePath, "decode.min.js"));
-                        response.Content.CopyToAsync(fs);
+                        await response.Content.CopyToAsync(fs);
                     }
                     else
                     {
@@ -193,7 +194,9 @@ namespace Fusee.Tools.Build.Blazorpatch
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error: Could not download decode.min.js: " + ex);
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
                     return ErrorCode.ErrorFileDownload;
+#pragma warning restore ERP022 // Unobserved exception in generic exception handler
                 }
             }
 
@@ -225,7 +228,9 @@ namespace Fusee.Tools.Build.Blazorpatch
             catch (Exception ex)
             {
                 Console.WriteLine("Error: Could not copy Fusee.Engine.Player.Core.dll: " + ex);
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
                 return ErrorCode.ErrorFileCopy;
+#pragma warning restore ERP022 // Unobserved exception in generic exception handler
             }
             return errorCode;
         }
@@ -245,7 +250,9 @@ namespace Fusee.Tools.Build.Blazorpatch
             catch (Exception ex)
             {
                 Console.WriteLine("Error could not copy ico files: " + ex);
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
                 return ErrorCode.ErrorFileCopy;
+#pragma warning restore ERP022 // Unobserved exception in generic exception handler
             }
             return errorCode;
         }

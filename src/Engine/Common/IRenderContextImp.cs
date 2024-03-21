@@ -84,14 +84,14 @@ namespace Fusee.Engine.Common
         /// The result is already compiled to code executable on the GPU. <see cref="IRenderContextImp.SetShader"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
-        IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null);
+        IShaderHandle CreateShaderProgram(string vs, string ps, string? gs = null);
 
         /// <summary>
         /// Creates a shader object from compute shader source code.
         /// </summary>
         /// <param name="cs">A string containing the compute shader source.</param>
         /// <returns></returns>
-        IShaderHandle CreateShaderProgramCompute(string cs = null);
+        IShaderHandle CreateShaderProgramCompute(string? cs = null);
 
         /// <summary>
         /// Removes given shader program from GPU
@@ -701,7 +701,7 @@ namespace Fusee.Engine.Common
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        void Render(IMeshImp mr, IInstanceDataImp instanceData = null);
+        void Render(IMeshImp mr, IInstanceDataImp? instanceData = null);
 
         /// <summary>
         /// Launch the bound Compute Shader Program.

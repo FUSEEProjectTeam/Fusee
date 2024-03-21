@@ -31,7 +31,7 @@
     /// <see cref="Fusee.Engine.Common"/> namespace.
     /// </para>
     /// </summary>
-    static class NamespaceDoc
+    internal static class NamespaceDoc
     {
         // This class only exists to keep the namespace XML documentation 
     }

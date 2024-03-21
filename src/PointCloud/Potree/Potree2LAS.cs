@@ -365,32 +365,32 @@ namespace Fusee.PointCloud.Potree
                         var extraByteMarshalMin = attribute.Type switch
                         {
                             //see Las Specification
-                            "uint8" => MemoryMarshal.AsBytes<sbyte>(attribute.MinList.Select(x => (sbyte)x).ToArray()),
-                            "int8" => MemoryMarshal.AsBytes<byte>(attribute.MinList.Select(x => (byte)x).ToArray()),
-                            "uint16" => MemoryMarshal.AsBytes<ushort>(attribute.MinList.Select(x => (ushort)x).ToArray()),
-                            "int16" => MemoryMarshal.AsBytes<short>(attribute.MinList.Select(x => (short)x).ToArray()),
-                            "uint32" => MemoryMarshal.AsBytes<ulong>(attribute.MinList.Select(x => (ulong)x).ToArray()),
-                            "int32" => MemoryMarshal.AsBytes<long>(attribute.MinList.Select(x => (long)x).ToArray()),
-                            "int64" => MemoryMarshal.AsBytes<long>(attribute.MinList.Select(x => (long)x).ToArray()),
-                            "uint64" => MemoryMarshal.AsBytes<ulong>(attribute.MinList.Select(x => (ulong)x).ToArray()),
-                            "float" => MemoryMarshal.AsBytes<float>(attribute.MinList.Select(x => (float)x).ToArray()),
-                            "double" => MemoryMarshal.AsBytes<double>(attribute.MinList.ToArray()),
+                            "uint8" => MemoryMarshal.AsBytes<sbyte>(attribute.MinList?.Select(x => (sbyte)x).ToArray()),
+                            "int8" => MemoryMarshal.AsBytes<byte>(attribute.MinList?.Select(x => (byte)x).ToArray()),
+                            "uint16" => MemoryMarshal.AsBytes<ushort>(attribute.MinList?.Select(x => (ushort)x).ToArray()),
+                            "int16" => MemoryMarshal.AsBytes<short>(attribute.MinList?.Select(x => (short)x).ToArray()),
+                            "uint32" => MemoryMarshal.AsBytes<ulong>(attribute.MinList?.Select(x => (ulong)x).ToArray()),
+                            "int32" => MemoryMarshal.AsBytes<long>(attribute.MinList?.Select(x => (long)x).ToArray()),
+                            "int64" => MemoryMarshal.AsBytes<long>(attribute.MinList?.Select(x => (long)x).ToArray()),
+                            "uint64" => MemoryMarshal.AsBytes<ulong>(attribute.MinList?.Select(x => (ulong)x).ToArray()),
+                            "float" => MemoryMarshal.AsBytes<float>(attribute.MinList ?.Select(x => (float)x).ToArray()),
+                            "double" => MemoryMarshal.AsBytes<double>(attribute.MinList?.ToArray()),
                             _ => throw new ArgumentException("Invalid data type!")
                         };
 
                         var extraByteMarshalMax = attribute.Type switch
                         {
                             //see Las Specification
-                            "uint8" => MemoryMarshal.AsBytes<sbyte>(attribute.MaxList.Select(x => (sbyte)x).ToArray()),
-                            "int8" => MemoryMarshal.AsBytes<byte>(attribute.MaxList.Select(x => (byte)x).ToArray()),
-                            "uint16" => MemoryMarshal.AsBytes<ushort>(attribute.MaxList.Select(x => (ushort)x).ToArray()),
-                            "int16" => MemoryMarshal.AsBytes<short>(attribute.MaxList.Select(x => (short)x).ToArray()),
-                            "uint32" => MemoryMarshal.AsBytes<ulong>(attribute.MaxList.Select(x => (ulong)x).ToArray()),
-                            "int32" => MemoryMarshal.AsBytes<long>(attribute.MaxList.Select(x => (long)x).ToArray()),
-                            "int64" => MemoryMarshal.AsBytes<long>(attribute.MaxList.Select(x => (long)x).ToArray()),
-                            "uint64" => MemoryMarshal.AsBytes<ulong>(attribute.MaxList.Select(x => (ulong)x).ToArray()),
-                            "float" => MemoryMarshal.AsBytes<float>(attribute.MaxList.Select(x => (float)x).ToArray()),
-                            "double" => MemoryMarshal.AsBytes<double>(attribute.MaxList.ToArray()),
+                            "uint8" => MemoryMarshal.AsBytes<sbyte>(attribute.MaxList?.Select(x => (sbyte)x).ToArray()),
+                            "int8" => MemoryMarshal.AsBytes<byte>(attribute.MaxList?.Select(x => (byte)x).ToArray()),
+                            "uint16" => MemoryMarshal.AsBytes<ushort>(attribute.MaxList?.Select(x => (ushort)x).ToArray()),
+                            "int16" => MemoryMarshal.AsBytes<short>(attribute.MaxList?.Select(x => (short)x).ToArray()),
+                            "uint32" => MemoryMarshal.AsBytes<ulong>(attribute.MaxList?.Select(x => (ulong)x).ToArray()),
+                            "int32" => MemoryMarshal.AsBytes<long>(attribute.MaxList?.Select(x => (long)x).ToArray()),
+                            "int64" => MemoryMarshal.AsBytes<long>(attribute.MaxList?.Select(x => (long)x).ToArray()),
+                            "uint64" => MemoryMarshal.AsBytes<ulong>(attribute.MaxList?.Select(x => (ulong)x).ToArray()),
+                            "float" => MemoryMarshal.AsBytes<float>(attribute.MaxList?.Select(x => (float)x).ToArray()),
+                            "double" => MemoryMarshal.AsBytes<double>(attribute.MaxList?.ToArray()),
                             _ => throw new ArgumentException("Invalid data type!")
                         };
 
@@ -496,7 +496,7 @@ namespace Fusee.PointCloud.Potree
 
             // advance to end of stream
             _fileStream.Seek(0, SeekOrigin.End);
-            var fileLength = (long)Metadata.PointCount * (long)Metadata.PointSize;
+            var fileLength = Metadata.PointCount * (long)Metadata.PointSize;
 
             // set complete length before writing, this generates the full file
             // writing operations are much faster afterwards

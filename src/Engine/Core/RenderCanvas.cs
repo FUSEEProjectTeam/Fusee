@@ -1,3 +1,4 @@
+using CommunityToolkit.Diagnostics;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -25,7 +26,7 @@ namespace Fusee.Engine.Core
         ///     The canvas implementor.
         /// </value>
         [InjectMe]
-        public IRenderCanvasImp CanvasImplementor { set; get; }
+        public IRenderCanvasImp? CanvasImplementor { set; get; }
 
         /// <summary>
         ///     Gets and sets the RenderContext implementor.
@@ -34,7 +35,7 @@ namespace Fusee.Engine.Core
         ///     The context implementor.
         /// </value>
         [InjectMe]
-        public IRenderContextImp ContextImplementor { set; get; }
+        public IRenderContextImp? ContextImplementor { set; get; }
 
         /// <summary>
         ///     Gets and sets the input driver implementor.
@@ -43,7 +44,7 @@ namespace Fusee.Engine.Core
         ///     The input driver implementor.
         /// </value>
         [InjectMe]
-        public IInputDriverImp InputDriverImplementor { set; get; }
+        public IInputDriverImp? InputDriverImplementor { set; get; }
 
         /// <summary>
         ///     Gets and sets the video manager implementor.
@@ -52,7 +53,7 @@ namespace Fusee.Engine.Core
         ///     The video manager implementor.
         /// </value>
         [InjectMe]
-        public IVideoManagerImp VideoManagerImplementor { set; get; }
+        public IVideoManagerImp? VideoManagerImplementor { set; get; }
 
         /// <summary>
         ///     Returns the render context object.
@@ -60,7 +61,7 @@ namespace Fusee.Engine.Core
         /// <value>
         ///     Use the render context (<see cref="RenderContext" />) to fill the render canvas with 3d contents.
         /// </value>
-        public RenderContext RC { get; private set; }
+        public RenderContext? RC { get; private set; }
 
         #endregion
 
@@ -108,6 +109,7 @@ namespace Fusee.Engine.Core
             if (attributes.Length > 0)
             {
                 var fae = (FuseeApplicationAttribute)attributes[0];
+                Guard.IsNotNull(fae.Name);
                 return fae.Name;
             }
             return GetType().Name;
@@ -152,7 +154,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// This event is usually triggered when loading is completed (after init() method)
         /// </summary>
-        public EventHandler<EventArgs> LoadingCompleted;
+        public EventHandler<EventArgs?>? LoadingCompleted;
 
         /// <summary>
         /// Called after <see cref="RenderCanvas.Init"/> can be used to await async tasks (e.g. loading methods)

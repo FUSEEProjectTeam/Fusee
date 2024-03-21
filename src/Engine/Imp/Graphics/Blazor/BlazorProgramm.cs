@@ -66,8 +66,8 @@ namespace Fusee.Base.Imp.Blazor
             mainExecutable?.Resize(newX, newY);
         }
 
-        private static readonly Stopwatch _sw;
-        private static Stopwatch SW => _sw ?? new Stopwatch();
+        private static readonly Stopwatch _sw = new();
+        private static Stopwatch SW => _sw;
 
         /// <summary>
         /// Main application loop, triggered via Javascript RequestAnimationFrame
@@ -91,10 +91,7 @@ namespace Fusee.Base.Imp.Blazor
 
         private void RequestAnimationFrame()
         {
-            if (window == null)
-            {
-                window = Runtime.GetGlobalObject<IJSObjectReference>("window");
-            }
+            window ??= Runtime.GetGlobalObject<IJSObjectReference>("window");
 
             // disable
             Diagnostics.SetMinConsoleLoggingSeverityLevel(Diagnostics.SeverityLevel.None);

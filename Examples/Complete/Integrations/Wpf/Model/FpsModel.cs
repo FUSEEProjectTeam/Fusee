@@ -2,7 +2,7 @@
 
 namespace Fusee.Examples.Integrations.Wpf.Model
 {
-    class FpsModel : INotifyPropertyChanged
+    internal class FpsModel : INotifyPropertyChanged
     {
         private float _fps;
 

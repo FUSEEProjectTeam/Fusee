@@ -1,3 +1,4 @@
+using CommunityToolkit.Diagnostics;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System.Collections.Generic;
@@ -125,6 +126,8 @@ namespace Fusee.Engine.Core.Primitives
 
             if (recursionLevel == 0) return mesh;
 
+            Guard.IsNotNull(mesh.Vertices);
+            Guard.IsNotNull(mesh.Triangles);
             //Add Verts to temp vert list
             foreach (var vert in mesh.Vertices.AsReadOnlySpan)
             {
@@ -228,6 +231,9 @@ namespace Fusee.Engine.Core.Primitives
         /// <param name="mesh">The mesh for which to calculate the normals.</param>
         internal static float3[] CreateVertexNormals(Mesh mesh)
         {
+            Guard.IsNotNull(mesh.Vertices);
+            Guard.IsNotNull(mesh.Triangles);
+
             var returnArray = new float3[mesh.Vertices.Length];
 
             var triVerts = new List<float3>();

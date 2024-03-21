@@ -93,7 +93,7 @@ namespace Fusee.Engine.Core.Effects
         /// Determines whether two Effect instances are equal.
         /// </summary>
         /// <param name="obj">The other Effect.</param>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             // If parameter is null return false.
             if (obj == null)

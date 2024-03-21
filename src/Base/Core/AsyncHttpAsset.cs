@@ -78,7 +78,7 @@ namespace Fusee.Base.Core
         public event EventHandler OnFail;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="id"></param>
         /// <param name="type"></param>
@@ -107,7 +107,7 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="id"></param>
         /// <param name="type"></param>
@@ -176,13 +176,13 @@ namespace Fusee.Base.Core
         private void DoneCallback(object content)
         {
             Content = content;
-            this.State = AsyncAssetState.Done;
+            State = AsyncAssetState.Done;
             OnDone?.Invoke(this, EventArgs.Empty);
         }
 
         private void FailCallback()
         {
-            this.State = AsyncAssetState.Failed;
+            State = AsyncAssetState.Failed;
             OnFail?.Invoke(this, EventArgs.Empty);
         }
     }

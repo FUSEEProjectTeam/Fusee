@@ -10,13 +10,13 @@ namespace Fusee.Engine.Core
     {
         // For omni directional shadow mapping there will be six LightSpaceMatrices
         // to allow the creation of the cube map in one pass.
-        public float4x4[] LightSpaceMatrices;
+        public float4x4[]? LightSpaceMatrices;
 
         //The world space frustum planes of the light frustum.
-        public List<FrustumF> Frustums;
+        public List<FrustumF>? Frustums;
 
-        public IWritableTexture ShadowMap;
-        public float2[] ClipPlanesForLightMat;
+        public IWritableTexture? ShadowMap;
+        public float2[]? ClipPlanesForLightMat;
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ namespace Fusee.Engine.Core
         /// <param name="width">The window width in px.</param>
         /// <param name="height">The window height in px.</param>
         /// <param name="fov">The field of view of the camera.</param>
-        /// <param name="view">The view matrix.</param>        
+        /// <param name="view">The view matrix.</param>
         public static IEnumerable<Cascade> ParallelSplitCascades(int numberOfCascades, float4x4 lightView, float lambda, float zNear, float zFar, int width, int height, float fov, float4x4 view)
         {
             var frustumCorners = CascadeCornersWorldSpace(numberOfCascades, lambda, zNear, zFar, width, height, fov, view).ToList();
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core
         /// <param name="zNear">The near clipping plane of the camera.</param>
         /// <param name="zFar">The far clipping plane of the camera.</param>
         /// <param name="numberOfCascades">The number of times the viewing frustum is divided. A Cascade is created for each of the sub-frustum.</param>
-        /// <param name="lambda">A constant value, used to wight the logarithmic division with the logarithmic division of the viewing frustum.</param>        
+        /// <param name="lambda">A constant value, used to wight the logarithmic division with the logarithmic division of the viewing frustum.</param>
         private static IEnumerable<float> GetClippingPlanesOfSplitFrustums(float zNear, float zFar, int numberOfCascades, float lambda)
         {
             for (int i = 0; i < numberOfCascades + 1; i++)
@@ -80,7 +80,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="zNear">The near clipping plane of the camera.</param>
         /// <param name="zFar">The far clipping plane of the camera.</param>
-        /// <param name="splitOverNoOfCascades">A fraction consisting of i and the number of cascades.</param>        
+        /// <param name="splitOverNoOfCascades">A fraction consisting of i and the number of cascades.</param>
         private static float SplitClipPlaneUniform(float zNear, float zFar, float splitOverNoOfCascades)
         {
             return zNear + (zFar - zNear) * splitOverNoOfCascades;
@@ -91,7 +91,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="zNear">The near clipping plane of the camera.</param>
         /// <param name="zFar">The far clipping plane of the camera.</param>
-        /// <param name="splitOverNoOfCascades">A fraction consisting of i and the number of cascades.</param>        
+        /// <param name="splitOverNoOfCascades">A fraction consisting of i and the number of cascades.</param>
         private static float SplitClipPlaneLog(float zNear, float zFar, float splitOverNoOfCascades)
         {
             return zNear * (float)System.Math.Pow((zFar / zNear), splitOverNoOfCascades);
@@ -102,7 +102,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="zNear">The near clipping plane of the camera.</param>
         /// <param name="zFar">The far clipping plane of the camera.</param>
-        /// <param name="splitOverNoOfCascades">A fraction consisting of i and the number of cascades.</param>   
+        /// <param name="splitOverNoOfCascades">A fraction consisting of i and the number of cascades.</param>
         /// <param name="lambda">A constant value, used to weight the logarithmic split with the uniform split of the viewing frustum.</param>
         private static float SplitClipPlane(float zNear, float zFar, float splitOverNoOfCascades, float lambda)
         {
@@ -136,13 +136,13 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns a tuple of a projection matrix and the clipping planes for each sub-frustum.
         /// </summary>
-        /// <param name="numberOfCascades">The number of times the viewing frustum is divided. A Cascade is created for each of the sub-frustum.</param>      
+        /// <param name="numberOfCascades">The number of times the viewing frustum is divided. A Cascade is created for each of the sub-frustum.</param>
         /// <param name="lambda">A constant value, used to weight the logarithmic split with the uniform split of the viewing frustum.</param>
         /// <param name="zNear">The near clipping plane of the camera.</param>
         /// <param name="zFar">The far clipping plane of the camera.</param>
         /// <param name="width">The window width in px.</param>
         /// <param name="height">The window height in px.</param>
-        /// <param name="fov">The field of view of the camera.</param>              
+        /// <param name="fov">The field of view of the camera.</param>
         private static IEnumerable<Tuple<float4x4, float2>> CascadesProjectionMatrices(int numberOfCascades, float lambda, float zNear, float zFar, int width, int height, float fov)
         {
             var clipPlanes = GetClippingPlanesOfSplitFrustums(zNear, zFar, numberOfCascades, lambda).ToList();
@@ -170,14 +170,14 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns a tuple of the world space frustum corners and the clipping planes for each sub-frustum.
         /// </summary>
-        /// <param name="numberOfCascades">The number of times the viewing frustum is divided. A Cascade is created for each of the sub-frustum.</param>      
+        /// <param name="numberOfCascades">The number of times the viewing frustum is divided. A Cascade is created for each of the sub-frustum.</param>
         /// <param name="lambda">A constant value, used to weight the logarithmic split with the uniform split of the viewing frustum.</param>
         /// <param name="zNear">The near clipping plane of the camera.</param>
         /// <param name="zFar">The far clipping plane of the camera.</param>
         /// <param name="width">The window width in px.</param>
         /// <param name="height">The window height in px.</param>
-        /// <param name="fov">The field of view of the camera.</param>    
-        /// <param name="view">The view matrix.</param> 
+        /// <param name="fov">The field of view of the camera.</param>
+        /// <param name="view">The view matrix.</param>
         private static IEnumerable<Tuple<float3[], float2>> CascadeCornersWorldSpace(int numberOfCascades, float lambda, float zNear, float zFar, int width, int height, float fov, float4x4 view)
         {
             var allSplitProjectionMatrices = CascadesProjectionMatrices(numberOfCascades, lambda, zNear, zFar, width, height, fov);

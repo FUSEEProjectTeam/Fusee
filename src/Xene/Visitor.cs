@@ -1,6 +1,7 @@
 using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Fusee.Xene
@@ -14,10 +15,41 @@ namespace Fusee.Xene
     {
     }
 
+    /// <summary>
+    /// Visit Node
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <typeparam name="TComponent"></typeparam>
+    /// <param name="visitor"></param>
+    /// <param name="node"></param>
     public delegate void VisitNodeMethod<TNode, TComponent>(Visitor<TNode, TComponent> visitor, TNode node) where TNode : class, INode where TComponent : class, IComponent;
+
+    /// <summary>
+    /// Visit Component
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <typeparam name="TComponent"></typeparam>
+    /// <param name="visitor"></param>
+    /// <param name="component"></param>
     public delegate void VisitComponentMethod<TNode, TComponent>(Visitor<TNode, TComponent> visitor, TComponent component) where TNode : class, INode where TComponent : class, IComponent;
 
+
+    /// <summary>
+    /// Visit Node Method of Module
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <typeparam name="TComponent"></typeparam>
+    /// <param name="visitor"></param>
+    /// <param name="node"></param>
     public delegate void VisitNodeMethodOfModule<TNode, TComponent>(IVisitorModule visitor, TNode node) where TNode : class, INode where TComponent : class, IComponent;
+
+    /// <summary>
+    /// Visit Component Of Module
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <typeparam name="TComponent"></typeparam>
+    /// <param name="visitor"></param>
+    /// <param name="component"></param>
     public delegate void VisitComponentMethodOfModule<TNode, TComponent>(IVisitorModule visitor, TComponent component) where TNode : class, INode where TComponent : class, IComponent;
 
     /// <summary>
@@ -551,7 +583,7 @@ namespace Fusee.Xene
             if (node?.EnumComponents == null)
                 return;
             // Visit each component
-            foreach (TComponent component in node.EnumComponents)
+            foreach (var component in node.EnumComponents.Cast<TComponent>())
             {
                 CurrentComponent = component;
                 DoVisitComponent(component);

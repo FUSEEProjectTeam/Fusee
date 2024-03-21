@@ -5,18 +5,18 @@ namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Defines a weight map. Basically a table with a row for each vertex and a column for each bone
-    /// controlling the geometry. 
+    /// controlling the geometry.
     /// </summary>
     public class Weight : SceneComponent
     {
         /// <summary>
         /// The weight map. Contains as many entries as the object containing this node's geometry has vertices.
-        /// </summary>       
+        /// </summary>
         public List<VertexWeightList> WeightMap = new();
 
         /// <summary>
         /// The joint objects controlling the geometry.
-        /// </summary>       
+        /// </summary>
         public List<SceneNode> Joints = new();
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core.Scene
     {
         /// <summary>
         /// List of bones controlling the vertex.
-        /// </summary>        
+        /// </summary>
         public List<VertexWeight> VertexWeights { get; set; }
     }
 
@@ -57,21 +57,21 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj) => obj is VertexWeight w && w.JointIndex.Equals(JointIndex) && w.Weight.Equals(Weight);
+        public override readonly bool Equals(object? obj) => obj is not null && obj is VertexWeight w && w.JointIndex.Equals(JointIndex) && w.Weight.Equals(Weight);
 
         /// <summary>
         /// Returns the hash code of one vertex weight
-        /// </summary>        
-        public override int GetHashCode() => (7 * JointIndex.GetHashCode()) + 5 * Weight.GetHashCode();
+        /// </summary>
+        public override readonly int GetHashCode() => (7 * JointIndex.GetHashCode()) + 5 * Weight.GetHashCode();
 
         /// <summary>
         /// Check if two vertex weights are the same
-        /// </summary>       
+        /// </summary>
         public static bool operator ==(VertexWeight left, VertexWeight right) => left.Equals(right);
 
         /// <summary>
         /// Check if two vertex weights aren't the same
-        /// </summary>       
+        /// </summary>
         public static bool operator !=(VertexWeight left, VertexWeight right) => !(left == right);
     }
 

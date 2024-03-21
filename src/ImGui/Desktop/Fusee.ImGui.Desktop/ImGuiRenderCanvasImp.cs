@@ -8,7 +8,7 @@ using System;
 
 namespace Fusee.ImGuiImp.Desktop
 {
-    struct UniformFieldInfo
+    internal struct UniformFieldInfo
     {
         public int Location;
         public string Name;
@@ -31,7 +31,7 @@ namespace Fusee.ImGuiImp.Desktop
     {
         private static bool _initialized = false;
 
-        private ImGuiController _controller;
+        private readonly ImGuiController _controller;
         private bool _isShuttingDown;
 
         public ImGuiRenderCanvasImp(ImageData? icon = null, int width = 1280, int height = 720, int minWidth = 360, int minHeight = 640) : base(icon, true, width, height, minWidth, minHeight)

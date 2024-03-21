@@ -2,7 +2,7 @@
 
 namespace Fusee.Examples.Integrations.Wpf.ViewModel
 {
-    class MainViewModel
+    internal class MainViewModel
     {
         public PositionModel Position { get; set; }
         public FpsModel Fps { get; set; }

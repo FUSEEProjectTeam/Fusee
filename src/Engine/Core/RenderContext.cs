@@ -152,12 +152,12 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The currently used <see cref="Effect"/> is set in <see cref="SetEffect(Effect, bool)"/>.
         /// </summary>
-        private Effect _currentEffect;
+        private Effect? _currentEffect;
 
         /// <summary>
         /// The currently bound shader program.
         /// </summary>
-        internal IShaderHandle CurrentShaderProgram;
+        internal IShaderHandle? CurrentShaderProgram;
 
         #endregion
 
@@ -1399,7 +1399,7 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    if (!ef.UniformParameters.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
+                    if (!ef.UniformParameters.TryGetValue(shaderParam.Key, out IFxParamDeclaration? dcl))
                     {
                         Diagnostics.Error(shaderParam.Value.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
                         continue;
@@ -1692,7 +1692,7 @@ namespace Fusee.Engine.Core
                     }
                     else if (val is WritableMultisampleTexture writableMultTex)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableMultisampleTexture)writableMultTex);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle(writableMultTex);
                         _rci.SetActiveAndBindTexture(param.Handle, textureHandle, TextureType.TextureMultisample);
                     }
                     else if (val is ITexture tex)
@@ -1902,9 +1902,9 @@ namespace Fusee.Engine.Core
         /// Sets the RenderTarget, if texture is null render target is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        public void SetRenderTarget(IRenderTarget renderTarget = null)
+        public void SetRenderTarget(IRenderTarget? renderTarget = null)
         {
-            ITextureHandle[] texHandles = null;
+            ITextureHandle[]? texHandles = null;
             if (renderTarget != null)
             {
                 texHandles = new ITextureHandle[renderTarget.RenderTextures.Length];
@@ -2022,7 +2022,7 @@ namespace Fusee.Engine.Core
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        public void Render(Mesh mesh, InstanceData instanceData = null, bool doRenderForward = true)
+        public void Render(Mesh mesh, InstanceData? instanceData = null, bool doRenderForward = true)
         {
             var cFx = GetCompiledFxForRenderMethod(doRenderForward);
             SetCompiledFx(cFx.GpuHandle);
@@ -2119,10 +2119,11 @@ namespace Fusee.Engine.Core
         /// <param name="bitangents">The bitangent vectors of the mesh.</param>
         /// <param name="boneIndices">The bone indices of the mesh.</param>
         /// <param name="boneWeights">The bone weights of the mesh.</param>
+        /// <param name="flags">The flags of one mesh, needed for point cloud visualization</param>
         /// <returns></returns>
-        public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, uint[] triangles = null,
-            float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null, float2[] uvs = null,
-            float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null, uint[] flags = null)
+        public GpuMesh CreateGpuMesh(PrimitiveType primitiveType, float3[] vertices, uint[]? triangles = null,
+            float3[]? normals = null, uint[]? colors = null, uint[]? colors1 = null, uint[]? colors2 = null, float2[]? uvs = null,
+            float4[]? tangents = null, float3[]? bitangents = null, float4[]? boneIndices = null, float4[]? boneWeights = null, uint[]? flags = null)
         {
             var mesh = new GpuMesh
             {

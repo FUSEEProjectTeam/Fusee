@@ -8,7 +8,7 @@ namespace Fusee.PointCloud.Potree.V2
         internal const string MetadataFileName = "metadata.json";
         internal const string OctreeFileName = "octree.bin";
 
-        internal static readonly double4x4 YZflip = new double4x4()
+        internal static readonly double4x4 YZflip = new()
         {
             M11 = 1,
             M12 = 0,

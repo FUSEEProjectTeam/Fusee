@@ -20,7 +20,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The handle of the buffer on the GPU.
         /// </summary>
-        IBufferHandle BufferHandle { get; set; }
+        IBufferHandle? BufferHandle { get; set; }
 
         /// <summary>
         /// The binding index point the SSBO will be bound to.

@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -14,15 +15,15 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The inx vert
         /// </summary>
-        public int[] InxVert;
+        public int[]? InxVert;
         /// <summary>
         /// The inx normal
         /// </summary>
-        public int[] InxNormal;
+        public int[]? InxNormal;
         /// <summary>
         /// The inx tex coord
         /// </summary>
-        public int[] InxTexCoord;
+        public int[]? InxTexCoord;
     }
 
     /// <summary>
@@ -33,7 +34,7 @@ namespace Fusee.Engine.Core
     {
         #region Fields
 
-        internal List<double3> _vertices;
+        internal List<double3>? _vertices;
 
         /// <summary>
         /// The list of vertices (3D positions).
@@ -41,46 +42,46 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The vertices.
         /// </value>
-        public IList<double3> Vertices
+        public IList<double3>? Vertices
         {
             set { _vertices = new List<double3>(value); }
             get { return _vertices; }
         }
 
-        internal List<double3> _normals;
+        internal List<double3>? _normals;
         /// <summary>
         /// Gets and sets the normals.
         /// </summary>
         /// <value>
         /// The normals.
         /// </value>
-        public IList<double3> Normals
+        public IList<double3>? Normals
         {
             set { _normals = new List<double3>(value); }
             get { return _normals; }
         }
 
-        internal List<double2> _texCoords;
+        internal List<double2>? _texCoords;
         /// <summary>
         /// Gets and sets the texture coordinates.
         /// </summary>
         /// <value>
         /// The texture coordinates.
         /// </value>
-        public IList<double2> TexCoords
+        public IList<double2>? TexCoords
         {
             set { _texCoords = new List<double2>(value); }
             get { return _texCoords; }
         }
 
-        internal List<Face> _faces;
+        internal List<Face>? _faces;
         /// <summary>
         /// Gets and sets the faces.
         /// </summary>
         /// <value>
         /// The faces.
         /// </value>
-        public IList<Face> Faces
+        public IList<Face>? Faces
         {
             set { _faces = new List<Face>(value); }
             get { return _faces; }
@@ -109,6 +110,7 @@ namespace Fusee.Engine.Core
         /// <returns>The current vertex count.</returns>
         public int AddVertex(double3 v)
         {
+            Guard.IsNotNull(_vertices);
             _vertices.Add(v);
             return _vertices.Count - 1;
         }
@@ -120,8 +122,7 @@ namespace Fusee.Engine.Core
         /// <returns>The count of <see cref="TexCoords"/>.</returns>
         public int AddTexCoord(double2 uv)
         {
-            if (_texCoords == null)
-                _texCoords = new List<double2>();
+            _texCoords ??= new List<double2>();
             _texCoords.Add(uv);
             return _texCoords.Count - 1;
         }
@@ -133,8 +134,7 @@ namespace Fusee.Engine.Core
         /// <returns>The count of <see cref="Normals"/>.</returns>
         public int AddNormal(double3 normal)
         {
-            if (_normals == null)
-                _normals = new List<double3>();
+            _normals ??= new List<double3>();
             _normals.Add(normal);
             return _normals.Count - 1;
         }
@@ -167,6 +167,8 @@ namespace Fusee.Engine.Core
             if (vertInx == null)
                 throw new ArgumentNullException(nameof(vertInx));
 
+            Guard.IsNotNull(_vertices);
+
             f.InxVert = new int[vertInx.Length];
             for (i = 0; i < vertInx.Length; i++)
             {
@@ -182,6 +184,7 @@ namespace Fusee.Engine.Core
                     throw new ArgumentException(
                         "Number of texture coordinate indices must match number of vertex indices", nameof(texCoordInx));
 
+                Guard.IsNotNull(_texCoords);
                 f.InxTexCoord = new int[texCoordInx.Length];
                 for (i = 0; i < texCoordInx.Length; i++)
                 {
@@ -197,6 +200,7 @@ namespace Fusee.Engine.Core
                 if (normalInx.Length != vertInx.Length)
                     throw new ArgumentException("Number of normal indices must match number of vertex indices", nameof(normalInx));
 
+                Guard.IsNotNull(_normals);
                 f.InxNormal = new int[normalInx.Length];
                 for (i = 0; i < normalInx.Length; i++)
                 {
@@ -208,8 +212,7 @@ namespace Fusee.Engine.Core
             }
 
             // Actually add the faces
-            if (_faces == null)
-                _faces = new List<Face>();
+            _faces ??= new List<Face>();
 
             _faces.Add(f);
             return _faces.Count - 1;
@@ -370,8 +373,8 @@ namespace Fusee.Engine.Core
 
             List<uint> mTris = new();
             List<float3> mVerts = new();
-            List<float2> mTexCoords = (HasTexCoords) ? new List<float2>() : null;
-            List<float3> mNormals = (HasNormals) ? new List<float3>() : null;
+            List<float2>? mTexCoords = (HasTexCoords) ? new List<float2>() : null;
+            List<float3>? mNormals = (HasNormals) ? new List<float3>() : null;
 
             foreach (Face f in _faces)
             {
@@ -392,11 +395,13 @@ namespace Fusee.Engine.Core
                                               (float)_vertices[vInx].z));
                         if (HasTexCoords)
                         {
+                            Guard.IsNotNull(mTexCoords);
                             int tInx = f.InxTexCoord[i];
                             mTexCoords.Add(new float2((float)_texCoords[tInx].x, (float)_texCoords[tInx].y));
                         }
                         if (HasNormals)
                         {
+                            Guard.IsNotNull(mNormals);
                             int nInx = f.InxNormal[i];
                             mNormals.Add(new float3((float)_normals[nInx].x, (float)_normals[nInx].y,
                                                     (float)_normals[nInx].z));

@@ -79,18 +79,18 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Override for the Equals method.
         /// </summary>
-        /// <param name="obj">The object to compare with.</param>       
-        public override bool Equals(object obj)
+        /// <param name="obj">The object to compare with.</param>
+        public override bool Equals(object? obj)
         {
-            var lc = (LightResult)obj;
-            return Id.Equals(lc.Id);
+            var lc = obj as LightResult;
+            return lc is not null && Id.Equals(lc.Id);
         }
 
         /// <summary>
         /// Override of the == operator.
         /// </summary>
         /// <param name="thisLc">The first LightResult that will be compared with a second one.</param>
-        /// <param name="otherLc">The second LightResult that will be compared with the first one.</param>        
+        /// <param name="otherLc">The second LightResult that will be compared with the first one.</param>
         public static bool operator ==(LightResult thisLc, LightResult otherLc)
         {
             return otherLc.Id.Equals(thisLc.Id);
@@ -109,7 +109,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Override of the GetHashCode method.
         /// Returns the session unique identifier as hash code.
-        /// </summary>  
+        /// </summary>
         public override int GetHashCode()
         {
             return Id.GetHashCode();

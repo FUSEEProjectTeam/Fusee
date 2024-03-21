@@ -188,14 +188,14 @@ namespace Fusee.Base.Common
         /// <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
         public byte this[int index]
         {
-            get
+            readonly get
             {
                 return index switch
                 {
-                    0 => this.R,
-                    1 => this.G,
-                    2 => this.B,
-                    3 => this.A,
+                    0 => R,
+                    1 => G,
+                    2 => B,
+                    3 => A,
                     _ => throw new ArgumentOutOfRangeException(nameof(index), "Indices for ColorUint run from 0 to 3, inclusive."),
                 };
             }
@@ -204,16 +204,16 @@ namespace Fusee.Base.Common
                 switch (index)
                 {
                     case 0:
-                        this.R = value;
+                        R = value;
                         break;
                     case 1:
-                        this.G = value;
+                        G = value;
                         break;
                     case 2:
-                        this.B = value;
+                        B = value;
                         break;
                     case 3:
-                        this.A = value;
+                        A = value;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(index), "Indices for ColorUint run from 0 to 3, inclusive.");
@@ -227,7 +227,7 @@ namespace Fusee.Base.Common
         /// <param name="value">The value that will be assigned to all components.</param>
         public ColorUint(byte value)
         {
-            this.A = this.R = this.G = this.B = value;
+            A = R = G = B = value;
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace Fusee.Base.Common
         /// <param name="value">The value that will be assigned to all components.</param>
         public ColorUint(float value)
         {
-            this.A = this.R = this.G = this.B = ColorUint.ToByte(value);
+            A = R = G = B = ColorUint.ToByte(value);
         }
 
         /// <summary>
@@ -249,10 +249,10 @@ namespace Fusee.Base.Common
         /// <param name="alpha">The alpha component of the color.</param>
         public ColorUint(byte red, byte green, byte blue, byte alpha)
         {
-            this.R = red;
-            this.G = green;
-            this.B = blue;
-            this.A = alpha;
+            R = red;
+            G = green;
+            B = blue;
+            A = alpha;
         }
 
         /// <summary>
@@ -264,10 +264,10 @@ namespace Fusee.Base.Common
         /// <param name="alpha">The alpha component of the color.</param>
         public ColorUint(float red, float green, float blue, float alpha)
         {
-            this.R = ToByte(red);
-            this.G = ToByte(green);
-            this.B = ToByte(blue);
-            this.A = ToByte(alpha);
+            R = ToByte(red);
+            G = ToByte(green);
+            B = ToByte(blue);
+            A = ToByte(alpha);
         }
 
         /// <summary>
@@ -276,10 +276,10 @@ namespace Fusee.Base.Common
         /// <param name="value">The red, green, blue, and alpha components of the color.</param>
         public ColorUint(float4 value)
         {
-            this.R = ToByte(value.x);
-            this.G = ToByte(value.y);
-            this.B = ToByte(value.z);
-            this.A = ToByte(value.w);
+            R = ToByte(value.x);
+            G = ToByte(value.y);
+            B = ToByte(value.z);
+            A = ToByte(value.w);
         }
 
         /// <summary>
@@ -289,10 +289,10 @@ namespace Fusee.Base.Common
         /// <param name="alpha">The alpha component of the color.</param>
         public ColorUint(float3 value, float alpha)
         {
-            this.R = ToByte(value.x);
-            this.G = ToByte(value.y);
-            this.B = ToByte(value.z);
-            this.A = ToByte(alpha);
+            R = ToByte(value.x);
+            G = ToByte(value.y);
+            B = ToByte(value.z);
+            A = ToByte(alpha);
         }
 
         /// <summary>
@@ -301,10 +301,10 @@ namespace Fusee.Base.Common
         /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
         public ColorUint(uint rgba)
         {
-            this.A = (byte)(rgba >> 24 & (uint)byte.MaxValue);
-            this.B = (byte)(rgba >> 16 & (uint)byte.MaxValue);
-            this.G = (byte)(rgba >> 8 & (uint)byte.MaxValue);
-            this.R = (byte)(rgba & (uint)byte.MaxValue);
+            A = (byte)(rgba >> 24 & byte.MaxValue);
+            B = (byte)(rgba >> 16 & byte.MaxValue);
+            G = (byte)(rgba >> 8 & byte.MaxValue);
+            R = (byte)(rgba & byte.MaxValue);
         }
 
         /// <summary>
@@ -313,10 +313,10 @@ namespace Fusee.Base.Common
         /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
         public ColorUint(int rgba)
         {
-            this.A = (byte)(rgba >> 24 & (int)byte.MaxValue);
-            this.B = (byte)(rgba >> 16 & (int)byte.MaxValue);
-            this.G = (byte)(rgba >> 8 & (int)byte.MaxValue);
-            this.R = (byte)(rgba & (int)byte.MaxValue);
+            A = (byte)(rgba >> 24 & byte.MaxValue);
+            B = (byte)(rgba >> 16 & byte.MaxValue);
+            G = (byte)(rgba >> 8 & byte.MaxValue);
+            R = (byte)(rgba & byte.MaxValue);
         }
 
         /// <summary>
@@ -329,13 +329,13 @@ namespace Fusee.Base.Common
                 throw new ArgumentNullException(nameof(values));
             if (values.Length != 3 && values.Length != 4)
                 throw new ArgumentOutOfRangeException(nameof(values), "There must be three or four input values for ColorUint.");
-            this.R = ToByte(values[0]);
-            this.G = ToByte(values[1]);
-            this.B = ToByte(values[2]);
+            R = ToByte(values[0]);
+            G = ToByte(values[1]);
+            B = ToByte(values[2]);
             if (values.Length > 3)
-                this.A = ToByte(values[3]);
+                A = ToByte(values[3]);
             else
-                this.A = byte.MaxValue;
+                A = byte.MaxValue;
         }
 
         /// <summary>
@@ -348,13 +348,13 @@ namespace Fusee.Base.Common
                 throw new ArgumentNullException(nameof(values));
             if (values.Length != 3 && values.Length != 4)
                 throw new ArgumentOutOfRangeException(nameof(values), "There must be three or four input values for ColorUint.");
-            this.R = values[0];
-            this.G = values[1];
-            this.B = values[2];
+            R = values[0];
+            G = values[1];
+            B = values[2];
             if (values.Length > 3)
-                this.A = values[3];
+                A = values[3];
             else
-                this.A = byte.MaxValue;
+                A = byte.MaxValue;
         }
 
         /// <summary>
@@ -369,13 +369,13 @@ namespace Fusee.Base.Common
                 throw new ArgumentNullException(nameof(copyFrom));
             if (copyFrom.Length < index + (noAlpha ? 3 : 4))
                 throw new ArgumentOutOfRangeException(nameof(copyFrom), "Not enough pixel data to copy from given index.");
-            this.R = copyFrom[index + 0];
-            this.G = copyFrom[index + 1];
-            this.B = copyFrom[index + 2];
+            R = copyFrom[index + 0];
+            G = copyFrom[index + 1];
+            B = copyFrom[index + 2];
             if (noAlpha)
-                this.A = byte.MaxValue;
+                A = byte.MaxValue;
             else
-                this.A = copyFrom[index + 3];
+                A = copyFrom[index + 3];
         }
 
         /// <summary>
@@ -486,7 +486,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint operator +(ColorUint left, ColorUint right)
         {
-            return new ColorUint((float)((int)left.R + (int)right.R), (float)((int)left.G + (int)right.G), (float)((int)left.B + (int)right.B), (float)((int)left.A + (int)right.A));
+            return new ColorUint(left.R + right.R, left.G + right.G, left.B + right.B, left.A + right.A);
         }
 
         /// <summary>
@@ -510,7 +510,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint operator -(ColorUint left, ColorUint right)
         {
-            return new ColorUint((float)((int)left.R - (int)right.R), (float)((int)left.G - (int)right.G), (float)((int)left.B - (int)right.B), (float)((int)left.A - (int)right.A));
+            return new ColorUint(left.R - right.R, left.G - right.G, left.B - right.B, left.A - right.A);
         }
 
         /// <summary>
@@ -522,7 +522,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint operator -(ColorUint value)
         {
-            return new ColorUint((float)-value.R, (float)-value.G, (float)-value.B, (float)-value.A);
+            return new ColorUint(-value.R, -value.G, -value.B, -value.A);
         }
 
         /// <summary>
@@ -534,7 +534,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint operator *(float scale, ColorUint value)
         {
-            return new ColorUint((byte)((double)value.R * (double)scale), (byte)((double)value.G * (double)scale), (byte)((double)value.B * (double)scale), (byte)((double)value.A * (double)scale));
+            return new ColorUint((byte)(value.R * (double)scale), (byte)(value.G * (double)scale), (byte)(value.B * (double)scale), (byte)(value.A * (double)scale));
         }
 
         /// <summary>
@@ -546,7 +546,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint operator *(ColorUint value, float scale)
         {
-            return new ColorUint((byte)((double)value.R * (double)scale), (byte)((double)value.G * (double)scale), (byte)((double)value.B * (double)scale), (byte)((double)value.A * (double)scale));
+            return new ColorUint((byte)(value.R * (double)scale), (byte)(value.G * (double)scale), (byte)(value.B * (double)scale), (byte)(value.A * (double)scale));
         }
 
         /// <summary>
@@ -558,7 +558,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint operator *(ColorUint left, ColorUint right)
         {
-            return new ColorUint((byte)((double)((int)left.R * (int)right.R) / (double)byte.MaxValue), (byte)((double)((int)left.G * (int)right.G) / (double)byte.MaxValue), (byte)((double)((int)left.B * (int)right.B) / (double)byte.MaxValue), (byte)((double)((int)left.A * (int)right.A) / (double)byte.MaxValue));
+            return new ColorUint((byte)(left.R * right.R / (double)byte.MaxValue), (byte)(left.G * right.G / (double)byte.MaxValue), (byte)(left.B * right.B / (double)byte.MaxValue), (byte)(left.A * right.A / (double)byte.MaxValue));
         }
 
         /// <summary>
@@ -591,9 +591,9 @@ namespace Fusee.Base.Common
         /// <returns>
         /// A packed integer containing all four color components.
         /// </returns>
-        public int ToBgra()
+        public readonly int ToBgra()
         {
-            return (int)this.B | (int)this.G << 8 | (int)this.R << 16 | (int)this.A << 24;
+            return B | G << 8 | R << 16 | A << 24;
         }
 
         /// <summary>
@@ -602,9 +602,9 @@ namespace Fusee.Base.Common
         /// <returns>
         /// A packed integer containing all four color components.
         /// </returns>
-        public int ToRgba()
+        public readonly int ToRgba()
         {
-            return (int)this.R | (int)this.G << 8 | (int)this.B << 16 | (int)this.A << 24;
+            return R | G << 8 | B << 16 | A << 24;
         }
 
         /// <summary>
@@ -616,7 +616,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static float3 Tofloat3(ColorUint col)
         {
-            return new float3((float)col.R / (float)byte.MaxValue, (float)col.G / (float)byte.MaxValue, (float)col.B / (float)byte.MaxValue);
+            return new float3(col.R / (float)byte.MaxValue, col.G / (float)byte.MaxValue, col.B / (float)byte.MaxValue);
         }
 
         /// <summary>
@@ -628,7 +628,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static float4 Tofloat4(ColorUint col)
         {
-            return new float4((float)col.R / (float)byte.MaxValue, (float)col.G / (float)byte.MaxValue, (float)col.B / (float)byte.MaxValue, (float)col.A / (float)byte.MaxValue);
+            return new float4(col.R / (float)byte.MaxValue, col.G / (float)byte.MaxValue, col.B / (float)byte.MaxValue, col.A / (float)byte.MaxValue);
         }
 
         /// <summary>
@@ -637,7 +637,7 @@ namespace Fusee.Base.Common
         /// <returns>
         /// A four-element array containing the components of the color in RGBA order.
         /// </returns>
-        public byte[] ToArray()
+        public readonly byte[] ToArray()
         {
             return new byte[4]
             {
@@ -652,7 +652,7 @@ namespace Fusee.Base.Common
         /// Converts the color to a string capable of being used in html/css declarations, like #FF0000 for red or #0000FF for blue.
         /// </summary>
         /// <returns>A seven characters string (# followed by two hex digits for each color channel, red, green and blue).</returns>
-        public string ToCss()
+        public readonly string ToCss()
         {
             return $"#{R:X2}{G:X2}{B:X2}";
         }
@@ -663,20 +663,20 @@ namespace Fusee.Base.Common
         /// <returns>
         /// The Hue-Saturation-Brightness (HSB) saturation for this <see cref="T:Fusee.Engine.ColorUint"/>
         /// </returns>
-        public float GetBrightness()
+        public readonly float GetBrightness()
         {
-            float fR = (float)R / (float)byte.MaxValue;
-            float fG = (float)G / (float)byte.MaxValue;
-            float fB = (float)B / (float)byte.MaxValue;
+            float fR = R / (float)byte.MaxValue;
+            float fG = G / (float)byte.MaxValue;
+            float fB = B / (float)byte.MaxValue;
             float AA = fR;
             float BB = fR;
-            if ((double)fG > (double)A)
+            if ((double)fG > A)
                 AA = fG;
-            if ((double)fB > (double)A)
+            if ((double)fB > A)
                 AA = fB;
-            if ((double)fG < (double)B)
+            if ((double)fG < B)
                 BB = fG;
-            if ((double)fB < (double)B)
+            if ((double)fB < B)
                 BB = fB;
             return (float)(((double)AA + (double)BB) / 2.0);
         }
@@ -687,13 +687,13 @@ namespace Fusee.Base.Common
         /// <returns>
         /// The Hue-Saturation-Brightness (HSB) saturation for this <see cref="T:Fusee.Engine.ColorUint"/>
         /// </returns>
-        public float GetHue()
+        public readonly float GetHue()
         {
-            if ((int)this.R == (int)this.G && (int)this.G == (int)this.B)
+            if (R == G && G == B)
                 return 0.0f;
-            float num1 = (float)this.R / (float)byte.MaxValue;
-            float num2 = (float)this.G / (float)byte.MaxValue;
-            float num3 = (float)this.B / (float)byte.MaxValue;
+            float num1 = R / (float)byte.MaxValue;
+            float num2 = G / (float)byte.MaxValue;
+            float num3 = B / (float)byte.MaxValue;
             float num4 = 0.0f;
             float num5 = num1;
             float num6 = num1;
@@ -724,11 +724,11 @@ namespace Fusee.Base.Common
         /// <returns>
         /// The Hue-Saturation-Brightness (HSB) saturation for this <see cref="T:Fusee.Engine.ColorUint"/>
         /// </returns>
-        public float GetSaturation()
+        public readonly float GetSaturation()
         {
-            float num1 = (float)this.R / (float)byte.MaxValue;
-            float num2 = (float)this.G / (float)byte.MaxValue;
-            float num3 = (float)this.B / (float)byte.MaxValue;
+            float num1 = R / (float)byte.MaxValue;
+            float num2 = G / (float)byte.MaxValue;
+            float num3 = B / (float)byte.MaxValue;
             float num4 = 0.0f;
             float num5 = num1;
             float num6 = num1;
@@ -751,10 +751,10 @@ namespace Fusee.Base.Common
         /// <param name="left">The first color to add.</param><param name="right">The second color to add.</param><param name="result">When the method completes, completes the sum of the two colors.</param>
         public static void Add(ref ColorUint left, ref ColorUint right, out ColorUint result)
         {
-            result.A = (byte)((uint)left.A + (uint)right.A);
-            result.R = (byte)((uint)left.R + (uint)right.R);
-            result.G = (byte)((uint)left.G + (uint)right.G);
-            result.B = (byte)((uint)left.B + (uint)right.B);
+            result.A = (byte)(left.A + (uint)right.A);
+            result.R = (byte)(left.R + (uint)right.R);
+            result.G = (byte)(left.G + (uint)right.G);
+            result.B = (byte)(left.B + (uint)right.B);
         }
 
         /// <summary>
@@ -766,7 +766,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Add(ColorUint left, ColorUint right)
         {
-            return new ColorUint((float)((int)left.R + (int)right.R), (float)((int)left.G + (int)right.G), (float)((int)left.B + (int)right.B), (float)((int)left.A + (int)right.A));
+            return new ColorUint(left.R + right.R, left.G + right.G, left.B + right.B, left.A + right.A);
         }
 
         /// <summary>
@@ -775,10 +775,10 @@ namespace Fusee.Base.Common
         /// <param name="left">The first color to subtract.</param><param name="right">The second color to subtract.</param><param name="result">WHen the method completes, contains the difference of the two colors.</param>
         public static void Subtract(ref ColorUint left, ref ColorUint right, out ColorUint result)
         {
-            result.A = (byte)((uint)left.A - (uint)right.A);
-            result.R = (byte)((uint)left.R - (uint)right.R);
-            result.G = (byte)((uint)left.G - (uint)right.G);
-            result.B = (byte)((uint)left.B - (uint)right.B);
+            result.A = (byte)(left.A - (uint)right.A);
+            result.R = (byte)(left.R - (uint)right.R);
+            result.G = (byte)(left.G - (uint)right.G);
+            result.B = (byte)(left.B - (uint)right.B);
         }
 
         /// <summary>
@@ -790,7 +790,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Subtract(ColorUint left, ColorUint right)
         {
-            return new ColorUint((float)((int)left.R - (int)right.R), (float)((int)left.G - (int)right.G), (float)((int)left.B - (int)right.B), (float)((int)left.A - (int)right.A));
+            return new ColorUint(left.R - right.R, left.G - right.G, left.B - right.B, left.A - right.A);
         }
 
         /// <summary>
@@ -799,10 +799,10 @@ namespace Fusee.Base.Common
         /// <param name="left">The first color to modulate.</param><param name="right">The second color to modulate.</param><param name="result">When the method completes, contains the modulated color.</param>
         public static void Modulate(ref ColorUint left, ref ColorUint right, out ColorUint result)
         {
-            result.A = (byte)((double)((int)left.A * (int)right.A) / (double)byte.MaxValue);
-            result.R = (byte)((double)((int)left.R * (int)right.R) / (double)byte.MaxValue);
-            result.G = (byte)((double)((int)left.G * (int)right.G) / (double)byte.MaxValue);
-            result.B = (byte)((double)((int)left.B * (int)right.B) / (double)byte.MaxValue);
+            result.A = (byte)(left.A * right.A / (double)byte.MaxValue);
+            result.R = (byte)(left.R * right.R / (double)byte.MaxValue);
+            result.G = (byte)(left.G * right.G / (double)byte.MaxValue);
+            result.B = (byte)(left.B * right.B / (double)byte.MaxValue);
         }
 
         /// <summary>
@@ -814,7 +814,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Modulate(ColorUint left, ColorUint right)
         {
-            return new ColorUint((float)((int)left.R * (int)right.R), (float)((int)left.G * (int)right.G), (float)((int)left.B * (int)right.B), (float)((int)left.A * (int)right.A));
+            return new ColorUint(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
         }
 
         /// <summary>
@@ -823,10 +823,10 @@ namespace Fusee.Base.Common
         /// <param name="value">The color to scale.</param><param name="scale">The amount by which to scale.</param><param name="result">When the method completes, contains the scaled color.</param>
         public static void Scale(ref ColorUint value, float scale, out ColorUint result)
         {
-            result.A = (byte)((double)value.A * (double)scale);
-            result.R = (byte)((double)value.R * (double)scale);
-            result.G = (byte)((double)value.G * (double)scale);
-            result.B = (byte)((double)value.B * (double)scale);
+            result.A = (byte)(value.A * (double)scale);
+            result.R = (byte)(value.R * (double)scale);
+            result.G = (byte)(value.G * (double)scale);
+            result.B = (byte)(value.B * (double)scale);
         }
 
         /// <summary>
@@ -838,7 +838,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Scale(ColorUint value, float scale)
         {
-            return new ColorUint((byte)((double)value.R * (double)scale), (byte)((double)value.G * (double)scale), (byte)((double)value.B * (double)scale), (byte)((double)value.A * (double)scale));
+            return new ColorUint((byte)(value.R * (double)scale), (byte)(value.G * (double)scale), (byte)(value.B * (double)scale), (byte)(value.A * (double)scale));
         }
 
         /// <summary>
@@ -847,10 +847,10 @@ namespace Fusee.Base.Common
         /// <param name="value">The color to negate.</param><param name="result">When the method completes, contains the negated color.</param>
         public static void Negate(ref ColorUint value, out ColorUint result)
         {
-            result.A = (byte)((uint)byte.MaxValue - (uint)value.A);
-            result.R = (byte)((uint)byte.MaxValue - (uint)value.R);
-            result.G = (byte)((uint)byte.MaxValue - (uint)value.G);
-            result.B = (byte)((uint)byte.MaxValue - (uint)value.B);
+            result.A = (byte)(byte.MaxValue - (uint)value.A);
+            result.R = (byte)(byte.MaxValue - (uint)value.R);
+            result.G = (byte)(byte.MaxValue - (uint)value.G);
+            result.B = (byte)(byte.MaxValue - (uint)value.B);
         }
 
         /// <summary>
@@ -862,7 +862,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Negate(ColorUint value)
         {
-            return new ColorUint((float)((int)byte.MaxValue - (int)value.R), (float)((int)byte.MaxValue - (int)value.G), (float)((int)byte.MaxValue - (int)value.B), (float)((int)byte.MaxValue - (int)value.A));
+            return new ColorUint(byte.MaxValue - value.R, byte.MaxValue - value.G, byte.MaxValue - value.B, byte.MaxValue - value.A);
         }
 
         /// <summary>
@@ -872,17 +872,17 @@ namespace Fusee.Base.Common
         public static void Clamp(ref ColorUint value, ref ColorUint min, ref ColorUint max, out ColorUint result)
         {
             byte num1 = value.A;
-            byte num2 = (int)num1 > (int)max.A ? max.A : num1;
-            byte alpha = (int)num2 < (int)min.A ? min.A : num2;
+            byte num2 = num1 > max.A ? max.A : num1;
+            byte alpha = num2 < min.A ? min.A : num2;
             byte num3 = value.R;
-            byte num4 = (int)num3 > (int)max.R ? max.R : num3;
-            byte red = (int)num4 < (int)min.R ? min.R : num4;
+            byte num4 = num3 > max.R ? max.R : num3;
+            byte red = num4 < min.R ? min.R : num4;
             byte num5 = value.G;
-            byte num6 = (int)num5 > (int)max.G ? max.G : num5;
-            byte green = (int)num6 < (int)min.G ? min.G : num6;
+            byte num6 = num5 > max.G ? max.G : num5;
+            byte green = num6 < min.G ? min.G : num6;
             byte num7 = value.B;
-            byte num8 = (int)num7 > (int)max.B ? max.B : num7;
-            byte blue = (int)num8 < (int)min.B ? min.B : num8;
+            byte num8 = num7 > max.B ? max.B : num7;
+            byte blue = num8 < min.B ? min.B : num8;
             result = new ColorUint(red, green, blue, alpha);
         }
 
@@ -895,7 +895,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint FromBgra(int color)
         {
-            return new ColorUint((byte)(color >> 16 & (int)byte.MaxValue), (byte)(color >> 8 & (int)byte.MaxValue), (byte)(color & (int)byte.MaxValue), (byte)(color >> 24 & (int)byte.MaxValue));
+            return new ColorUint((byte)(color >> 16 & byte.MaxValue), (byte)(color >> 8 & byte.MaxValue), (byte)(color & byte.MaxValue), (byte)(color >> 24 & byte.MaxValue));
         }
 
         /// <summary>
@@ -960,10 +960,10 @@ namespace Fusee.Base.Common
         /// </remarks>
         public static void Lerp(ref ColorUint start, ref ColorUint end, float amount, out ColorUint result)
         {
-            result.A = (byte)((double)start.A + (double)amount * (double)((int)end.A - (int)start.A));
-            result.R = (byte)((double)start.R + (double)amount * (double)((int)end.R - (int)start.R));
-            result.G = (byte)((double)start.G + (double)amount * (double)((int)end.G - (int)start.G));
-            result.B = (byte)((double)start.B + (double)amount * (double)((int)end.B - (int)start.B));
+            result.A = (byte)(start.A + (double)amount * (end.A - start.A));
+            result.R = (byte)(start.R + (double)amount * (end.R - start.R));
+            result.G = (byte)(start.G + (double)amount * (end.G - start.G));
+            result.B = (byte)(start.B + (double)amount * (end.B - start.B));
         }
 
         /// <summary>
@@ -987,7 +987,7 @@ namespace Fusee.Base.Common
         /// </remarks>
         public static ColorUint Lerp(ColorUint start, ColorUint end, float amount)
         {
-            return new ColorUint((byte)((double)start.R + (double)amount * (double)((int)end.R - (int)start.R)), (byte)((double)start.G + (double)amount * (double)((int)end.G - (int)start.G)), (byte)((double)start.B + (double)amount * (double)((int)end.B - (int)start.B)), (byte)((double)start.A + (double)amount * (double)((int)end.A - (int)start.A)));
+            return new ColorUint((byte)(start.R + (double)amount * (end.R - start.R)), (byte)(start.G + (double)amount * (end.G - start.G)), (byte)(start.B + (double)amount * (end.B - start.B)), (byte)(start.A + (double)amount * (end.A - start.A)));
         }
 
         /// <summary>
@@ -999,10 +999,10 @@ namespace Fusee.Base.Common
         {
             amount = (double)amount > 1.0 ? 1f : ((double)amount < 0.0 ? 0.0f : amount);
             amount = (float)((double)amount * (double)amount * (3.0 - 2.0 * (double)amount));
-            result.A = (byte)((double)start.A + (double)((int)end.A - (int)start.A) * (double)amount);
-            result.R = (byte)((double)start.R + (double)((int)end.R - (int)start.R) * (double)amount);
-            result.G = (byte)((double)start.G + (double)((int)end.G - (int)start.G) * (double)amount);
-            result.B = (byte)((double)start.B + (double)((int)end.B - (int)start.B) * (double)amount);
+            result.A = (byte)(start.A + (end.A - start.A) * (double)amount);
+            result.R = (byte)(start.R + (end.R - start.R) * (double)amount);
+            result.G = (byte)(start.G + (end.G - start.G) * (double)amount);
+            result.B = (byte)(start.B + (end.B - start.B) * (double)amount);
         }
 
         /// <summary>
@@ -1017,7 +1017,7 @@ namespace Fusee.Base.Common
         {
             amount = (double)amount > 1.0 ? 1f : ((double)amount < 0.0 ? 0.0f : amount);
             amount = (float)((double)amount * (double)amount * (3.0 - 2.0 * (double)amount));
-            return new ColorUint((byte)((double)start.R + (double)((int)end.R - (int)start.R) * (double)amount), (byte)((double)start.G + (double)((int)end.G - (int)start.G) * (double)amount), (byte)((double)start.B + (double)((int)end.B - (int)start.B) * (double)amount), (byte)((double)start.A + (double)((int)end.A - (int)start.A) * (double)amount));
+            return new ColorUint((byte)(start.R + (end.R - start.R) * (double)amount), (byte)(start.G + (end.G - start.G) * (double)amount), (byte)(start.B + (end.B - start.B) * (double)amount), (byte)(start.A + (end.A - start.A) * (double)amount));
         }
 
         /// <summary>
@@ -1027,10 +1027,10 @@ namespace Fusee.Base.Common
         /// <param name="left">The first source color.</param><param name="right">The second source color.</param><param name="result">When the method completes, contains an new color composed of the largest components of the source colors.</param>
         public static void Max(ref ColorUint left, ref ColorUint right, out ColorUint result)
         {
-            result.A = (int)left.A > (int)right.A ? left.A : right.A;
-            result.R = (int)left.R > (int)right.R ? left.R : right.R;
-            result.G = (int)left.G > (int)right.G ? left.G : right.G;
-            result.B = (int)left.B > (int)right.B ? left.B : right.B;
+            result.A = left.A > right.A ? left.A : right.A;
+            result.R = left.R > right.R ? left.R : right.R;
+            result.G = left.G > right.G ? left.G : right.G;
+            result.B = left.B > right.B ? left.B : right.B;
         }
 
         /// <summary>
@@ -1054,10 +1054,10 @@ namespace Fusee.Base.Common
         /// <param name="left">The first source color.</param><param name="right">The second source color.</param><param name="result">When the method completes, contains an new color composed of the smallest components of the source colors.</param>
         public static void Min(ref ColorUint left, ref ColorUint right, out ColorUint result)
         {
-            result.A = (int)left.A < (int)right.A ? left.A : right.A;
-            result.R = (int)left.R < (int)right.R ? left.R : right.R;
-            result.G = (int)left.G < (int)right.G ? left.G : right.G;
-            result.B = (int)left.B < (int)right.B ? left.B : right.B;
+            result.A = left.A < right.A ? left.A : right.A;
+            result.R = left.R < right.R ? left.R : right.R;
+            result.G = left.G < right.G ? left.G : right.G;
+            result.B = left.B < right.B ? left.B : right.B;
         }
 
         /// <summary>
@@ -1082,9 +1082,9 @@ namespace Fusee.Base.Common
         public static void AdjustContrast(ref ColorUint value, float contrast, out ColorUint result)
         {
             result.A = value.A;
-            result.R = ColorUint.ToByte((float)(0.5 + (double)contrast * ((double)value.R / (double)byte.MaxValue - 0.5)));
-            result.G = ColorUint.ToByte((float)(0.5 + (double)contrast * ((double)value.G / (double)byte.MaxValue - 0.5)));
-            result.B = ColorUint.ToByte((float)(0.5 + (double)contrast * ((double)value.B / (double)byte.MaxValue - 0.5)));
+            result.R = ColorUint.ToByte((float)(0.5 + (double)contrast * (value.R / (double)byte.MaxValue - 0.5)));
+            result.G = ColorUint.ToByte((float)(0.5 + (double)contrast * (value.G / (double)byte.MaxValue - 0.5)));
+            result.B = ColorUint.ToByte((float)(0.5 + (double)contrast * (value.B / (double)byte.MaxValue - 0.5)));
         }
 
         /// <summary>
@@ -1097,7 +1097,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint AdjustContrast(ColorUint value, float contrast)
         {
-            return new ColorUint(ColorUint.ToByte((float)(0.5 + (double)contrast * ((double)value.R / (double)byte.MaxValue - 0.5))), ColorUint.ToByte((float)(0.5 + (double)contrast * ((double)value.G / (double)byte.MaxValue - 0.5))), ColorUint.ToByte((float)(0.5 + (double)contrast * ((double)value.B / (double)byte.MaxValue - 0.5))), value.A);
+            return new ColorUint(ColorUint.ToByte((float)(0.5 + (double)contrast * (value.R / (double)byte.MaxValue - 0.5))), ColorUint.ToByte((float)(0.5 + (double)contrast * (value.G / (double)byte.MaxValue - 0.5))), ColorUint.ToByte((float)(0.5 + (double)contrast * (value.B / (double)byte.MaxValue - 0.5))), value.A);
         }
 
         /// <summary>
@@ -1107,11 +1107,11 @@ namespace Fusee.Base.Common
         /// <param name="value">The color whose saturation is to be adjusted.</param><param name="saturation">The amount by which to adjust the saturation.</param><param name="result">When the method completes, contains the adjusted color.</param>
         public static void AdjustSaturation(ref ColorUint value, float saturation, out ColorUint result)
         {
-            float num = (float)((double)value.R / (double)byte.MaxValue * 0.212500005960464 + (double)value.G / (double)byte.MaxValue * 0.715399980545044 + (double)value.B / (double)byte.MaxValue * 0.0720999985933304);
+            float num = (float)(value.R / (double)byte.MaxValue * 0.212500005960464 + value.G / (double)byte.MaxValue * 0.715399980545044 + value.B / (double)byte.MaxValue * 0.0720999985933304);
             result.A = value.A;
-            result.R = ColorUint.ToByte(num + saturation * ((float)value.R / (float)byte.MaxValue - num));
-            result.G = ColorUint.ToByte(num + saturation * ((float)value.G / (float)byte.MaxValue - num));
-            result.B = ColorUint.ToByte(num + saturation * ((float)value.B / (float)byte.MaxValue - num));
+            result.R = ColorUint.ToByte(num + saturation * (value.R / (float)byte.MaxValue - num));
+            result.G = ColorUint.ToByte(num + saturation * (value.G / (float)byte.MaxValue - num));
+            result.B = ColorUint.ToByte(num + saturation * (value.B / (float)byte.MaxValue - num));
         }
 
         /// <summary>
@@ -1124,8 +1124,8 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint AdjustSaturation(ColorUint value, float saturation)
         {
-            float num = (float)((double)value.R / (double)byte.MaxValue * 0.212500005960464 + (double)value.G / (double)byte.MaxValue * 0.715399980545044 + (double)value.B / (double)byte.MaxValue * 0.0720999985933304);
-            return new ColorUint(ColorUint.ToByte(num + saturation * ((float)value.R / (float)byte.MaxValue - num)), ColorUint.ToByte(num + saturation * ((float)value.G / (float)byte.MaxValue - num)), ColorUint.ToByte(num + saturation * ((float)value.B / (float)byte.MaxValue - num)), value.A);
+            float num = (float)(value.R / (double)byte.MaxValue * 0.212500005960464 + value.G / (double)byte.MaxValue * 0.715399980545044 + value.B / (double)byte.MaxValue * 0.0720999985933304);
+            return new ColorUint(ColorUint.ToByte(num + saturation * (value.R / (float)byte.MaxValue - num)), ColorUint.ToByte(num + saturation * (value.G / (float)byte.MaxValue - num)), ColorUint.ToByte(num + saturation * (value.B / (float)byte.MaxValue - num)), value.A);
         }
 
         /// <summary>
@@ -1137,9 +1137,9 @@ namespace Fusee.Base.Common
         /// A <see cref="T:System.String"/> that represents this instance.
         ///
         /// </returns>
-        public override string ToString()
+        public override readonly string ToString()
         {
-            return string.Format("A:{0} R:{1} G:{2} B:{3}", (object)this.A, (object)this.R, (object)this.G, (object)this.B);
+            return string.Format("A:{0} R:{1} G:{2} B:{3}", A, R, G, B);
         }
 
         /// <summary>
@@ -1151,11 +1151,11 @@ namespace Fusee.Base.Common
         /// A <see cref="T:System.String"/> that represents this instance.
         ///
         /// </returns>
-        public string ToString(string format)
+        public readonly string ToString(string format)
         {
             if (format == null)
-                return this.ToString();
-            return string.Format("A:{0} R:{1} G:{2} B:{3}", (object)this.A.ToString(format), (object)this.R.ToString(format), (object)this.G.ToString(format), (object)this.B.ToString(format));
+                return ToString();
+            return string.Format("A:{0} R:{1} G:{2} B:{3}", A.ToString(format), R.ToString(format), G.ToString(format), B.ToString(format));
         }
 
         /// <summary>
@@ -1167,9 +1167,9 @@ namespace Fusee.Base.Common
         /// A <see cref="T:System.String"/> that represents this instance.
         ///
         /// </returns>
-        public string ToString(IFormatProvider formatProvider)
+        public readonly string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, "A:{0} R:{1} G:{2} B:{3}", (object)this.A, (object)this.R, (object)this.G, (object)this.B);
+            return string.Format(formatProvider, "A:{0} R:{1} G:{2} B:{3}", A, R, G, B);
         }
 
         /// <summary>
@@ -1181,11 +1181,11 @@ namespace Fusee.Base.Common
         /// A <see cref="T:System.String"/> that represents this instance.
         ///
         /// </returns>
-        public string ToString(string format, IFormatProvider formatProvider)
+        public readonly string ToString(string format, IFormatProvider formatProvider)
         {
             if (format == null)
-                return this.ToString(formatProvider);
-            return string.Format(formatProvider, "A:{0} R:{1} G:{2} B:{3}", (object)this.A.ToString(format, formatProvider), (object)this.R.ToString(format, formatProvider), (object)this.G.ToString(format, formatProvider), (object)this.B.ToString(format, formatProvider));
+                return ToString(formatProvider);
+            return string.Format(formatProvider, "A:{0} R:{1} G:{2} B:{3}", A.ToString(format, formatProvider), R.ToString(format, formatProvider), G.ToString(format, formatProvider), B.ToString(format, formatProvider));
         }
 
         /// <summary>
@@ -1197,9 +1197,9 @@ namespace Fusee.Base.Common
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         ///
         /// </returns>
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
-            return this.A.GetHashCode() + this.R.GetHashCode() + this.G.GetHashCode() + this.B.GetHashCode();
+            return A.GetHashCode() + R.GetHashCode() + G.GetHashCode() + B.GetHashCode();
         }
 
         /// <summary>
@@ -1211,10 +1211,10 @@ namespace Fusee.Base.Common
         /// <c>true</c> if the specified <see cref="T:Fusee.Engine.ColorUint"/> is equal to this instance; otherwise, <c>false</c>.
         ///
         /// </returns>
-        public bool Equals(ColorUint other)
+        public readonly bool Equals(ColorUint other)
         {
-            if ((int)this.R == (int)other.R && (int)this.G == (int)other.G && (int)this.B == (int)other.B)
-                return (int)this.A == (int)other.A;
+            if (R == other.R && G == other.G && B == other.B)
+                return A == other.A;
             else
                 return false;
         }
@@ -1228,18 +1228,18 @@ namespace Fusee.Base.Common
         /// <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
         ///
         /// </returns>
-        public override bool Equals(object value)
+        public override readonly bool Equals(object value)
         {
-            if (value == null || !object.ReferenceEquals((object)value.GetType(), (object)typeof(ColorUint)))
+            if (value == null || !object.ReferenceEquals(value.GetType(), typeof(ColorUint)))
                 return false;
             else
-                return this.Equals((ColorUint)value);
+                return Equals((ColorUint)value);
         }
 
         private static byte ToByte(float component)
         {
-            int num = (int)((double)component * (double)byte.MaxValue);
-            return num < 0 ? (byte)0 : (num > (int)byte.MaxValue ? byte.MaxValue : (byte)num);
+            int num = (int)((double)component * byte.MaxValue);
+            return num < 0 ? (byte)0 : (num > byte.MaxValue ? byte.MaxValue : (byte)num);
         }
 
     }
