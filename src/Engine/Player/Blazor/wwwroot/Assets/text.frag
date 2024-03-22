@@ -30,8 +30,7 @@ void main()
     vec3 lightColor = vec3(1.0, 1.0, 1.0);
     vec4 objCol = vec4(0.0, 0.0, 0.0, 1.0);
     vec4 texCol = texture(AlbedoTexture, vUv * AlbedoTextureTiles);
-    vec3 mixCol = mix(Albedo.xyz, texCol.xyz, AlbedoMix);    
-
+    vec3 mixCol = mix(Albedo.xyz, texCol.xyz, AlbedoMix);
     objCol = vec4(mixCol.rgb, texCol.r);
         
     vec4 Idif = vec4(max(dot(N, L), 0.0) * lightColor, 1.0);
