@@ -20,11 +20,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
     public class RenderContextImp : IRenderContextImp
     {
         /// <summary>
-        /// The WebGL rendering context base.
-        /// </summary>
-        protected WebGLRenderingContextBase gl;
-
-        /// <summary>
         /// The WebGL2 rendering context base.
         /// </summary>
         protected WebGL2RenderingContextBase gl2;
