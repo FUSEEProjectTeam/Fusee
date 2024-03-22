@@ -226,10 +226,10 @@ jobs:
         dotnet workload install wasm-tools-net7
     - name: Publish F.E.Player.Blazor
       run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
-    - name: Build F.T.B.Blazorpatch
-      run: dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
-    - name: Patch Blazor
-      run: dotnet bin/Release/Tools/Build/Blazorpatch/net8.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net8.0/publish/wwwroot -t All
+#    - name: Build F.T.B.Blazorpatch
+#      run: dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
+#    - name: Patch Blazor
+#      run: dotnet bin/Release/Tools/Build/Blazorpatch/net8.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net8.0/publish/wwwroot -t All
     - name: Upload Player-Artifact
       uses: actions/upload-artifact@v3
       with:
