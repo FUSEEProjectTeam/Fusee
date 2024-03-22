@@ -1,23 +1,43 @@
 ﻿@page "/"
-@using System.Runtime.CompilerServices
 @using System.Diagnostics.CodeAnalysis
 @inject IJSRuntime JS
-
+@inject ILogger<Index> Logger
 
 @code
 {
+    private string message = "Initial assigned message.";
+
+    protected override void OnInitialized()
+    {
+        Logger.LogInformation("OnInitialized(): was called!");
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        Logger.LogInformation("OnAfterRender(1): firstRender: " +
+           "{FirstRender}, message: {Message}", firstRender, message);
+
         if (firstRender)
-        {         
+        {
             var program = new Fusee.Base.Imp.Blazor.BlazorProgramm();
             var main = new Main();
             program.Start(main, (IJSInProcessRuntime)JS);
+
+            message = "Executed for the first render.";
+        }
+        else
+        {
+            message = "Executed after the first render.";
         }
 
-
+        Logger.LogInformation("OnAfterRender(2): firstRender: " +
+           "{FirstRender}, message: {Message}", firstRender, message);
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void LogInformation()
+    {
+        Logger.LogInformation("LogInformation called");
     }
 }
