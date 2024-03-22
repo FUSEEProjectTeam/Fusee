@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.PointCloud.Common;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 

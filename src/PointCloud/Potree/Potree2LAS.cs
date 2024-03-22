@@ -268,7 +268,7 @@ namespace Fusee.PointCloud.Potree
             Guard.IsLessThan(size, ushort.MaxValue);
 
             // automatic point guessing
-            var ptSize = _potreeData.Metadata.OffsetToExtraBytes == - 1 ? size : (_potreeData.Metadata.OffsetToExtraBytes - 1);
+            var ptSize = _potreeData.Metadata.OffsetToExtraBytes == -1 ? size : (_potreeData.Metadata.OffsetToExtraBytes - 1);
             LASPointType ptType = ptSize switch
             {
                 20 => LASPointType.Zero,
@@ -331,8 +331,8 @@ namespace Fusee.PointCloud.Potree
                     if (offset >= _potreeData.Metadata.OffsetToExtraBytes)
                     {
 
-                        var desc = Encoding.ASCII.GetBytes(attribute.Description.Append('\0').ToArray());
-                        var name = Encoding.ASCII.GetBytes(attribute.Name.Append('\0').ToArray());
+                        var desc = Encoding.ASCII.GetBytes(attribute.Description.ToArray());
+                        var name = Encoding.ASCII.GetBytes(attribute.Name.ToArray());
 
                         var extraByteType = attribute.Type switch
                         {
@@ -356,8 +356,8 @@ namespace Fusee.PointCloud.Potree
                             data_type = (byte)extraByteType
                         };
 
-                        Guard.IsLessThan(desc.Length, currentExtra.description.Length);
-                        Guard.IsLessThan(name.Length, currentExtra.name.Length);
+                        Guard.IsLessThanOrEqualTo(desc.Length, currentExtra.description.Length);
+                        Guard.IsLessThanOrEqualTo(name.Length, currentExtra.name.Length);
 
                         Array.Copy(desc, currentExtra.description, desc.Length);
                         Array.Copy(name, currentExtra.name, name.Length);
@@ -419,8 +419,8 @@ namespace Fusee.PointCloud.Potree
                 var description = Encoding.UTF8.GetBytes("Extra Bytes Record\0");
                 var userId = Encoding.UTF8.GetBytes("LASF_Spec\0");
 
-                Guard.IsLessThan(description.Length, vlr.Description.Length);
-                Guard.IsLessThan(userId.Length, vlr.UserId.Length);
+                Guard.IsLessThanOrEqualTo(description.Length, vlr.Description.Length);
+                Guard.IsLessThanOrEqualTo(userId.Length, vlr.UserId.Length);
                 Array.Copy(description, vlr.Description, description.Length);
                 Array.Copy(userId, vlr.UserId, userId.Length);
 

@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
-using CommunityToolkit.HighPerformance.Buffers;
+﻿using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
@@ -83,34 +82,54 @@ namespace Fusee.PointCloud.Potree
         /// <summary>
         /// The center of the point clouds AABB / Octree root.
         /// </summary>
-        public float3 Center => (float3)VisibilityTester.Octree.Root.Center;
+        public float3 Center { get; private set; }
 
         /// <summary>
         /// The size (longest edge) of the point clouds AABB / Octree root.
         /// </summary>
-        public float3 Size => new((float)VisibilityTester.Octree.Root.Size);
+        public float3 Size { get; private set; }
 
         /// <summary>
         /// Action that is run on every mesh that is determined as newly visible.
         /// </summary>
-        public Action<Mesh>? NewMeshAction;
+        public Action<Mesh>? NewMeshAction
+        {
+            get => _newMeshAction;
+            set
+            {
+                _newMeshAction = value;
+                (DataHandler).NewMeshAction = _newMeshAction;
+            }
+        }
+        private Action<Mesh>? _newMeshAction;
 
         /// <summary>
         /// Action that is run on every mesh that was updated.
         /// </summary>
-        public Action<Mesh>? UpdatedMeshAction;
+        public Action<Mesh>? UpdatedMeshAction
+        {
+            get => _updateMeshAction;
+            set
+            {
+                _updateMeshAction = value;
+                DataHandler.UpdatedMeshAction = _updateMeshAction;
+            }
+        }
+        private Action<Mesh>? _updateMeshAction;
 
         private bool _doUpdate = true;
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
         /// </summary>
-        public Potree2CloudDynamic(PointCloudDataHandlerBase<Mesh> dataHandler, IPointCloudOctree octree)
+        public Potree2CloudDynamic(PointCloudDataHandlerBase<Mesh> dataHandler, IPointCloudOctree octree, float3 size, float3 center)
         {
-            GpuDataToRender = new List<Mesh>();
+            GpuDataToRender = new();
             DataHandler = dataHandler;
             DataHandler.UpdateGpuDataCache = UpdateGpuDataCache;
             VisibilityTester = new VisibilityTester(octree, dataHandler.TriggerPointLoading);
+            Size = size;
+            Center = center;
         }
 
         /// <summary>
@@ -183,39 +202,11 @@ namespace Fusee.PointCloud.Potree
             {
                 if (!guid.Valid) continue;
 
-                var guidMeshes = DataHandler.GetGpuData(guid, () => !_visibleOctantsCache.Contains(guid), out GpuDataState meshStatus);
+                var guidMeshes = DataHandler.GetGpuData(guid, () => !_visibleOctantsCache.Contains(guid));
 
-                switch (meshStatus)
-                {
-                    //Octants that are now visible but the points for this octant aren't loaded yet.
-                    //Nothing to do here.
-                    case GpuDataState.None:
-                        continue;
-                    //Octants that are now visible and the meshes are newly created.
-                    //They we have to call "NewMeshAction" when they are loaded.
-                    case GpuDataState.New:
-                        Guard.IsNotNull(guidMeshes); //If this is null we have an internal error in DataHandler.GetMeshes/DoUpdate
-                        foreach (var mesh in guidMeshes)
-                        {
-                            NewMeshAction?.Invoke(mesh);
-                        }
-                        break;
-                    //Octants that are now visible and the existing meshes where updated.
-                    case GpuDataState.Changed:
-                        Guard.IsNotNull(guidMeshes); //If this is null we have an internal error in DataHandler.GetMeshes/DoUpdate
-                        foreach (var mesh in guidMeshes)
-                        {
-                            UpdatedMeshAction?.Invoke(mesh);
-                        }
-                        break;
-                    case GpuDataState.Unchanged:
-                        Guard.IsNotNull(guidMeshes); //If this is null we have an internal error in DataHandler.GetMeshes/DoUpdate
-                        break;
-                    default:
-                        throw new ArgumentException($"Invalid mesh status {meshStatus}.");
-                }
+                if (guidMeshes != null)
+                    GpuDataToRender.AddRange(guidMeshes);
 
-                GpuDataToRender.AddRange(guidMeshes);
                 currentOctants.Add(guid);
             }
 

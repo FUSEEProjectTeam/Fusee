@@ -282,29 +282,17 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _camTransform.FpsView(_angleHorz, _angleVert, Input.Keyboard.WSAxis, Input.Keyboard.ADAxis, Time.DeltaTimeUpdate * 20);
 
-
             if (!_keys && Input.Mouse.RightButton && PointRenderMode == RenderMode.DynamicMesh)
             {
                 var size = RenderToTexture ? ExternalCanvasSize : new int2(_rc.ViewportWidth, _rc.ViewportHeight);
                 var mousePos = RenderToTexture ? ExternalMousePosition : Input.Mouse.Position;
-                var result = _picker?.Pick(mousePos, size.x, size.y).Where(x => x is PointCloudPickResult).Cast<PointCloudPickResult>();
+                var result = _picker?.Pick(mousePos, size.x, size.y).Where(x => x is PointCloudPickResult).Cast<PointCloudPickResult>().OrderBy(res => res.DistanceToRay);
                 if (result != null && result.Any())
                 {
                     var minElement = result.FirstOrDefault();
-
-                    // get min x/y distance point
-                    foreach (var r in result)
-                    {
-                        if (r.DistanceToRay.x < minElement.DistanceToRay.x && r.DistanceToRay.y < minElement.DistanceToRay.y)
-                        {
-                            minElement = r;
-                        }
-                    }
                     _pickResultTransform.Translation = minElement.Mesh.Vertices[minElement.VertIdx];
                 }
-
             }
-
         }
 
         private void OnThresholdChanged(int newValue)

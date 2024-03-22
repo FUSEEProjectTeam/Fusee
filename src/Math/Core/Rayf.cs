@@ -43,8 +43,7 @@ namespace Fusee.Math.Core
             {
                 if (_inverseDirty)
                 {
-                    _inverse = new float3(1 / Direction.x, 1 / Direction.y, 1 / Direction.z);
-
+                    _inverse = new float3(1 / Direction.x, 1 / Direction.y, 1 / Direction.z).Normalize();
                     _inverseDirty = false;
                 }
 
@@ -68,24 +67,40 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Creates a new ray.
+        /// Creates a new ray in world space using clip coordinates.
+        /// Origin is the camera's world space position.
         /// </summary>
         /// <param name="pickPosClip">A mouse position in Clip Space.</param>
         /// <param name="view">The View Matrix of the rendered scene.</param>
         /// <param name="projection">The Projection Matrix of the rendered scene.</param>
-        public RayF(float2 pickPosClip, float4x4 view, float4x4 projection)
+        /// <param name="isOrthographic">Is the projection matrix a orthographic one?</param>
+        public RayF(float2 pickPosClip, float4x4 view, float4x4 projection, bool isOrthographic = false)
         {
-            float4x4 invViewProjection = float4x4.Invert(projection * view);
+            if (!isOrthographic)
+            {
+                //No need for perspective devision here. Ray has no intrinsic depth.
+                //Doesn't work for ortho projection.
+                //Numerically more stable because of the missing perspective division.
+                float4 rayClip = new(pickPosClip.x, pickPosClip.y, 1.0f, 1.0f);
+                float4 rayEye = float4x4.Invert(projection) * rayClip;
+                rayEye.z = 1.0f;
+                rayEye.w = 0.0f;
 
-            var pickPosFarWorld = float4x4.TransformPerspective(invViewProjection, new float3(pickPosClip.x, pickPosClip.y, 1));
-            var pickPosNearWorld = float4x4.TransformPerspective(invViewProjection, new float3(pickPosClip.x, pickPosClip.y, -1));
+                var invView = float4x4.Invert(view);
 
-            Origin = pickPosNearWorld;
+                float3 rayWorld = (invView * rayEye).xyz.Normalize();
+                Origin = invView.Column4.xyz;
+                Direction = rayWorld;
+            }
+            else
+            {
+                float4x4 invViewProjection = float4x4.Invert(projection * view);
+                var pickPosFarWorld = invViewProjection * new float3(pickPosClip.x, pickPosClip.y, 1);
+                var pickPosNearWorld = invViewProjection * new float3(pickPosClip.x, pickPosClip.y, -1);
 
-            _direction = (pickPosFarWorld - pickPosNearWorld).Normalize();
-
-            _inverse = new float3(1 / _direction.x, 1 / _direction.y, 1 / _direction.z);
-            _inverseDirty = false;
+                Origin = pickPosNearWorld;
+                Direction = (pickPosFarWorld - pickPosNearWorld).Normalize();
+            }
         }
     }
 }

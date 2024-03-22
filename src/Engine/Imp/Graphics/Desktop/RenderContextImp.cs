@@ -1366,7 +1366,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="instanceImp">The <see cref="InstanceDataImp"/>.</param>
         /// <param name="instanceColors">The colors of the instances.</param>
-        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
+        public void SetInstanceColor(IInstanceDataImp instanceImp, uint[] instanceColors)
         {
             if (instanceColors == null)
                 return;
@@ -1378,7 +1378,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             //TODO: can we use AttributeLocations.Color?
-            int sizeOfCol = sizeof(float) * 4;
+            int sizeOfCol = sizeof(uint);
             int iColorBytes = instanceColors.Length * sizeOfCol;
             int instanceColorBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
             if (instanceColorBo == 0)
@@ -1399,7 +1399,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO. Tried to upload {0} bytes, uploaded {1}.", instancedColorBytes, iColorBytes));
 
             // set attribute pointers for matrix (4 times vec4)
-            GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedColor, 4, VertexAttribType.Float, false, 0);
+            GL.VertexArrayAttribFormat(vao, AttributeLocations.InstancedColor, 4, VertexAttribType.UnsignedByte, false, 0);
             GL.VertexArrayAttribBinding(vao, AttributeLocations.InstancedColor, AttributeLocations.InstancedColorBindingIndex);
             GL.VertexArrayBindingDivisor(vao, AttributeLocations.InstancedColor, 1);
         }

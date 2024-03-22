@@ -13,6 +13,11 @@ namespace Fusee.PointCloud.Core
     public abstract class PointCloudDataHandlerBase<TGpuData> : IDisposable where TGpuData : IDisposable
     {
         /// <summary>
+        /// Allows to inject a method that knows how to create a specific type of mesh.
+        /// </summary>
+        public CreateGpuData<TGpuData>? CreateGpuDataHandler;
+
+        /// <summary>
         /// Token, that allows to invalidate the complete GpuData cache.
         /// </summary>
         public InvalidateGpuDataCache InvalidateCacheToken { get; } = new();
@@ -29,33 +34,13 @@ namespace Fusee.PointCloud.Core
         protected int MaxNumberOfNodesToLoad = 5;
 
         /// <summary>
-        /// Contains nodes that are queued for loading in the background.
-        /// </summary>
-        protected List<OctantId> LoadingQueue = new();
-
-        /// <summary>
-        /// Contains meshes that are marked for disposal.
-        /// </summary>
-        protected Dictionary<OctantId, IEnumerable<TGpuData>> DisposeQueue = new();
-
-        /// <summary>
-        /// Locking object for the loading queue.
-        /// </summary>
-        protected object LockLoadingQueue = new();
-        /// <summary>
-        /// Locking object for the dispose queue.
-        /// </summary>
-        protected object LockDisposeQueue = new();
-
-        /// <summary>
         /// First looks in the mesh cache, if there are meshes return, 
         /// else look in the DisposeQueue, if there are meshes return,
         /// else look in the point cache, if there are points create a mesh and add to the MeshCache.
         /// </summary>
         /// <param name="guid">The unique id of an octant.</param>
         /// <param name="doUpdateIf">Allows inserting a condition, if true the mesh will be updated.</param>
-        /// <param name="gpuDataState">State of the gpu data in it's life cycle.</param>
-        public abstract IEnumerable<TGpuData>? GetGpuData(OctantId guid, Func<bool>? doUpdateIf, out GpuDataState gpuDataState);
+        public abstract IEnumerable<TGpuData>? GetGpuData(OctantId guid, Func<bool>? doUpdateIf);
 
         /// <summary>
         /// Loads points from the hard drive if they are neither in the loading queue nor in the PointCahce.
@@ -64,7 +49,8 @@ namespace Fusee.PointCloud.Core
         public abstract void TriggerPointLoading(OctantId guid);
 
         /// <summary>
-        /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the MeshCache.
+        /// Disposes of unused meshes, if needed. Depends on the dispose rate and the expiration frequency of the gpu data cache.
+        /// Make sure to call this on the main thread.
         /// </summary>
         public abstract void ProcessDisposeQueue();
 
@@ -72,6 +58,24 @@ namespace Fusee.PointCloud.Core
         /// Allows to update meshes with data from the points.
         /// </summary>
         public UpdateGpuData<IEnumerable<TGpuData>, MemoryOwner<VisualizationPoint>>? UpdateGpuDataCache;
+
+        /// <summary>
+        /// Used to inject a application dependent method that processes newly created gpu data.
+        /// </summary>
+        public Action<TGpuData>? NewMeshAction;
+
+        /// <summary>
+        /// Used to inject a application dependent method that processes gpu data after some update.
+        /// </summary>
+        public Action<TGpuData>? UpdatedMeshAction;
+
+        /// <summary>
+        /// Returns all bytes of one node for a specific attribute.
+        /// </summary>
+        /// <param name="attribName"></param>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public abstract byte[] GetAllBytesForAttribute(string attribName, OctantId guid);
 
         private bool _disposed = false;
 
@@ -110,13 +114,7 @@ namespace Fusee.PointCloud.Core
 
                 // Call the appropriate methods to clean up
                 // unmanaged resources here.
-                foreach (var kvp in DisposeQueue)
-                {
-                    foreach (var val in kvp.Value)
-                    {
-                        val.Dispose();
-                    }
-                }
+
                 _disposed = true;
             }
         }

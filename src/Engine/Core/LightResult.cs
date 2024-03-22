@@ -1,6 +1,7 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
+using System;
 
 namespace Fusee.Engine.Core
 {
@@ -50,7 +51,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The session unique identifier of tis LightResult.
         /// </summary>
-        public Suid Id;
+        public Guid Id;
 
         /// <summary>
         /// Creates a new instance of type LightResult.
@@ -61,7 +62,7 @@ namespace Fusee.Engine.Core
             Light = light;
             WorldSpacePos = float3.Zero;
             Rotation = float4x4.Identity;
-            Id = Suid.GenerateSuid();
+            Id = Guid.NewGuid();
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Fusee.Engine.Core
             Light = new Light();
             WorldSpacePos = float3.Zero;
             Rotation = float4x4.Identity;
-            Id = Suid.GenerateSuid();
+            Id = Guid.NewGuid();
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.HighPerformance.Buffers;
+using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using System.Collections.Generic;
@@ -11,17 +11,17 @@ namespace Fusee.PointCloud.Common
     public interface IPointCloudImpBase
     {
         /// <summary>
-        /// Token for invalidating the cached gpu data .
+        /// Object for handling the invalidation of the gpu data cache.
         /// </summary>
         public InvalidateGpuDataCache InvalidateGpuDataCache { get; }
 
         /// <summary>
-        /// Center of the PointCloud's AABB
+        /// Center of the PointCloud's AABB (already shifted/offsetted)
         /// </summary>
         public float3 Center { get; }
 
         /// <summary>
-        /// Dimensions of the PointCloud's AABB
+        /// Dimensions of the PointCloud's AABB ("real" size, not the octree cube)
         /// </summary>
         public float3 Size { get; }
 

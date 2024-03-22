@@ -180,7 +180,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The pick position on the screen.
         /// </summary>
-        public float2 PickPosClip { get; set; }
+        public float2 PickPosClip { get; private set; }
 
         private float4x4 _view;
         private float4x4 _invView;
@@ -277,6 +277,10 @@ namespace Fusee.Engine.Core
                     pickCamRect = camRect;
                 }
             }
+
+            //Early out for the case that the scene is rendered with more than one canvas and the mouse isn't inside the correct one.
+            if (pickCam == null || pickCam == default)
+                return null;
 
             CurrentCameraResult = pickCam;
 
@@ -598,7 +602,6 @@ namespace Fusee.Engine.Core
 
         private void PickLineAdjacencyGeometry(Mesh mesh)
         {
-
             var mvp = _projection * _view * State.Model;
             var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
             if (matOfNode == null)
@@ -610,7 +613,7 @@ namespace Fusee.Engine.Core
 
             if (mesh.Triangles == null) return;
             if (mesh.Vertices == null) return;
-            if (CurrentCameraResult == null)
+            if (CurrentCameraResult.Camera == null)
             {
                 Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
                 return;
@@ -698,7 +701,6 @@ namespace Fusee.Engine.Core
 
         private void PickLineGeometry(Mesh mesh)
         {
-
             var mvp = _projection * _view * State.Model;
 
             var matOfNode = CurrentNode.GetComponent<ShaderEffect>();
@@ -711,7 +713,7 @@ namespace Fusee.Engine.Core
 
             if (mesh.Triangles == null) return;
             if (mesh.Vertices == null) return;
-            if (CurrentCameraResult == null)
+            if (CurrentCameraResult.Camera == null)
             {
                 Diagnostics.Warn("No camera found in SceneGraph, no picking possible!");
                 return;
@@ -781,7 +783,8 @@ namespace Fusee.Engine.Core
                 return;
             }
 
-            var ray = new RayF(PickPosClip, _view, _projection);
+            if (_currentCameraResult.Camera == null) return;
+            var ray = new RayF(PickPosClip, _view, _projection, _currentCameraResult.Camera.ProjectionMethod == ProjectionMethod.Orthographic);
 
             var box = State.Model * mesh.BoundingBox;
             if (!box.IntersectRay(ray))

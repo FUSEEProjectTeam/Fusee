@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Fusee.PointCloud.Potree.V2.Data;
+using System.IO.MemoryMappedFiles;
 
 namespace Fusee.PointCloud.Potree.V2
 {
@@ -32,16 +33,20 @@ namespace Fusee.PointCloud.Potree.V2
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        internal byte[] ReadRawNodeData(PotreeNode node)
+        internal MemoryMappedFile ReadRawNodeData(PotreeNode node)
         {
             Guard.IsLessThanOrEqualTo(node.NumPoints, int.MaxValue);
             Guard.IsNotNull(PotreeData);
 
-            var potreePointSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
-            var pointArray = new byte[potreePointSize];
-            PotreeData.ReadViewAccessor.ReadArray(node.ByteOffset, pointArray, 0, potreePointSize);
+            var nodeSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
+            var pointArray = new byte[nodeSize];
+            PotreeData.ReadViewAccessor.ReadArray(node.ByteOffset, pointArray, 0, nodeSize);
 
-            return pointArray;
+            var mmf = MemoryMappedFile.CreateNew(null, nodeSize);
+            using var accessor = mmf.CreateViewAccessor();
+            accessor.WriteArray(0, pointArray, 0, pointArray.Length);
+
+            return mmf;
         }
 
         #region Metadata caching

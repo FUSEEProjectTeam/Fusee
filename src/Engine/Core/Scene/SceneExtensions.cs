@@ -528,8 +528,8 @@ namespace Fusee.Engine.Core.Scene
             if ((angleVert >= M.TwoPi && angleVert > 0f) || angleVert <= -M.TwoPi)
                 angleVert %= M.TwoPi;
 
-            var camForward = float4x4.CreateRotationXY(new float2(angleVert, angleHorz)) * float3.UnitZ;
-            var camRight = float4x4.CreateRotationXY(new float2(angleVert, angleHorz)) * float3.UnitX;
+            var camForward = float4x4.CreateRotationXY(angleVert, angleHorz) * float3.UnitZ;
+            var camRight = float4x4.CreateRotationXY(angleVert, angleHorz) * float3.UnitX;
 
             tc.Translation += camForward * inputWSAxis * speed;
             tc.Translation += camRight * inputADAxis * speed;

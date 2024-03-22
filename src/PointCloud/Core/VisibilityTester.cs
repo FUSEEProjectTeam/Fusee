@@ -90,7 +90,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public float UpdateRate { get; set; } = 1 / 30f;
 
-        // Minimal screen projected size of a node. Depends on spacing of the octree.
+        // Minimal screen projected size of a node.
         private double _minScreenProjectedSize;
 
         // Allows traversal in order of screen projected size.

@@ -1,6 +1,5 @@
 using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance;
-using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
@@ -12,20 +11,13 @@ using Fusee.PointCloud.Potree.V2.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Fusee.PointCloud.Potree.V2
 {
-    /// <summary>
-    /// Delegate for a method that knows how to parse a slice of a point's extra bytes to a valid uint.
-    /// </summary>
-    /// <param name="bytes"></param>
-    /// <returns></returns>
-    public delegate uint HandleReadExtraBytes(Span<byte> bytes);
-
     /// <summary>
     /// Reads Potree V2 files and is able to create a point cloud scene component, that can be rendered.
     /// </summary>
@@ -40,11 +32,6 @@ namespace Fusee.PointCloud.Potree.V2
         /// If any errors during load occur this event is being called
         /// </summary>
         public EventHandler<ErrorEventArgs>? OnPointCloudReadError;
-
-        /// <summary>
-        /// Specify the byte offset for one point until the extra byte data is reached
-        /// </summary>
-        public int OffsetToExtraBytes = -1;
 
         /// <summary>
         /// Generate a new instance of <see cref="Potree2Reader"/>.
@@ -70,34 +57,53 @@ namespace Fusee.PointCloud.Potree.V2
         /// <param name="renderMode">Determines which <see cref="RenderMode"/> is used to display the returned point cloud."/></param>
         public IPointCloud GetPointCloudComponent(RenderMode renderMode = RenderMode.StaticMesh)
         {
+            var metaData = new CreateMeshMetaData()
+            {
+                PointSize = PotreeData.Metadata.PointSize,
+                Scale = PotreeData.Metadata.Scale,
+                OffsetColor = offsetColor,
+                OffsetIntensity = offsetIntensity,
+                OffsetToPosValues = offsetPosition,
+                OffsetToExtraBytes = PotreeData.Metadata.OffsetToExtraBytes,
+                IntensityMax = PotreeData.Metadata.Attributes["intensity"].MaxList[0],
+                IntensityMin = PotreeData.Metadata.Attributes["intensity"].MinList[0],
+
+            };
+
+            var shiftedAabbCenter = (float3)(PotreeData.Metadata.AABB.Center - PotreeData.Metadata.Offset);
+
             switch (renderMode)
             {
                 default:
                 case RenderMode.StaticMesh:
                     {
-                        var dataHandler = new PointCloudDataHandler<GpuMesh>(MeshMaker.CreateStaticMesh,
-                            LoadVisualizationPointData);
+                        var dataHandler = new PointCloudDataHandler<GpuMesh>(MeshMaker.CreateStaticMesh, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, GetAllBytesForAttribute);
                         dataHandler.OnLoadingErrorEvent += OnPointCloudReadError;
-                        var imp = new Potree2Cloud(dataHandler, GetOctree());
+                        var imp = new Potree2Cloud(dataHandler, GetOctree(), (float3)PotreeData.Metadata.AABB.Size, shiftedAabbCenter);
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.Instanced:
                     {
-                        var dataHandlerInstanced = new PointCloudDataHandler<InstanceData>(MeshMaker.CreateInstanceData,
-                            LoadVisualizationPointData, true);
+                        var dataHandlerInstanced = new PointCloudDataHandler<InstanceData>(MeshMaker.CreateInstanceData, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, GetAllBytesForAttribute, true);
                         dataHandlerInstanced.OnLoadingErrorEvent += OnPointCloudReadError;
-                        var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree());
+                        var imp = new Potree2CloudInstanced(dataHandlerInstanced, GetOctree(), (float3)PotreeData.Metadata.AABB.Size, shiftedAabbCenter);
                         return new PointCloudComponent(imp, renderMode);
                     }
                 case RenderMode.DynamicMesh:
                     {
-                        var dataHandlerDynamic = new PointCloudDataHandler<Mesh>(MeshMaker.CreateDynamicMesh,
-                            LoadVisualizationPointData);
+                        var dataHandlerDynamic = new PointCloudDataHandler<Mesh>(MeshMaker.CreateDynamicMesh, HandleReadExtraBytes, metaData, LoadVisualizationPointData, GetNumberOfPointsInNode, GetAllBytesForAttribute);
                         dataHandlerDynamic.OnLoadingErrorEvent += OnPointCloudReadError;
-                        var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree());
+                        var imp = new Potree2CloudDynamic(dataHandlerDynamic, GetOctree(), (float3)PotreeData.Metadata.AABB.Size, shiftedAabbCenter);
                         return new PointCloudComponent(imp, renderMode);
                     }
             }
+        }
+
+        private long GetNumberOfPointsInNode(OctantId octantId)
+        {
+            Guard.IsNotNull(PotreeData);
+            var node = PotreeData.GetNode(octantId);
+            return node == null ? throw new ArgumentException($"Couldn't get node for id {octantId}.") : node.NumPoints;
         }
 
         /// <summary>
@@ -114,7 +120,7 @@ namespace Fusee.PointCloud.Potree.V2
             Guard.IsNotNull(PotreeData.Metadata.Hierarchy);
 
             var center = PotreeData.Hierarchy.Root.Aabb.Center;
-            var size = PotreeData.Hierarchy.Root.Aabb.Size.y;
+            var size = PotreeData.Hierarchy.Root.Aabb.Size;//System.Math.Max(System.Math.Max(PotreeData.Hierarchy.Root.Aabb.Size.x, PotreeData.Hierarchy.Root.Aabb.Size.y), PotreeData.Hierarchy.Root.Aabb.Size.z);
             var maxLvl = PotreeData.Metadata.Hierarchy.Depth;
 
             var octree = new PointCloudOctree(center, size, maxLvl);
@@ -125,11 +131,41 @@ namespace Fusee.PointCloud.Potree.V2
         }
 
         /// <summary>
+        /// Returns all bytes of one node for a specific attribute.
+        /// </summary>
+        /// <param name="attribName"></param>
+        /// <param name="pointsMmf"></param>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public byte[] GetAllBytesForAttribute(string attribName, MemoryMappedFile pointsMmf, OctantId guid)
+        {
+            Guard.IsNotNull(PotreeData);
+            var node = PotreeData.GetNode(guid);
+            Guard.IsNotNull(node);
+            var potreePointSize = (int)node.NumPoints * PotreeData.Metadata.PointSize;
+
+            using var accessor = pointsMmf.CreateViewAccessor();
+            var pointArray = new byte[potreePointSize];
+            accessor.ReadArray(0, pointArray, 0, potreePointSize);
+
+            var memStream = new MemoryStream();
+            var attrib = PotreeData.Metadata.Attributes[attribName];
+
+            for (var i = 0; i < pointArray.Length; i += PotreeData.Metadata.PointSize)
+            {
+                var extraBytesSpan = pointArray.AsSpan().Slice(i + attrib.AttributeOffset, attrib.Size);
+                memStream.Write(extraBytesSpan);
+            }
+
+            return memStream.ToArray();
+        }
+
+        /// <summary>
         /// Reads the points for a specific octant of type <see cref="VisualizationPoint"/>.
         /// </summary>
         /// <param name="id">Id of the octant.</param>
         /// <returns></returns>
-        public MemoryOwner<VisualizationPoint> LoadVisualizationPointData(OctantId id)
+        public MemoryMappedFile LoadVisualizationPointData(OctantId id)
         {
             Guard.IsNotNull(PotreeData);
             var node = PotreeData.GetNode(id);
@@ -140,97 +176,12 @@ namespace Fusee.PointCloud.Potree.V2
             return LoadVisualizationPoint(node);
         }
 
-        private MemoryOwner<VisualizationPoint> LoadVisualizationPoint(PotreeNode node)
+        private MemoryMappedFile LoadVisualizationPoint(PotreeNode node)
         {
             Guard.IsLessThanOrEqualTo(node.NumPoints, int.MaxValue);
-            //if (HandleExtraBytes != null)
-            //    Guard.IsGreaterThan(OffsetToExtraBytes, 0);
             Guard.IsNotNull(PotreeData);
 
-            var pointArray = ReadRawNodeData(node);
-
-            var returnMemory = MemoryOwner<VisualizationPoint>.Allocate((int)node.NumPoints);
-
-            var pointCount = 0;
-
-            for (var i = 0; i < pointArray.Length; i += PotreeData.Metadata.PointSize)
-            {
-                var posSlice = new Span<byte>(pointArray).Slice(i + offsetPosition, Marshal.SizeOf<int>() * 3);
-                var pos = MemoryMarshal.Cast<byte, int>(posSlice);
-
-                double x = pos[0] * PotreeData.Metadata.Scale.x;
-                double y = pos[1] * PotreeData.Metadata.Scale.y;
-                double z = pos[2] * PotreeData.Metadata.Scale.z;
-
-                float3 position = new((float)x, (float)y, (float)z);
-                position = (float4x4)Potree2Consts.YZflip * position;
-
-                var posSpan = MemoryMarshal.Cast<float, byte>(position.ToArray());
-
-                Span<byte> colorSlice;
-                Span<ushort> rgb;
-                float4 color;
-                if (offsetColor != -1)
-                {
-                    colorSlice = new Span<byte>(pointArray).Slice(i + offsetColor, Marshal.SizeOf<ushort>() * 3);
-                    rgb = MemoryMarshal.Cast<byte, ushort>(colorSlice);
-
-                    color = float4.Zero;
-
-                    color.r = ((byte)(rgb[0] > 255 ? rgb[0] / 256 : rgb[0]));
-                    color.g = ((byte)(rgb[1] > 255 ? rgb[1] / 256 : rgb[1]));
-                    color.b = ((byte)(rgb[2] > 255 ? rgb[2] / 256 : rgb[2]));
-                    color.a = 1;
-                }
-                else if (offsetIntensity != -1)
-                {
-                    var attrib = PotreeData.Metadata.Attributes["intensity"];
-                    colorSlice = new Span<byte>(pointArray).Slice(i + offsetIntensity, Marshal.SizeOf<ushort>());
-                    rgb = MemoryMarshal.Cast<byte, ushort>(colorSlice);
-                    color = float4.Zero;
-
-                    color.r = (float)((rgb[0] - attrib.MinList[0]) / (attrib.MaxList[0] - attrib.MinList[0]) * 1f);
-                    color.g = color.r;
-                    color.b = color.r;
-                    color.a = 1;
-                }
-                else
-                {
-                    color = float4.UnitW;
-                }
-
-                var colorSpan = MemoryMarshal.Cast<float, byte>(color.ToArray());
-
-                uint flags = 0;
-                Span<byte> extraBytesSpan = null;
-                if (PotreeData.Metadata.OffsetToExtraBytes != -1 && PotreeData.Metadata.OffsetToExtraBytes != 0)
-                {
-                    var extraByteSize = PotreeData.Metadata.PointSize - PotreeData.Metadata.OffsetToExtraBytes;
-                    extraBytesSpan = pointArray.AsSpan().Slice(i + PotreeData.Metadata.OffsetToExtraBytes, extraByteSize);
-                }
-                if (HandleReadExtraBytes != null)
-                {
-                    try
-                    {
-                        flags = HandleReadExtraBytes(extraBytesSpan);
-                    }
-                    catch (Exception e)
-                    {
-                        OnPointCloudReadError?.Invoke(this, new ErrorEventArgs(e));
-                    }
-                }
-
-                var flagsSpan = MemoryMarshal.Cast<uint, byte>(new uint[] { flags });
-
-                var currentMemoryPt = MemoryMarshal.Cast<VisualizationPoint, byte>(returnMemory.Span.Slice(pointCount, 1));
-                posSpan.CopyTo(currentMemoryPt[..]);
-                colorSpan.CopyTo(currentMemoryPt[posSpan.Length..]);
-                flagsSpan.CopyTo(currentMemoryPt.Slice(posSpan.Length + colorSpan.Length, Marshal.SizeOf<uint>()));
-
-                pointCount++;
-            }
-
-            return returnMemory;
+            return ReadRawNodeData(node);
         }
 
         private static void MapChildNodesRecursive(IPointCloudOctant octreeNode, PotreeNode potreeNode)
@@ -242,8 +193,8 @@ namespace Fusee.PointCloud.Potree.V2
                 if (potreeNode.Children[i] != null)
                 {
                     var potreeChild = potreeNode.Children[i];
-                    Guard.IsNotNull(potreeNode.Children[i].Aabb);
-                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size.y, new OctantId(potreeChild.Name));
+
+                    var octant = new PointCloudOctant(potreeNode.Children[i].Aabb.Center, potreeNode.Children[i].Aabb.Size, new OctantId(potreeChild.Name));
 
                     if (potreeChild.NodeType == NodeType.LEAF)
                     {
@@ -279,12 +230,8 @@ namespace Fusee.PointCloud.Potree.V2
 
             CacheMetadata(true);
 
-            PotreeData.Metadata.PrincipalAxisRotation = CalculatePrincipalAxis(PotreeData);
-
             return PotreeData;
         }
-
-
 
         /// <summary>
         /// Calculate the principal axis rotation from given data
@@ -292,26 +239,39 @@ namespace Fusee.PointCloud.Potree.V2
         ///    - Convert to covariance matrix
         ///    - Calculate principal axis
         /// </summary>
-        /// <param name="data">The potree data</param>
         /// <returns></returns>
-        private float4x4 CalculatePrincipalAxis(PotreeData data)
+        public float4x4 CalculatePrincipalAxis()
         {
-            using var allPoints = LoadVisualizationPoint(data.Hierarchy.Root);
-            using var positions = MemoryOwner<float3>.Allocate(allPoints.Length);
+            Guard.IsNotNull(PotreeData);
+            var potreeRootSize = (int)PotreeData.Hierarchy.Root.NumPoints * PotreeData.Metadata.PointSize;
+            using var mmf = LoadVisualizationPoint(PotreeData.Hierarchy.Root);
+            using var accessor = mmf.CreateViewAccessor();
 
-            var allPtsBytes = allPoints.Span.AsBytes();
+            var potreeRootRaw = new byte[potreeRootSize];
+            accessor.ReadArray(0, potreeRootRaw, 0, potreeRootSize);
 
-            // convert all points to byte, slice the position value (stride/offset) and copy to position array
-            for (var i = 0; i < allPoints.Length; i++)
+            var rootPoints = new float3[(int)PotreeData.Hierarchy.Root.NumPoints];
+            var pointCounter = 0;
+            var sizeOffloat3 = Marshal.SizeOf<int>() * 3;
+
+            for (var i = 0; i < potreeRootRaw.Length; i += PotreeData.Metadata.PointSize)
             {
-                positions.Span[i] = allPoints.Span[i].Position;
+                var posSlice = new Span<byte>(potreeRootRaw).Slice(i + offsetPosition, sizeOffloat3);
+                var pos = MemoryMarshal.Cast<byte, int>(posSlice);
+
+                float x = (float)(pos[0] * PotreeData.Metadata.Scale.x);
+                float y = (float)(pos[1] * PotreeData.Metadata.Scale.y);
+                float z = (float)(pos[2] * PotreeData.Metadata.Scale.z);
+
+                float3 position = (float4x4)Potree2Consts.YZflip * new float3(x, y, z);
+                rootPoints[pointCounter] = position;
+                pointCounter++;
             }
 
-            // dangerous, undefined behavior -> do not use the array values after this method
-            // this is irrelevant, as we use only a local variable
             try
             {
-                var eigen = new Eigen(positions.DangerousGetArray().Array);
+                var eigen = new Eigen(rootPoints);
+                PotreeData.Metadata.PrincipalAxisRotation = (float4x4)eigen.RotationMatrix;
                 return (float4x4)eigen.RotationMatrix;
             }
             catch (ArithmeticException ex)
@@ -330,7 +290,6 @@ namespace Fusee.PointCloud.Potree.V2
         public void ReadFile(PotreeData potreeData)
         {
             PotreeData = potreeData;
-
             CacheMetadata(true);
         }
 
@@ -367,16 +326,39 @@ namespace Fusee.PointCloud.Potree.V2
 
             LoadHierarchyRecursive(ref Hierarchy.Root, ref data, 0, Metadata.Hierarchy.FirstChunkSize);
 
+            //TODO: this is needed because the .NET Potree Converter is producing Nodes with 0 points right now. Remove when this is fixed.
+            CleanupHierarchy(Hierarchy.Root);
+
             Hierarchy.Nodes = new();
             Hierarchy.Root.Traverse(n => Hierarchy.Nodes.Add(n));
 
             Potree2Reader.FlipYZAxis(Metadata, Hierarchy);
 
-            // adapt the global AABB after conversion, this works with the current LAS writer
-            Metadata.BoundingBox.MinList = new List<double>(3) { Hierarchy.Root.Aabb.min.x + Metadata.Offset.x, Hierarchy.Root.Aabb.min.z + Metadata.Offset.z, Hierarchy.Root.Aabb.min.y + Metadata.Offset.y };
-            Metadata.BoundingBox.MaxList = new List<double>(3) { Hierarchy.Root.Aabb.max.x + Metadata.Offset.x, Hierarchy.Root.Aabb.max.z + Metadata.Offset.z, Hierarchy.Root.Aabb.max.y + Metadata.Offset.y };
-
             return (Metadata, Hierarchy);
+        }
+
+        private static void CleanupHierarchy(PotreeNode root)
+        {
+            Stack<PotreeNode> stack = new();
+            stack.Push(root);
+
+            while (stack.Count > 0)
+            {
+                PotreeNode node = stack.Pop();
+
+                for (int i = 0; i < node.Children.Length; i++)
+                {
+                    var child = node.Children[i];
+
+                    if (child != null)
+                    {
+                        if (child.NumPoints == 0)
+                            node.Children[i] = null;
+                        else
+                            stack.Push(child);
+                    }
+                }
+            }
         }
 
         private static PotreeMetadata LoadPotreeMetadata(string metadataFilepath)
@@ -408,9 +390,6 @@ namespace Fusee.PointCloud.Potree.V2
                 serializer.Serialize(writer, value);
             }
         }
-
-
-
 
         private static void LoadHierarchyRecursive(ref PotreeNode root, ref byte[] data, long offset, long size)
         {
@@ -518,6 +497,8 @@ namespace Fusee.PointCloud.Potree.V2
             }
             potreeMetadata.OffsetList = new List<double>(3) { potreeMetadata.Offset.x, potreeMetadata.Offset.z, potreeMetadata.Offset.y };
             potreeMetadata.ScaleList = new List<double>(3) { potreeMetadata.Scale.x, potreeMetadata.Scale.z, potreeMetadata.Scale.y };
+            potreeMetadata.BoundingBox.MaxList = new List<double>(3) { potreeMetadata.BoundingBox.Max.x, potreeMetadata.BoundingBox.Max.z, potreeMetadata.BoundingBox.Max.y };
+            potreeMetadata.BoundingBox.MinList = new List<double>(3) { potreeMetadata.BoundingBox.Min.x, potreeMetadata.BoundingBox.Min.z, potreeMetadata.BoundingBox.Min.y };
         }
 
         private static void CalculateAttributeOffsets(ref PotreeMetadata potreeMetadata)

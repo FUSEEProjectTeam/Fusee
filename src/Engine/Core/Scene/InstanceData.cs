@@ -70,7 +70,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The color of each instance. This array needs to be as long as <see cref="Amount"/>.
         /// </summary>
-        public float4[]? Colors
+        public uint[]? Colors
         {
             get => _colors;
             set
@@ -81,7 +81,7 @@ namespace Fusee.Engine.Core.Scene
                 DataChanged?.Invoke(this, new InstanceDataChangedEventArgs(this, InstanceDataChangedEnum.Colors));
             }
         }
-        private float4[]? _colors;
+        private uint[]? _colors;
 
         /// <summary>
         /// The amount of instances that will be rendered.
@@ -91,7 +91,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The unique id of this object.
         /// </summary>
-        public Suid SessionUniqueId { get; } = Suid.GenerateSuid();
+        public Guid UniqueId { get; } = Guid.NewGuid();
 
         /// <summary>
         /// Creates a new instance of type <see cref="InstanceData"/>. Will fail if the length of a provided array doesn't match <see cref="Amount"/>.
@@ -102,7 +102,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="scales">The scale of each instance.</param>
         /// <param name="colors">The color of each instance.</param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public InstanceData(int amount, float3[] positions, float3[]? rotations = null, float3[]? scales = null, float4[]? colors = null)
+        public InstanceData(int amount, float3[] positions, float3[]? rotations = null, float3[]? scales = null, uint[]? colors = null)
         {
             Amount = amount;
             Guard.IsEqualTo(positions.Length, Amount);

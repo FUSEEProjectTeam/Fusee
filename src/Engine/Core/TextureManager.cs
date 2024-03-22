@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace Fusee.Engine.Core
 
         private readonly Stack<ITextureHandle> _toBeDeletedTextureHandles = new();
 
-        private readonly Dictionary<Suid, Tuple<ITextureHandle, ITextureBase>> _identifierToTextureHandleDictionary = new();
+        private readonly Dictionary<Guid, Tuple<ITextureHandle, ITextureBase>> _identifierToTextureHandleDictionary = new();
 
         private void Remove(ITextureHandle textureHandle)
         {
@@ -20,8 +20,8 @@ namespace Fusee.Engine.Core
 
         private void TextureChanged(object? sender, TextureEventArgs textureDataEventArgs)
         {
-            if (!_identifierToTextureHandleDictionary.TryGetValue(textureDataEventArgs.Texture.SessionUniqueIdentifier,
-                out Tuple<ITextureHandle, ITextureBase>? toBeUpdatedTextureTuple))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(textureDataEventArgs.Texture.UniqueIdentifier,
+                out Tuple<ITextureHandle, ITextureBase> toBeUpdatedTextureTuple))
             {
                 throw new KeyNotFoundException("Texture is not registered.");
             }
@@ -34,7 +34,7 @@ namespace Fusee.Engine.Core
                     // Add the TextureHandle to the toBeDeleted Stack...
                     _toBeDeletedTextureHandles.Push(toBeUpdatedTextureTuple.Item1);
                     // remove the TextureHandle from the dictionary, the TextureHandle data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
-                    _identifierToTextureHandleDictionary.Remove(texture.SessionUniqueIdentifier);
+                    _identifierToTextureHandleDictionary.Remove(texture.UniqueIdentifier);
                     // add the identifier to the reusable identifiers stack
                     //_reusableIdentifiers.Push(textureDataEventArgs.Texture.Identifier);
                     break;
@@ -69,7 +69,7 @@ namespace Fusee.Engine.Core
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(texture.TextureHandle, texture));
+            _identifierToTextureHandleDictionary.Add(texture.UniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(texture.TextureHandle, texture));
 
             return textureHandle;
         }
@@ -86,7 +86,7 @@ namespace Fusee.Engine.Core
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(texture.InternalTextureHandle, texture));
+            _identifierToTextureHandleDictionary.Add(texture.UniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(texture.InternalTextureHandle, texture));
 
             return textureHandle;
         }
@@ -100,7 +100,7 @@ namespace Fusee.Engine.Core
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
 
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
+            _identifierToTextureHandleDictionary.Add(texture.UniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
 
             return textureHandle;
         }
@@ -114,7 +114,7 @@ namespace Fusee.Engine.Core
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
 
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
+            _identifierToTextureHandleDictionary.Add(texture.UniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
 
             return textureHandle;
         }
@@ -128,7 +128,7 @@ namespace Fusee.Engine.Core
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
 
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
+            _identifierToTextureHandleDictionary.Add(texture.UniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
 
             return textureHandle;
         }
@@ -141,7 +141,7 @@ namespace Fusee.Engine.Core
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
 
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
+            _identifierToTextureHandleDictionary.Add(texture.UniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
 
             return textureHandle;
         }
@@ -154,7 +154,7 @@ namespace Fusee.Engine.Core
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
 
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
+            _identifierToTextureHandleDictionary.Add(texture.UniqueIdentifier, new Tuple<ITextureHandle, ITextureBase>(textureHandle, texture));
 
             return textureHandle;
         }
@@ -170,7 +170,7 @@ namespace Fusee.Engine.Core
 
         public ITextureHandle GetTextureHandle(Texture texture)
         {
-            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureTouple))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.UniqueIdentifier, out var foundTextureTouple))
             {
                 return RegisterNewTexture(texture);
             }
@@ -179,7 +179,7 @@ namespace Fusee.Engine.Core
 
         public ITextureHandle GetTextureHandle(ExposedTexture texture)
         {
-            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureTouple))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.UniqueIdentifier, out var foundTextureTouple))
             {
                 return RegisterNewTexture(texture);
             }
@@ -188,7 +188,7 @@ namespace Fusee.Engine.Core
 
         public ITextureHandle GetTextureHandle(WritableMultisampleTexture texture)
         {
-            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureTouple))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.UniqueIdentifier, out var foundTextureTouple))
             {
                 return RegisterNewTexture(texture);
             }
@@ -197,7 +197,7 @@ namespace Fusee.Engine.Core
 
         public ITextureHandle GetTextureHandle(WritableCubeMap texture)
         {
-            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureTouple))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.UniqueIdentifier, out var foundTextureTouple))
             {
                 return RegisterNewTexture(texture);
             }
@@ -206,7 +206,7 @@ namespace Fusee.Engine.Core
 
         public ITextureHandle GetTextureHandle(WritableArrayTexture texture)
         {
-            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureTouple))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.UniqueIdentifier, out var foundTextureTouple))
             {
                 return RegisterNewTexture(texture);
             }
@@ -215,7 +215,7 @@ namespace Fusee.Engine.Core
 
         public ITextureHandle GetTextureHandle(WritableTexture texture)
         {
-            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureItem))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.UniqueIdentifier, out var foundTextureItem))
             {
                 return RegisterNewTexture(texture);
             }
@@ -224,7 +224,7 @@ namespace Fusee.Engine.Core
 
         public ITextureHandle GetTextureHandle(Texture1D texture)
         {
-            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureItem))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.UniqueIdentifier, out var foundTextureItem))
             {
                 return RegisterNewTexture(texture);
             }
