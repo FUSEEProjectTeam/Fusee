@@ -7,8 +7,6 @@ using Fusee.Engine.Imp.Graphics.Blazor;
 using Fusee.Serialization;
 using Microsoft.JSInterop;
 using ProtoBuf;
-using System;
-using System.Threading.Tasks;
 using Path = System.IO.Path;
 using Stream = System.IO.Stream;
 
@@ -26,7 +24,6 @@ namespace Fusee.Examples.Camera.Blazor
             // Disable colored console ouput, not supported
             Diagnostics.UseConsoleColor(false);
             Diagnostics.SetMinDebugOutputLoggingSeverityLevel(Diagnostics.SeverityLevel.Verbose);
-
 
             base.Run();
 
@@ -122,7 +119,7 @@ namespace Fusee.Examples.Camera.Blazor
         public override void Resize(int width, int height)
         {
             base.Resize(width, height);
-            _canvasImp.DoResize(width, height);
+            _canvasImp?.DoResize(width, height);
         }
     }
 }
