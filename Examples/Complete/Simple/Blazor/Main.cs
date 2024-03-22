@@ -7,8 +7,6 @@ using Fusee.Engine.Imp.Graphics.Blazor;
 using Fusee.Serialization;
 using Microsoft.JSInterop;
 using ProtoBuf;
-using System;
-using System.Threading.Tasks;
 using Path = System.IO.Path;
 using Stream = System.IO.Stream;
 
