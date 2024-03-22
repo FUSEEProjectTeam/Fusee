@@ -89,6 +89,8 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public double3 Max { get; private set; }
 
+        public bool IsProxy { get; }
+
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloudOctant"/>.
         /// </summary>

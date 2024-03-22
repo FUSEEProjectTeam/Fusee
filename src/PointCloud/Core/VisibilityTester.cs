@@ -76,10 +76,10 @@ namespace Fusee.PointCloud.Core
             {
                 _minProjSizeModifier = value;
 
-                if (Octree is PointCloudOctree pointCloudOctree)
+                if (Octree is IPointCloudOctree pointCloudOctree)
                 {
                     if (pointCloudOctree.Root != null)
-                        _minScreenProjectedSize = ((PointCloudOctant)pointCloudOctree.Root).ProjectedScreenSize * _minProjSizeModifier;
+                        _minScreenProjectedSize = (pointCloudOctree.Root).ProjectedScreenSize * _minProjSizeModifier;
                 }
             }
         }
@@ -98,7 +98,7 @@ namespace Fusee.PointCloud.Core
         private double _minScreenProjectedSize;
 
         // Allows traversal in order of screen projected size.
-        private readonly SortedDictionary<double, PointCloudOctant> _visibleNodesOrderedByProjectionSize;
+        private readonly SortedDictionary<double, IPointCloudOctant> _visibleNodesOrderedByProjectionSize;
 
         private double3 _camPosD;
         private float _minProjSizeModifier = 0.1f;
@@ -112,7 +112,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="tryAddPointsToCacheHandler">Inject a method that loads the points and adds the loaded points in to cache, if needed.</param>
         public VisibilityTester(IPointCloudOctree octree, TriggerPointLoading tryAddPointsToCacheHandler)
         {
-            _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, PointCloudOctant>();
+            _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, IPointCloudOctant>();
             var numberOfNodes = ((int)System.Math.Pow(8, octree.Depth + 1) - 1) / 7 - 1;
             VisibleNodes = new(numberOfNodes / 4);
             Octree = octree;
@@ -145,7 +145,14 @@ namespace Fusee.PointCloud.Core
             NumberOfVisiblePoints = 0;
             _visibleNodesOrderedByProjectionSize.Clear();
             VisibleNodes.Clear();
-            DetermineVisibilityForNode((PointCloudOctant)Octree.Root);
+            if (!Octree.Root.IsProxy)
+            {
+                DetermineVisibilityForNode(Octree.Root);
+            }
+            else
+            {
+                DetermineVisibilityForChildrenProxy(Octree.Root);
+            }
 
             while (_visibleNodesOrderedByProjectionSize.Count > 0 && NumberOfVisiblePoints <= PointThreshold)
             {
@@ -160,22 +167,44 @@ namespace Fusee.PointCloud.Core
                 _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
                 DetermineVisibilityForChildren(kvp.Value);
             }
+  
         }
 
-        private void DetermineVisibilityForChildren(PointCloudOctant node)
+        private void DetermineVisibilityForChildren(IPointCloudOctant node)
         {
+            if (node.IsLeaf)
+                return;
+
             // add child nodes to the heap of ordered nodes
             foreach (var child in node.Children)
             {
                 if (child == null)
                     continue;
 
-                DetermineVisibilityForNode((PointCloudOctant)child);
+                DetermineVisibilityForNode((IPointCloudOctant)child);
             }
         }
 
-        private void DetermineVisibilityForNode(PointCloudOctant node)
+        private void DetermineVisibilityForChildrenProxy(IPointCloudOctant node)
         {
+            if (node.IsLeaf)
+                return;
+
+            // add child nodes to the heap of ordered nodes
+            foreach (var child in node.Children)
+            {
+                if (child == null)
+                    continue;
+
+                DetermineVisibilityForNodeProxy((IPointCloudOctant)child);
+            }
+        }
+
+        private void DetermineVisibilityForNode(IPointCloudOctant node)
+        {
+            if (node.IsProxy)
+                return;
+
             var scale = float3.One; //Model.Scale()
             var translation = Model.Translation();
             // gets pixel radius of the node
@@ -198,10 +227,43 @@ namespace Fusee.PointCloud.Core
                 node.IsVisible = false;
         }
 
+        private void DetermineVisibilityForNodeProxy(IPointCloudOctant node)
+        {
+            if(node.IsProxy)
+            {
+                DetermineVisibilityForChildrenProxy(node);
+                return;
+            }
+            else if(node.NumberOfPointsInNode == 0) //"Dead" branch.
+                return;
+            
+            var scale = float3.One; //Model.Scale()
+            var translation = Model.Translation();
+            // gets pixel radius of the node
+            node.ComputeScreenProjectedSize(_camPosD, ViewportHeight, Fov, translation, scale);
+
+            //If node does not intersect the viewing frustum or is smaller than the minimal projected size:
+            //Return -> will not be added to _visibleNodesOrderedByProjectionSize -> traversal of this branch stops.
+            Guard.IsNotNull(RenderFrustum);
+            if (!node.InsideOrIntersectingFrustum(RenderFrustum, translation, scale) || node.ProjectedScreenSize < _minScreenProjectedSize)
+            {
+                node.IsVisible = false;
+                DetermineVisibilityForChildrenProxy(node);
+                return;
+            }
+
+            // Else if the node is visible and big enough, load if necessary and add to visible nodes.
+            // If by chance two same nodes have the same screen-projected-size can't add it to the dictionary....
+            if (_visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node))
+                node.IsVisible = true;
+            else
+                DetermineVisibilityForChildrenProxy(node);
+        }
+
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
         {
-            ((PointCloudOctant)Octree.Root).ComputeScreenProjectedSize(camPos, ViewportHeight, fov, Model.Translation(), float3.One);
-            _minScreenProjectedSize = ((PointCloudOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
+            (Octree.Root).ComputeScreenProjectedSize(camPos, ViewportHeight, fov, Model.Translation(), float3.One);
+            _minScreenProjectedSize = Octree.Root.ProjectedScreenSize * _minProjSizeModifier;
         }
     }
 }
