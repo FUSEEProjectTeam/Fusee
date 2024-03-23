@@ -1710,21 +1710,16 @@ Global
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
-		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{3DABC820-F218-41E0-A059-CBFA461FBB07}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
