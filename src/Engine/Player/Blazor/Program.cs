@@ -1,4 +1,4 @@
-using Fusee.Examples.Player.Blazor;
+using Fusee.Engine.Player.Blazor;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
