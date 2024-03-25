@@ -206,6 +206,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         internal RenderCanvasGameWindow _gameWindow;
 
+        //SLIRP
+        public GameWindow GW => _gameWindow;
+
         #endregion
 
         #region Constructors
