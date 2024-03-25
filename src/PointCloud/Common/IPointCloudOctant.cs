@@ -53,5 +53,10 @@ namespace Fusee.PointCloud.Common
         /// Proxy nodes can have children but don't necessarily have any payload.
         /// </summary>
         public bool IsProxy { get; }
+
+        /// <summary>
+        /// Support lazy loading.
+        /// </summary>
+        public bool Initialized { get; }
     }
 }

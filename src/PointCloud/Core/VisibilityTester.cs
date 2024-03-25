@@ -145,14 +145,7 @@ namespace Fusee.PointCloud.Core
             NumberOfVisiblePoints = 0;
             _visibleNodesOrderedByProjectionSize.Clear();
             VisibleNodes.Clear();
-            if (!Octree.Root.IsProxy)
-            {
-                DetermineVisibilityForNode(Octree.Root);
-            }
-            else
-            {
-                DetermineVisibilityForChildrenProxy(Octree.Root);
-            }
+            DetermineVisibilityForNode(Octree.Root);
 
             while (_visibleNodesOrderedByProjectionSize.Count > 0 && NumberOfVisiblePoints <= PointThreshold)
             {
@@ -160,14 +153,19 @@ namespace Fusee.PointCloud.Core
                 var kvp = _visibleNodesOrderedByProjectionSize.Last();
                 var octant = kvp.Value;
 
-                _triggerPointLoading(octant.OctId);
+                if (!octant.IsProxy)
+                {
+                    if (octant.Initialized)
+                    {
+                        NumberOfVisiblePoints += octant.NumberOfPointsInNode;
+                        _triggerPointLoading(octant.OctId);
+                        VisibleNodes.Add(octant.OctId);
+                    }
+                }
 
-                NumberOfVisiblePoints += octant.NumberOfPointsInNode;
-                VisibleNodes.Add(octant.OctId);
                 _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
                 DetermineVisibilityForChildren(kvp.Value);
             }
-  
         }
 
         private void DetermineVisibilityForChildren(IPointCloudOctant node)
@@ -185,26 +183,8 @@ namespace Fusee.PointCloud.Core
             }
         }
 
-        private void DetermineVisibilityForChildrenProxy(IPointCloudOctant node)
-        {
-            if (node.IsLeaf)
-                return;
-
-            // add child nodes to the heap of ordered nodes
-            foreach (var child in node.Children)
-            {
-                if (child == null)
-                    continue;
-
-                DetermineVisibilityForNodeProxy((IPointCloudOctant)child);
-            }
-        }
-
         private void DetermineVisibilityForNode(IPointCloudOctant node)
         {
-            if (node.IsProxy)
-                return;
-
             var scale = float3.One; //Model.Scale()
             var translation = Model.Translation();
             // gets pixel radius of the node
@@ -225,39 +205,6 @@ namespace Fusee.PointCloud.Core
                 node.IsVisible = true;
             else
                 node.IsVisible = false;
-        }
-
-        private void DetermineVisibilityForNodeProxy(IPointCloudOctant node)
-        {
-            if(node.IsProxy)
-            {
-                DetermineVisibilityForChildrenProxy(node);
-                return;
-            }
-            else if(node.NumberOfPointsInNode == 0) //"Dead" branch.
-                return;
-            
-            var scale = float3.One; //Model.Scale()
-            var translation = Model.Translation();
-            // gets pixel radius of the node
-            node.ComputeScreenProjectedSize(_camPosD, ViewportHeight, Fov, translation, scale);
-
-            //If node does not intersect the viewing frustum or is smaller than the minimal projected size:
-            //Return -> will not be added to _visibleNodesOrderedByProjectionSize -> traversal of this branch stops.
-            Guard.IsNotNull(RenderFrustum);
-            if (!node.InsideOrIntersectingFrustum(RenderFrustum, translation, scale) || node.ProjectedScreenSize < _minScreenProjectedSize)
-            {
-                node.IsVisible = false;
-                DetermineVisibilityForChildrenProxy(node);
-                return;
-            }
-
-            // Else if the node is visible and big enough, load if necessary and add to visible nodes.
-            // If by chance two same nodes have the same screen-projected-size can't add it to the dictionary....
-            if (_visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node))
-                node.IsVisible = true;
-            else
-                DetermineVisibilityForChildrenProxy(node);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)

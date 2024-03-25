@@ -133,7 +133,8 @@ namespace Fusee.PointCloud.Core
         {
             var size = numberOfPoints * metaData.PointSize;
             using var accessor = mmf.CreateViewAccessor();
-            var rawPoints = new byte[size];
+            var rawPoints = new byte[size];            
+
             accessor.ReadArray(0, rawPoints, 0, size);
 
             MemoryOwner<VisualizationPoint> visPoints = MemoryOwner<VisualizationPoint>.Allocate(numberOfPoints);

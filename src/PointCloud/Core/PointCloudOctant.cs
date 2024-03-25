@@ -96,6 +96,11 @@ namespace Fusee.PointCloud.Core
         public bool IsProxy { get; } = false;
 
         /// <summary>
+        /// Support lazy loading.
+        /// </summary>
+        public bool Initialized { get; } = true;
+
+        /// <summary>
         /// Creates a new instance of type <see cref="PointCloudOctant"/>.
         /// </summary>
         /// <param name="center">The center of this octant.</param>
