@@ -11,7 +11,6 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.1" />
 		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.1" />
-		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.1" />
 	</ItemGroup>
 
 	<ItemGroup>
