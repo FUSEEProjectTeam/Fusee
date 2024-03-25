@@ -89,7 +89,11 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public double3 Max { get; private set; }
 
-        public bool IsProxy { get; }
+        /// <summary>
+        /// True, if this octant is marked as proxy/helper node.
+        /// Proxy nodes can have children but don't necessarily have any payload.
+        /// </summary>
+        public bool IsProxy { get; } = false;
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloudOctant"/>.

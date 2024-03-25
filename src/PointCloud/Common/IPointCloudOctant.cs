@@ -19,8 +19,9 @@ namespace Fusee.PointCloud.Common
         /// <param name="camPos">Position of the camera.</param>
         /// <param name="screenHeight">Hight of the canvas.</param>
         /// <param name="fov">Field of view.</param>
+        /// <param name="translation">Translation of the octant.</param>
+        /// <param name="scale">Scale of the octant.</param>
         public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov, float3 translation, float3 scale);
-
 
         /// <summary>
         /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float, float3, float3)"/>.
@@ -42,8 +43,15 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         public bool IsVisible { get; set; }
 
+        /// <summary>
+        /// The globally unique identifier for this octant.
+        /// </summary>
         public OctantId OctId { get; }
 
+        /// <summary>
+        /// True, if this octant is marked as proxy/helper node.
+        /// Proxy nodes can have children but don't necessarily have any payload.
+        /// </summary>
         public bool IsProxy { get; }
     }
 }
