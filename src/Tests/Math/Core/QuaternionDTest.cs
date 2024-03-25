@@ -557,17 +557,17 @@ namespace Fusee.Tests.Math.Core
             yield return new object[]
             {
                 new QuaternionD(System.Math.Sqrt(0.5), 0, 0,  System.Math.Sqrt(0.5)),
-                new double4(1, 0, 0, M.DegreesToRadiansD((double)90))
+                new double4(1, 0, 0, M.DegreesToRadiansD(90))
             };
             yield return new object[]
             {
                 new QuaternionD(0, System.Math.Sqrt(0.5), 0,  System.Math.Sqrt(0.5)),
-                new double4(0, 1, 0, M.DegreesToRadiansD((double)90))
+                new double4(0, 1, 0, M.DegreesToRadiansD(90))
             };
             yield return new object[]
             {
                 new QuaternionD(0, 0, System.Math.Sqrt(0.5),  System.Math.Sqrt(0.5)),
-                new double4(0, 0, 1, M.DegreesToRadiansD((double)90))
+                new double4(0, 0, 1, M.DegreesToRadiansD(90))
             };
         }
 

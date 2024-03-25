@@ -9,7 +9,7 @@ namespace Fusee.Base.Imp.Android
     /// </summary>
     public class IOImp : IIOImp
     {
-        readonly Context _androidContext;
+        private readonly Context _androidContext;
 
         /// <summary>
         /// Android implementation for IO related functionality.

@@ -126,6 +126,7 @@ namespace Fusee.PointCloud.Core.Scene
 
             foreach (var res in results)
             {
+                Guard.IsNotNull(res.Mesh.Vertices);
                 var pickRes = new PointCloudPickResult
                 {
                     Node = null,

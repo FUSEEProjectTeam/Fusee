@@ -926,7 +926,7 @@ namespace Fusee.Tests.Math.Core
         {
             var mat = new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-            var actual = (double4x4)mat;
+            var actual = mat;
 
             Assert.Equal(new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), actual);
         }

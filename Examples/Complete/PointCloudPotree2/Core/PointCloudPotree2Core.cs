@@ -60,7 +60,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private PointCloudComponent _pointCloud;
         private SceneNode _pointCloudNode;
         private SceneNode _camNode;
-        private Potree2Reader _potreeReader;
+        private readonly Potree2Reader _potreeReader;
         private PotreeData _potreeData;
 
         private ScenePicker _picker;

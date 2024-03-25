@@ -171,7 +171,7 @@ namespace Fusee.Engine.Core.Scene
             return ProjectionMethod switch
             {
                 ProjectionMethod.Orthographic => float4x4.CreateOrthographic(viewport.z * Scale, viewport.w * Scale, ClippingPlanes.x, ClippingPlanes.y),
-                _ => float4x4.CreatePerspectiveFieldOfView(Fov, System.Math.Abs((float)viewport.z / viewport.w), ClippingPlanes.x, ClippingPlanes.y),
+                _ => float4x4.CreatePerspectiveFieldOfView(Fov, System.Math.Abs(viewport.z / viewport.w), ClippingPlanes.x, ClippingPlanes.y),
             };
         }
 

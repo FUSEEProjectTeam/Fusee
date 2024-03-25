@@ -67,13 +67,13 @@ namespace Fusee.Engine.Core.ShaderShards
             return string.Join("\n", refinedShader);
         }
 
-        private static Dictionary<string, string> GetFieldValues(Type type)
+        private static Dictionary<string, string?> GetFieldValues(Type type)
         {
             return type
                       .GetProperties(BindingFlags.Public | BindingFlags.Static)
                       .Where(f => f.PropertyType == typeof(string))
                       .ToDictionary(f => f.Name,
-                                    f => (string)f.GetValue(null));
+                                    f => (string?)f.GetValue(null));
         }
     }
 }

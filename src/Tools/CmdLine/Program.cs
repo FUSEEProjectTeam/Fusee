@@ -4,19 +4,19 @@ using System;
 
 namespace Fusee.Tools.CmdLine
 {
-    class Program
+    internal class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, ProtoSchema>(args)
                 .WithParsed<Pack>(pack =>
                 {
                     pack.Run();
                 })
-                .WithParsed<Player>(player =>
+                .WithParsed<Player>(async player =>
                 {
-                    player.Run();
+                    await player.Run();
                 })
                 .WithParsed<ProtoSchema>(protoschema =>
                 {
@@ -37,7 +37,7 @@ namespace Fusee.Tools.CmdLine
         }
     }
 
-    enum ErrorCode : int
+    internal enum ErrorCode : int
     {
         Success,
         CommandLineSyntax = -1,

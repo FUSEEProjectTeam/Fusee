@@ -159,19 +159,19 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Returns the center of the bounding box
         /// </summary>
-        public double3 Center => (max + min) * 0.5;
+        public readonly double3 Center => (max + min) * 0.5;
 
         /// <summary>
         ///     Returns the with, height and depth of the box in x, y and z
         /// </summary>
-        public double3 Size => (max - min);
+        public readonly double3 Size => (max - min);
 
         /// <summary>
         ///     Check if this AABB intersects with another
         /// </summary>
         /// <param name="b"></param>
         /// <returns></returns>
-        public bool Intersects(AABBd b)
+        public readonly bool Intersects(AABBd b)
         {
             return (min.x <= b.max.x && max.x >= b.min.x) &&
            (min.y <= b.max.y && max.y >= b.min.y) &&
@@ -230,7 +230,7 @@ namespace Fusee.Math.Core
         /// <returns></returns>
         public bool IntersectRay(RayD ray)
         {
-            if (this.Intersects(ray.Origin))
+            if (Intersects(ray.Origin))
                 return true;
 
             double t1 = (min[0] - ray.Origin[0]) * ray.Inverse[0];

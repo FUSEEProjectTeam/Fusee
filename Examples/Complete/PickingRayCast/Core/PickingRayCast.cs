@@ -200,7 +200,7 @@ namespace Fusee.Examples.PickingRayCast.Core
             Present();
         }
 
-        private SceneContainer CreateScene()
+        private static SceneContainer CreateScene()
         {
             var scene = new SceneContainer
             {

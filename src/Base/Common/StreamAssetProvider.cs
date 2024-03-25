@@ -56,21 +56,19 @@ namespace Fusee.Base.Common
         /// <exception cref="System.ArgumentNullException"></exception>
         public object GetAsset(string id, Type type)
         {
-            using (Stream stream = GetStream(id))
+            using Stream stream = GetStream(id);
+            if (stream == null)
             {
-                if (stream == null)
-                {
-                    return null;
-                }
+                return null;
+            }
 
-                if (_assetHandlers.TryGetValue(type, out AssetHandler handler))
+            if (_assetHandlers.TryGetValue(type, out AssetHandler handler))
+            {
+                object ret;
+                if ((ret = handler.Decoder(id, stream)) != null)
                 {
-                    object ret;
-                    if ((ret = handler.Decoder(id, stream)) != null)
-                    {
-                        // Return in using will dispose the used object, which is what we want...
-                        return ret;
-                    }
+                    // Return in using will dispose the used object, which is what we want...
+                    return ret;
                 }
             }
             return null;

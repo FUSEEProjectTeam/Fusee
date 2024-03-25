@@ -15,12 +15,12 @@ namespace Fusee.PointCloud.Core.Scene
     /// </summary>
     public class PointCloudRenderModule : IRendererModule
     {
-        RenderContext _rc;
+        private RenderContext? _rc;
 
         /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
         /// </summary>
-        private RendererState _state;
+        private RendererState? _state;
 
         /// <summary>
         /// The RenderLayer this renderer should render.
@@ -30,7 +30,7 @@ namespace Fusee.PointCloud.Core.Scene
         /// <summary>
         /// The RenderLayer this renderer should render.
         /// </summary>
-        private Camera _camera;
+        private Camera? _camera;
 
         private readonly bool _isForwardModule;
 

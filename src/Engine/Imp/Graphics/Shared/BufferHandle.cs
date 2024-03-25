@@ -17,12 +17,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// <summary>
     /// FrameBuffer for OpenTK, an integer value is used as a handle
     /// </summary>
-    class FrameBufferHandle : IBufferHandle
+    internal class FrameBufferHandle : IBufferHandle
     {
         internal int Handle = -1;
     }
 
-    class StorageBufferHandle : IBufferHandle
+    internal class StorageBufferHandle : IBufferHandle
     {
         internal int Handle = -1;
     }

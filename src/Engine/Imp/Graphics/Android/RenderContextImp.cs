@@ -1322,7 +1322,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="instanceImp">The <see cref="IInstanceDataImp"/> instance.</param>
         /// <param name="instanceColors">The instance colors.</param>
-        public void SetInstanceColor(IInstanceDataImp instanceImp, float4[] instanceColors)
+        public void SetInstanceColor(IInstanceDataImp instanceImp, uint[] instanceColors)
         {
             if (instanceColors == null)
                 return;
@@ -1334,7 +1334,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             //TODO: can we use AttributeLocations.Color?
-            int sizeOfCol = sizeof(float) * 4;
+            int sizeOfCol = sizeof(uint);
             int iColorBytes = instanceColors.Length * sizeOfCol;
             int instanceColorBo = ((InstanceDataImp)instanceImp).InstanceColorBufferObject;
             if (instanceColorBo == 0)

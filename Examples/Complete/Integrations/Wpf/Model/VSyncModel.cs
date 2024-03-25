@@ -2,7 +2,7 @@
 
 namespace Fusee.Examples.Integrations.Wpf.Model
 {
-    class VSyncModel : INotifyPropertyChanged
+    internal class VSyncModel : INotifyPropertyChanged
     {
         private bool _vsync;
 

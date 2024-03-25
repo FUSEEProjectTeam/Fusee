@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Common;
+using CommunityToolkit.Diagnostics;
+using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
 
@@ -17,7 +18,7 @@ namespace Fusee.Engine.Core
             _renderContextImp.RemoveTextureHandle(textureHandle);
         }
 
-        private void TextureChanged(object sender, TextureEventArgs textureDataEventArgs)
+        private void TextureChanged(object? sender, TextureEventArgs textureDataEventArgs)
         {
             if (!_identifierToTextureHandleDictionary.TryGetValue(textureDataEventArgs.Texture.UniqueIdentifier,
                 out Tuple<ITextureHandle, ITextureBase> toBeUpdatedTextureTuple))
@@ -47,9 +48,11 @@ namespace Fusee.Engine.Core
                     }
                     break;
                 case TextureChangedEnum.FilterModeChanged:
+                    Guard.IsNotNull(sender);
                     _renderContextImp.SetTextureFilterMode(toBeUpdatedTextureTuple.Item1, ((ITextureBase)sender).FilterMode);
                     break;
                 case TextureChangedEnum.WrapModeChanged:
+                    Guard.IsNotNull(sender);
                     _renderContextImp.SetTextureWrapMode(toBeUpdatedTextureTuple.Item1, ((ITextureBase)sender).WrapMode);
                     break;
                 default:

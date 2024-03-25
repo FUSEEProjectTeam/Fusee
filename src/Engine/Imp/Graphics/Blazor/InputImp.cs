@@ -538,24 +538,22 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             IJSInProcessObjectReference _GamePad;
             IJSInProcessObjectReference Axes;
-            using (IJSInProcessObjectReference navigator = runtime.GetGlobalObject<IJSInProcessObjectReference>("navigator"))
+            using IJSInProcessObjectReference navigator = runtime.GetGlobalObject<IJSInProcessObjectReference>("navigator");
+            using IJSInProcessObjectReference Gamepads = navigator.Invoke<IJSInProcessObjectReference>("getGamepads");
+            using (_GamePad = Gamepads.GetObjectProperty<IJSInProcessObjectReference>(DeviceID.ToString()))
             {
-                using IJSInProcessObjectReference Gamepads = navigator.Invoke<IJSInProcessObjectReference>("getGamepads");
-                using (_GamePad = Gamepads.GetObjectProperty<IJSInProcessObjectReference>(DeviceID.ToString()))
+                if (_GamePad != null)
                 {
-                    if (_GamePad != null)
+                    using (Axes = _GamePad.GetObjectProperty<IJSInProcessObjectReference>("axes"))
                     {
-                        using (Axes = _GamePad.GetObjectProperty<IJSInProcessObjectReference>("axes"))
+                        return iAxisId switch
                         {
-                            return iAxisId switch
-                            {
-                                0 => Axes.GetObjectProperty<float>("[0]"),
-                                1 => Axes.GetObjectProperty<float>("[1]"),
-                                2 => Axes.GetObjectProperty<float>("[2]"),
-                                3 => Axes.GetObjectProperty<float>("[3]"),
-                                _ => throw new InvalidOperationException($"Unsupported axis {iAxisId}."),
-                            };
-                        }
+                            0 => Axes.GetObjectProperty<float>("[0]"),
+                            1 => Axes.GetObjectProperty<float>("[1]"),
+                            2 => Axes.GetObjectProperty<float>("[2]"),
+                            3 => Axes.GetObjectProperty<float>("[3]"),
+                            _ => throw new InvalidOperationException($"Unsupported axis {iAxisId}."),
+                        };
                     }
                 }
             }

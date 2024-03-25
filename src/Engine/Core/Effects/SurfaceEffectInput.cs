@@ -44,7 +44,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Event to notify a <see cref="SurfaceEffectBase"/> about a changed value of a property of this class.
         /// </summary>
-        public event EventHandler<SurfaceEffectEventArgs> PropertyChanged;
+        public event EventHandler<SurfaceEffectEventArgs>? PropertyChanged;
 
         /// <summary>
         /// This method needs to be called by the setter of each property.
@@ -85,19 +85,19 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The albedo texture.
         /// </summary>
-        public Texture AlbedoTex
+        public Texture? AlbedoTex
         {
             get => _albedoTex;
             set
             {
-                if (value != _albedoTex)
+                if (value != null && value != _albedoTex)
                 {
                     _albedoTex = value;
                     NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
                 }
             }
         }
-        private Texture _albedoTex;
+        private Texture? _albedoTex;
 
         /// <summary>
         /// The normal texture.
@@ -170,19 +170,19 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The normal texture.
         /// </summary>
-        public Texture NormalTex
+        public Texture? NormalTex
         {
             get => _normalTex;
             set
             {
-                if (value != _normalTex)
+                if (value != null && value != _normalTex)
                 {
                     _normalTex = value;
                     NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
                 }
             }
         }
-        private Texture _normalTex;
+        private Texture? _normalTex;
 
         /// <summary>
         /// The normal texture.
@@ -369,19 +369,19 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The albedo texture.
         /// </summary>
-        public Texture ThicknessMap
+        public Texture? ThicknessMap
         {
             get => _thicknessMap;
             set
             {
-                if (value != _thicknessMap)
+                if (value != null && value != _thicknessMap)
                 {
                     _thicknessMap = value;
                     NotifyValueChanged(_thicknessMap.GetType(), nameof(ThicknessMap), _thicknessMap);
                 }
             }
         }
-        private Texture _thicknessMap;
+        private Texture? _thicknessMap;
 
         /// <summary>
         /// Creates a new instance of type <see cref="BRDFInput"/>.

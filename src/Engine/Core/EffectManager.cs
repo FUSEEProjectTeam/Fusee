@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Effects;
+using Fusee.Base.Core;
+using Fusee.Engine.Core.Effects;
 using System;
 using System.Collections.Generic;
 
@@ -10,13 +11,15 @@ namespace Fusee.Engine.Core
         private readonly Stack<Effect> _effectsToBeDeleted = new();
         private readonly Dictionary<Guid, Effect> _allEffects = new();
 
-        private void EffectChanged(object sender, EffectManagerEventArgs args)
+        private void EffectChanged(object? sender, EffectManagerEventArgs args)
         {
             if (args == null || sender == null) return;
 
-            // ReSharper disable once InconsistentNaming
-            var senderSF = sender as Effect;
-
+            if (sender is not Effect senderSF)
+            {
+                Diagnostics.Warn("Casting changed effect to type Effect failed!");
+                return;
+            }
             switch (args.Changed)
             {
                 case UniformChangedEnum.Dispose:

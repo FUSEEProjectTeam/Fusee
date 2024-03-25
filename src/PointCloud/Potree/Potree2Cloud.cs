@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.HighPerformance.Buffers;
+using CommunityToolkit.HighPerformance.Buffers;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;

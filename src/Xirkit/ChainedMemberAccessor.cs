@@ -14,8 +14,8 @@ namespace Fusee.Xirkit
     public class ChainedMemberAccessor<TPin, TObj> : IMemberAccessor<TPin>
     {
         //private readonly PropertyInfo _propertyInfo;
-        readonly Converter<TPin, TObj> _p2o;
-        readonly Converter<TObj, TPin> _o2p;
+        private readonly Converter<TPin, TObj> _p2o;
+        private readonly Converter<TObj, TPin> _o2p;
         private readonly MemberInfo[] _miList;
         private readonly object[] _oList;
 

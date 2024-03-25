@@ -1538,7 +1538,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Checks if this matrix is invertible.
         /// </summary>
-        /// <param name="mat">The matrix.</param>       
+        /// <param name="mat">The matrix.</param>
         public static bool IsInvertable(double4x4 mat)
         {
             return mat.Determinant != 0;
@@ -1548,7 +1548,7 @@ namespace Fusee.Math.Core
         /// Checks if this matrix is invertible.
         /// </summary>
         /// <param name="mat">The matrix.</param>
-        /// <param name="det">The determinant of the matrix.</param>       
+        /// <param name="det">The determinant of the matrix.</param>
         public static bool IsInvertable(double4x4 mat, out double det)
         {
             det = mat.Determinant;
@@ -1907,7 +1907,7 @@ namespace Fusee.Math.Core
 
         #endregion Transpose
 
-        #region Transform        
+        #region Transform
 
         /// <summary>
         /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
@@ -2411,7 +2411,7 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
-        /// </summary>       
+        /// </summary>
         public bool IsAffine =>
                 // Column order notation
                 (Row4 == double4.UnitW);

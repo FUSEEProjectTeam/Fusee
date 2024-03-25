@@ -249,7 +249,7 @@ namespace Fusee.Engine.Core
             _canvasHeight = canvasHeight;
 
             float2 pickPosClip;
-            if (_prePassResults.Count() == 0)
+            if (!_prePassResults.Any())
             {
                 Diagnostics.Error("No camera from a PrePassVisitor found. Picking not possible!");
                 return null;
@@ -271,7 +271,7 @@ namespace Fusee.Engine.Core
                 if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos))
                     continue;
 
-                if (pickCam == default || camRes.Camera.Layer > pickCam.Camera.Layer)
+                if (pickCam == default(CameraResult) || camRes.Camera.Layer > pickCam.Camera.Layer)
                 {
                     pickCam = camRes;
                     pickCamRect = camRect;
@@ -779,7 +779,7 @@ namespace Fusee.Engine.Core
 
             if (mesh is not Primitives.Plane && (mesh.BoundingBox.Size.x <= 0f || mesh.BoundingBox.Size.y <= 0f || mesh.BoundingBox.Size.z <= 0f))
             {
-                Diagnostics.Warn($"Size of current bounding box is 0 for one or more dimensions. Picking not possible.");
+                Diagnostics.Debug($"Size of current bounding box is 0 for one or more dimensions. Picking not possible.");
                 return;
             }
 

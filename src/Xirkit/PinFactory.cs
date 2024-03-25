@@ -10,7 +10,7 @@ namespace Fusee.Xirkit
     /// depending on whether the member is a property (with a setter and getter) or a simple field.
     /// </summary>
 
-    static class PinFactory
+    internal static class PinFactory
     {
         public static IOutPin CreateOutPin(Node n, String member)
         {
@@ -196,8 +196,8 @@ namespace Fusee.Xirkit
 
             // From int
             AddConverter<int, int>(x => x);
-            AddConverter<int, float>(x => (float)x);
-            AddConverter<int, double>(x => (double)x);
+            AddConverter<int, float>(x => x);
+            AddConverter<int, double>(x => x);
             AddConverter<int, bool>(x => x != 0);
             AddConverter<int, string>(x => x.ToString());
             AddConverter<int, double2>(x => new double2(x, 0));
@@ -317,7 +317,7 @@ namespace Fusee.Xirkit
 
             // From float2
             AddConverter<float2, int>(v => (int)v.x);
-            AddConverter<float2, float>(v => (float)v.x);
+            AddConverter<float2, float>(v => v.x);
             AddConverter<float2, double>(v => v.x);
             AddConverter<float2, bool>(v => (v.x != 0.0 || v.y != 0.0));
             AddConverter<float2, string>(v => v.ToString());
@@ -332,7 +332,7 @@ namespace Fusee.Xirkit
 
             // From float3
             AddConverter<float3, int>(v => (int)v.x);
-            AddConverter<float3, float>(v => (float)v.x);
+            AddConverter<float3, float>(v => v.x);
             AddConverter<float3, double>(v => v.x);
             AddConverter<float3, bool>(v => (v.x != 0.0 || v.y != 0.0 || v.z != 0.0));
             AddConverter<float3, string>(v => v.ToString());
@@ -342,7 +342,7 @@ namespace Fusee.Xirkit
             AddConverter<float3, double4x4>(v => new double4x4(v.x, v.y, v.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
             AddConverter<float3, float2>(v => new float2(v.x, v.y));
             AddConverter<float3, float3>(v => v);
-            AddConverter<float3, float4>(v => new float4(v.x, v.y, (float)v.z, 1));
+            AddConverter<float3, float4>(v => new float4(v.x, v.y, v.z, 1));
             AddConverter<float3, float4x4>(v => new float4x4(v.x, v.y, v.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From float4
@@ -394,7 +394,7 @@ namespace Fusee.Xirkit
 
         private static void AddConverter<TParm, TRet>(Math.Core.Converter<TParm, TRet> c)
         {
-            Delegate d = (Delegate)c;
+            Delegate d = c;
             if (!_convMap.TryGetValue(typeof(TParm), out _))
                 _convMap[typeof(TParm)] = new Dictionary<Type, Delegate>();
 

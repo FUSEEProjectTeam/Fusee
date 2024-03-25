@@ -3,7 +3,7 @@
 namespace Fusee.Serialization.V1
 {
     /// <summary>
-    /// Marker component (contains no data). If contained within a node, the node 
+    /// Marker component (contains no data). If contained within a node, the node
     /// serves as a bone in a bone animation.
     /// </summary>
     [ProtoContract]

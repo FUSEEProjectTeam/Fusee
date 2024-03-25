@@ -4,10 +4,10 @@ namespace Fusee.Engine.Core
 {
     /// <summary>
     /// The Time class provides all time information. Time is a staticton (a singleton with an additional
-    /// static interface). 
+    /// static interface).
     /// </summary>
     /// <remarks>
-    /// Use the input instance in cases where you actually need an 
+    /// Use the input instance in cases where you actually need an
     /// object to pass around (although there is no such use case in FUSEE code at all).
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Time</code> to
@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core
     {
         #region Fields
 
-        private static Time _instance;
+        private static Time? _instance;
 
         private float _deltaTime;
         private float _time;
@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core
         /// <remarks>
         /// 0 the time stops.
         /// 1 normal time speed.
-        /// Smaller then 1 time passes slower. 
+        /// Smaller then 1 time passes slower.
         /// Bigger then 1 time passes faster.
         /// </remarks>
         public float InstTimeScale
@@ -158,7 +158,7 @@ namespace Fusee.Engine.Core
         /// <remarks>
         /// 0 the time stops.
         /// 1 normal time speed.
-        /// Smaller then 1 time passes slower. 
+        /// Smaller then 1 time passes slower.
         /// Bigger then 1 time passes faster.
         /// </remarks>
         public static float TimeScale

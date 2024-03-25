@@ -38,12 +38,12 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Point cloud name
         /// </summary>
-        public string Name { get; }
+        public string? Name { get; }
 
         /// <summary>
         /// Description of point cloud
         /// </summary>
-        public string Description { get; }
+        public string? Description { get; }
 
         /// <summary>
         /// How many points does this point cloud contain
@@ -53,12 +53,12 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// A possible projection method
         /// </summary>
-        public string Projection { get; }
+        public string? Projection { get; }
 
         /// <summary>
         /// The point cloud hierarchy information
         /// </summary>
-        public IPointWriterHierarchy Hierarchy { get; }
+        public IPointWriterHierarchy? Hierarchy { get; }
 
         /// <summary>
         /// Global offset of each point
@@ -86,7 +86,7 @@ namespace Fusee.PointCloud.Common
         /// The encoding of every point, as we save the point cloud as <see cref="sbyte"/> elements
         /// Default is <see cref="Encoding.Default"/>
         /// </summary>
-        public string Encoding { get; }
+        public string? Encoding { get; }
 
         /// <summary>
         /// The size of one point in bytes (for sanity checks later on, compare with e. g. LASPoint type data)
@@ -102,11 +102,11 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// The necessary metadata
         /// </summary>
-        IPointWriterMetadata Metadata { get; }
+        IPointWriterMetadata? Metadata { get; }
 
         /// <summary>
         /// The file to write to
         /// </summary>
-        FileInfo SavePath { get; }
+        FileInfo? SavePath { get; }
     }
 }

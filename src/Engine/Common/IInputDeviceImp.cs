@@ -10,7 +10,7 @@ namespace Fusee.Engine.Common
     public enum DeviceCategory
     {
         /// <summary>
-        /// The input device is a mouse. A mouse exhibits two axes 'X' and 'Y', one axis 'Wheel', 
+        /// The input device is a mouse. A mouse exhibits two axes 'X' and 'Y', one axis 'Wheel',
         /// three buttons 'Left', 'Middle', and 'Right'.
         /// </summary>
         Mouse,
@@ -55,7 +55,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         Position,
         /// <summary>
-        /// The axis' values rather describe velocities to be applied to objects like positional or angular speed. 
+        /// The axis' values rather describe velocities to be applied to objects like positional or angular speed.
         /// </summary>
         Speed,
         /// <summary>
@@ -99,7 +99,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         Unbound,
         /// <summary>
-        /// The axis values are bound by constant values. The values can be read from <see cref="AxisDescription.MaxValueOrAxis"/> 
+        /// The axis values are bound by constant values. The values can be read from <see cref="AxisDescription.MaxValueOrAxis"/>
         /// and <see cref="AxisDescription.MinValueOrAxis"/>.
         /// </summary>
         Constant,
@@ -134,8 +134,8 @@ namespace Fusee.Engine.Common
         /// </summary>
         public AxisNature Nature;
         /// <summary>
-        /// Indicating if the axis' values are within a defined range. Depending on this value 
-        /// <see cref="MinValueOrAxis"/> and <see cref="MaxValueOrAxis"/> contain either constant range bounds 
+        /// Indicating if the axis' values are within a defined range. Depending on this value
+        /// <see cref="MinValueOrAxis"/> and <see cref="MaxValueOrAxis"/> contain either constant range bounds
         /// or other axes' Ids delivering the (possibly changing) range values.
         /// </summary>
         public AxisBoundedType Bounded;
@@ -189,7 +189,7 @@ namespace Fusee.Engine.Common
 
     /// <summary>
     /// Information about a button exhibited by a device. Contains the Name of the button and the Id that
-    /// can be used to access the button state. 
+    /// can be used to access the button state.
     /// </summary>
     public struct ButtonDescription
     {
@@ -229,7 +229,7 @@ namespace Fusee.Engine.Common
     public class ButtonValueChangedArgs : EventArgs
     {
         /// <summary>
-        /// The new button state 
+        /// The new button state
         /// </summary>
         public bool Pressed;
         /// <summary>
@@ -240,7 +240,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// Implementors represent a physical input device. 
+    /// Implementors represent a physical input device.
     /// </summary>
     public interface IInputDeviceImp
     {
@@ -280,7 +280,7 @@ namespace Fusee.Engine.Common
         /// </value>
         int AxesCount { get; }
         /// <summary>
-        /// Gets a description of the axis. This value can be used in user setup-dialogs or 
+        /// Gets a description of the axis. This value can be used in user setup-dialogs or
         /// to match axes of devices of different categories.
         /// </summary>
         /// <value>
@@ -300,10 +300,10 @@ namespace Fusee.Engine.Common
         float GetAxis(int iAxisId);
 
         /// <summary>
-        /// Occurs on value changes of axes exhibited by this device. 
+        /// Occurs on value changes of axes exhibited by this device.
         /// Only applies for axes where the <see cref="AxisImpDescription.PollAxis"/> is set to false.
         /// </summary>
-        event EventHandler<AxisValueChangedArgs> AxisValueChanged;
+        event EventHandler<AxisValueChangedArgs>? AxisValueChanged;
 
         /// <summary>
         ///     Gets the number of buttons supported by this device.
@@ -313,7 +313,7 @@ namespace Fusee.Engine.Common
         /// </value>
         int ButtonCount { get; }
         /// <summary>
-        ///     Gets information about of the specified button. This value can be used in user setup-dialogs or 
+        ///     Gets information about of the specified button. This value can be used in user setup-dialogs or
         ///     to match buttons of devices of different categories.
         /// </summary>
         /// <value>
@@ -327,7 +327,7 @@ namespace Fusee.Engine.Common
         /// <returns>true if the button is currently pressed. false, if the button is currently released.</returns>
         bool GetButton(int iButtonId);
 
-        /// Occurs on state changes of buttons exhibited by this device. 
+        /// Occurs on state changes of buttons exhibited by this device.
         /// Only applies for buttons where the <see cref="ButtonImpDescription.PollButton"/> is set to false.
         event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
 

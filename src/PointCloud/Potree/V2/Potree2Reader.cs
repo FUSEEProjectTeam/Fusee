@@ -114,6 +114,10 @@ namespace Fusee.PointCloud.Potree.V2
         {
             Guard.IsNotNull(PotreeData);
             Guard.IsNotNull(PotreeData.Metadata);
+            Guard.IsNotNull(PotreeData.Hierarchy);
+            Guard.IsNotNull(PotreeData.Hierarchy.Root);
+            Guard.IsNotNull(PotreeData.Hierarchy.Root.Aabb);
+            Guard.IsNotNull(PotreeData.Metadata.Hierarchy);
 
             var center = PotreeData.Hierarchy.Root.Aabb.Center;
             var size = PotreeData.Hierarchy.Root.Aabb.Size;//System.Math.Max(System.Math.Max(PotreeData.Hierarchy.Root.Aabb.Size.x, PotreeData.Hierarchy.Root.Aabb.Size.y), PotreeData.Hierarchy.Root.Aabb.Size.z);
@@ -291,7 +295,7 @@ namespace Fusee.PointCloud.Potree.V2
 
         #region LoadHierarchy
 
-        private (PotreeMetadata, PotreeHierarchy) LoadHierarchy(string folderPath)
+        private static (PotreeMetadata, PotreeHierarchy) LoadHierarchy(string folderPath)
         {
             var metadataFilePath = Path.Combine(folderPath, Potree2Consts.MetadataFileName);
             var hierarchyFilePath = Path.Combine(folderPath, Potree2Consts.HierarchyFileName);
@@ -328,7 +332,7 @@ namespace Fusee.PointCloud.Potree.V2
             Hierarchy.Nodes = new();
             Hierarchy.Root.Traverse(n => Hierarchy.Nodes.Add(n));
 
-            FlipYZAxis(Metadata, Hierarchy);
+            Potree2Reader.FlipYZAxis(Metadata, Hierarchy);
 
             return (Metadata, Hierarchy);
         }
@@ -376,12 +380,12 @@ namespace Fusee.PointCloud.Potree.V2
                 return objectType == typeof(IPointWriterHierarchy);
             }
 
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
             {
                 return serializer.Deserialize(reader, typeof(PotreeSettingsHierarchy));
             }
 
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
             {
                 serializer.Serialize(writer, value);
             }
@@ -400,8 +404,7 @@ namespace Fusee.PointCloud.Potree.V2
             for (int i = 0; i < numNodes; i++)
             {
                 var currentNode = nodes[i];
-                if (currentNode == null)
-                    currentNode = new PotreeNode();
+                currentNode ??= new PotreeNode();
 
                 ulong offsetNode = (ulong)offset + (ulong)(i * bytesPerNode);
 
@@ -485,9 +488,9 @@ namespace Fusee.PointCloud.Potree.V2
             }
         }
 
-        private void FlipYZAxis(PotreeMetadata potreeMetadata, PotreeHierarchy potreeHierarchy)
+        private static void FlipYZAxis(PotreeMetadata potreeMetadata, PotreeHierarchy potreeHierarchy)
         {
-            for (int i = 0; i < potreeHierarchy.Nodes.Count; i++)
+            for (int i = 0; i < potreeHierarchy?.Nodes?.Count; i++)
             {
                 var node = potreeHierarchy.Nodes[i];
                 node.Aabb = new AABBd(Potree2Consts.YZflip * (node.Aabb.min - potreeMetadata.Offset), Potree2Consts.YZflip * (node.Aabb.max - potreeMetadata.Offset));

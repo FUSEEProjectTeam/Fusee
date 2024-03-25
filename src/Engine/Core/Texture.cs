@@ -1,4 +1,5 @@
-﻿using Fusee.Base.Common;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using System;
@@ -11,6 +12,9 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class Texture : ITexture
     {
+        /// <summary>
+        /// Texture ctor
+        /// </summary>
         protected Texture() { }
 
         #region RenderContext Asset Management
@@ -18,7 +22,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
         /// </summary>
-        public event EventHandler<TextureEventArgs> TextureChanged;
+        public event EventHandler<TextureEventArgs>? TextureChanged;
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
@@ -29,21 +33,21 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The <see cref="IImageData"/> of this texture.
         /// </summary>
-        public IImageData ImageData { get; protected set; }
+        public IImageData? ImageData { get; protected set; }
 
         #region Properties
 
         /// <summary>
         /// Reference to the original image. Should save path/file name.
         /// </summary>
-        public string PathAndName;
+        public string? PathAndName;
 
         /// <summary>
         /// Width in pixels.
         /// </summary>
         public int Width
         {
-            get { return ImageData.Width; }
+            get { Guard.IsNotNull(ImageData); return ImageData.Width; }
         }
 
         /// <summary>
@@ -51,7 +55,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int Height
         {
-            get { return ImageData.Height; }
+            get { Guard.IsNotNull(ImageData); return ImageData.Height; }
         }
 
         /// <summary>
@@ -59,7 +63,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public byte[] PixelData
         {
-            get { return ImageData.PixelData; }
+            get { Guard.IsNotNull(ImageData); return ImageData.PixelData; }
         }
 
         /// <summary>
@@ -67,7 +71,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public ImagePixelFormat PixelFormat
         {
-            get { return ImageData.PixelFormat; }
+            get { Guard.IsNotNull(ImageData); return ImageData.PixelFormat; }
         }
 
         /// <summary>
@@ -208,6 +212,7 @@ namespace Fusee.Engine.Core
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public IEnumerator<ScanLine> ScanLines(int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
         {
+            Guard.IsNotNull(ImageData);
             return ImageData.ScanLines(xSrc, ySrc, width, height);
         }
 

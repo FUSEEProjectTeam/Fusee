@@ -230,7 +230,7 @@ namespace Fusee.Engine.Core
         /// <param name="shadowMap">The shadow map.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
+        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget? srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture? shadowMap = null)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -240,10 +240,10 @@ namespace Fusee.Engine.Core
                 if (lc.Type != LightType.Point)
                 {
                     effectParams.Add(new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity });
-                    effectParams.Add(new FxParamDeclaration<WritableTexture> { Name = UniformNameDeclarations.ShadowMap, Value = (WritableTexture)shadowMap });
+                    effectParams.Add(new FxParamDeclaration<WritableTexture> { Name = UniformNameDeclarations.ShadowMap, Value = (WritableTexture?)shadowMap });
                 }
                 else
-                    effectParams.Add(new FxParamDeclaration<WritableCubeMap> { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
+                    effectParams.Add(new FxParamDeclaration<WritableCubeMap> { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap?)shadowMap });
             }
 
             effectParams.AddRange(DeferredLightParams());
@@ -273,7 +273,7 @@ namespace Fusee.Engine.Core
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
+        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, WritableArrayTexture? shadowMap, float2[]? clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -383,18 +383,18 @@ namespace Fusee.Engine.Core
             DeferredShaders.ShadowMapFrag);
         }
 
-        private static List<IFxParamDeclaration> DeferredLightingEffectParams(IRenderTarget srcRenderTarget, float4 backgroundColor)
+        private static List<IFxParamDeclaration> DeferredLightingEffectParams(IRenderTarget? srcRenderTarget, float4 backgroundColor)
         {
             return new List<IFxParamDeclaration>()
             {
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Subsurface], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Subsurface]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Depth]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Position]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Subsurface], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Subsurface]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth], Value = srcRenderTarget?.RenderTextures[(int)RenderTargetTextureTypes.Depth]},
 
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
                 new FxParamDeclaration<float4> { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
@@ -432,7 +432,7 @@ namespace Fusee.Engine.Core
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <returns></returns>
-        public static SurfaceEffect FromUnlit(float4 albedoColor, Texture albedoTex = null, float2 texTiles = new float2(), float albedoMix = 0)
+        public static SurfaceEffect FromUnlit(float4 albedoColor, Texture? albedoTex = null, float2 texTiles = new float2(), float albedoMix = 0)
         {
             var input = new UnlitInput()
             {
@@ -456,7 +456,7 @@ namespace Fusee.Engine.Core
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
-        public static SurfaceEffect FromDiffuse(float4 albedoColor, float roughness = 0f, float3 emissionColor = new float3(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
+        public static SurfaceEffect FromDiffuse(float4 albedoColor, float roughness = 0f, float3 emissionColor = new float3(), Texture? albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture? normalTex = null, float normalMapStrength = 0.5f)
         {
             var input = new DiffuseInput()
             {
@@ -491,7 +491,7 @@ namespace Fusee.Engine.Core
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
-        public static SurfaceEffect FromDiffuseInstanced(float4 albedoColor, float roughness = 0f, float3 emissionColor = new float3(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
+        public static SurfaceEffect FromDiffuseInstanced(float4 albedoColor, float roughness = 0f, float3 emissionColor = new float3(), Texture? albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture? normalTex = null, float normalMapStrength = 0.5f)
         {
             var input = new DiffuseInput()
             {
@@ -528,7 +528,7 @@ namespace Fusee.Engine.Core
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
-        public static SurfaceEffect FromDiffuseSpecular(float4 albedoColor, float roughness = 0f, float shininess = 255, float specularStrength = 0.5f, float3 emissionColor = new float3(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
+        public static SurfaceEffect FromDiffuseSpecular(float4 albedoColor, float roughness = 0f, float shininess = 255, float specularStrength = 0.5f, float3 emissionColor = new float3(), Texture? albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture? normalTex = null, float normalMapStrength = 0.5f)
         {
             var input = new SpecularInput()
             {
@@ -564,7 +564,7 @@ namespace Fusee.Engine.Core
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">Used to calculate the GGX micro facet distribution.</param>
-        public static SurfaceEffect FromGlossy(float4 albedoColor, float roughness = 0f, Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
+        public static SurfaceEffect FromGlossy(float4 albedoColor, float roughness = 0f, Texture? albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture? normalTex = null, float normalMapStrength = 0.5f)
         {
             var input = new GlossyInput()
             {
@@ -604,7 +604,7 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static SurfaceEffect FromBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface = 0f, float3 subsurfaceColor = new float3(), float3 emissionColor = new float3(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f, Texture thicknessMap = null)
+        public static SurfaceEffect FromBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface = 0f, float3 subsurfaceColor = new float3(), float3 emissionColor = new float3(), Texture? albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture? normalTex = null, float normalMapStrength = 0.5f, Texture? thicknessMap = null)
         {
             var input = new BRDFInput()
             {

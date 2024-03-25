@@ -87,6 +87,12 @@ namespace Fusee.Engine.Core
             _state.Model *= transform.Matrix;
         }
 
+        /// <summary>
+        /// Called when a <see cref="Light"/> is found during traversal, add current position to <see cref="LightPrepassResults"/>.
+        /// This is necessary, as a <see cref="Light"/> can be positioned arbitrarily inside a <see cref="SceneContainer"/>.
+        /// However, the resulting lighting affects all <see cref="Mesh"/>s, therefore we need to collect everything before rendering.
+        /// </summary>
+        /// <param name="lightComponent"></param>
         [VisitMethod]
         public void OnLight(Light lightComponent)
         {
@@ -109,6 +115,12 @@ namespace Fusee.Engine.Core
             _currentLight++;
         }
 
+        /// <summary>
+        /// Called when a camera is found inside the <see cref="SceneContainer"/>
+        /// This is done inside this pre-pass visitor, as the camera can be anywhere inside the container, however we want to render the whole container
+        /// independent of the camera position inside the scene graph.
+        /// </summary>
+        /// <param name="camComp"></param>
         [VisitMethod]
         public void OnCamera(Camera camComp)
         {

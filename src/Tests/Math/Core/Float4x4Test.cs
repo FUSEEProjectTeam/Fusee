@@ -298,7 +298,6 @@ namespace Fusee.Tests.Math.Core
         public void Invalid_GetWithIdx_Exception(int idx, string expected)
         {
             var actual = Assert.Throws<ArgumentOutOfRangeException>(() => float4x4.Zero[idx, idx]);
-
             Assert.Equal(expected, actual.ParamName);
         }
 

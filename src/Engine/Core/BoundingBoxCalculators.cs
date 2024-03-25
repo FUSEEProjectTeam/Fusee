@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
@@ -101,6 +102,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnMesh(Mesh mesh)
         {
+            Guard.IsNotNull(mesh.Vertices);
             // modify mesh
             for (var i = 0; i < mesh.Vertices.Length; i++)
                 _allVerticesOfCurrentScene.Add(_state.ModelView * mesh.Vertices[i]);

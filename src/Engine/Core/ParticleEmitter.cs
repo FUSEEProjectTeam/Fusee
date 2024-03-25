@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using CommunityToolkit.Diagnostics;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -103,11 +104,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns the particle mesh.
         /// </summary>
-        public Mesh PMesh => ParticleMesh;
+        public Mesh? PMesh => ParticleMesh;
 
         private readonly List<ParticleData> _particleList = new();
-        private ParticleData _particle;
-        private Random _rnd;
+        private ParticleData? _particle;
+        private Random? _rnd;
         private double _randVelX;
         private double _randVelY;
         private double _randVelZ;
@@ -409,12 +410,14 @@ namespace Fusee.Engine.Core
 
         private double GenRand(double one, double two)
         {
+            Guard.IsNotNull(_rnd);
             var rand = _rnd;
             return one + rand.NextDouble() * (two - one);
         }
 
         private int GenIntRand(int one, int two)
         {
+            Guard.IsNotNull(_rnd);
             var rand = _rnd;
             if (one < two)
             {

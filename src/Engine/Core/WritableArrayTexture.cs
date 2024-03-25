@@ -12,7 +12,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
         /// </summary>
-        public event EventHandler<TextureEventArgs> TextureChanged;
+        public event EventHandler<TextureEventArgs>? TextureChanged;
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
@@ -161,6 +161,7 @@ namespace Fusee.Engine.Core
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            GC.SuppressFinalize(this);
             Dispose(true);
         }
 

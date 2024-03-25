@@ -14,8 +14,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class WindowsSpaceMouseDriverImp : IInputDriverImp
     {
-        readonly GameWindow _gameWindow;
-        readonly WindowsSpaceMouseInputDeviceImp _SMI;
+        private readonly GameWindow _gameWindow;
+        private readonly WindowsSpaceMouseInputDeviceImp _SMI;
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseDriverImp"/> class.
         /// </summary>
@@ -91,7 +91,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// <summary>
     /// SMI input device implementation for the Windows platform. This implementation directly
     /// sniffs at the render window's message pump (identified by the <see cref="GameWindow"/> parameter passed
-    /// to the constructor) to receive 
+    /// to the constructor) to receive
     /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.
     /// </summary>
     public class WindowsSpaceMouseInputDeviceImp : IInputDeviceImp, IDisposable
@@ -124,6 +124,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private static extern IntPtr DefWindowProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
+        private
         // private static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
         static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
@@ -152,11 +153,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                      || os.Version.Major == 6 && os.Version.Minor >= 2)
                 )
             {
-                if (_handle.Handle != IntPtr.Zero)
-                {
-                    _newWinProc = new WinProc(SpaceMouseWindowsProc);
-                    _oldWndProc = SetWindowLongPtr(_handle, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(_newWinProc));
-                }
+
+                _newWinProc = new WinProc(SpaceMouseWindowsProc);
+                _oldWndProc = SetWindowLongPtr(_handle, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(_newWinProc));
+
             }
         }
         #endregion
@@ -164,7 +164,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseInputDeviceImp" /> class.
         /// </summary>
-        /// <param name="gameWindow">The game window to hook on to receive 
+        /// <param name="gameWindow">The game window to hook on to receive
         /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
         public WindowsSpaceMouseInputDeviceImp(GameWindow gameWindow)
         {
@@ -396,11 +396,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
-
+        /// <summary>
+        /// dtor
+        /// </summary>
         ~WindowsSpaceMouseInputDeviceImp()
         {
             Dispose(false);
         }
+
 
         /// <summary>
         /// Part of the dispose pattern.

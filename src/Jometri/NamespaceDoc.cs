@@ -15,7 +15,7 @@
     /// allows for such queries. Additionally, a number of geometric algorithms are implemented here.
     /// </para>
     /// </summary>
-    static class NamespaceDoc
+    internal static class NamespaceDoc
     {
         // This class only exists to keep the namespace XML documentation 
     }

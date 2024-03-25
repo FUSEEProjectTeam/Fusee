@@ -8,8 +8,8 @@ namespace Fusee.Engine.Core
 
     internal struct CompiledEffects
     {
-        internal CompiledEffect ForwardFx;
-        internal CompiledEffect DeferredFx;
+        internal CompiledEffect? ForwardFx;
+        internal CompiledEffect? DeferredFx;
     }
 
     /// <summary>
@@ -20,7 +20,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The handle that identifies the shader program on the gpu.
         /// </summary>
-        internal IShaderHandle GpuHandle;
+        internal IShaderHandle? GpuHandle;
 
         /// <summary>
         /// The shader parameters of all passes. See <see cref="IActiveUniform"/> on the parameter infos that are saved.
@@ -37,7 +37,7 @@ namespace Fusee.Engine.Core
         /// <returns>
         /// True, if left does equal right; false otherwise.
         /// </returns>
-        public static bool operator ==(CompiledEffect lhs, CompiledEffect rhs)
+        public static bool operator ==(CompiledEffect? lhs, CompiledEffect? rhs)
         {
             // Check for null on left side.
             if (lhs is null)
@@ -59,7 +59,7 @@ namespace Fusee.Engine.Core
         /// <returns>
         /// True, if left does not equal right; false otherwise.
         /// </returns>
-        public static bool operator !=(CompiledEffect lhs, CompiledEffect rhs)
+        public static bool operator !=(CompiledEffect? lhs, CompiledEffect? rhs)
         {
             return !(lhs == rhs);
         }
@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
         /// <returns>
         /// true if the current NormapMapChannel is equal to the other; otherwise, false.
         /// </returns>
-        public bool Equals(CompiledEffect other)
+        public bool Equals(CompiledEffect? other)
         {
             if (other is null)
                 return false;
@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core
         /// <returns>
         /// True if the instances are equal; false otherwise.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if ((obj is null) || !GetType().Equals(obj.GetType()))
                 return false;

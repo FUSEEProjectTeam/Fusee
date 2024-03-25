@@ -11,28 +11,28 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The video stream.
         /// </summary>
-        public IVideoStreamImp _imp;
+        public IVideoStreamImp? _imp;
         /// <summary>
         /// Returns the current frame.
         /// </summary>
         /// <returns></returns>
-        public IImageData GetCurrentFrame()
+        public IImageData? GetCurrentFrame()
         {
-            return _imp.GetCurrentFrame();
+            return _imp?.GetCurrentFrame();
         }
         /// <summary>
         /// Starts the video stream.
         /// </summary>
         public void Start()
         {
-            _imp.Start();
+            _imp?.Start();
         }
         /// <summary>
         /// Stops the video stream.
         /// </summary>
         public void Stop()
         {
-            _imp.Stop();
+            _imp?.Stop();
         }
 
     }
