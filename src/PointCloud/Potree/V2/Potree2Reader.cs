@@ -67,6 +67,7 @@ namespace Fusee.PointCloud.Potree.V2
                 OffsetToExtraBytes = PotreeData.Metadata.OffsetToExtraBytes,
                 IntensityMax = PotreeData.Metadata.Attributes["intensity"].MaxList[0],
                 IntensityMin = PotreeData.Metadata.Attributes["intensity"].MinList[0],
+                PositionType = SupportedPositionTypes.int32
 
             };
 
