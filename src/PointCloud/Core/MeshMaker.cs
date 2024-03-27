@@ -15,7 +15,7 @@ namespace Fusee.PointCloud.Core
     public enum SupportedPositionTypes
     {
         int32,
-        float64
+        float32
     }
 
     /// <summary>
@@ -169,11 +169,11 @@ namespace Fusee.PointCloud.Core
                             z = (float)(pos[2] * metaData.Scale.z);
                         }
                         break;
-                    case SupportedPositionTypes.float64:
+                    case SupportedPositionTypes.float32:
                         {
-                            var byteCountPos = sizeof(double) * 3;
+                            var byteCountPos = sizeof(float) * 3;
                             var posRaw = pointsSpan.Slice(i * metaData.PointSize + metaData.OffsetToPosValues, byteCountPos);
-                            var pos = MemoryMarshal.Cast<byte, double>(posRaw);
+                            var pos = MemoryMarshal.Cast<byte, float>(posRaw);
 
                             x = (float)(pos[0] * metaData.Scale.x);
                             y = (float)(pos[1] * metaData.Scale.y);
