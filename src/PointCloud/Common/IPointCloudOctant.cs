@@ -9,9 +9,14 @@ namespace Fusee.PointCloud.Common
     public interface IPointCloudOctant : IEmptyOctant<double3, double3>
     {
         /// <summary>
-        /// The number of points that fall into this octant.
+        /// The number of points that are in this octant.
         /// </summary>
         public int NumberOfPointsInNode { get; set; }
+
+        /// <summary>
+        /// The number of points this octant can hold.
+        /// </summary>
+        public int PointCapacity { get; }
 
         /// <summary>
         /// Calculates the size, projected into screen space.

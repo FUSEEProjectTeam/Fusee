@@ -20,6 +20,12 @@ namespace Fusee.PointCloud.Core
         public int NumberOfPointsInNode { get; set; }
 
         /// <summary>
+        /// Number of point cloud points, this node can hold.
+        /// This octant is of dynamic size, will return <see cref="NumberOfPointsInNode"/>
+        /// </summary>
+        public int PointCapacity => NumberOfPointsInNode;
+
+        /// <summary>
         /// The globally unique identifier for this octant.
         /// </summary>
         public OctantId OctId { get; set; }
