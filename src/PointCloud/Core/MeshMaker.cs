@@ -138,7 +138,7 @@ namespace Fusee.PointCloud.Core
             ];
         }
 
-        public static MemoryOwner<VisualizationPoint> CreateVisualizationPoints(MemoryMappedFile mmf, int numberOfPoints, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
+        public static MemoryOwner<VisualizationPoint> CreateVisualizationPoints(MemoryMappedFile mmf, int numberOfPoints, HandleReadExtraBytes? handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
         {
             var size = numberOfPoints * metaData.PointSize;
             using var accessor = mmf.CreateViewAccessor();
