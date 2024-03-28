@@ -239,7 +239,7 @@ namespace Fusee.PointCloud.Core
                 {
                     var visPoint = new VisualizationPoint
                     {
-                        Position = new float3(x, z, y),
+                        Position = new float3(x, y, z),
                         Color = color,
                         Flags = flag
                     };
