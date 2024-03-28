@@ -19,13 +19,13 @@ namespace Fusee.PointCloud.Common
         /// <param name="pointSizeMode">The <see cref="PointSizeMode"/>.</param>
         /// <param name="shape">The <see cref="PointShape"/>.</param>
         /// <returns></returns>
-        public static ShaderEffect ForDepthPass(int size, PointSizeMode pointSizeMode, PointShape shape)
+        public static ShaderEffect ForDepthPass(float size, PointSizeMode pointSizeMode, PointShape shape)
         {
             return new ShaderEffect(
 
             new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = size},
+                new FxParamDeclaration<float> {Name = UniformNameDeclarations.PointSize, Value = size},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)shape},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)pointSizeMode},
             },
@@ -54,7 +54,7 @@ namespace Fusee.PointCloud.Common
 
             new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = size},
+                new FxParamDeclaration<float> {Name = UniformNameDeclarations.PointSize, Value = size},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)shape},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)pointSizeMode},
             },
@@ -77,7 +77,7 @@ namespace Fusee.PointCloud.Common
         /// <param name="edlStrength">The strength of the EDL lighting.</param>
         /// <param name="edlNeigbourPx">Number of pixels, used in the EDL lighting calculation.</param>
         /// <returns></returns>
-        public static SurfaceEffectPointCloud ForColorPass(int size, ColorMode colorMode, PointSizeMode pointSizeMode, PointShape shape, float edlStrength, int edlNeigbourPx)
+        public static SurfaceEffectPointCloud ForColorPass(float size, ColorMode colorMode, PointSizeMode pointSizeMode, PointShape shape, float edlStrength, int edlNeigbourPx)
         {
             var fx = new SurfaceEffectPointCloud
             {
@@ -103,7 +103,7 @@ namespace Fusee.PointCloud.Common
         /// <param name="edlStrength">The strength of the EDL lighting.</param>
         /// <param name="edlNeigbourPx">Number of pixels, used in the EDL lighting calculation.</param>
         /// <returns></returns>
-        public static SurfaceEffectPointCloud ForColorPassInstanced(int size, ColorMode colorMode, PointSizeMode pointSizeMode, PointShape shape, float edlStrength, int edlNeigbourPx)
+        public static SurfaceEffectPointCloud ForColorPassInstanced(float size, ColorMode colorMode, PointSizeMode pointSizeMode, PointShape shape, float edlStrength, int edlNeigbourPx)
         {
             var fx = new SurfaceEffectPointCloud(null, true)
             {
