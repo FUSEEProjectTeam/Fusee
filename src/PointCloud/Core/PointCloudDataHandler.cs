@@ -82,7 +82,7 @@ namespace Fusee.PointCloud.Core
 
         private readonly HandleReadExtraBytes? _handleExtraBytes;
 
-        private HashSet<OctantId> _updateFromInvalidateCache = [];
+        private HashSet<OctantId> _updateFromInvalidateCache = new();
 
         /// <summary>
         /// Caches loaded raw points.
