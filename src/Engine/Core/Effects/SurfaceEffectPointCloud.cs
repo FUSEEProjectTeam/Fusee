@@ -66,7 +66,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Uniform)]
-        public int PointSize
+        public float PointSize
         {
             get { return _pointSize; }
             set
@@ -75,7 +75,7 @@ namespace Fusee.Engine.Core.Effects
                 SetFxParam(nameof(PointSize), _pointSize);
             }
         }
-        private int _pointSize;
+        private float _pointSize;
 
         /// <summary>
         /// Shape of the points.
@@ -186,7 +186,7 @@ namespace Fusee.Engine.Core.Effects
                     "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",
                     "",
                     "       //Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!",
-                    $"      gl_PointSize = int((float({UniformNameDeclarations.ViewportPx}.y) / 2.0) * (float({UniformNameDeclarations.PointSize}) / ( slope * {VaryingNameDeclarations.ViewPos}.z))) / 100.0;",
+                    $"      gl_PointSize =  (float({UniformNameDeclarations.ViewportPx}.y) / 2.0) * (float({UniformNameDeclarations.PointSize}) / ( slope * {VaryingNameDeclarations.ViewPos}.z)) / 100.0;",
                     "       break;",
                     "   }",
                     "}"

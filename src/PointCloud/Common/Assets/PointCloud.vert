@@ -4,7 +4,7 @@ precision highp float;
 
 uniform ivec2 FUSEE_ViewportPx;
 uniform int PointSizeMode;
-uniform int PointSize;
+uniform float PointSize;
 
 uniform mat4 FUSEE_MVP;
 uniform mat4 FUSEE_MV;
@@ -51,7 +51,7 @@ void main(void)
 			//In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away
 			
 			//Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!
-			ptSize = ((float(FUSEE_ViewportPx.y) / 2.0) * (float(PointSize) / ( slope * vViewPos.z))) / pointSizeDivisor;
+			ptSize = ((float(FUSEE_ViewportPx.y) / 2.0) * (PointSize / ( slope * vViewPos.z))) / pointSizeDivisor;
 			break;
 		}
 	}

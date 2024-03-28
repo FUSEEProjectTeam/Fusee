@@ -20,6 +20,12 @@ namespace Fusee.PointCloud.Core
         public int NumberOfPointsInNode { get; set; }
 
         /// <summary>
+        /// Number of point cloud points, this node can hold.
+        /// This octant is of dynamic size, will return <see cref="NumberOfPointsInNode"/>
+        /// </summary>
+        public int PointCapacity => NumberOfPointsInNode;
+
+        /// <summary>
         /// The globally unique identifier for this octant.
         /// </summary>
         public OctantId OctId { get; set; }
@@ -88,6 +94,17 @@ namespace Fusee.PointCloud.Core
         /// The maximum of octants bounding box.
         /// </summary>
         public double3 Max { get; private set; }
+
+        /// <summary>
+        /// True, if this octant is marked as proxy/helper node.
+        /// Proxy nodes can have children but don't necessarily have any payload.
+        /// </summary>
+        public bool IsProxy { get; } = false;
+
+        /// <summary>
+        /// Support lazy loading.
+        /// </summary>
+        public bool Initialized { get; } = true;
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloudOctant"/>.

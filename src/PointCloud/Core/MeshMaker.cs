@@ -12,6 +12,12 @@ using System.Runtime.InteropServices;
 
 namespace Fusee.PointCloud.Core
 {
+    public enum SupportedPositionTypes
+    {
+        int32,
+        float32
+    }
+
     /// <summary>
     /// Delegate for a method that knows how to parse a slice of a point's extra bytes to a valid uint.
     /// </summary>
@@ -66,6 +72,9 @@ namespace Fusee.PointCloud.Core
         /// -1 means there is no such value.
         /// </summary>
         public int OffsetToExtraBytes;
+
+        public SupportedPositionTypes PositionType;
+
     }
 
     /// <summary>
@@ -123,35 +132,54 @@ namespace Fusee.PointCloud.Core
         /// <returns></returns>
         public static IEnumerable<TGpuData> CreateInstanceData<TGpuData>(MemoryOwner<VisualizationPoint> points, CreateGpuData<TGpuData> createGpuDataHandler)
         {
-            return new List<TGpuData>
-            {
-                createGpuDataHandler(points)
-            };
+            return new List<TGpuData>() { createGpuDataHandler(points) };
         }
 
-        public static MemoryOwner<VisualizationPoint> CreateVisualizationPoints(MemoryMappedFile mmf, int numberOfPoints, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
+        public static MemoryOwner<VisualizationPoint> CreateVisualizationPoints(MemoryMappedFile mmf, int numberOfPoints, HandleReadExtraBytes? handleExtraBytes, CreateMeshMetaData metaData, EventHandler<ErrorEventArgs>? onPointCloudReadError)
         {
             var size = numberOfPoints * metaData.PointSize;
             using var accessor = mmf.CreateViewAccessor();
             var rawPoints = new byte[size];
+
             accessor.ReadArray(0, rawPoints, 0, size);
 
-            MemoryOwner<VisualizationPoint> visPoints = MemoryOwner<VisualizationPoint>.Allocate(numberOfPoints);
             var pointsSpan = rawPoints.AsSpan();
+            var numberOfRelevantPoints = 0;
+
+            var visPoints = new List<VisualizationPoint>(65535);
 
             for (int i = 0; i < numberOfPoints; i++)
             {
-                var visPoint = new VisualizationPoint();
-                var byteCountPos = sizeof(int) * 3;
-                var posRaw = pointsSpan.Slice(i * metaData.PointSize + metaData.OffsetToPosValues, byteCountPos);
+                float x;
+                float y;
+                float z;
+                switch (metaData.PositionType)
+                {
+                    case SupportedPositionTypes.int32:
+                        {
+                            var byteCountPos = sizeof(int) * 3;
+                            var posRaw = pointsSpan.Slice(i * metaData.PointSize + metaData.OffsetToPosValues, byteCountPos);
+                            var pos = MemoryMarshal.Cast<byte, int>(posRaw);
 
-                var pos = MemoryMarshal.Cast<byte, int>(posRaw);
+                            x = (float)(pos[0] * metaData.Scale.x);
+                            y = (float)(pos[1] * metaData.Scale.y);
+                            z = (float)(pos[2] * metaData.Scale.z);
+                        }
+                        break;
+                    case SupportedPositionTypes.float32:
+                        {
+                            var byteCountPos = sizeof(float) * 3;
+                            var posRaw = pointsSpan.Slice(i * metaData.PointSize + metaData.OffsetToPosValues, byteCountPos);
+                            var pos = MemoryMarshal.Cast<byte, float>(posRaw);
 
-                var x = (float)(pos[0] * metaData.Scale.x);
-                var y = (float)(pos[1] * metaData.Scale.y);
-                var z = (float)(pos[2] * metaData.Scale.z);
-
-                visPoint.Position = new float3(x, z, y);
+                            x = (float)(pos[0] * metaData.Scale.x);
+                            y = (float)(pos[1] * metaData.Scale.y);
+                            z = (float)(pos[2] * metaData.Scale.z);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentException($"Unsupported pos type: {metaData.PositionType} ");
+                }
 
                 float4 color;
                 if (metaData.OffsetColor != -1)
@@ -184,8 +212,6 @@ namespace Fusee.PointCloud.Core
                     color = float4.UnitW;
                 }
 
-                visPoint.Color = color;
-
                 uint flag = 0;
                 Span<byte> extraBytesRaw = new();
                 if (metaData.OffsetToExtraBytes != -1 && metaData.OffsetToExtraBytes != 0)
@@ -205,12 +231,27 @@ namespace Fusee.PointCloud.Core
                         onPointCloudReadError?.Invoke(null, new ErrorEventArgs(e));
                     }
                 }
-                visPoint.Flags = flag;
 
-                visPoints.Span[i] = visPoint;
+                if (x != 0 || y != 0 || z != 0)
+                {
+                    var visPoint = new VisualizationPoint
+                    {
+                        Position = new float3(x, y, z),
+                        Color = color,
+                        Flags = flag
+                    };
+
+                    numberOfRelevantPoints++;
+                    visPoints.Add(visPoint);
+                }
             }
 
-            return visPoints;
+            MemoryOwner<VisualizationPoint> visPointsMem = MemoryOwner<VisualizationPoint>.Allocate(numberOfRelevantPoints);
+            for (int i = 0; i < visPoints.Count; i++)
+            {
+                visPointsMem.Span[i] = visPoints[i];
+            }
+            return visPointsMem;
         }
 
         private static (float3[], uint[], uint[], uint[], AABBf) GetGpuDataContents(MemoryOwner<VisualizationPoint> points)

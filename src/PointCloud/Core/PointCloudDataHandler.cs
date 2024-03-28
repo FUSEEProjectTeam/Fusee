@@ -80,7 +80,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public CreateMeshMetaData MetaData { get; private set; }
 
-        private readonly HandleReadExtraBytes _handleExtraBytes;
+        private readonly HandleReadExtraBytes? _handleExtraBytes;
 
         private HashSet<OctantId> _updateFromInvalidateCache = new();
 
@@ -124,7 +124,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="getNumberOfPointsInNode"></param>
         /// <param name="getAllBytesForAttribute"></param>
         /// <param name="doRenderInstanced"></param>
-        public PointCloudDataHandler(CreateGpuData<TGpuData> createMeshHandler, HandleReadExtraBytes handleExtraBytes, CreateMeshMetaData metaData, LoadPointsHandler loadPointsHandler, Func<OctantId, long> getNumberOfPointsInNode, GetAllBytesForAttributeHandler getAllBytesForAttribute, bool doRenderInstanced = false)
+        public PointCloudDataHandler(CreateGpuData<TGpuData> createMeshHandler, HandleReadExtraBytes? handleExtraBytes, CreateMeshMetaData metaData, LoadPointsHandler loadPointsHandler, Func<OctantId, long> getNumberOfPointsInNode, GetAllBytesForAttributeHandler getAllBytesForAttribute, bool doRenderInstanced = false)
         {
             _rawPointCache = new()
             {
