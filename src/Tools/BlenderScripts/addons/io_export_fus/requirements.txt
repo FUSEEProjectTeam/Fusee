@@ -1,2 +1,2 @@
-protobuf==3.21.9
+protobuf==4.25.8
 ptvsd==4.3.2
