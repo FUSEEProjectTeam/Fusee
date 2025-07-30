@@ -72,7 +72,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
+		<SourceRoot Include="$(MSBuildThisFileDirectory)/" />
 	</ItemGroup>
 
 </Project>
